@@ -12,5 +12,6 @@ LinkingTo:
     BH
 Imports: 
     Rcpp,
-    BH
+    BH,
+    data.table
 RoxygenNote: 6.1.1

@@ -10,7 +10,7 @@ rcpp_construct_filepath(filename, i = NULL, subdir = NULL,
 \arguments{
 \item{filename}{character. アウトプットファイル名.}
 
-\item{i}{double. The file name will be like filename01.csv.}
+\item{i}{numeric. The file name will be like filename01.csv.}
 
 \item{subdir}{character. A file is saved into data/output/subdir.}
 
