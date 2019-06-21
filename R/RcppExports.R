@@ -6,7 +6,7 @@
 #' @param cows cow data table
 #' @export
 rcpp_add_1_to_age <- function(cows) {
-    .Call('_BLVIBMjp_rcpp_add_1_to_age', PACKAGE = 'BLVIBMjp', cows)
+    .Call('_blvibmjp_rcpp_add_1_to_age', PACKAGE = 'blvibmjp', cows)
 }
 
 #' Add the month indicator
@@ -15,7 +15,7 @@ rcpp_add_1_to_age <- function(cows) {
 #' @param i numeric. The index of month.
 #' @export
 rcpp_set_i_month <- function(cows, i) {
-    .Call('_BLVIBMjp_rcpp_set_i_month', PACKAGE = 'BLVIBMjp', cows, i)
+    .Call('_blvibmjp_rcpp_set_i_month', PACKAGE = 'blvibmjp', cows, i)
 }
 
 #' Extract owned cows
@@ -23,18 +23,18 @@ rcpp_set_i_month <- function(cows, i) {
 #' @param cows cow data frame
 #' @export
 rcpp_extract_owned_cows <- function(cows) {
-    .Call('_BLVIBMjp_rcpp_extract_owned_cows', PACKAGE = 'BLVIBMjp', cows)
+    .Call('_blvibmjp_rcpp_extract_owned_cows', PACKAGE = 'blvibmjp', cows)
 }
 
 #' Construct filepath to output a file
 #'
 #' @param filename character. アウトプットファイル名.
-#' @param i double. The file name will be like filename01.csv.
+#' @param i numeric. The file name will be like filename01.csv.
 #' @param subdir character. A file is saved into data/output/subdir.
 #' @param ext character. Extension of the output file.
 #' @return character. data/output/subdir/filenameiext. eg. data/output/your_sub_directory/filename01.csv
 #' @export
 rcpp_construct_filepath <- function(filename, i = NULL, subdir = NULL, ext = ".csv") {
-    .Call('_BLVIBMjp_rcpp_construct_filepath', PACKAGE = 'BLVIBMjp', filename, i, subdir, ext)
+    .Call('_blvibmjp_rcpp_construct_filepath', PACKAGE = 'blvibmjp', filename, i, subdir, ext)
 }
 

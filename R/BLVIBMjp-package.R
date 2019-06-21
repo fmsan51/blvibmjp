@@ -1,4 +1,4 @@
-#' @useDynLib BLVIBMjp
+#' @useDynLib blvibmjp
 #' @importFrom Rcpp sourceCpp
 #' @exportPattern "^[[:alpha:]]+"
 NULL

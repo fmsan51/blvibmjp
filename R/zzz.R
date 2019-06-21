@@ -1,3 +1,3 @@
 .onUnload <- function (libpath) {
-  library.dynam.unload("BLVIBMjp", libpath)
+  library.dynam.unload("blvibmjp", libpath)
 }

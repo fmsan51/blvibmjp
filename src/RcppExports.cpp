@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // rcpp_add_1_to_age
 List rcpp_add_1_to_age(List cows);
-RcppExport SEXP _BLVIBMjp_rcpp_add_1_to_age(SEXP cowsSEXP) {
+RcppExport SEXP _blvibmjp_rcpp_add_1_to_age(SEXP cowsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // rcpp_set_i_month
 List rcpp_set_i_month(List cows, double i);
-RcppExport SEXP _BLVIBMjp_rcpp_set_i_month(SEXP cowsSEXP, SEXP iSEXP) {
+RcppExport SEXP _blvibmjp_rcpp_set_i_month(SEXP cowsSEXP, SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,7 +30,7 @@ END_RCPP
 }
 // rcpp_extract_owned_cows
 DataFrame rcpp_extract_owned_cows(DataFrame cows);
-RcppExport SEXP _BLVIBMjp_rcpp_extract_owned_cows(SEXP cowsSEXP) {
+RcppExport SEXP _blvibmjp_rcpp_extract_owned_cows(SEXP cowsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +41,7 @@ END_RCPP
 }
 // rcpp_construct_filepath
 String rcpp_construct_filepath(std::string filename, Nullable<Rcpp::NumericVector> i, Nullable<Rcpp::String> subdir, std::string ext);
-RcppExport SEXP _BLVIBMjp_rcpp_construct_filepath(SEXP filenameSEXP, SEXP iSEXP, SEXP subdirSEXP, SEXP extSEXP) {
+RcppExport SEXP _blvibmjp_rcpp_construct_filepath(SEXP filenameSEXP, SEXP iSEXP, SEXP subdirSEXP, SEXP extSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,14 +55,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLVIBMjp_rcpp_add_1_to_age", (DL_FUNC) &_BLVIBMjp_rcpp_add_1_to_age, 1},
-    {"_BLVIBMjp_rcpp_set_i_month", (DL_FUNC) &_BLVIBMjp_rcpp_set_i_month, 2},
-    {"_BLVIBMjp_rcpp_extract_owned_cows", (DL_FUNC) &_BLVIBMjp_rcpp_extract_owned_cows, 1},
-    {"_BLVIBMjp_rcpp_construct_filepath", (DL_FUNC) &_BLVIBMjp_rcpp_construct_filepath, 4},
+    {"_blvibmjp_rcpp_add_1_to_age", (DL_FUNC) &_blvibmjp_rcpp_add_1_to_age, 1},
+    {"_blvibmjp_rcpp_set_i_month", (DL_FUNC) &_blvibmjp_rcpp_set_i_month, 2},
+    {"_blvibmjp_rcpp_extract_owned_cows", (DL_FUNC) &_blvibmjp_rcpp_extract_owned_cows, 1},
+    {"_blvibmjp_rcpp_construct_filepath", (DL_FUNC) &_blvibmjp_rcpp_construct_filepath, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_BLVIBMjp(DllInfo *dll) {
+RcppExport void R_init_blvibmjp(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
