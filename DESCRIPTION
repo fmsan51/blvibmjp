@@ -13,6 +13,7 @@ LinkingTo:
 Imports: 
     Rcpp,
     BH,
-    data.table
+    data.table,
+    rlang
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

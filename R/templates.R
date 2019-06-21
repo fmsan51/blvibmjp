@@ -62,11 +62,8 @@
 #'
 #' @format [data.table::data.table]
 #' @seealso [barn_table]
+#'
 #' @name cow_table
-#' @export
-NULL
-
-#' @rdname cow_table
 #' @export
 a_new_calf <- data.table(
   row_id = NA_integer_,
@@ -155,10 +152,6 @@ a_new_calf <- data.table(
 #' @seealso [cow_table]
 #' @name barn_table
 #' @export
-NULL
-
-#' @rdname barn_table
-#' @export
 a_chamber <- data.table(
   chamber_id = NA_integer_,
   is_edge1 = NA,
@@ -201,10 +194,6 @@ a_chamber <- data.table(
 #' @format [data.table::data.table]
 #' @seealso [cow_table] [barn_table]
 #' @name rp_table
-#' @export
-NULL
-
-#' @rdname rp_table
 #' @export
 day_rp <- data.table(cow_id = NA_integer_,
                      infection_status = NA_character_,
