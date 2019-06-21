@@ -7,7 +7,7 @@
 is_ts(params)
 }
 \arguments{
-\item{params}{A list of parameter. See [calc_params()].}
+\item{params}{A list of parameter. See \code{\link[=calc_params]{calc_params()}}.}
 }
 \value{
 A logical vector of length 4 which indicates whether barns are tie-stall or not.

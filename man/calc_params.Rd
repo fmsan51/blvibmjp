@@ -10,15 +10,15 @@ calc_params_once(modification = NULL)
 calc_params_repeatedly(modification = NULL, i_simulation = NULL)
 }
 \arguments{
-\item{modification}{A list like `list(parameter_name_to_overwrite = new_parameter)`.}
+\item{modification}{A list like \code{list(parameter_name_to_overwrite = new_parameter)}.}
 
 \item{i_simulation}{The iteration indicator of the simulation.}
 }
 \value{
-An empty list (`calc_params_once()`) or an parameter list (`calc_params_repeatedly()`)
+An empty list (\code{calc_params_once()}) or an parameter list (\code{calc_params_repeatedly()})
 }
 \description{
-Calculate parameters to the simulation and overwrite the default setting if necessary.  
-`calc_params_once()` calculate parameters at the start of the whole simulations. At that moment, it returns an empty list.  
-`calc_params_repeatedly()` calculate paramaters at the start of the each iteration of the simulation.
+Calculate parameters to the simulation and overwrite the default setting if necessary.
+\code{calc_params_once()} calculate parameters at the start of the whole simulations. At that moment, it returns an empty list.
+\code{calc_params_repeatedly()} calculate paramaters at the start of the each iteration of the simulation.
 }

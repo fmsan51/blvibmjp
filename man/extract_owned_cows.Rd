@@ -7,10 +7,10 @@
 extract_owned_cows(cows)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 }
 \value{
-A [cow_table]
+A \link{cow_table}
 }
 \description{
 Extract owned cows from a cow_table

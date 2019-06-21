@@ -7,7 +7,7 @@
 is_infected_vertical(status_mother)
 }
 \arguments{
-\item{status_mother}{The `infection_status` of dams.}
+\item{status_mother}{The \code{infection_status} of dams.}
 }
 \value{
 A logical vector

@@ -15,8 +15,8 @@ set_param(parameter, default)
 A list of overwritten parameters
 }
 \description{
-It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.  
-When 'parameter' is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.  
+It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
+When 'parameter' is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.
 When 'parameter' is NA (= when a farm specific parameter was not set), it returns dafault parameters.
 }
 \note{

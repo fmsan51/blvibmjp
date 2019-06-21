@@ -7,14 +7,14 @@
 change_infection_status(cows, i, month)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
-\item{month}{The month (1, 2, ..., 12) of month `i`.}
+\item{month}{The month (1, 2, ..., 12) of month \code{i}.}
 }
 \value{
-A [cow_table]
+A \link{cow_table}
 }
 \description{
 Check change of infection status of cows

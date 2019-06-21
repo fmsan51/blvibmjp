@@ -7,7 +7,7 @@
 is_md_separated_in_ts(params)
 }
 \arguments{
-\item{params}{A list of parameters. See [calc_params()].}
+\item{params}{A list of parameters. See \code{\link[=calc_params]{calc_params()}}.}
 }
 \value{
 A logical value

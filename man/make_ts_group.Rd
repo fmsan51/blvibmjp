@@ -7,15 +7,15 @@
 make_ts_group(cows, n_x, n_y)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
 \item{n_x}{The number of chambers in a lane.}
 
 \item{n_y}{The number of lanes in a tie-stall barn.}
 }
 \value{
-A [barn_table]
+A \link{barn_table}
 }
 \description{
-Make a [barn_table] based on x, y coordinates in a [cow_table].
+Make a \link{barn_table} based on x, y coordinates in a \link{cow_table}.
 }

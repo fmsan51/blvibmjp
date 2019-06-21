@@ -20,13 +20,19 @@ A list consisted of a month
 When a cow is infected, the number of months necessary to progress the disease is calculated at the month a cow is infected.
 }
 \details{
-Probabilities to:  
-- be newly infected (s->ial),  
-- develop persistent lymphocytosis (ial->ipl), and  
-- show symptom (ipl->ebl),
+Probabilities to:
+\itemize{
+\item be newly infected (s->ial),
+\item develop persistent lymphocytosis (ial->ipl), and
+\item show symptom (ipl->ebl),
 in the month.
+}
 
-Total infection risk = Infection risk in free-stall or grazing  
-  * (hours_grazing / 24)  
-  + Infection risk from neighborhood cows * (1 - hours_grazing / 24)
+Total infection risk = Infection risk in free-stall or grazing
+\itemize{
+\item (hours_grazing / 24)
+}
+\itemize{
+\item Infection risk from neighborhood cows * (1 - hours_grazing / 24)
+}
 }

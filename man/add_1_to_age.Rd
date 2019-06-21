@@ -7,11 +7,11 @@
 add_1_to_age(cows)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 }
 \value{
-A [cow_table]
+A \link{cow_table}
 }
 \description{
-Add 1 to `age` variable in a cow table.
+Add 1 to \code{age} variable in a cow table.
 }

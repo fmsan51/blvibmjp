@@ -16,7 +16,7 @@ sex_twins(n_calves)
 A character vector consisted of "male", "female" and "freemartin"
 }
 \description{
-`sex_newborns()` returns sex of singleton newborns.  
-`sex_twins()` returns sex of pairs of twin newborns.  
+\code{sex_newborns()} returns sex of singleton newborns.
+\code{sex_twins()} returns sex of pairs of twin newborns.
 Probability to be triplets or more is ignored (=0).
 }

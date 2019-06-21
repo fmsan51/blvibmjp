@@ -7,12 +7,12 @@
 remove_from_group(group, cow_id_removed)
 }
 \arguments{
-\item{group}{See [barn_table].}
+\item{group}{See \link{barn_table}.}
 
 \item{cow_id_removed}{The ID of cows removed from the barn.}
 }
 \value{
-A [barn_table].
+A \link{barn_table}.
 }
 \description{
 Remove dead or sold cows from a barn

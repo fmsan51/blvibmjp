@@ -7,14 +7,14 @@
 add_newborns(cows, params_calculated, i)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
-\item{params_calculated}{See [calculate_parameters].}
+\item{params_calculated}{See \link{calculate_parameters}.}
 
 \item{i}{The number of months from the start of the simulation.}
 }
 \value{
-A [cow_table]
+A \link{cow_table}
 }
 \description{
 Add newborns to a cow_table

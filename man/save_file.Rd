@@ -13,7 +13,7 @@ save_params_txt(params, filename, i, subdir)
 construct_filepath(filename, i = NULL, subdir = NA, ext = ".csv")
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
 \item{filename}{The file name to an output file.}
 
@@ -21,12 +21,12 @@ construct_filepath(filename, i = NULL, subdir = NA, ext = ".csv")
 
 \item{subdir}{Specify the path to the directory from "output" folder if you want to output a file into a different directory.}
 
-\item{params}{The parameter list used in the simulation. For more detail, see [calc_params()].}
+\item{params}{The parameter list used in the simulation. For more detail, see \code{\link[=calc_params]{calc_params()}}.}
 
 \item{ext}{The file extension of an output file.}
 }
 \value{
-An output file at the specified location (`save_to_csv()` and `save_params()`) or a character string indicates a file path (eg. "subdir/filename001.csv") (`construct_filepath()`).
+An output file at the specified location (\code{save_to_csv()} and \code{save_params()}) or a character string indicates a file path (eg. "subdir/filename001.csv") (\code{construct_filepath()}).
 }
 \description{
 Export a cow_table or the list of parameters to a file.

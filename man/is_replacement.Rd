@@ -19,7 +19,7 @@ is_replacement(n_calves, capacity, herd_size)
 \item{herd_size}{The current herd size.}
 }
 \value{
-A logical vector or a numeric value (`set_prob_rep()`)
+A logical vector or a numeric value (\code{set_prob_rep()})
 }
 \description{
 Whether a newborn will be a replacement

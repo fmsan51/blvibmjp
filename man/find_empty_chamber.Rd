@@ -7,12 +7,12 @@
 find_empty_chamber(group, added_cows)
 }
 \arguments{
-\item{group}{See [barn_table].}
+\item{group}{See \link{barn_table}.}
 
-\item{added_cows}{A [cow_table] consisted of cows to add to the barn.}
+\item{added_cows}{A \link{cow_table} consisted of cows to add to the barn.}
 }
 \value{
-A [barn_table]
+A \link{barn_table}
 }
 \description{
 Find empty chambers in a barn_table and assign cows to chambers.

@@ -7,12 +7,12 @@
 do_ai(cows, i)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 }
 \value{
-A [cow_table]
+A \link{cow_table}
 }
 \description{
 Conduct AI and check chance of infection

@@ -7,14 +7,14 @@
 change_stage(cows, groups, i)
 }
 \arguments{
-\item{cows}{See [cow_table].}
+\item{cows}{See \link{cow_table}.}
 
-\item{groups}{See [barn_table].}
+\item{groups}{See \link{barn_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 }
 \value{
-A list consists of `cow_table` and `barn_table`
+A list consists of \code{cow_table} and \code{barn_table}
 }
 \description{
 Change stage of cows and move cows between barns accordinglly
