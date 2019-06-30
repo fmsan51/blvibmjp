@@ -7,7 +7,7 @@
 is_infected_needles(id_cow_s)
 }
 \arguments{
-\item{id_cow_s}{}
+\item{id_cow_s}{\code{cow_id} of infected cows}
 }
 \value{
 A logical vector

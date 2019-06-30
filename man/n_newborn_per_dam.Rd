@@ -7,7 +7,7 @@
 n_newborn_per_dam(n_dams)
 }
 \arguments{
-\item{n_dams}{}
+\item{n_dams}{The number of dams}
 }
 \value{
 A numeric vector consisted of 1 and 2

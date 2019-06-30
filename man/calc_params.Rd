@@ -8,10 +8,13 @@
 \usage{
 calc_params_once(modification = NULL)
 
-calc_params_repeatedly(modification = NULL, i_simulation = NULL)
+calc_params_repeatedly(parameter, modification = NULL,
+  i_simulation = NULL)
 }
 \arguments{
 \item{modification}{A list like \code{list(parameter_name_to_overwrite = new_parameter)}.}
+
+\item{parameter}{Parameter list.}
 
 \item{i_simulation}{The iteration indicator of the simulation.}
 }

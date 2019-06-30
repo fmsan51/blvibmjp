@@ -7,7 +7,7 @@
 is_dried(months_from_delivery)
 }
 \arguments{
-\item{months_from_deliverly}{The number of months past from the last delivery}
+\item{months_from_delivery}{The number of months past from the last delivery}
 }
 \value{
 A logical vector
