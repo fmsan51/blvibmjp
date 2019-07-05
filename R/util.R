@@ -9,7 +9,9 @@
 #' a <- "a"
 #' b <- "B"
 #' c <- 3
+#' \dontrun{
 #' vars_to_named_list(a, b, c)  # list(a = "a", b = "B", c = 3)
+#' }
 vars_to_named_list <- function(...) {
   vars <- quos_auto_name(enquos(...))
   list <- eval_tidy(expr(list(!!!vars)))
@@ -31,7 +33,9 @@ vars_to_named_list <- function(...) {
 #' a <- "A"
 #' b <- NULL
 #' l <- list(a = "a", b = "B", c = 3)
+#' \dontrun{
 #' update_if_input_not_null(l, a, b)  # list(a = "A", b = "B", c = 3)
+#' }
 update_if_input_not_null <- function(list, ...) {
   input_list <- as.list(...)
   input_name <- as.character(ensyms(...))

@@ -10,9 +10,3 @@
 #' @importFrom tidyr complete
 #' @importFrom utils str
 "_PACKAGE"
-
-
-#' @useDynLib blvibmjp
-#' @importFrom Rcpp sourceCpp
-#' @exportPattern "^[[:alpha:]]+"
-NULL

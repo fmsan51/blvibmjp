@@ -19,5 +19,7 @@ Construct a named list whose elements' names are same with the inputs.
 a <- "a"
 b <- "B"
 c <- 3
+\dontrun{
 vars_to_named_list(a, b, c)  # list(a = "a", b = "B", c = 3)
+}
 }

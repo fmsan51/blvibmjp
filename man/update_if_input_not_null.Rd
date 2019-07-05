@@ -21,5 +21,7 @@ Overwrite components of a list if inputs are not \code{NULL}.
 a <- "A"
 b <- NULL
 l <- list(a = "a", b = "B", c = 3)
+\dontrun{
 update_if_input_not_null(l, a, b)  # list(a = "A", b = "B", c = 3)
+}
 }
