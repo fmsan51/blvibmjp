@@ -13,17 +13,17 @@
 #' - `cow_id`
 #' - `age`: Age in month.
 #' - `stage`: One of "calf", "heifer", "milking" or "dry".
-#' - `sex`: One of "female" (Holstern), "male" (Holstein), "freemartin" (female Hostein), "f1-female" (Hostein x Japanese black), "f1-male" (Holstein x Japanese black), "black-female" (Japanese black), "black-male" (Japanese black)
+#' - `sex`: One of "female" (Holstern), "male" (Holstein), "freemartin" (female Hostein), "f1-female" (Hostein x Japanese black), "f1-male" (Holstein x Japanese black), "black-female" (Japanese black), "black-male" (Japanese black).
 #' - `date_birth`: Date of birth.
 #' - `date_death`: Date of death. The value is NA while the cow is alive. It is set after the cow died.
 #' - `date_death_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 #' - `is_owned`: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 #' - `cause_removal`:
-#'     - "died": culled or slaughtered
-#'     - "ebl": culled due to onset of the disease
-#'     - "sold": send to a market or another farm
-#      - "will_die": (still alive and) will die
-#      - "will_be_slaughtered": (still alive and) will be slaughtered
+#'     - "died": culled or slaughtered.
+#'     - "ebl": culled due to onset of the disease.
+#'     - "sold": send to a market or another farm.
+#      - "will_die": (still alive and) will die.
+#      - "will_be_slaughtered": (still alive and) will be slaughtered.
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
@@ -45,23 +45,23 @@
 #' - `date_ebl`: The month when `infection_status` changes from "ipl" to "ebl".
 #' - `date_ebl_expected`: The exppected month when `infection_status` changes from "ial" to "ebl". It is calculated when `infection_status` becomes "ial".
 #' - `cause_infection`: The reason why the cow is infected. It is set when the cow gets infected.
-#'     - "initial": already be infected at the start of the start of a simulation
-#'     - "insects": by bloodsucking insects
-#'     - "contact": by direct contact with an infected cow
-#'     - "needles": by a contaminated needle
-#'     - "rp": by rectal palpation
-#'     - "vertical": vertical transimisson (intrauterine and by the dam's milk)
-#'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this)
-#'     - "comranch": infected at a communal ranch
-#' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl)
-#' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL)
-#' -`group_id`: Barn ID
+#'     - "initial": already be infected at the start of the start of a simulation.
+#'     - "insects": by bloodsucking insects.
+#'     - "contact": by direct contact with an infected cow.
+#'     - "needles": by a contaminated needle.
+#'     - "rp": by rectal palpation.
+#'     - "vertical": vertical transimisson (intrauterine and by the dam's milk).
+#'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
+#'     - "comranch": infected at a communal ranch.
+#' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
+#' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
+#' -`group_id`: Barn ID.
 #' -`chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table::data.table]
-#' @seealso [barn_table]
+#' @seealso [barn_table] [rp_table]
 #'
 #' @name cow_table
 #' @export
@@ -137,10 +137,10 @@ a_new_calf <- data.table(
 #' - `cow_id`: Cow ID in a lane.
 #' - `cow_status`: Infection status of the cow.
 #' - `is_exposed`:
-#'     TRUE = The cow is not isolated AND one or both of the neighbor cows is infected and not isolated
-#'     FALSE = Both of the neibors are either uninfected or isolated
-#'     NA = No cow in the chamber
-#' - `is_isolated`: Whether the cow is isolated or not
+#'     TRUE = The cow is not isolated AND one or both of the neighbor cows is infected and not isolated.
+#'     FALSE = Both of the neibors are either uninfected or isolated.
+#'     NA = No cow in the chamber.
+#' - `is_isolated`: Whether the cow is isolated or not.
 #' - `hazard_ratio`: Hazard ratio of infection to the cow calculated based on neighbors' infection status.
 #' - `neighbor1_status`: Infection status of the neighbor in the right chamber.
 #' - `neighbor1_isolated`: Whether the cow in the right chamber is isolated or not.
@@ -149,7 +149,7 @@ a_new_calf <- data.table(
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
 #' @format [data.table::data.table]
-#' @seealso [cow_table]
+#' @seealso [cow_table] [rp_table]
 #' @name barn_table
 #' @export
 a_chamber <- data.table(
@@ -195,12 +195,12 @@ a_chamber <- data.table(
 #' @seealso [cow_table] [barn_table]
 #' @name rp_table
 #' @export
-day_rp <- data.table(cow_id = NA_integer_,
-                     infection_status = NA_character_,
-                     day_rp = NA_real_,
-                     type = NA_character_,
-                     i_rp = NA_integer_,
-                     is_after_inf = NA,
-                     is_infected = NA)
-
+one_day_rp <- data.table(cow_id = NA_integer_,
+                         infection_status = NA_character_,
+                         day_rp = NA_real_,
+                         type = NA_character_,
+                         i_rp = NA_integer_,
+                         is_after_inf = NA,
+                         is_infected = NA)
+# TODO: 名前は検討
 

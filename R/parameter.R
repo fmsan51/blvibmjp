@@ -1,28 +1,52 @@
 # Parameters get from papers, reports, experiments, etc. are set in this simulation.
 # 文献や実験を参考に設定したパラメーターは全てこのファイルに記述する。
 
-## ---- parameter ----
+#' Parameters about a simulation which should be set by users
+#'
+#' - `simulation_length`: Length of simulation (months). (default: 60)
+#' - `n_simulation`: The number of simulation. (default: 1)
+#' - `simulation_start`: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
+#' - `input_csv`: Path to a csv file which contains cattle information.
+#' - `output_dir`: Directory to output files. (default: data/output)
+#' - `output_filename`: The name of the output files. (default: "simulation")
+#'
+#' @seealso [param_farm] [param_group]
+#' @export
+param_simulation <- list(
+  # TODO: 必要なパラメータが設定されてるか確認するためのfunctionを作成する
+  simulation_length = 60,
+  n_simulation = 1,
+  simulation_start = 1,
+  input_csv = NA_character_,
+  output_dir = "data/output",
+  output_filename = "simulation"
+)
+
 #' Parameters about farms which should be set by users
 #'
-#' - `csv`: Path to a csv file which contains cattle information.
-#' - `prop_female` (0-1): Proportion of female of newborns (NA: average in Hokkaido)
-#' - `prop_replacement` (0-1): Proportion of calvest to be replacements in female newborns (NA: average in Hokkaido)
-#' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)) (NA: average in Hokkaido)
-#' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats (NA: average in Hokkaido)
-#' - `calving_interval`: Calving interval in day (NA: average in Hokkaido)
-#' - `n_mean_ai`: Mean number of AI done until conception
-#' - `mean_age_first_ai`, `sd_age_first_ai`: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (NA: mean = mode of Hokkaido, sd = `2 / qnorm(0.975)`)
-#' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (NA: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
-#' - `months_grazing` (1-12), `hours_grazing` (0-23): Months and hours for grazing (NA: no grazing)
+#' The following parameters are passed to [calc_param()] and the parameter will be calculated.
+#'
+#' - `prop_female` (0-1): Proportion of female of newborns. (default: average in Hokkaido)
+#' - `prop_replacement` (0-1): Proportion of calvest to be replacements in female newborns. (default: average in Hokkaido)
+#' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
+#' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
+#' - `calving_interval`: Calving interval in day. (default: average in Hokkaido)
+#' - `n_mean_ai`: Mean number of AI done until conception.
+#' - `mean_age_first_ai`, `sd_age_first_ai`: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = `2 / qnorm(0.975)`)
+#' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
+#' - `months_grazing` (1-12), `hours_grazing` (0-23): Months and hours for grazing. (default: no grazing)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
-#' - `change_needles` (logical): whether use one needles for one cow (NA: TRUE)
-#' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation (NA: TRUE)
-#' - `days_milking`: Length of milking period (in days) (NA: average in Hokkaido)
+#' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
+#' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
+#' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
+#' @seealso [param_simulation] [param_group] [calc_param]
 #' @export
-farm_parameter <- list(
-  csv = NA,
+param_farm <- list(
+  # TODO: farm と herdの表記ゆれ修正
+  # TODO: 必要なパラメータが設定されてるか確認するためのfunctionを作成する
+  csv = NA,  # TODO: これ本当にここで設定するべきか？ 他の部分に移動させる
   prop_female = NA,
   prop_replacement = NA,
   prop_died = NA,
@@ -39,10 +63,10 @@ farm_parameter <- list(
   months_grazing = NA,
   hours_grazing = NA,
 
-  capacity_head = NA,
-  capacity_multiple = NA,
+  capacity_in_head = NA,
+  capacity_as_ratio = NA,
   # TODO: capacityが現在の頭数を上回ってるor下回ってるようなら警告
-  # TODO: capacity_headとcapacity_multipleが両方セットされたら警告
+  # TODO: capacity_in_headとcapacity_as_ratioが両方セットされたら警告
 
   change_needles = NA,
   # TODO: これpropとして設定できるようになりたい
@@ -52,34 +76,28 @@ farm_parameter <- list(
   days_milking = NA
 )
 
-
-## ---- PARAMS_GROUPS ----
-
 #' Parameters about barns which should be set by users
 #'
-#' - `n_groups`: The number of barns
-#' - `xy_chambers`
+#' - `n_group`: The number of barns.
+#' - `xy_chamber`: The number of chambers per lane and the number of lanes.
+#' - `is_calf_separated`: Whether each calf is separated.
+#' - `is_milking_dry_separated`: (For a farm which miling and dry cows are kept in same tie-stall barn,) whether dry cows are separated from milking cows.
 #'
-# 牛舎関連のパラメーターの設定
-# Set farm specific parameters regarding groups here. NA is allowed for some parameters.
-PARAMS_GROUPS <- list(
-  n_groups = 4,  # 4 groups
-  # TODO: groups と barns について、もっと検討
-  xy_chambers = list(
-    NA,
-    NA,
-    c(25, 8),
-    NA
-  ),
-  #
-  is_calf_separated = F,
+#' @seealso [param_simulation] [param_farm]
+#' @export
+param_group <- list(
+  # TODO: 必要なパラメータが設定されてるか確認するためのfunctionを作成する
+  # TODO: barnとgroupの構造についてもっと検討、それに応じてこのparameter listも検討
+  n_group = NA,  # 4 groups
+  xy_chamber = NA,
+  is_calf_separated = NA,
 
   # (For a farm which miling and dry cows are kept in same tie-stall barn,)
   # are dry cows are separated from milking cows?
   # (NA means milking cows and dry cows are in different barns.)
   # (搾乳牛と乾乳牛を同一のタイストール牛舎で飼育している農場について、)
   # 搾乳牛と乾乳牛を分けているか？
-  is_milking_dry_separated = T
+  is_milking_dry_separated = NA
   # 搾乳牛と乾乳牛が同一牛舎で飼養されている、
   # かつ搾乳牛と乾乳牛の飼養エリアを分けている、
   # かつ牛舎がタイストールである場合、
@@ -110,8 +128,6 @@ PARAMS_GROUPS <- list(
 #'
 #' @return A list of overwritten parameters
 set_param <- function(parameter, default) {
-  # TODO: ↓これ消そう
-  #' @note This function is used to find this environment (= the environment test_params defined). Be careful to use the function in the other file.
   if (anyNA(parameter)) {  # Much faster than (is.na(parameter[1]))
     parameter <- default
   } else if (length(parameter) != length(default)) {
@@ -125,33 +141,17 @@ set_param <- function(parameter, default) {
 #' Calculate parameters necessary to the simulation.
 #'
 #' Calculate parameters to the simulation and overwrite the default setting if necessary.
-#' `calc_params_once()` calculate parameters at the start of the whole simulations. At that moment, it returns an empty list.
-#' `calc_params_repeatedly()` calculate paramaters at the start of the each iteration of the simulation.
 #'
-#' @param parameter Parameter list.
-#' @param modification A list like `list(parameter_name_to_overwrite = new_parameter)`.
-#' @param i_simulation The iteration indicator of the simulation.
+#' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
-#' @name calc_params
-#' @return An empty list (`calc_params_once()`) or an parameter list (`calc_params_repeatedly()`)
+#' @param param_farm See [param_farm].
+#' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
+#'
+#' @return A parameter list.
 #' @export
-calc_params_once <- function(modification = NULL) {
-  # TODO: このfunctionの必要性を検討した上で、不必要なら消す。
-  params_initial <- list(
-  )
-
-  if (!is.null(modification)) {
-    params_initial <- c(modification, params_initial)
-    params_initial <- params_initial[!duplicated(names(params_initial))]
-  }
-  return(params_initial)
-}
-
-#' @rdname calc_params
-#' @export
-calc_params_repeatedly <- function(parameter, modification = NULL,
-                                   i_simulation = NULL) {
-  # TODO: parameterをtemplateとして作成しよう
+calc_param <- function(param_farm, modification = NULL) {
+  # TODO: 各種parameterについて本当にこれでいいか再検討
+  param <- list()
 
   ## infection_status_change ----
   # Changes of infection status  感染ステータスの変化
@@ -161,52 +161,46 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   #   一般的な農場は直検手袋を毎回交換していると想定しているため。
   #   TODO: 直検手袋交換しない農場も多いらしい。要検討。
 
-  params_disease_progress <- list(
-    mean_prop_ial_period = 0.3,
-    sd_prop_ial_period = (0.3 - 0.2) / qnorm(0.975),
-    # Length of periods from PL to EBL is not well known.
-    # PL発症からEBLまでの期間については不明 (数ヶ月～数年) 。
-    shape = 3.3,
-    scale = 7.8
-    # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 (Tsutsui et al, 2016)
-  )
-  mean_prop_ial_period <- params_disease_progress$mean_prop_ial_period
-  sd_prop_ial_period <- params_disease_progress$sd_prop_ial_period
-  dp_shape <- params_disease_progress$shape
-  dp_scale <- params_disease_progress$scale
+  param$mean_prop_ial_period <-  0.3
+  param$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
+  # Length of periods from PL to EBL is not well known.
+  # PL発症からEBLまでの期間については不明 (数ヶ月～数年) 。
+  param$ebl_progress_shape <- 3.3
+  param$ebl_progress_scale <- 7.8
+  # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 (Tsutsui et al, 2016)
 
   ## Probabilities of disease progress
   # Proportion of ial cattle which develops ipl
   prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
-  probs_develop_ipl <- c(prob_develop_ipl, 1 - prob_develop_ipl)
+  param$probs_develop_ipl <- c(prob_develop_ipl, 1 - prob_develop_ipl)
   # Proportion of blv infected cattle which develops ebl
   prob_develop_ebl <- 0.014 / prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
-  probs_develop_ebl <- c(prob_develop_ebl, 1 - prob_develop_ebl)
+  param$probs_develop_ebl <- c(prob_develop_ebl, 1 - prob_develop_ebl)
 
   # Probability that an BLV-infected cow is detected  感染牛が発見される確率
   # Tsutsui et al. (2015) より、発症牛の39.7%が発見される。39.7%はステージが「Ial->Ipl」に移ったその月に発見され、残りは死亡までの間発見されないと仮定する。（参考論文でもそうなってる？のと、発症から発見までの期間のデータなんてあるはずがない）。
   prob_ebl_detected <- rnorm(1, mean = 0.397,
                              sd = (0.397 - 0.358) / qnorm(0.975))
-  probs_ebl_detected <- c(prob_ebl_detected, 1 - prob_ebl_detected)
+  param$probs_ebl_detected <- c(prob_ebl_detected, 1 - prob_ebl_detected)
 
   # Months until EBL cattle die  発症牛が死亡するまでの月数
-  rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
+  param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
 
   ## infection_insects ----
 
   ## Probability of infection by bloodsucking insects per month per cattle
   # Read preps/Parameters_num_insects.Rmd
-  probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
-                               0.0028,  # May
-                               0.0107,  # Jun
-                               0.0146,  # Jul
-                               0.0063,  # Aug
-                               0.0406,  # Sep
-                               0.0140,  # Oct
-                               0.0001,  # Nov
-                               0        # Dec
-                               )
-  insects_pressure <- 1
+  param$probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
+                                     0.0028,  # May
+                                     0.0107,  # Jun
+                                     0.0146,  # Jul
+                                     0.0063,  # Aug
+                                     0.0406,  # Sep
+                                     0.0140,  # Oct
+                                     0.0001,  # Nov
+                                     0        # Dec
+                                     )
+  param$insects_pressure <- 1
 
   ## infection_contact ----
 
@@ -218,9 +212,9 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
 
   # 1ヶ月ごとの感染確率
   # TODO: とりあえず適当
-  change_needles <- set_param(PARAMS_FARM$change_needles, T)
+  change_needles <- set_param(param_farm$change_needles, T)
   prob_inf_needles <- ifelse(change_needles, 0, 0.005)
-  probs_inf_needles <- c(prob_inf_needles, 1 - prob_inf_needles)
+  param$probs_inf_needles <- c(prob_inf_needles, 1 - prob_inf_needles)
 
   ## infection_rp ----
   # Infection by rectal palpation  直検による感染
@@ -229,9 +223,9 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   # [Lack of evidence of transmission of bovine leukemia virus by rectal palpation of dairy cows. - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/2557314) では0.034となってる
 
   # 直検1回ごとの感染確率
-  change_gloves <- set_param(PARAMS_FARM$change_gloves, T)
+  change_gloves <- set_param(param_farm$change_gloves, T)
   prob_inf_rp <- ifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
-  probs_inf_rp <- c(prob_inf_rp, 1 - prob_inf_rp)
+  param$probs_inf_rp <- c(prob_inf_rp, 1 - prob_inf_rp)
 
 
   ## infection_vertical ----
@@ -247,9 +241,9 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   # http://veterinaryrecord.bmj.com/content/176/10/254.long を参考に、ialでは約10%、 iplでは約50%とする。
 
   prob_vert_inf_ial <- (4 + 5) / 95
-  probs_vert_inf_ial <- c(prob_vert_inf_ial, 1 - prob_vert_inf_ial)
+  param$probs_vert_inf_ial <- c(prob_vert_inf_ial, 1 - prob_vert_inf_ial)
   prob_vert_inf_ipl <- (10 + 4) / 29
-  probs_vert_inf_ipl <- c(prob_vert_inf_ipl, 1 - prob_vert_inf_ipl)
+  param$probs_vert_inf_ipl <- c(prob_vert_inf_ipl, 1 - prob_vert_inf_ipl)
 
   # 海外のだったけどよさそうだった
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
@@ -268,44 +262,46 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   # 北酪検、牛群検定成績表(H25-29)より
   # 分娩後初回授精開始日の「前年」成績 （当年成績は2-12月までの結果しかないので）
   mean_date_start_ai <- c(88, 88, 88, 88, 89) / 30
-  lims_date_start_ai <- set_param(PARAMS_FARM$mean_day_start_ai,
+  lims_date_start_ai <- set_param(param_farm$mean_day_start_ai,
                                   c(min(mean_date_start_ai),
                                     max(mean_date_start_ai)))
   # 前後1月以内に95%が授精を開始するとする
   # TODO: ↑ここ要検討
-  sd_date_start_ai <- set_param(PARAMS_FARM$sd_day_start_ai / 30,
-                                1 / qnorm(0.975))
-  mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
-                              max = lims_date_start_ai[2])
+  param$sd_date_start_ai <- set_param(param_farm$sd_day_start_ai / 30,
+                                      1 / qnorm(0.975))
+  param$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
+                                    max = lims_date_start_ai[2])
 
 
   # First AI for heifer  未経産牛の初回授精月齢
   mean_age_first_ai <- c(427, 427, 435, 432) / 365 * 12  #TODO: 牛群検定成績まとめより
-  lims_age_first_ai <- set_param(PARAMS_FARM$mean_age_first_ai,
+  lims_age_first_ai <- set_param(param_farm$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # 前後1ヶ月以内に95%が授精するとする
-  sd_age_first_ai <- set_param(PARAMS_FARM$sd_age_first_ai, 1 / qnorm(0.975))
-  mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
-                             max = lims_age_first_ai[2])
-  lower_lim_first_ai <- 12
+  param$sd_age_first_ai <- set_param(param_farm$sd_age_first_ai, 1 / qnorm(0.975))
+  param$mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
+                                   max = lims_age_first_ai[2])
+  param$lower_lim_first_ai <- 12
 
 
   # Detection of heats  発情発見率
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # 発情発見率
   # 北海道酪農検定検査協会、年間検定成績より (H23-28)
-  prob_heat_detected <- set_param(PARAMS_FARM$prop_heat_detected,
+  prob_heat_detected <- set_param(param_farm$prop_heat_detected,
                                   runif(1, min = min(prop_heat_detected),
                                         max = max(prop_heat_detected)))
-  probs_heat_detected <- c(prob_heat_detected, 1 - prob_heat_detected)
+  param$probs_heat_detected <- c(prob_heat_detected, 1 - prob_heat_detected)
 
 
   # Proportion of success of the first AI  初回授精受胎率
   # 北酪検、牛群検定成績表(H25-29)より
   # 初回授精受胎率の「前年」成績 （当年成績は2-12月までの結果しかないので）
   prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  prob_first_ai_success <- runif(1, min(prop_first_ai_success),
+  prob_first_ai_success <- runif(1,
+                                 min(prop_first_ai_success),
                                  max(prop_first_ai_success))
-  probs_first_ai_success <- c(prob_first_ai_success, 1 - prob_first_ai_success)
+  param$probs_first_ai_success <- c(prob_first_ai_success,
+                                    1 - prob_first_ai_success)
 
 
   # Proportion of success of AI after the first  2回目以降の授精の受胎率
@@ -316,12 +312,12 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   prop_ai_success <- (1 - prob_first_ai_success) / (mean_ai - 1)
   lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
   prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
-  probs_ai_success <- c(prob_ai_success, 1 - prob_ai_success)
+  param$probs_ai_success <- c(prob_ai_success, 1 - prob_ai_success)
 
 
   # Heat cycle  発情周期
   # https://doi.org/10.1017/S1751731118001830
-  sd_heat <- 1  # SD of length of heat cycle (days)
+  param$sd_heat <- 1  # SD of length of heat cycle (days)
 
 
   ## milking_stage ----
@@ -329,9 +325,9 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
 
   # Length of milking period  搾乳日数
   # TODO: 搾乳を長く続ける農家さんもいると思うのでそれを反映させたい
-  length_milking <- set_param(PARAMS_FARM$days_milking, 363) / 30
-  lower_lim_dried <- length_milking %/% 1
-  prop_dried_shorter <- 1 - length_milking %% 1
+  length_milking <- set_param(param_farm$days_milking, 363) / 30
+  param$lower_lim_dried <- length_milking %/% 1
+  param$prop_dried_shorter <- 1 - length_milking %% 1
 
 
   ## reproduction ----
@@ -349,14 +345,14 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
   prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
-  probs_twin <- c(prob_twin, 1 - prob_twin)
+  param$probs_twin <- c(prob_twin, 1 - prob_twin)
 
   ## Sex ratio
   sex_ratio_f <- prop_f / (prop_m + prop_f)
-  lims_female <- set_param(PARAMS_FARM$prop_female,
+  lims_female <- set_param(param_farm$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
   prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
-  probs_female <- c(prob_female, 1 - prob_female)
+  param$probs_female <- c(prob_female, 1 - prob_female)
 
   ## Sex ratio for twins
   sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)
@@ -364,9 +360,9 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))  # TODO: 同上
   lims_ff <- c(min(sex_ratio_ff), max(sex_ratio_ff))  # TODO: 同上
 
-  if (!is.na(PARAMS_FARM$prop_female)) {
-    if (length(PARAMS_FARM$prop_female) == 1) {
-      prop_female <- c(PARAMS_FARM$prop_female, PARAMS_FARM$prop_female)
+  if (!is.na(param_farm$prop_female)) {
+    if (length(param_farm$prop_female) == 1) {
+      prop_female <- c(param_farm$prop_female, param_farm$prop_female)
     }
     tend_mm <- sex_ratio_mm / (prop_m ^ 2)
     tend_ff <- sex_ratio_ff / (prop_f ^ 2)
@@ -382,15 +378,15 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
 
   prob_mm <- runif(1, min = lims_mm[1], max = lims_mm[2])
   prob_ff <- runif(1, min = lims_ff[1], max = lims_ff[2])
-  probs_sex_pairs <- c(prob_mm, 1 - prob_mm - prob_ff, prob_ff)
+  param$probs_sex_pairs <- c(prob_mm, 1 - prob_mm - prob_ff, prob_ff)
 
 
   # Failure of delivery (stillbirth/abortion)  死流産
-  prob_sb_1 <- runif(1, min = 0.0834, max = 0.1070)  # Parity = 1 (Heifer)
-  prob_sb_2 <- runif(1, min = 0.0473, max = 0.0563)  # 2
-  prob_sb_3 <- runif(1, min = 0.0487, max = 0.0572)  # 3
-  prob_sb_4 <- runif(1, min = 0.0526, max = 0.0604)  # 4
-  prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
+  param$prob_sb_1 <- runif(1, min = 0.0834, max = 0.1070)  # Parity = 1 (Heifer)
+  param$prob_sb_2 <- runif(1, min = 0.0473, max = 0.0563)  # 2
+  param$prob_sb_3 <- runif(1, min = 0.0487, max = 0.0572)  # 3
+  param$prob_sb_4 <- runif(1, min = 0.0526, max = 0.0604)  # 4
+  param$prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
 
 
   ## longevity ----
@@ -403,110 +399,73 @@ calc_params_repeatedly <- function(parameter, modification = NULL,
   # No. of died Holstein females in Hokkaido
   n_died <- c(63361, 62949, 65395, 66143, 63437)
   prop_died <- n_died / (n_slaughtered + n_died)
-  lims_died <- set_param(PARAMS_FARM$prop_died,
+  lims_died <- set_param(param_farm$prop_died,
                          c(min(prop_died), max(prop_died)))
-  prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
+  param$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
 
   # Death  死亡
-  params_die <- list(
+  param_die <- list(
     prop = c(0.1781149, 0.19206973, 0.18295625, 0.18357473, 0.17160985),
     e_rate = c(0.69504391, 0.66565927, 0.62963687, 0.55892655, 0.62194143),
     g_shape = c(3.94254619, 4.0635499, 4.11764786, 4.11193613, 4.06322732),
     g_rate = c(0.06274259, 0.06433635, 0.06515513, 0.06596917, 0.06591569)
   )
-  params_die_min <- sapply(params_die, min)
-  params_die_max <- sapply(params_die, max)
-  params_die_set <- runif(4, min = params_die_min, max = params_die_max)
-  pd_prop <- params_die_set[1]
-  pd_e_rate <- params_die_set[2]
-  pd_g_shape <- params_die_set[3]
-  pd_g_rate <- params_die_set[4]
+  param_die_min <- sapply(param_die, min)
+  param_die_max <- sapply(param_die, max)
+  param_die_set <- runif(4, min = param_die_min, max = param_die_max)
+  param$die_prop <- param_die_set[1]
+  param$die_e_rate <- param_die_set[2]
+  param$die_g_shape <- param_die_set[3]
+  param$die_g_rate <- param_die_set[4]
 
   # Slaughtering  と畜
-  params_slaughtered <- list(
+  param_slaughtered <- list(
     shape = c(5.207747, 5.172914, 5.182164, 4.918844, 5.134622),
     rate = c(0.07337904, 0.07226869, 0.07165169, 0.0678387, 0.06992455)
   )
-  params_slaughtered_min <- sapply(params_slaughtered, min)
-  params_slaughtered_max <- sapply(params_slaughtered, max)
-  params_slaughtered_set <- runif(2,
-                                  min = params_slaughtered_min,
-                                  max = params_slaughtered_max)
-  ps_shape <- params_slaughtered_set[1]
-  ps_rate <- params_slaughtered_set[2]
+  param_slaughtered_min <- sapply(param_slaughtered, min)
+  param_slaughtered_max <- sapply(param_slaughtered, max)
+  param_slaughtered_set <- runif(2,
+                                 min = param_slaughtered_min,
+                                 max = param_slaughtered_max)
+  param$slaughter_shape <- param_slaughtered_set[1]
+  param$slaughter_rate <- param_slaughtered_set[2]
 
-  ## set_params_initial ----
+  param <- c(modification, param)
+  param <- param[!duplicated(names(param))]
 
-  # Code below is equivalent to
-  # variables <- list(mean_prop_ial_period = mean_prop_ial_period,
-  #                   sd_prop_ial_period = sd_prop_ial_period, ...)
-  variables <- c(
-    "mean_prop_ial_period", "sd_prop_ial_period", "dp_shape", "dp_scale",
-    "prob_develop_ipl", "prob_develop_ebl", "prob_ebl_detected",
-    "rate_ebl_die",
-    "insects_pressure", "prob_inf_needles", "prob_inf_rp",
-    "prob_vert_inf_ial", "prob_vert_inf_ipl",
-    "sd_date_start_ai", "mean_date_start_ai",
-    "sd_age_first_ai", "mean_age_first_ai", "lower_lim_first_ai",
-    "prob_heat_detected", "prob_first_ai_success", "prob_ai_success", "sd_heat",
-    "lower_lim_dried", "prop_dried_shorter",
-    "prob_twin", "prob_female", "prob_mm", "prob_ff",
-    "prob_sb_1", "prob_sb_2", "prob_sb_3", "prob_sb_4", "prob_sb_5",
-    "prob_died", "pd_prop", "pd_e_rate", "pd_g_shape", "pd_g_rate",
-    "ps_shape", "ps_rate"
-  )
-  params_initial <- eval(expr(list(!!!syms(variables))))
-  names(params_initial) <- variables
-
-  if (!is.null(modification)) {
-    if (length(modification) == 1) {
-      params_initial <- c(modification, params_initial)
-    } else {
-      params_initial <- c(modification[[i_simulation]], params_initial)
-    }
-    params_initial <- params_initial[!duplicated(names(params_initial))]
-  }
-
-  params_initial$params_disease_progress <- list(
-    mean_prop_ial_period = params_initial$mean_prop_ial_period,
-    sd_prop_ial_period = params_initial$sd_prop_ial_period,
-    shape = params_initial$dp_shape,
-    scale = params_initial$dp_scale
-  )
-
-  # TODO: ここfor文とかでシンプルに
-  # params_initial$probs_xxx <- c(params_initial$prob_xxx, 1 - params_initial$prob_xxx)
-  params_initial$probs_develop_ipl <- c(params_initial$prob_develop_ipl, 1 - params_initial$prob_develop_ipl)
-  params_initial$probs_develop_ebl <- c(params_initial$prob_develop_ebl, 1 - params_initial$prob_develop_ebl)
-  params_initial$probs_ebl_detected <- c(params_initial$prob_ebl_detected, 1 - params_initial$prob_ebl_detected)
-  params_initial$probs_inf_insects_month <- params_initial$insects_pressure * probs_inf_insects_month
-  params_initial$probs_inf_needles <- c(params_initial$prob_inf_needles, 1 - params_initial$prob_inf_needles)
-  params_initial$probs_inf_rp <- c(params_initial$prob_inf_rp, 1 - params_initial$prob_inf_rp)
-  params_initial$probs_vert_inf_ial <- c(params_initial$prob_vert_inf_ial, 1 - params_initial$prob_vert_inf_ial)
-  params_initial$probs_vert_inf_ipl <- c(params_initial$prob_vert_inf_ipl, 1 - params_initial$prob_vert_inf_ipl)
-  params_initial$probs_heat_detected <- c(params_initial$prob_heat_detected, 1 - params_initial$prob_heat_detected)
-  params_initial$probs_first_ai_success <- c(params_initial$prob_first_ai_success, 1 - params_initial$prob_first_ai_success)
-  params_initial$probs_ai_success <- c(params_initial$prob_ai_success, 1 - params_initial$prob_ai_success)
-  params_initial$probs_twin <- c(params_initial$prob_twin, 1 - params_initial$prob_twin)
-  params_initial$probs_female <- c(params_initial$prob_female, 1 - params_initial$prob_female)
-  params_initial$probs_sex_pairs <- c(params_initial$prob_mm, 1 - params_initial$prob_mm - params_initial$prob_ff, params_initial$prob_ff)
-  params_initial$params_die <- list(
-    1, 2, 3,
-    c(params_initial$pd_prop, params_initial$pd_e_rate, params_initial$pd_g_shape, params_initial$pd_g_rate)
-  )
-  params_initial$params_slaughtered <- list(
-    1, 2, 3,
-    c(params_initial$ps_rate, params_initial$ps_shape)
-  )
-
-  return(params_initial)
+  return(param)
 }
 
 
-## ---- test_params ----
-
-#' Only used in test
-#' @note DON'T TOUCH THIS though it seems meaningless. This variable is only used in test runs and parameters are automatically set.
-# test_params <- list()
-# TODO: パッケージにするなら削除
+#' Calculate parameters based on other parameters
+#'
+#' - `is_ts`: Wheter barns are tie-stall.
+#' - `ts_group`: Barn ID of tie-stall barns.
+#' - `is_md_separated_in_ts`: Whether milking and dry cows are separated.
+#' - `capacity`: The result of [set_capacity()].
+#' - `prob_rep`: The result of [set_prob_rep()]. The probability that a newborn female calf will be a replacement cow.
+#'
+#' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
+#'
+#' @param setup_cows_res A result of [setup_cows()].
+#' @param param_simulation See [param_simulation].
+#' @param param_farm See [param_farm].
+#' @param param_group See [param_group].
+#'
+#' @return A list of calculated parameters.
+#' @export
+process_param <- function(setup_cows_res,
+                          param_simulation, param_farm, param_group) {
+  list(
+    param_output_filename = paste0("param_", param_simulation$output_filename),
+    is_ts = is_ts(param_group),
+    ts_group = which(is_ts(param_group)),
+    # is_md_separated_in_ts = is_md_separated_in_ts(param_group),
+    capacity = set_capacity(setup_cows_res$init_last_cow_id, param_farm),
+    prob_rep = set_prob_rep(
+      setup_cows_res$init_cows[stage %in% c("milking", "dry"), .N],
+      param_farm)
+  )
+}
 

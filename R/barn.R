@@ -9,7 +9,7 @@
 #' @param n_x The number of chambers in a lane.
 #' @param n_y The number of lanes in a tie-stall barn.
 #'
-#' @return A [barn_table]
+#' @return A [barn_table].
 #' @export
 make_ts_group <- function(cows, n_x, n_y) {
   # TODO: これcsvから読み込むような形にしたい
@@ -28,14 +28,16 @@ make_ts_group <- function(cows, n_x, n_y) {
                neighbor2_status = shift(cow_status, type = "lead"),
                neighbor2_isolated = shift(is_isolated, type = "lead"))]
 
-  group[, ':='(neighbor1_infectivity = if_else(is_edge1 == F &
+  # TODO: これifelseの結果NAになる場合の対処はできているか？
+  # そもそもNAにならないのか？
+  group[, ':='(neighbor1_infectivity = ifelse(is_edge1 == F &
                                                 neighbor1_isolated == F &
                                                 neighbor1_status != "s",
-                                               T, F, F),
-               neighbor2_infectivity = if_else(is_edge2 == F &
+                                              T, F),
+               neighbor2_infectivity = ifelse(is_edge2 == F &
                                                 neighbor2_isolated == F &
                                                 neighbor2_status != "s",
-                                               T, F, F))]
+                                              T, F))]
 
   group[!is.na(cow_id),
         is_exposed := (is_isolated == F &
@@ -50,16 +52,15 @@ make_ts_group <- function(cows, n_x, n_y) {
 ## ---- is_ts
 #' Check wheter a barn is tie-stall
 #'
-#' @param params A list of parameter. See [calc_params()].
+#' @param param_group See [param_group].
 #'
 #' @return A logical vector of length 4 which indicates whether barns are tie-stall or not.
-is_ts <- function(params) {
+is_ts <- function(param_group) {
   # TODO: このfunction必要ないのでは？
   is_ts <- logical(4)
-  for (stage in 1:4) {
-    group_id <- params$groups[stage]
-    group_xy <- params$xy_chambers[[group_id]]
-    is_ts[stage] <- !is.na(group_xy[1])
+  for (group_id in 1:4) {
+    group_xy <- param_group$xy_chamber[[group_id]]
+    is_ts[group_id] <- !is.na(group_xy[1])
   }
   return(is_ts)
 }
@@ -69,19 +70,20 @@ is_ts <- function(params) {
 ## ---- is_md_separated_in_ts
 #' Check whether milking cows and dry cows are separated
 #'
-#' @param params A list of parameters. See [calc_params()].
+#' @param param_calculated A list of parameters. See [calc_param()].
 #'
-#' @return A logical value
-is_md_separated_in_ts <- function(params) {
-  group_m <- params$groups[3]
-  group_d <- params$groups[4]
-  is_ts_milking <- !is.na(params$xy_chambers[group_m])
+#' @return A logical value.
+is_md_separated_in_ts <- function(param_calculated) {
+  # TODO: groupとbarnについて設定考えるときに変更
+  group_m <- param_calculated$groups[3]
+  group_d <- param_calculated$groups[4]
+  is_ts_milking <- !is.na(param_calculated$xy_chamber[group_m])
   is_md_separated_in_ts <- ((group_m == group_d) &
                               is_ts_milking &
-                              params$is_milking_dry_separated)
+                              param_calculated$is_milking_dry_separated)
   return(is_md_separated_in_ts)
 }
-
+# FIXME: currentry used nowhere
 
 
 ## group_settings ----
@@ -125,17 +127,12 @@ remove_from_group <- function(group, cow_id_removed) {
 #' @param group See [barn_table].
 #' @param added_cows A [cow_table] consisted of cows to add to the barn.
 #'
-#' @return A [barn_table]
+#' @return A [barn_table].
 find_empty_chamber <- function(group, added_cows) {
   group <- copy(group)
 
   empty_chamber <- group[is.na(cow_id), chamber_id]
   added_chamber <- sample(empty_chamber, nrow(added_cows))
-
-  # Assign added_chamber manually when is_test = T
-  if (is_test && !is.null(test_params$find_empty_chamber)) {
-    added_chamber <- test_params$find_empty_chamber
-  }
 
   group[added_chamber, ':='(cow_id = added_cows$cow_id,
                             cow_status = added_cows$infection_status,
@@ -148,13 +145,14 @@ find_empty_chamber <- function(group, added_cows) {
   group[neighbor1, ':='(neighbor2_status = group[neighbor1 + 1, cow_status],
                         neighbor2_isolated = group[neighbor1 + 1, is_isolated])]
 
+  # TODO: ここ、infectivityがNAになる場合の対処はできているか？　そもそもNAにならないのか？
   group[c(added_chamber, neighbor2, neighbor1),
-        ':='(neighbor1_infectivity = if_else(is_edge1 == F &
+        ':='(neighbor1_infectivity = ifelse(is_edge1 == F &
                                              neighbor1_isolated == F &
-                                             neighbor1_status != "s", T, F, F),
-             neighbor2_infectivity = if_else(is_edge2 == F &
+                                             neighbor1_status != "s", T, F),
+             neighbor2_infectivity = ifelse(is_edge2 == F &
                                              neighbor2_isolated == F &
-                                             neighbor2_status != "s", T, F, F))]
+                                             neighbor2_status != "s", T, F))]
   group[, is_exposed := (is_isolated == F &
                          (neighbor1_infectivity == T |
                           neighbor2_infectivity == T))]
@@ -168,14 +166,16 @@ find_empty_chamber <- function(group, added_cows) {
 #' Calculate capacity of a barn based on inputed parameters
 #'
 #' @param herd_size The herd size in a simulated herd.
+#' @param param_farm See [param_farm].
 #'
-#' @return numeric
-set_capacity <- function(herd_size) {
-  if (!is.na(PARAMS_FARM$capacity_in_head[1])) {
-    capacity <- PARAMS_FARM$capacity_in_head
-  } else if (!is.na(PARAMS_FARM$capacity_as_ratio[1])) {
-    capacity <- round(c(herd_size * PARAMS_FARM$capacity_as_ratio[1],
-                        herd_size * PARAMS_FARM$capacity_as_ratio[2]))
+#' @return Numeric vector of length 2: `c(lower_limit_of_herd_size, upper_limit_of_herd_size)`.
+set_capacity <- function(herd_size, param_farm) {
+  # TODO: rename function to explicity
+  if (!is.na(param_farm$capacity_in_head[1])) {
+    capacity <- param_farm$capacity_in_head
+  } else if (!is.na(param_farm$capacity_as_ratio[1])) {
+    capacity <- round(c(herd_size * param_farm$capacity_as_ratio[1],
+                        herd_size * param_farm$capacity_as_ratio[2]))
   } else {
     capacity <- round(c(herd_size * 0.9, herd_size * 1.1))
   }

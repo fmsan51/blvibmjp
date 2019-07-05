@@ -16,31 +16,33 @@
 #' @param susceptibility_ial_to_ipl A numeric.
 #' @param susceptibility_ipl_to_ebl A numeric.
 #' @param i The number of months from the start of a simulation.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A list consisted of a month
+#' @return A list consisted of a month.
 #' @export
-months_progression <- function(susceptibility_ial_to_ipl,
-                               susceptibility_ipl_to_ebl,
-                               i) {
+n_month_to_progress <- function(susceptibility_ial_to_ipl,
+                                susceptibility_ipl_to_ebl,
+                                i,
+                                param_calculated) {
   # TODO: ここsusceptibility...って結局何してるんだ？
   n_cows <- length(susceptibility_ial_to_ipl)
-  params <- params_this_run$params_disease_progress
   months_ial_to_ebl <- prop_ial_period <- months_ial_to_ipl <- numeric(n_cows)
   neg_months_ial_to_ipl <- rep(T, n_cows)
   while (any(neg_months_ial_to_ipl)) {
     months_ial_to_ebl[neg_months_ial_to_ipl] <- rweibull(
                            n_cows,
-                           shape = params$shape,
-                           scale = params$scale
+                           shape = param_calculated$ebl_progress_shape,
+                           scale = param_calculated$ebl_progress_scale
                          ) * 12
     prop_ial_period[neg_months_ial_to_ipl] <- rnorm(n_cows,
-                             mean = params$mean_prop_ial_period,
-                             sd = params$sd_prop_ial_period)
+                             mean = param_calculated$mean_prop_ial_period,
+                             sd = param_calculated$sd_prop_ial_period)
     prop_ial_period[prop_ial_period < 0] <- 0
     months_ial_to_ipl[neg_months_ial_to_ipl] <- rweibull(
                            n_cows,
-                           shape = params$shape,
-                           scale = params$scale * prop_ial_period
+                           shape = param_calculated$ebl_progress_shape,
+                           scale = param_calculated$ebl_progress_scale *
+                             prop_ial_period
                          ) * 12
     neg_months_ial_to_ipl <- months_ial_to_ipl < 0
   }
@@ -62,21 +64,23 @@ months_progression <- function(susceptibility_ial_to_ipl,
 #' Whether a EBL cow is detected
 #'
 #' @param id_cow_ebl The ID of EBL cows.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_ebl_detected <- function(id_cow_ebl) {
+#' @return A logical vector.
+is_ebl_detected <- function(id_cow_ebl, param_calculated) {
   sample(c(T, F), size = length(id_cow_ebl), replace = T,
-         prob = params_this_run$probs_ebl_detected)
+         prob = param_calculated$probs_ebl_detected)
 }
 
 #' The number of months until EBL cows die
 #'
 #' @param rows_cow_overlooked The row IDs of EBL-yet-non-detected cows.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A numeric vector
-months_until_ebl_die <- function(rows_cow_overlooked) {
+#' @return A numeric vector.
+n_month_until_ebl_die <- function(rows_cow_overlooked, param_calculated) {
   # TODO: なんでここrow? idにしよう
-  months <- rexp(length(rows_cow_overlooked), params_this_run$rate_ebl_die)
+  months <- rexp(length(rows_cow_overlooked), param_calculated$rate_ebl_die)
   months <- ceiling(months)
   return(months)
 }
@@ -88,11 +92,12 @@ months_until_ebl_die <- function(rows_cow_overlooked) {
 #' Wheter cows are infected by insects
 #'
 #' @param id_cow_s ID of infected cows.
-#' @param month The current month (1, 2, ..., 12)
+#' @param month The current month (1, 2, ..., 12).
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_infected_insects <- function(id_cow_s, month) {
-  prob_inf_insetcs <- params_this_run$probs_inf_insects_month[1:12 == month]
+#' @return A logical vector.
+is_infected_insects <- function(id_cow_s, month, param_calculated) {
+  prob_inf_insetcs <- param_calculated$probs_inf_insects_month[1:12 == month]
   is_infected <- sample(c(T, F), size = length(id_cow_s), replace = T,
                         prob = c(prob_inf_insetcs, 1 - prob_inf_insetcs))
   return(is_infected)
@@ -103,9 +108,7 @@ is_infected_insects <- function(id_cow_s, month) {
 
 #' Whether cows are infected by direct contact
 #'
-#' @param id_cow_s ID of infected cows.
-#'
-#' @return A logical vector
+#' @return A logical vector.
 is_infected_contact <- function() {
   # TODO: 中身はあとで考える
   # これまだどこからも繋がってない
@@ -122,25 +125,27 @@ is_infected_contact <- function() {
 ## ---- is_infected_needles
 #' Whether cows are infected by contaminated needles
 #'
-#' @param id_cow_s `cow_id` of infected cows
+#' @param id_cow_s `cow_id` of infected cows.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_infected_needles <- function(id_cow_s) {
+#' @return A logical vector.
+is_infected_needles <- function(id_cow_s, param_calculated) {
   sample(c(T, F), size = length(id_cow_s), replace = T,
-         prob = params_this_run$probs_inf_needles)
+         prob = param_calculated$probs_inf_needles)
 }
 
 
 ## ---- is_infected_rp
 #' Whether cows are infected by rectal palpation
 #'
-#' @param n_cows_palpated IDs of rectally palpated cows
+#' @param n_cows_palpated ID of rectally palpated cows.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_infected_rp <- function(n_cows_palpated) {
+#' @return A logical vector.
+is_infected_rp <- function(n_cows_palpated, param_calculated) {
   # TODO: ここ他のis_infected_xxxにそろえてid_cow_xxxにしたほうがいいかも。それとも他をn_xxxにする？
   sample(c(T, F), size = n_cows_palpated, replace = T,
-         prob = params_this_run$probs_inf_rp)
+         prob = param_calculated$probs_inf_rp)
 }
 
 
@@ -149,17 +154,18 @@ is_infected_rp <- function(n_cows_palpated) {
 #' Wheter newborns are infected vertically
 #'
 #' @param status_mother The `infection_status` of dams.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_infected_vertical <- function(status_mother) {
+#' @return A logical vector.
+is_infected_vertical <- function(status_mother, param_calculated) {
   n_calf <- length(status_mother)
   is_vert_inf_ial <-
     sample(c(T, F), size = n_calf, replace = T,
-           prob = params_this_run$probs_vert_inf_ial) &
+           prob = param_calculated$probs_vert_inf_ial) &
     (status_mother == "ial")
   is_vert_inf_ipl <-
     sample(c(T, F), size = n_calf, replace = T,
-           prob = params_this_run$probs_vert_inf_ipl) &
+           prob = param_calculated$probs_vert_inf_ipl) &
     (status_mother == "ipl" | status_mother == "ebl")
   is_vert_inf <- (is_vert_inf_ial | is_vert_inf_ipl)
   return(is_vert_inf)
@@ -181,7 +187,7 @@ is_infected_introduced <- function() {
 #'
 #' When a cow is come back from a communal ranch, the probability of infection at communal ranch was calculated.
 #'
-#' @return A logical vector
+#' @return A logical vector.
 is_infected_comranch <- function() {
   # TODO: 中身はあとで考える
   # これまだどこからも繋がってない
@@ -195,12 +201,13 @@ is_infected_comranch <- function() {
 #' Whether the first AIs for milking cows are conducted
 #'
 #' @param n_month_from_delivery The month past from the last delivery.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_ai_started_milking <- function(n_month_from_delivery) {
+#' @return A logical vector.
+is_ai_started_milking <- function(n_month_from_delivery, param_calculated) {
   prob_start_ai <- pnorm(n_month_from_delivery,
-                         mean = params_this_run$mean_date_start_ai,
-                         sd = params_this_run$sd_date_start_ai)
+                         mean = param_calculated$mean_date_start_ai,
+                         sd = param_calculated$sd_date_start_ai)
   is_ai_started_milking <-
     (runif(length(n_month_from_delivery)) <= prob_start_ai)
   return(is_ai_started_milking)
@@ -210,14 +217,15 @@ is_ai_started_milking <- function(n_month_from_delivery) {
 ## ---- is_ai_started_heifer
 #' Whether the first AIs for hifers are conducted
 #'
-#' @param ages Age of heifers
+#' @param ages Age of heifers.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_ai_started_heifer <- function(ages) {
+#' @return A logical vector.
+is_ai_started_heifer <- function(ages, param_calculated) {
   prob_first_ai <- pnorm(ages,
-                         mean = params_this_run$mean_age_first_ai,
-                         sd = params_this_run$sd_age_first_ai)
-  prob_first_ai[ages < params_this_run$lower_lim_first_ai] <- 0
+                         mean = param_calculated$mean_age_first_ai,
+                         sd = param_calculated$sd_age_first_ai)
+  prob_first_ai[ages < param_calculated$lower_lim_first_ai] <- 0
   is_ai_started_heifer <- (runif(length(ages)) <= prob_first_ai)
   return(is_ai_started_heifer)
 }
@@ -227,11 +235,12 @@ is_ai_started_heifer <- function(ages) {
 #' Whether a heat is detected
 #'
 #' @param n_cows The number of cows which come into heat.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_heat_detected <- function(n_cows) {
+#' @return A logical vector.
+is_heat_detected <- function(n_cows, param_calculated) {
   sample(c(T, F), size = n_cows, replace = T,
-         prob = params_this_run$probs_heat_detected)
+         prob = param_calculated$probs_heat_detected)
 }
 
 
@@ -239,32 +248,34 @@ is_heat_detected <- function(n_cows) {
 ## ---- is_first_ai_successed
 #' Whether a cow is concepted at the first or later AI
 #'
-#' @param n_cows The number of cows on which the first AI were conducted
+#' @param n_cows The number of cows on which the first AI were conducted.
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @rdname is_ai_successed
-#' @return A logical vector
-is_first_ai_successed <- function(n_cows) {
+#' @return A logical vector.
+is_first_ai_successed <- function(n_cows, param_calculated) {
   sample(c(T, F), size = n_cows, replace = T,
-         prob = params_this_run$probs_first_ai_success)
+         prob = param_calculated$probs_first_ai_success)
 }
 
 
 ## ---- is_ai_successed
 #' @rdname is_ai_successed
-is_ai_successed <- function(n_cows) {
+is_ai_successed <- function(n_cows, param_calculated) {
   sample(c(T, F), size = n_cows, replace = T,
-         prob = params_this_run$probs_ai_success)
+         prob = param_calculated$probs_ai_success)
 }
 
 
 ## ---- heat_cycle
 #' Heat cycle
 #'
-#' @param n_cows The number of cows to which heat cycle should be calculated
+#' @param n_cows The number of cows to which heat cycle should be calculated.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A numeric vector
-heat_cycle <- function(n_cows) {
-  round(rnorm(n_cows, mean = 21, sd = params_this_run$sd_heat))
+#' @return A numeric vector.
+heat_cycle <- function(n_cows, param_calculated) {
+  round(rnorm(n_cows, mean = 21, sd = param_calculated$sd_heat))
 }
 
 
@@ -274,14 +285,15 @@ heat_cycle <- function(n_cows) {
 ## ---- is_dried
 #' Whether a cow is dried
 #'
-#' @param months_from_delivery The number of months past from the last delivery
+#' @param months_from_delivery The number of months past from the last delivery.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_dried <- function(months_from_delivery) {
+#' @return A logical vector.
+is_dried <- function(months_from_delivery, param_calculated) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
-  (months_from_delivery > params_this_run$lower_lim_dried) |
-  ((months_from_delivery == params_this_run$lower_lim_dried) &
-     (runif(length(months_from_delivery)) < params_this_run$prop_dried_shorter))
+  (months_from_delivery > param_calculated$lower_lim_dried) |
+  ((months_from_delivery == param_calculated$lower_lim_dried) &
+     (runif(length(months_from_delivery)) < param_calculated$prop_dried_shorter))
 }
 
 
@@ -291,22 +303,24 @@ is_dried <- function(months_from_delivery) {
 ## ---- susceptibility
 #' Calculate susceptibility of newborns to the pathogen
 #'
-#' @param n_newborns The number of newborns
-#' @param susceptibility_ial_to_ipl_dam,susceptibility_ipl_to_ebl_dam The dam's susceptibility to the pathogen
+#' @param n_newborns The number of newborns.
+#' @param susceptibility_ial_to_ipl_dam,susceptibility_ipl_to_ebl_dam The dam's susceptibility to the pathogen.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A list consisted of susceptibility of newborns
+#' @return A list consisted of susceptibility of newborns.
 susceptibility <- function(n_newborns,
                            susceptibility_ial_to_ipl_dam,
-                           susceptibility_ipl_to_ebl_dam) {
+                           susceptibility_ipl_to_ebl_dam,
+                           param_calculated) {
   inherit_from_dam <- sample(c(T, F), n_newborns, replace = T)
   ial_to_ipl <- ifelse(inherit_from_dam,
                        susceptibility_ial_to_ipl_dam,
                        sample(c(T, F), n_newborns, replace = T,
-                              prob = params_this_run$probs_develop_ipl))
+                              prob = param_calculated$probs_develop_ipl))
   ipl_to_ebl <- ifelse(inherit_from_dam,
                        susceptibility_ipl_to_ebl_dam,
                        sample(c(T, F), n_newborns, replace = T,
-                              prob = params_this_run$probs_develop_ebl) &
+                              prob = param_calculated$probs_develop_ebl) &
                        ial_to_ipl)
   susceptibility <- list(ial_to_ipl = ial_to_ipl, ipl_to_ebl = ipl_to_ebl)
   return(susceptibility)
@@ -318,11 +332,12 @@ susceptibility <- function(n_newborns,
 ## ---- n_newborn_per_dam
 #' The number of newborns per dam
 #'
-#' @param n_dams The number of dams
+#' @param n_dams The number of dams.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A numeric vector consisted of 1 and 2
-n_newborn_per_dam <- function(n_dams) {
-  sample(2:1, n_dams, replace = T, prob = params_this_run$probs_twin)
+#' @return A numeric vector consisted of 1 and 2.
+n_newborn_per_dam <- function(n_dams, param_calculated) {
+  sample(2:1, n_dams, replace = T, prob = param_calculated$probs_twin)
 }
 # Probability to be triplets or more is ignored.
 
@@ -336,20 +351,21 @@ n_newborn_per_dam <- function(n_dams) {
 #' Probability to be triplets or more is ignored (=0).
 #'
 #' @param n_newborns,n_calves The number of newborns.
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @rdname sex_newborns
-#' @return A character vector consisted of "male", "female" and "freemartin"
-sex_newborns <- function(n_newborns) {
+#' @return A character vector consisted of "male", "female" and "freemartin".
+sex_newborns <- function(n_newborns, param_calculated) {
   sample(c("female", "male"), size = n_newborns, replace = T,
-         prob = params_this_run$probs_female)
+         prob = param_calculated$probs_female)
 }
 
 #' @rdname sex_newborns
-sex_twins <- function(n_calves) {
+sex_twins <- function(n_calves, param_calculated) {
   # TODO: なんでここn_newbornsじゃなくてn_calvesなんだ？
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
                       size = (n_calves / 2),
-                      prob = params_this_run$probs_sex_pairs)
+                      prob = param_calculated$probs_sex_pairs)
   sex_calves <- strsplit(paste(sex_pairs, collapse = "-"), split = "-")[[1]]
   return(sex_calves)
 }
@@ -359,17 +375,19 @@ sex_twins <- function(n_calves) {
 #' Whether a newborn will be a replacement
 #'
 #' @param n_calves The number of newborns.
-#' @param capacity Capacity of a herd.
 #' @param herd_size The current herd size.
 #' @param n_delivered The number of delivered cows in a herd.
-#'
-#' @rdname is_replacement
-#' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」より
-#' @return A logical vector or a numeric value (`set_prob_rep()`)
-set_prob_rep <- function(n_delivered) {
-# TODO: これ 1 default_parametersに移す
-  prob_rep <- if (!is.na(PARAMS_FARM$prop_replacement)) {
-    PARAMS_FARM$prop_replacement
+#' @param param_farm See [param_farm].
+#' @param param_processed Return from [process_param()].
+
+#' @name is_replacement
+#' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」
+#' @encoding UTF-8
+#' @return A logical vector or a numeric value.
+set_prob_rep <- function(n_delivered, param_farm) {
+  # TODO: これ他の場所に移動した方がいいか確認する
+  prob_rep <- if (!is.na(param_farm$prop_replacement)) {
+    param_farm$prop_replacement
   } else if (n_delivered < 30) {
     4 / (0.2 + 4)
   } else if (n_delivered < 50) {
@@ -384,13 +402,14 @@ set_prob_rep <- function(n_delivered) {
   return(prob_rep)
 }
 
-#' @rdname is_replacement
-is_replacement <- function(n_calves, capacity, herd_size) {
+#' @name is_replacement
+is_replacement <- function(n_calves, herd_size, param_processed) {
   # capacity: upper and lower limits of number of cattle should be kept in the farm
-  spaces <- (capacity - herd_size) * (capacity > herd_size)
+  spaces <- (param_processed$capacity - herd_size) *
+              (param_processed$capacity > herd_size)
   spaces <- spaces * (spaces <= n_calves) + n_calves * (spaces > n_calves)
 
-  n_selected <- rbinom(1, n_calves, params_calculated$prob_rep)
+  n_selected <- rbinom(1, n_calves, param_processed$prob_rep)
   if (n_selected < spaces[1]) {
     n_selected <- spaces[1]
   } else if (n_selected > spaces[2]) {
@@ -407,17 +426,18 @@ is_replacement <- function(n_calves, capacity, herd_size) {
 ## ---- is_stillbirth
 #' Whether a delivery end up in stillbirth or abortion
 #'
-#' Here, stillbirth means stillbirth and abortion
+#' Here, stillbirth means stillbirth and abortion.
 #'
-#' @param parity Parity of dams
+#' @param parity Parity of dams.
+#' @param param_calculated Return from [calc_param()].
 #'
-#' @return A logical vector
-is_stillbirth <- function(parity) {
-  prob_sb <- params_this_run$prob_sb_1 * (parity == 1) +
-    params_this_run$prob_sb_2 * (parity == 2) +
-    params_this_run$prob_sb_3 * (parity == 3) +
-    params_this_run$prob_sb_4 * (parity == 4) +
-    params_this_run$prob_sb_5 * (parity >= 5)
+#' @return A logical vector.
+is_stillbirth <- function(parity, param_calculated) {
+  prob_sb <- param_calculated$prob_sb_1 * (parity == 1) +
+    param_calculated$prob_sb_2 * (parity == 2) +
+    param_calculated$prob_sb_3 * (parity == 3) +
+    param_calculated$prob_sb_4 * (parity == 4) +
+    param_calculated$prob_sb_5 * (parity >= 5)
   is_sb <- (runif(length(parity)) <= prob_sb)
   return(is_sb)
 }
@@ -428,47 +448,41 @@ is_stillbirth <- function(parity) {
 ## ---- longevity ----
 #' Expected age of death or slaugher
 #'
-#' @param n_cows The number of cows to calculate expected age of death
+#' @param n_cows The number of cows to calculate expected age of death.
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @rdname longevity
-#' @return A numeric vector
-age_die <- function(n_cows) {
+#' @return A numeric vector.
+age_die <- function(n_cows, param_calculated) {
   is_exp <- runif(n_cows)
   value <- rexp(n_cows,
-                rate = params_this_run$params_die[[4]][2]) *
-    (is_exp < params_this_run$params_die[[4]][1]) +
+                rate = param_calculated$die_e_rate) *
+    (is_exp < param_calculated$die_prop) +
     rgamma(n_cows,
-           shape = params_this_run$params_die[[4]][3],
-           rate = params_this_run$params_die[[4]][4]) *
-    (is_exp >= params_this_run$params_die[[4]][1])
+           shape = param_calculated$die_g_shape,
+           rate = param_calculated$die_g_rate) *
+    (is_exp >= param_calculated$die_prop)
   return(trunc(value))
 }
 
 #' @rdname longevity
-age_slaughtered <- function(n_cows) {
+age_slaughtered <- function(n_cows, param_calculated) {
   value <- rgamma(n_cows,
-                  shape = params_this_run$params_slaughtered[[4]][1],
-                  rate = params_this_run$params_slaughtered[[4]][2])
+                  shape = param_calculated$slaughter_shape,
+                  rate = param_calculated$slaughter_rate)
   return(trunc(value))
 }
 
 #' @rdname longevity
-longevity <- function(n_cows) {
+longevity <- function(n_cows, param_calculated) {
   # TODO: これcause_deathとかのが正確やな
   longevity <- list(
     age = numeric(n_cows),
     cause = rep("will_be_slaughtered", n_cows)
   )
-  will_die <- runif(n_cows) <= params_this_run$prob_died
-  longevity$age <- age_die(n_cows) * will_die +
-    age_slaughtered(n_cows) * (!will_die)
+  will_die <- runif(n_cows) <= param_calculated$prob_died
+  longevity$age <- age_die(n_cows, param_calculated) * will_die +
+    age_slaughtered(n_cows, param_calculated) * (!will_die)
   longevity$cause[will_die] <- "will_die"
   return(longevity)
 }
-
-
-
-
-
-
-
