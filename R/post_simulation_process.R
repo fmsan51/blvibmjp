@@ -59,7 +59,7 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 #' @param cows See `cow_table`
 #' @param path_to_csv Path to a csv file.
 #'
-#' @return A [data.table::data.table] contains monthly prevalences.
+#' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
 calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {

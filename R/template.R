@@ -2,7 +2,7 @@
 
 #' A data.table to store status of cows
 #'
-#' `cow_table` is a [data.table::data.table] to store status of cows.
+#' `cow_table` is a [data.table][data.table::data.table] to store status of cows.
 #' Status of all the cows in a farm is stored in one `cow_table`.
 #' The rows are consists of `a_new_calf`, which indicates one cow.
 #'
@@ -60,7 +60,7 @@
 #' -`is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`i_month`: The number of months past from the start of a simulation.
 #'
-#' @format [data.table::data.table]
+#' @format [data.table][data.table::data.table]
 #' @seealso [barn_table] [rp_table]
 #'
 #' @name cow_table
@@ -124,7 +124,7 @@ a_new_calf <- data.table(
 
 #' Barn data.table to store status of barns
 #'
-#' `barn_table` is a [data.table::data.table] to store status of barns.
+#' `barn_table` is a [data.table][data.table::data.table] to store status of barns.
 #' Each barn have each `barn_table`.
 #' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
 #'
@@ -148,7 +148,7 @@ a_new_calf <- data.table(
 #'     TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
-#' @format [data.table::data.table]
+#' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [rp_table]
 #' @name barn_table
 #' @export
@@ -181,7 +181,7 @@ a_chamber <- data.table(
 
 #' A data.table to manage cow status related with rectal palpation
 #'
-#' `rp_table` is a [data.table::data.table] to manage cow status related with rectal palpation.
+#' `rp_table` is a [data.table][data.table::data.table] to manage cow status related with rectal palpation.
 #' The table is automatically made and used within a simulation. You don't have to make it manually.
 #' The rows are consists of `day_rp`, which indicates one chance of rectal palpation for one cow.
 #'
@@ -191,7 +191,7 @@ a_chamber <- data.table(
 #' - `is_after_inf`: Whether a cow palpated on `i_rp` - 1 th turn is infected or not.
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
-#' @format [data.table::data.table]
+#' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [barn_table]
 #' @name rp_table
 #' @export

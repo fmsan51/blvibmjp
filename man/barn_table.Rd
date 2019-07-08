@@ -5,12 +5,12 @@
 \alias{barn_table}
 \alias{a_chamber}
 \title{Barn data.table to store status of barns}
-\format{\link[data.table:data.table]{data.table::data.table}}
+\format{\link[data.table:data.table]{data.table}}
 \usage{
 a_chamber
 }
 \description{
-\code{barn_table} is a \link[data.table:data.table]{data.table::data.table} to store status of barns.
+\code{barn_table} is a \link[data.table:data.table]{data.table} to store status of barns.
 Each barn have each \code{barn_table}.
 The rows are consists of \code{a_chamber}, which indicates one chamber in a barn.
 }
