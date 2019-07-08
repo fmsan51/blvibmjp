@@ -36,6 +36,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_group,
       param_processed$param_output_filename, 0,
       subdir = param_simulation$output_dir)
   }
+  # TODO: Make param list to a data.frame
 
   # TODO: set seed for reproductivity
   max_simulation <- param_simulation$n_simulation + i_simulation_start - 1
