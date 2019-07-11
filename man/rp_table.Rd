@@ -10,7 +10,7 @@
 one_day_rp
 }
 \description{
-\code{rp_table} is a \link[data.table:data.table]{data.table::data.table} to manage cow status related with rectal palpation.
+\code{rp_table} is a \link[data.table:data.table]{data.table} to manage cow status related with rectal palpation.
 The table is automatically made and used within a simulation. You don't have to make it manually.
 The rows are consists of \code{day_rp}, which indicates one chance of rectal palpation for one cow.
 }

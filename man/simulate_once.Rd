@@ -17,7 +17,7 @@ simulate_once(setup_cows_res, init_groups, day_rp, i_simulation, result,
 
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_groups}{Lists to store a \code{cow_table} and a \code{barn_table} respectively.}
+\item{result, result_groups}{Lists to store a \code{cow_table} and a \code{tiestall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
 

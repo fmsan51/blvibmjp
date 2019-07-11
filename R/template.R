@@ -60,7 +60,7 @@
 #' -`is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`i_month`: The number of months past from the start of a simulation.
 #'
-#' @format [data.table::data.table]
+#' @format [data.table][data.table::data.table]
 #' @seealso [tiestall_table] [rp_table] [area_table]
 #'
 #' @name cow_table
@@ -120,12 +120,12 @@ a_new_calf <- data.table(
 )
 
 
-## ---- chamber_template ----
+## ---- tiestall_template ----
 
-#' Barn data.table to store status of barns
+#' A data.table to store status of a tie-stall barn
 #'
-#' `barn_table` is a [data.table::data.table] to store status of barns.
-#' Each barn have each `barn_table`.
+#' `tiestall_table` is a [data.table::data.table] to store status of barns.
+#' Each barn have each `tiestall_table`.
 #' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
 #'
 #' `chamber_id`, `is_edge`, and `group_id` are fixed. Values will not be changed while a simulation.
@@ -148,9 +148,10 @@ a_new_calf <- data.table(
 #'     TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
-#' @format [data.table::data.table]
 #' @name barn_table
+#' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [area_table] [rp_table]
+#' @name tiestall_table
 #' @export
 a_chamber <- data.table(
   chamber_id = NA_integer_,

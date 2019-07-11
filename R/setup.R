@@ -55,7 +55,7 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 }
 
 
-#' Setup of `barn_table`
+#' Setup of `tiestall_table`
 #'
 #' Make chamber matrix, which indicates in which chamber each cow is.
 #' Cows kept in free-stall or paddock are not shown in this matrix.
@@ -63,8 +63,8 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
 #' @param param_group See [param_group].
 #'
-#' @return A [barn_table].
-#' @seealso [setup_rp_table] [barn_table] [setup_cows]
+#' @return A [tiestall_table].
+#' @seealso [setup_rp_table] [tiestall_table] [setup_cows]
 #' @export
 setup_groups <- function(init_cows, param_group) {
   # TODO: groupsとbarnsの見直しに合わせてここも変更

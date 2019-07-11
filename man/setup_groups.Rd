@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup.R
 \name{setup_groups}
 \alias{setup_groups}
-\title{Setup of \code{barn_table}}
+\title{Setup of \code{tiestall_table}}
 \usage{
 setup_groups(init_cows, param_group)
 }
@@ -12,12 +12,12 @@ setup_groups(init_cows, param_group)
 \item{param_group}{See \link{param_group}.}
 }
 \value{
-A \link{barn_table}.
+A \link{tiestall_table}.
 }
 \description{
 Make chamber matrix, which indicates in which chamber each cow is.
 Cows kept in free-stall or paddock are not shown in this matrix.
 }
 \seealso{
-\link{setup_rp_table} \link{barn_table} \link{setup_cows}
+\link{setup_rp_table} \link{tiestall_table} \link{setup_cows}
 }

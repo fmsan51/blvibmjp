@@ -323,13 +323,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 #' Change stage of cows and move cows between barns accordinglly
 #'
 #' @param cows See [cow_table].
-#' @param groups See [barn_table].
+#' @param groups See [tiestall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_group See [param_group].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
-#' @return A list consists of `cow_table` and `barn_table`.
+#' @return A list consists of `cow_table` and `tiestall_table`.
 #' @export
 change_stage <- function(cows, groups, i, param_group, param_calculated,
                          param_processed) {
@@ -587,12 +587,12 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
 #' Check death and sale of current cows
 #'
 #' @param cows See [cow_table].
-#' @param groups See [barn_table].
+#' @param groups See [tiestall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
-#' @return A list consisted of [cow_table] and [barn_table].
+#' @return A list consisted of [cow_table] and [tiestall_table].
 #' @export
 check_removal <- function(cows, groups, i, param_calculated, param_processed) {
   # Removal by death

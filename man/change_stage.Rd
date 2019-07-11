@@ -10,7 +10,7 @@ change_stage(cows, groups, i, param_group, param_calculated,
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{groups}{See \link{barn_table}.}
+\item{groups}{See \link{tiestall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
@@ -21,7 +21,7 @@ change_stage(cows, groups, i, param_group, param_calculated,
 \item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
 }
 \value{
-A list consists of \code{cow_table} and \code{barn_table}.
+A list consists of \code{cow_table} and \code{tiestall_table}.
 }
 \description{
 Change stage of cows and move cows between barns accordinglly

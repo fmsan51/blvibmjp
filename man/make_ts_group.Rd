@@ -2,7 +2,7 @@
 % Please edit documentation in R/barn.R
 \name{make_ts_group}
 \alias{make_ts_group}
-\title{Make a barn_table from a cow_table}
+\title{Make a tiestall_table from a cow_table}
 \usage{
 make_ts_group(cows, n_x, n_y)
 }
@@ -14,8 +14,8 @@ make_ts_group(cows, n_x, n_y)
 \item{n_y}{The number of lanes in a tie-stall barn.}
 }
 \value{
-A \link{barn_table}.
+A \link{tiestall_table}.
 }
 \description{
-Make a \link{barn_table} based on x, y coordinates in a \link{cow_table}.
+Make a \link{tiestall_table} based on x, y coordinates in a \link{cow_table}.
 }
