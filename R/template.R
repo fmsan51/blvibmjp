@@ -2,7 +2,7 @@
 
 #' A data.table to store status of cows
 #'
-#' `cow_table` is a [data.table::data.table] to store status of cows.
+#' `cow_table` is a [data.table][data.table::data.table] to store status of cows.
 #' Status of all the cows in a farm is stored in one `cow_table`.
 #' The rows are consists of `a_new_calf`, which indicates one cow.
 #'
@@ -124,7 +124,7 @@ a_new_calf <- data.table(
 
 #' A data.table to store status of a tie-stall barn
 #'
-#' `tiestall_table` is a [data.table::data.table] to store status of barns.
+#' `tiestall_table` is a [data.table][data.table::data.table] to store status of barns.
 #' Each barn have each `tiestall_table`.
 #' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
 #'
@@ -148,7 +148,6 @@ a_new_calf <- data.table(
 #'     TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
-#' @name barn_table
 #' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [area_table] [rp_table]
 #' @name tiestall_table
@@ -227,7 +226,7 @@ a_area <- data.table(area_id = NA_real_,
 
 #' A data.table to manage cow status related with rectal palpation
 #'
-#' `rp_table` is a [data.table::data.table] to manage cow status related with rectal palpation.
+#' `rp_table` is a [data.table][data.table::data.table] to manage cow status related with rectal palpation.
 #' The table is automatically made and used within a simulation. You don't have to make it manually.
 #' The rows are consists of `day_rp`, which indicates one chance of rectal palpation for one cow.
 #'
@@ -237,7 +236,7 @@ a_area <- data.table(area_id = NA_real_,
 #' - `is_after_inf`: Whether a cow palpated on `i_rp` - 1 th turn is infected or not.
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
-#' @format [data.table::data.table]
+#' @format [data.table] [data.table::data.table]
 #' @seealso [cow_table] [area_table] [tiestall_table]
 #' @name rp_table
 #' @export
