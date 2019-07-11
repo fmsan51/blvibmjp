@@ -73,6 +73,6 @@ FALSE: The cow Will be sold to beef operations.
 }
 }
 \seealso{
-\link{barn_table} \link{rp_table}
+\link{tiestall_table} \link{rp_table} \link{area_table}
 }
 \keyword{datasets}

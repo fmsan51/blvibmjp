@@ -61,7 +61,7 @@
 #' -`i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table::data.table]
-#' @seealso [barn_table] [rp_table]
+#' @seealso [tiestall_table] [rp_table] [area_table]
 #'
 #' @name cow_table
 #' @export
@@ -149,8 +149,8 @@ a_new_calf <- data.table(
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
 #' @format [data.table::data.table]
-#' @seealso [cow_table] [rp_table]
 #' @name barn_table
+#' @seealso [cow_table] [area_table] [rp_table]
 #' @export
 a_chamber <- data.table(
   chamber_id = NA_integer_,
@@ -176,6 +176,51 @@ a_chamber <- data.table(
 )
 
 
+## ---- movement_template ----
+
+#' A data.table to manage cows' movement between barns
+#'
+#' `area_table` is a [data.table][data.table::data.table] to manage cow movement among hatches, barns, paddocks etc. in a farm.
+#' A `area_table` is consisted of following items and users must specify before starting a simulation.
+#'
+#' - `area_id`: Area id. Specify by integers.
+#' - `area_type` (`"free"`/`"tie"`/`"outside"`): Type of a area. Specify one-of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall) or `"outside"` (paddock or rangeland, etc.).
+#' - `capacity`: Capacity of the area in head. `Inf` is set if you specify `NA`.
+#' - `condition`: Condition that cows in the area move to the next area(s). Describe logical conditions as character (see Example). You can use following terms to specify `condition`:
+#'     - `age`: Age in month. Use like `age > 20`.
+#'     - `parity`: Parity. Use like `parity > 1`.
+#'     - `delivery`, `pregnancy`, `dry`
+#'     - `dim`: Day in milking. Use like `dim > 100`.
+#'     - `NA`: Cows don't move from the area.
+#' - `next_area`: The next area cow will move to specified by `area_id`. You can specify multiple areas like `c(1:2, 4)`. `NA` means that cows don't move from the current area.
+#' - `priority`: The priority for `next_area`. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to `next_area`. If `priority` is set by integer, the area have multiple `next_area` and `capacity` is set, cows go to the area with highest `priority` (= nearest to 1) which is not full. If multiple areas have the same `priority`, cows are romdomly allocated to the areas. If `priority` is set by numeric which is summed to 1, `priority` is regarded as probability in accordance to which cows go to `next_area`.
+#'
+#' You can specify more than one set of `condition` and `next` to one `current` area.
+#'
+#' @examples
+#' # A farm has four areas:
+#' # - A freebarn for calves younger than 3 months old.
+#' # - A paddock for heifers.
+#' # - A tie-stall barn and a free-stall barn for adult cows. A cow is moved to the tie-stall barn right after the delivery if the barn is not full. Otherwise, the cow is moved (or stayed) to the free-stall barn.
+#' movement <- a_area[rep(1, 4), ]
+#' movement[, `:=`(area_id = 1:4,
+#'                 area_type = c("free", "free", "tie", "free"),
+#'                 capacity = c(NA, NA, 60, NA),
+#'                 condition = c("age > 2", "delivery", NA, "delivlery"),
+#'                 next_area = list(2, 3:4, NA, 3:4),
+#'                 priority = list(NA, NA, NA, c(1, 2))]
+#'
+#' @seealso [cow_table] [tiestall_table] [rp_table]
+#' @name area_table
+#' @export
+a_area <- data.table(area_id = NA_real_,
+                     area_type = NA_character_,
+                     capacity = NA_real_,
+                     condition = list(NA),
+                     next_area = list(NA),
+                     priority = list(NA))
+# TODO: Make UI to setup this.
+
 
 ## ---- rectal_palpation_template ----
 
@@ -192,7 +237,7 @@ a_chamber <- data.table(
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
 #' @format [data.table::data.table]
-#' @seealso [cow_table] [barn_table]
+#' @seealso [cow_table] [area_table] [tiestall_table]
 #' @name rp_table
 #' @export
 one_day_rp <- data.table(cow_id = NA_integer_,
