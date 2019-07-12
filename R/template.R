@@ -114,10 +114,11 @@ a_new_calf <- data.table(
   group_id = NA_integer_,  # TODO: Rename to barn_id
 
   # For tie-stall (For free-stall, all the following variables are NA)
-  chamber_id = NA_integer_,
+  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tiestall_table holds chamber_id.
   is_isolated = NA,
   i_month = NA_real_
 )
+# TODO: consider whether status can removed from the codes.
 
 
 ## ---- tiestall_template ----
