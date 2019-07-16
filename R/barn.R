@@ -1,15 +1,15 @@
 # tie_stall_settings ----
 
 ## ---- make_ts_group
-#' Make a barn_table from a cow_table
+#' Make a tiestall_table from a cow_table
 #'
-#' Make a [barn_table] based on x, y coordinates in a [cow_table].
+#' Make a [tiestall_table] based on x, y coordinates in a [cow_table].
 #'
 #' @param cows See [cow_table].
 #' @param n_x The number of chambers in a lane.
 #' @param n_y The number of lanes in a tie-stall barn.
 #'
-#' @return A [barn_table].
+#' @return A [tiestall_table].
 #' @export
 make_ts_group <- function(cows, n_x, n_y) {
   # TODO: これcsvから読み込むような形にしたい
@@ -91,10 +91,10 @@ is_md_separated_in_ts <- function(param_calculated) {
 ## ---- remove_from_group
 #' Remove dead or sold cows from a barn
 #'
-#' @param group See [barn_table].
+#' @param group See [tiestall_table].
 #' @param cow_id_removed The ID of cows removed from the barn.
 #'
-#' @return A [barn_table].
+#' @return A [tiestall_table].
 remove_from_group <- function(group, cow_id_removed) {
   # Remove chambers for isolation
   removed_chamber <- group[cow_id %in% cow_id_removed, chamber_id]
@@ -120,14 +120,14 @@ remove_from_group <- function(group, cow_id_removed) {
 
 
 ## ---- find_empty_chamber
-#' Find empty chambers in a barn_table
+#' Find empty chambers in a tiestall_table
 #'
-#' Find empty chambers in a barn_table and assign cows to chambers.
+#' Find empty chambers in a tiestall_table and assign cows to chambers.
 #'
-#' @param group See [barn_table].
+#' @param group See [tiestall_table].
 #' @param added_cows A [cow_table] consisted of cows to add to the barn.
 #'
-#' @return A [barn_table].
+#' @return A [tiestall_table].
 find_empty_chamber <- function(group, added_cows) {
   group <- copy(group)
 

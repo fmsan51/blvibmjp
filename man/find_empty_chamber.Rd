@@ -2,18 +2,18 @@
 % Please edit documentation in R/barn.R
 \name{find_empty_chamber}
 \alias{find_empty_chamber}
-\title{Find empty chambers in a barn_table}
+\title{Find empty chambers in a tiestall_table}
 \usage{
 find_empty_chamber(group, added_cows)
 }
 \arguments{
-\item{group}{See \link{barn_table}.}
+\item{group}{See \link{tiestall_table}.}
 
 \item{added_cows}{A \link{cow_table} consisted of cows to add to the barn.}
 }
 \value{
-A \link{barn_table}.
+A \link{tiestall_table}.
 }
 \description{
-Find empty chambers in a barn_table and assign cows to chambers.
+Find empty chambers in a tiestall_table and assign cows to chambers.
 }

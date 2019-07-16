@@ -5,12 +5,12 @@
 \alias{cow_table}
 \alias{a_new_calf}
 \title{A data.table to store status of cows}
-\format{\link[data.table:data.table]{data.table::data.table}}
+\format{\link[data.table:data.table]{data.table}}
 \usage{
 a_new_calf
 }
 \description{
-\code{cow_table} is a \link[data.table:data.table]{data.table::data.table} to store status of cows.
+\code{cow_table} is a \link[data.table:data.table]{data.table} to store status of cows.
 Status of all the cows in a farm is stored in one \code{cow_table}.
 The rows are consists of \code{a_new_calf}, which indicates one cow.
 }
@@ -73,6 +73,6 @@ FALSE: The cow Will be sold to beef operations.
 }
 }
 \seealso{
-\link{barn_table} \link{rp_table}
+\link{tiestall_table} \link{rp_table} \link{area_table}
 }
 \keyword{datasets}

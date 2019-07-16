@@ -12,7 +12,7 @@ calculate_prevalences(cows = NULL, path_to_csv = NULL)
 \item{path_to_csv}{Path to a csv file.}
 }
 \value{
-A \link[data.table:data.table]{data.table::data.table} contains monthly prevalences.
+A \link[data.table:data.table]{data.table} contains monthly prevalences.
 }
 \description{
 Calculate monthly prevalences from \code{cow_table} or a csv file. Set either one of \code{cows} or \code{path_to_csv}.
