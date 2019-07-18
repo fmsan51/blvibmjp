@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Yuri", "Fujimoto", email = "fmsan51@gmail.com", role = c("aut", "cre"))
 Description: Simulates spred of Bovine leukemia virus (BLV) on individual base within a typical dairy herd in Japan. 
 Depends: R (>= 3.5)
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 LinkingTo: 
