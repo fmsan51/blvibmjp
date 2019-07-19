@@ -4,13 +4,15 @@
 \name{param_group}
 \alias{param_group}
 \title{Parameters about barns which should be set by users}
-\format{An object of class \code{list} of length 4.}
+\format{An object of class \code{list} of length 6.}
 \usage{
 param_group
 }
 \description{
 \itemize{
-\item \code{n_group}: The number of barns.
+\item \code{calf_area_id}: Numeric vector. Set the \code{area_id}(s) for newborn calves specified in \code{[area_table]}.
+\item \code{calf_area_priority}: Specify priority for calf areas. \code{NA} is allowed. See explanation of \code{priority} in \code{[area_table]} for meaning of \code{priority}.
+\item \code{qualantine_area_id}: Numeric vector. Set the \code{area_id} for introduced cows. \code{NA} is allowed if the herd never introduce cows.
 \item \code{xy_chamber}: The number of chambers per lane and the number of lanes.
 \item \code{is_calf_separated}: Whether each calf is separated.
 \item \code{is_milking_dry_separated}: (For a farm which miling and dry cows are kept in same tie-stall barn,) whether dry cows are separated from milking cows.

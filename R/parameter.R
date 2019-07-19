@@ -35,6 +35,8 @@ param_simulation <- list(
 #' - `months_grazing` (1-12), `hours_grazing` (0-23): Months and hours for grazing. (default: no grazing)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
+#' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0)) 
+#' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
@@ -61,10 +63,13 @@ param_farm <- list(
   months_grazing = NA,
   hours_grazing = NA,
 
+  n_introduced = c(0, 0, 0),
+  days_qualantine = 0,
   capacity_in_head = NA,
   capacity_as_ratio = NA,
   # TODO: capacityが現在の頭数を上回ってるor下回ってるようなら警告
   # TODO: capacity_in_headとcapacity_as_ratioが両方セットされたら警告
+
 
   change_needles = NA,
   # TODO: これpropとして設定できるようになりたい
@@ -77,7 +82,9 @@ param_farm <- list(
 
 #' Parameters about barns which should be set by users
 #'
-#' - `n_group`: The number of barns.
+#' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves specified in `[area_table]`.
+#' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. See explanation of `priority` in `[area_table]` for meaning of `priority`.
+#' - `qualantine_area_id`: Numeric vector. Set the `area_id` for introduced cows. `NA` is allowed if the herd never introduce cows.
 #' - `xy_chamber`: The number of chambers per lane and the number of lanes.
 #' - `is_calf_separated`: Whether each calf is separated.
 #' - `is_milking_dry_separated`: (For a farm which miling and dry cows are kept in same tie-stall barn,) whether dry cows are separated from milking cows.
@@ -87,10 +94,12 @@ param_farm <- list(
 param_group <- list(
   # TODO: 必要なパラメータが設定されてるか確認するためのfunctionを作成する
   # TODO: barnとgroupの構造についてもっと検討、それに応じてこのparameter listも検討
-  n_group = NA,  # 4 groups
+  calf_area_id = NA_real_,
+  calf_area_priority = NA_real_,
+  qualantine_area_id = NA_real_,
   xy_chamber = NA,
   is_calf_separated = NA,
-
+  
   # (For a farm which miling and dry cows are kept in same tie-stall barn,)
   # are dry cows are separated from milking cows?
   # (NA means milking cows and dry cows are in different barns.)
