@@ -1,4 +1,3 @@
-## ---- save_to_csv
 #' Export a cow_table or the list of parameters to a file.
 #'
 #' @param cows See [cow_table].
@@ -18,7 +17,6 @@ save_to_csv <- function(cows, filename, i, subdir = ".") {
 # TODO: ここあとでテストかく
 
 
-## ---- save_param
 #' @rdname save_file
 #' @export
 save_param_txt <- function(param, filename, i, subdir = ".") {
@@ -30,7 +28,6 @@ save_param_txt <- function(param, filename, i, subdir = ".") {
 }
 
 
-## ---- construct_filepath
 #' @rdname save_file
 #' @export
 construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
@@ -45,3 +42,4 @@ construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
   return(path)
 }
 # TODO: test
+

@@ -1,5 +1,3 @@
-## ---- confirm_cow_params
-
 #' Validate cow_table
 #'
 #' Validate `cow_table`.
@@ -132,8 +130,6 @@ validate_cow_table <- function(cows,
 }
 
 
-## ---- validate_category ---
-
 #' Validate that categorical columns contain valid categories only
 #'
 #' @param cows A [cow_table].
@@ -152,8 +148,6 @@ validate_category <- function(cows, col, category) {
   }
 }
 
-
-## ---- format_date ----
 
 #' Format and validate date columns
 #'
@@ -203,8 +197,6 @@ format_date <- function(cows, date_format = "ymd",
 }
 
 
-## ---- classify_date_column ----
-
 #' Check date_xxx columns whether they are numeric, date or invaild value.
 #'
 #' @param date_col date_xxx column
@@ -225,5 +217,4 @@ classify_date_column <- function(date_col, date_format) {
   }
   return(col_class)
 }
-
 

@@ -1,6 +1,3 @@
-# Parameters get from papers, reports, experiments, etc. are set in this simulation.
-# 文献や実験を参考に設定したパラメーターは全てこのファイルに記述する。
-
 #' Parameters about a simulation which should be set by users
 #'
 #' - `simulation_length`: Length of simulation (months). (default: 60)
@@ -21,6 +18,7 @@ param_simulation <- list(
   output_dir = "data/output",
   output_filename = "simulation"
 )
+
 
 #' Parameters about farms which should be set by users
 #'
@@ -76,6 +74,7 @@ param_farm <- list(
   days_milking = NA
 )
 
+
 #' Parameters about barns which should be set by users
 #'
 #' - `n_group`: The number of barns.
@@ -116,7 +115,6 @@ param_group <- list(
 )
 
 
-## ---- set_param(parameter, default) ----
 #' Overwrite default parameters with herd specific parameters
 #'
 #' It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
@@ -137,7 +135,6 @@ set_param <- function(parameter, default) {
 }
 
 
-## ---- calculate_parameters ----
 #' Calculate parameters necessary to the simulation.
 #'
 #' Calculate parameters to the simulation and overwrite the default setting if necessary.
@@ -169,7 +166,7 @@ calc_param <- function(param_farm, modification = NULL) {
   param$ebl_progress_scale <- 7.8
   # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 (Tsutsui et al, 2016)
 
-  ## Probabilities of disease progress
+  ## Probabilities of disease progress ----
   # Proportion of ial cattle which develops ipl
   prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   param$probs_develop_ipl <- c(prob_develop_ipl, 1 - prob_develop_ipl)
@@ -188,7 +185,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## infection_insects ----
 
-  ## Probability of infection by bloodsucking insects per month per cattle
+  ## Probability of infection by bloodsucking insects per month per cattle ----
   # Read preps/Parameters_num_insects.Rmd
   param$probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
                                      0.0028,  # May
@@ -231,7 +228,7 @@ calc_param <- function(param_farm, modification = NULL) {
   ## infection_vertical ----
 
   # Vertical infection  垂直感染
-  ## Probability of vertical infection for calves born from BLV-infected dams
+  ## Probability of vertical infection for calves born from BLV-infected dams ----
   # Vet Microbiol. 2002 Jan 23;84(3):275-82.  Vertical transmission of bovine leukemia virus and bovine immunodeficiency virus in dairy cattle herds.  これだと垂直感染は0だな
   # https://www.jstage.jst.go.jp/article/jvma1951/34/9/34_9_423/_article/-char/ja  これも垂直感染は0
   # これだと 1/22
@@ -341,20 +338,20 @@ calc_param <- function(param_farm, modification = NULL) {
   prop_fm <- c(0.0137, 0.0140, 0.0135, 0.0134, 0.0134, 0.0123)
   prop_twin <- c(0.0294, 0.0298, 0.0285, 0.0282, 0.0284, 0.0268)
 
-  ## Probability to be twins  双子になる確率
+  ## Probability to be twins  双子になる確率 ----
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
   prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
   param$probs_twin <- c(prob_twin, 1 - prob_twin)
 
-  ## Sex ratio
+  ## Sex ratio ----
   sex_ratio_f <- prop_f / (prop_m + prop_f)
   lims_female <- set_param(param_farm$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
   prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
   param$probs_female <- c(prob_female, 1 - prob_female)
 
-  ## Sex ratio for twins
+  ## Sex ratio for twins ----
   sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)
   sex_ratio_ff <- prop_ff / (prop_mm + prop_ff + prop_fm)
   lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))  # TODO: 同上
@@ -391,7 +388,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## longevity ----
 
-  ## Longevity  寿命（死亡・と畜）
+  ## Longevity  寿命（死亡・と畜） ----
   # See preps/Parameters_age_distribution.Rmd
 
   # No. of slaughtered Holstein females in Hokkaido

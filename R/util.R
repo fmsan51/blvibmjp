@@ -20,6 +20,7 @@ vars_to_named_list <- function(...) {
 # TODO: いらんかも
 # TODO: スピード的にボトルネックになりそう
 
+
 #' Update a list if an input is not `NULL`
 #'
 #' Overwrite components of a list if inputs are not `NULL`.
@@ -46,3 +47,4 @@ update_if_input_not_null <- function(list, ...) {
   }
 }
 # TODO:いらんかも
+

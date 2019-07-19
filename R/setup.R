@@ -84,3 +84,4 @@ setup_groups <- function(init_cows, param_group) {
 # TODO: make an option to decide do validation of input or not
 # TODO: connect to validation functions
 # TODO: add a function to randomly set parameter which is not specified by user input
+

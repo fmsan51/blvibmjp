@@ -1,6 +1,3 @@
-# tie_stall_settings ----
-
-## ---- make_ts_group
 #' Make a tiestall_table from a cow_table
 #'
 #' Make a [tiestall_table] based on x, y coordinates in a [cow_table].
@@ -49,7 +46,6 @@ make_ts_group <- function(cows, n_x, n_y) {
 }
 
 
-## ---- is_ts
 #' Check wheter a barn is tie-stall
 #'
 #' @param param_group See [param_group].
@@ -66,8 +62,6 @@ is_ts <- function(param_group) {
 }
 
 
-
-## ---- is_md_separated_in_ts
 #' Check whether milking cows and dry cows are separated
 #'
 #' @param param_calculated A list of parameters. See [calc_param()].
@@ -86,9 +80,6 @@ is_md_separated_in_ts <- function(param_calculated) {
 # FIXME: currentry used nowhere
 
 
-## group_settings ----
-
-## ---- remove_from_group
 #' Remove dead or sold cows from a barn
 #'
 #' @param group See [tiestall_table].
@@ -118,8 +109,6 @@ remove_from_group <- function(group, cow_id_removed) {
 }
 
 
-
-## ---- find_empty_chamber
 #' Find empty chambers in a tiestall_table
 #'
 #' Find empty chambers in a tiestall_table and assign cows to chambers.
@@ -162,7 +151,7 @@ find_empty_chamber <- function(group, added_cows) {
 }
 # TODO: 移動させた後にgroup_idを変えるコードがどこかにあることを確認する
 
-## ---- set_capacity
+
 #' Calculate capacity of a barn based on inputed parameters
 #'
 #' @param herd_size The herd size in a simulated herd.
@@ -181,6 +170,4 @@ set_capacity <- function(herd_size, param_farm) {
   }
   return(capacity)
 }
-
-
 

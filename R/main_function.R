@@ -1,5 +1,3 @@
-## ---- add_1_to_age
-
 #' Increment age in a cow table
 #'
 #' Add 1 to `age` variable in a cow table.
@@ -13,8 +11,6 @@ add_1_to_age <- function(cows) {
   return(cows)
 }
 
-
-## ---- do_ai
 
 #' Conduct AI and check chance of infection
 #'
@@ -318,8 +314,6 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 }
 
 
-## ---- change_stage
-
 #' Change stage of cows and move cows between barns accordinglly
 #'
 #' @param cows See [cow_table].
@@ -413,9 +407,6 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
 }
 
 
-
-## ---- change_infection_status
-
 #' Check change of infection status of cows
 #'
 #' @param cows See [cow_table].
@@ -476,8 +467,6 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 }
 
 
-
-## ---- add_newborns
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].
@@ -582,8 +571,6 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
 }
 
 
-
-## ---- check_removal
 #' Check death and sale of current cows
 #'
 #' @param cows See [cow_table].
@@ -640,8 +627,6 @@ check_removal <- function(cows, groups, i, param_calculated, param_processed) {
 }
 
 
-
-## ---- set_i_month
 #' Set the variable i_month in a cow_table
 #'
 #' @param cows See [cow_table].
@@ -655,7 +640,6 @@ set_i_month <- function(cows, i) {
 }
 
 
-## ---- extract_owned_cows
 #' Extract owned cows from a cow_table
 #'
 #' @param cows See [cow_table].
@@ -666,3 +650,4 @@ extract_owned_cows <- function(cows) {
   cows <- cows[is_owned == T | is.na(is_owned), ]
   return(cows)
 }
+

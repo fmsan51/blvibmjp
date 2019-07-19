@@ -1,5 +1,3 @@
-# ---- cow_template ----
-
 #' A data.table to store status of cows
 #'
 #' `cow_table` is a [data.table][data.table::data.table] to store status of cows.
@@ -22,8 +20,8 @@
 #'     - "died": culled or slaughtered.
 #'     - "ebl": culled due to onset of the disease.
 #'     - "sold": send to a market or another farm.
-#      - "will_die": (still alive and) will die.
-#      - "will_be_slaughtered": (still alive and) will be slaughtered.
+#'     - "will_die": (still alive and) will die.
+#'     - "will_be_slaughtered": (still alive and) will be slaughtered.
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
@@ -121,8 +119,6 @@ a_new_calf <- data.table(
 # TODO: consider whether status can removed from the codes.
 
 
-## ---- tiestall_template ----
-
 #' A data.table to store status of a tie-stall barn
 #'
 #' `tiestall_table` is a [data.table][data.table::data.table] to store status of barns.
@@ -177,8 +173,6 @@ a_chamber <- data.table(
 )
 
 
-## ---- movement_template ----
-
 #' A data.table to manage cows' movement between barns
 #'
 #' `area_table` is a [data.table][data.table::data.table] to manage cow movement among hatches, barns, paddocks etc. in a farm.
@@ -222,8 +216,6 @@ a_area <- data.table(area_id = NA_real_,
                      priority = list(NA))
 # TODO: Make UI to setup this.
 
-
-## ---- rectal_palpation_template ----
 
 #' A data.table to manage cow status related with rectal palpation
 #'

@@ -2,6 +2,7 @@
   library.dynam.unload("blvibmjp", libpath)
 }
 
+
 # To prevent a warning "undefined gloval variable xxx" while devtools::check()
 if (getRversion() >= "3.1.0") {
   utils::globalVariables(c(
@@ -14,3 +15,4 @@ if (getRversion() >= "3.1.0") {
     "uninfected"
   ))
 }
+
