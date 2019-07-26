@@ -48,3 +48,22 @@ update_if_input_not_null <- function(list, ...) {
 }
 # TODO:いらんかも
 
+
+#' Convert non-integer to integer
+#'
+#' Convert non-integer to integer. \cr
+#' The output will be an integer which is obtained by [ceiling()] or [floor()] and the mean of the output of multiple trials equals to the input.
+#' For example, if input is 1.7, the output will be 1 by 30% or 2 by 70%.
+#'
+#' @param number numeric vector.
+#'
+#' @examples
+#' set.seed(1)
+#' res <- integerize(rep(pi, 100))
+#' table(res)
+#'
+#' @return numerc vector of the same lenth with the input.
+integerize <- function(number) {
+  floor(number) + (runif(length(number)) < number %% 1)
+}
+

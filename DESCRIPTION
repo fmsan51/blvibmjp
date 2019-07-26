@@ -18,7 +18,8 @@ Imports:
     ggplot2,
     forcats,
     tidyr,
-    lubridate
+    lubridate,
+    stringr
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 Suggests: 

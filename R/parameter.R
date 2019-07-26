@@ -84,7 +84,6 @@ param_farm <- list(
 #'
 #' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves specified in `[area_table]`.
 #' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. See explanation of `priority` in `[area_table]` for meaning of `priority`.
-#' - `qualantine_area_id`: Numeric vector. Set the `area_id` for introduced cows. `NA` is allowed if the herd never introduce cows.
 #' - `xy_chamber`: The number of chambers per lane and the number of lanes.
 #' - `is_calf_separated`: Whether each calf is separated.
 #' - `is_milking_dry_separated`: (For a farm which miling and dry cows are kept in same tie-stall barn,) whether dry cows are separated from milking cows.
@@ -96,7 +95,6 @@ param_group <- list(
   # TODO: barnとgroupの構造についてもっと検討、それに応じてこのparameter listも検討
   calf_area_id = NA_real_,
   calf_area_priority = NA_real_,
-  qualantine_area_id = NA_real_,
   xy_chamber = NA,
   is_calf_separated = NA,
   

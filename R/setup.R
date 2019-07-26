@@ -8,7 +8,7 @@
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
-#' @seealso [cow_table] [setup_groups] [setup_rp_table]
+#' @seealso [cow_table] [setup_groups] [setup_rp_table] [setup_area_table]
 #' @export
 setup_cows <- function(param_simulation, param_group, save_cows) {
   cows <- fread(file = param_simulation$input_csv,
@@ -45,7 +45,7 @@ setup_cows <- function(param_simulation, param_group, save_cows) {
 #' @param init_last_cow_id The element `init_last_cow_id` from the return of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #'
-#' @seealso [setup_cows] [setup_groups] [rp_table]
+#' @seealso [setup_cows] [setup_groups] [rp_table] [setup_area_table]
 #' @export
 setup_rp_table <- function(init_last_cow_id, param_simulation) {
   # TODO: do_aiをimproveするときに再検討
@@ -64,7 +64,7 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' @param param_group See [param_group].
 #'
 #' @return A [tiestall_table].
-#' @seealso [setup_rp_table] [tiestall_table] [setup_cows]
+#' @seealso [setup_rp_table] [tiestall_table] [setup_cows] [setup_area_table]
 #' @export
 setup_groups <- function(init_cows, param_group) {
   # TODO: groupsとbarnsの見直しに合わせてここも変更
@@ -78,6 +78,40 @@ setup_groups <- function(init_cows, param_group) {
     }
   }
   return(init_groups)
+}
+
+
+#' Setup of `area_table`
+#'
+#' Make `area_table`.
+#'
+#' @param area_table See [area_table].
+#'
+#' @seealso [area_table] [setup_cows] [setup_rp_table] [setup_groups]
+#' @export
+setup_area_table <- function(area_table) {
+  # translate condition from a form that users can easily understand
+  # to a form that functions can easily understand
+  cond <- area_table$condition
+  convert_day_to_month <- function(day) {
+    day <- as.numeric(day)
+    month <- round(day / (365 / 12), 3)  # rounded for readability
+    return(month)
+  }
+  cond <- str_replace_all(cond, "(?<=dim[^|&]{1,20}?)\\d+",
+                          convert_day_to_month)
+  # max range is 20 because it seems enough
+  cond <- str_replace_all(cond, "(?<!parity[^|&]{1,20}?)(\\d*\\.\\d+)",
+                          "integerize(\\1)")
+  
+  # fixed = T because it's about 2-3x faster
+  cond <- gsub("delivery", "status == \"delivered\"", cond, fixed = T)
+  cond <- gsub("pregnancy", "status == \"pregnant\"", cond, fixed = T)
+  cond <- gsub("dry", "status == \"dried\"", cond, fixed = T)
+  cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
+  cond <- gsub("stay", "month_in_area", cond, fixed = T)
+  area_table$condition <- cond
+  return(area_table)
 }
 
 

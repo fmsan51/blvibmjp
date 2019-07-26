@@ -9,6 +9,7 @@
 #' @importFrom lubridate day dmy dym interval mdy months myd today tz ydm ymd
 #' @importFrom rlang ensyms eval_tidy expr enquos quos_auto_name !!!
 #' @importFrom stats pnorm qnorm rbinom rexp rgamma rnorm runif rweibull
+#' @importFrom stringr str_replace_all
 #' @importFrom tidyr complete
 #' @importFrom utils str
 "_PACKAGE"

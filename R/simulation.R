@@ -88,6 +88,8 @@ simulate_once <- function(setup_cows_res, init_groups, day_rp,
   for (i in 1:param_simulation$simulation_length) {
     # Here, 1:n, not seq_len(n), is used due to the speed
     month <- (i + param_simulation$simulation_start - 2) %% 12 + 1
+    cows <- set_i_month(cows, i)
+    
     cows <- add_1_to_age(cows)
     # TODO: change_stage と move_group を分けたい
     cows <- do_ai(cows, i, day_rp, param_calculated)
@@ -106,7 +108,6 @@ simulate_once <- function(setup_cows_res, init_groups, day_rp,
     cows <- res$cows
     groups <- res$groups
 
-    cows <- set_i_month(cows, i)
     result[[i + 1]] <- copy(cows)
     # result_groups[[i + 1]] <- copy(groups)
     cows <- extract_owned_cows(cows)

@@ -651,3 +651,15 @@ extract_owned_cows <- function(cows) {
   return(cows)
 }
 
+
+#' Check and move cows between areas
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#'
+#' @return A [cow_table].
+#' @export
+change_area <- function(cows, area) {
+
+}
+
