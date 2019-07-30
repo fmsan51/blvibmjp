@@ -59,7 +59,7 @@ update_if_input_not_null <- function(list, ...) {
 #'
 #' @examples
 #' set.seed(1)
-#' res <- integerize(rep(pi, 100))
+#' res <- blvibmjp:::integerize(rep(pi, 100))
 #' table(res)
 #'
 #' @return numerc vector of the same lenth with the input.

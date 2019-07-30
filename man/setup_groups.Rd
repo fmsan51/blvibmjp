@@ -19,5 +19,5 @@ Make chamber matrix, which indicates in which chamber each cow is.
 Cows kept in free-stall or paddock are not shown in this matrix.
 }
 \seealso{
-\link{setup_rp_table} \link{tiestall_table} \link{setup_cows}
+\link{setup_rp_table} \link{tiestall_table} \link{setup_cows} \link{setup_area_table}
 }

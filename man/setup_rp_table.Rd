@@ -15,5 +15,5 @@ setup_rp_table(init_last_cow_id, param_simulation)
 Make initial \code{rp_table}.
 }
 \seealso{
-\link{setup_cows} \link{setup_groups} \link{rp_table}
+\link{setup_cows} \link{setup_groups} \link{rp_table} \link{setup_area_table}
 }

@@ -32,8 +32,6 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item "died": culled or slaughtered.
 \item "ebl": culled due to onset of the disease.
 \item "sold": send to a market or another farm.
-\item "will_die": (still alive and) will die.
-\item "will_be_slaughtered": (still alive and) will be slaughtered.
 }
 \item \code{is_replacement}:
 TRUE: The cow will be kept in the farm as replacement.
