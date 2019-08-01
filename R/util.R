@@ -62,7 +62,7 @@ update_if_input_not_null <- function(list, ...) {
 #' res <- blvibmjp:::integerize(rep(pi, 100))
 #' table(res)
 #'
-#' @return numerc vector of the same lenth with the input.
+#' @return numerc vector of the same length with the input.
 integerize <- function(number) {
   floor(number) + (runif(length(number)) < number %% 1)
 }
