@@ -50,7 +50,7 @@
 #'     - "contact": by direct contact with an infected cow.
 #'     - "needles": by a contaminated needle.
 #'     - "rp": by rectal palpation.
-#'     - "vertical": vertical transimisson (intrauterine and by the dam's milk).
+#'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
 #'     - "comranch": infected at a communal ranch.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).

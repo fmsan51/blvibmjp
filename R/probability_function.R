@@ -347,7 +347,7 @@ sex_twins <- function(n_calves, param_calculated) {
 #' @param n_delivered The number of delivered cows in a herd.
 #' @param param_farm See [param_farm].
 #' @param param_processed Return from [process_param()].
-#' 
+#'
 #' @name is_replacement
 #' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」
 #' @encoding UTF-8

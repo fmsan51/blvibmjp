@@ -22,7 +22,7 @@ add_1_to_age <- function(cows) {
 #' @return A [cow_table].
 #' @export
 do_ai <- function(cows, i, day_rp, param_calculated) {
-  # TODO: あまりに長いので適度に分割したい
+  # TODO: Divide this function to smaller ones because it's too long
   day_rp_last_row <- 0
 
   rows_h <- which(cows$stage == "heifer" & cows$n_ai == 0 &
@@ -37,7 +37,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     ]
   rows_ai_started <- c(rows_h_ai_started, rows_m_ai_started)
 
-  # 初回授精 (初回授精開始日と一致させるためには、この月の授精は必ず発見されなくてはならないので、初回以降と別にしている)
+  # The first AI
+  # (This is separated from the AI after the first because the heat of this month must be found in order to follow the date of doing first AI from data)
   if (length(rows_ai_started) != 0) {
     cows_first_ai <- cows[rows_ai_started, .(cow_id, infection_status, day_heat)]
     n_cows_first_ai <- nrow(cows_first_ai)
@@ -119,7 +120,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                                day_last_heat_detected =
                                  cows_first_ai$day_last_heat_detected,
                                n_heat_from_ai = cows_first_ai$n_heat_from_ai)]
-    # TODO: リピートブリーダーは処分するかもしれないのでとりあえず授精回数を記録しておく。
+    # TODO: n_ai is recorded (it's used currently nowhere) in case of considering repeatbreader.
 
     cows[rows_ai_started[cows_first_ai$is_pregnant],
          ':='(date_got_pregnant = i,
@@ -144,7 +145,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     }
   }
 
-  # 初回以降の授精
+  # AI after the first
   rows_open <- which(cows$n_ai != 0 & is.na(cows$date_got_pregnant))
 
   if (length(rows_open) != 0) {
@@ -153,7 +154,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                       day_last_heat_detected, n_heat_from_ai)]
     n_cows_ai <- nrow(cows_ai)
 
-    # 妊娠していないが、人工授精直後の発情を見逃したため妊娠鑑定される牛 その1
+    # Case 1
+    # No conception, however pregnancy cheking is done because the heat right after the AI is overlooked
     cows_ai_done <- cows_ai[n_heat_from_ai == 1, ]
     n_cow_heat_missed <- nrow(cows_ai_done)
     if (n_cow_heat_missed != 0) {
@@ -193,7 +195,9 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
     cows_ai[, n_heat_from_ai := (n_heat_from_ai + 1) * !is_heat1_detected]
 
-    # 妊娠していないが、人工授精直後の発情を見逃したため妊娠鑑定される牛 その2
+    # Case 2
+    # No conception, however pregnancy cheking is done because the heat right after the AI is overlooked
+    # (same as case 1)
     cows_ai_done <- cows_ai[n_heat_from_ai == 1, ]
     n_cow_heat_missed <- nrow(cows_ai_done)
     if (n_cow_heat_missed != 0) {
@@ -224,7 +228,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                          day_last_heat_detected =
                            cows_ai$day_last_heat_detected,
                          n_heat_from_ai = cows_ai$n_heat_from_ai)]
-    # TODO: リピートブリーダーは処分するかもしれないのでとりあえず授精回数を記録しておく。
+    # TODO: n_ai is recorded (it's used currently nowhere) in case of considering repeatbreader.
 
     cows[rows_open[cows_ai$is_pregnant], ':='(date_got_pregnant = i,
                                               n_ai = 0)]
@@ -249,7 +253,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
   }
 
-  # 妊娠鑑定
+  # pregnancy checking
   rows_pregnant <- which(cows$date_got_pregnant == i - 1 |
                            cows$date_got_pregnant == i - 2)
   cows_pregnant <- cows[rows_pregnant, ]
@@ -266,7 +270,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   }
 
 
-  # 繁殖検診
+  # health check after the delivery
   rows_delivered <- which(cows$date_last_delivery == i - 1 |
                            cows$date_last_delivery == i - 2)
   cows_delivered <- cows[rows_delivered, ]
@@ -281,11 +285,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     day_rp_last_row <- day_rp_last_row + n_delivered
   }
 
-  # 水平感染の判定
-  # 直検を「分娩後検診」「人工授精（午前）」「人工授精（午後）」「妊娠鑑定」の4グループに分ける。
-  # 分娩後検診と妊娠鑑定は月二回(15日・30日)、人工授精は毎日行う。
-  # 各日・各グループにおいて感染牛の直後に直検が行われた牛は感染リスクがあるとする。
-  # (最初は直後でなくてもよいとしていたが、明らかに直検による感染が多すぎたので修正)
+  # Judging about horizontal infection
+  # Divide change of rectal palpation into four groups:
+  # - AI (in morning) and  AI (in afternoon) (everyday)
+  # - health check after the delivery (15th and 30th of every month)
+  # - pregnancy checking (ditto)
+  # The cow on which rectal palpation was conducted RIGHT AFTER an infected cow has a chance of infection.
+  # (At first, cows after (not RIGHT after) an infected cow has a risk of infection. But it was modified because it showed too high infection rate.)
 
   if (day_rp_last_row != 0) {
     rp_inf_check <- one_day_rp[rep(1, day_rp_last_row), ]
@@ -327,9 +333,9 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 #' @export
 change_stage <- function(cows, groups, i, param_group, param_calculated,
                          param_processed) {
-  # TODO: groups と barns が入り混じってるのでbarnsに統一したい
+  # TODO: Unify "groups" and "barns"
 
-  # TODO: とりあえず12-23がheifer
+  # TODO: 12-23mo is heifer (temporary)
   param_group_id <- 1:(param_group$n_group)
 
   # Calf to heifer
@@ -344,8 +350,8 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
     groups[[param_group_id[2]]] <-
       find_empty_chamber(groups[[param_group_id[2]]], cows[row_c2h, ])
   }
-    # TODO: 牛舎が満杯状態のときも考慮しないと
-    # TODO: 牛舎内で牛の位置を変えることも考慮しなければ。（例えば同一牛舎内で搾乳牛エリアと乾乳牛エリアを分けているなど）
+    # TODO: Consider when the barn is full
+    # TODO: Consider when cows at different stage are kept in different areas in the same barn.
 
   # Heifer to milking
   row_h2m <- which(cows$stage == "heifer" & (i - cows$date_got_pregnant) == 10)
@@ -357,7 +363,7 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
                      day_heat = sample.int(30, .N, replace = T) * 1,
                      day_last_heat = sample.int(30, .N, replace = T) * 1)]
   if (param_processed$is_ts[2]) {
-    # TODO: 同上。これ同じことやってるので別のfunctionを作りたい
+    # TODO: ditto. Make a separate function because it does same thing with the previous codes.
     groups[[param_group_id[2]]] <-
       remove_from_group(groups[[param_group_id[2]]], cows[row_h2m, cow_id])
   }
@@ -376,8 +382,7 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
                      day_heat = sample.int(30, .N, replace = T) * 1,
                      day_last_heat = sample.int(30, .N, replace = T) * 1)]
   if (param_processed$is_ts[4]) {
-    # TODO: 同上
-    # DryとMilkingが同じところで飼われてるなら、牛舎内移動だけですむはず
+    # TODO: ditto
     groups[[param_group_id[4]]] <-
       remove_from_group(groups[[param_group_id[4]]], cows[row_d2m, cow_id])
   }
@@ -393,7 +398,7 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
                      group_id = param_group_id[4])]
 
   if (param_processed$is_ts[3]) {
-    # TODO: 同上
+    # TODO: ditto
     groups[[param_group_id[3]]] <-
       remove_from_group(groups[[param_group_id[3]]], cows[row_m2d, cow_id])
   }
@@ -401,7 +406,7 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
     groups[[param_group_id[4]]] <-
       find_empty_chamber(groups[[param_group_id[4]]], cows[row_m2d, ])
   }
-  # TODO: このタイミングで廃用になる牛がいるだろうので考慮
+  # TODO: Consider cows which will be sold at this point
 
   return(list(cows = cows, groups = groups))
 }
@@ -480,7 +485,8 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 add_newborns <- function(cows, i, last_cow_id, param_calculated,
                          param_processed) {
   rows_mothers <- which(cows$date_last_delivery == i)  # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
-  # TODO: とりあえず12ヶ月ごとに出産するとする。stageを変える関数と出産を決める関数を別にしていいのかもあとで考える。
+  # TODO: Temporary delivery interval is set to 12 months.
+  # TODO: Consider the functions to change stage and consider delivery could be the same or not.
   n_cows <- sum(!is.na(cows$cow_id))
 
   if (length(rows_mothers) != 0) {  # If there is any cow delivers in 'month i'
