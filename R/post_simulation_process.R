@@ -155,7 +155,7 @@ plot_infection_route <- function(path_to_csv,
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
 
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
-    geom_area(aes(group = cause_infection, fill = cause_infection)) +
+    geom_area(aes(area = cause_infection, fill = cause_infection)) +
     scale_x_continuous(breaks = seq(0, max(infection_route$i_month), 6),
                        minor_breaks = seq(0, max(infection_route$i_month), 3)) +
     ylim(0, max_ylim)

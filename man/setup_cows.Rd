@@ -4,12 +4,12 @@
 \alias{setup_cows}
 \title{Setup of \code{cow_table}}
 \usage{
-setup_cows(param_simulation, param_group, save_cows)
+setup_cows(param_simulation, param_area, save_cows)
 }
 \arguments{
 \item{param_simulation}{See \link{param_simulation}.}
 
-\item{param_group}{See \link{param_group}.}
+\item{param_area}{See \link{param_area}.}
 
 \item{save_cows}{Whether to save initial \code{cows} to a file.}
 }
@@ -20,5 +20,5 @@ A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_last_cow_
 Load initial cow status from a csv file, transform it to a \link{cow_table}, and output the \code{cow_table} to a csv file \code{month0000.csv}.
 }
 \seealso{
-\link{cow_table} \link{setup_groups} \link{setup_rp_table} \link{setup_area_table}
+\link{cow_table} \link{setup_areas} \link{setup_rp_table} \link{setup_area_table}
 }

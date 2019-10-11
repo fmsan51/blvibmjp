@@ -10,12 +10,12 @@
 a_chamber
 }
 \description{
-\code{tiestall_table} is a \link[data.table:data.table]{data.table} to store status of barns.
-Each barn have each \code{tiestall_table}.
+\code{tiestall_table} is a \link[data.table:data.table]{data.table} to store status of tie-stall barns.
+Each tie-tall barn have each \code{tiestall_table}.
 The rows are consists of \code{a_chamber}, which indicates one chamber in a barn.
 }
 \details{
-\code{chamber_id}, \code{is_edge}, and \code{group_id} are fixed. Values will not be changed while a simulation.
+\code{chamber_id}, \code{is_edge}, and \code{area_id} are fixed. Values will not be changed while a simulation.
 Other variables are flexible. Values will may be changed while a simulation.
 \itemize{
 \item \code{chamber_id}: Chamber ID.

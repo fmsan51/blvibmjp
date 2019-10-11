@@ -55,7 +55,7 @@
 #'     - "comranch": infected at a communal ranch.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' -`group_id`: Barn ID.
+#' -`area_id`: Area ID.
 #' -`chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' -`i_month`: The number of months past from the start of a simulation.
@@ -111,7 +111,7 @@ a_new_calf <- data.table(
   susceptibility_ipl_to_ebl = NA,
   # TODO: これ削除
 
-  group_id = NA_integer_,  # TODO: Rename to barn_id
+  area_id = NA_integer_,
 
   # For tie-stall (For free-stall, all the following variables are NA)
   chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tiestall_table holds chamber_id.
@@ -125,11 +125,11 @@ a_new_calf <- data.table(
 
 #' A data.table to store status of a tie-stall barn
 #'
-#' `tiestall_table` is a [data.table][data.table::data.table] to store status of barns.
-#' Each barn have each `tiestall_table`.
+#' `tiestall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
+#' Each tie-stall barn have each `tiestall_table`.
 #' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
 #'
-#' `chamber_id`, `is_edge`, and `group_id` are fixed. Values will not be changed while a simulation.
+#' `chamber_id`, `is_edge`, and `area_id` are fixed. Values will not be changed while a simulation.
 #' Other variables are flexible. Values will may be changed while a simulation.
 #'
 #' - `chamber_id`: Chamber ID.
@@ -173,13 +173,13 @@ a_chamber <- data.table(
   neighbor2_isolated = NA,
   neighbor2_infectivity = F,
 
-  group_id = NA_integer_
+  area_id = NA_integer_
 )
 
 
 ## ---- movement_template ----
 
-#' A data.table to manage cows' movement between barns
+#' A data.table to manage cows' movement between areas
 #'
 #' `area_table` is a [data.table][data.table::data.table] to manage cow movement among hatches, barns, paddocks etc. in a farm.
 #' A `area_table` is consisted of following items and users must specify before starting a simulation.

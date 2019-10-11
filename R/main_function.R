@@ -286,7 +286,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   }
 
   # Judging about horizontal infection
-  # Divide change of rectal palpation into four groups:
+  # Divide change of rectal palpation into four areas:
   # - AI (in morning) and  AI (in afternoon) (everyday)
   # - health check after the delivery (15th and 30th of every month)
   # - pregnancy checking (ditto)
@@ -320,35 +320,33 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 }
 
 
-#' Change stage of cows and move cows between barns accordinglly
+#' Change stage of cows and move cows between areas accordinglly
 #'
 #' @param cows See [cow_table].
-#' @param groups See [tiestall_table].
+#' @param areas See [tiestall_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_group See [param_group].
+#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consists of `cow_table` and `tiestall_table`.
 #' @export
-change_stage <- function(cows, groups, i, param_group, param_calculated,
+change_stage <- function(cows, areas, i, param_area, param_calculated,
                          param_processed) {
-  # TODO: Unify "groups" and "barns"
-
   # TODO: 12-23mo is heifer (temporary)
-  param_group_id <- 1:(param_group$n_group)
+  param_area_id <- 1:(param_area$n_area)
 
   # Calf to heifer
   row_c2h <- which(cows$age == 12)
   cows[row_c2h, ':='(stage = "heifer",
                      parity = 0,
-                     group_id = param_group_id[2])]
+                     area_id = param_area_id[2])]
   if (param_processed$is_ts[1]) {
-    groups[[1]] <- remove_from_group(groups[[1]], cows[row_c2h, cow_id])
+    areas[[1]] <- remove_from_area(areas[[1]], cows[row_c2h, cow_id])
   }
   if (param_processed$is_ts[2]) {
-    groups[[param_group_id[2]]] <-
-      find_empty_chamber(groups[[param_group_id[2]]], cows[row_c2h, ])
+    areas[[param_area_id[2]]] <-
+      find_empty_chamber(areas[[param_area_id[2]]], cows[row_c2h, ])
   }
     # TODO: Consider when the barn is full
     # TODO: Consider when cows at different stage are kept in different areas in the same barn.
@@ -359,17 +357,17 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
                      date_last_delivery = i,
                      parity = 1,
                      date_got_pregnant = NA,
-                     group_id = param_group_id[3],
+                     area_id = param_area_id[3],
                      day_heat = sample.int(30, .N, replace = T) * 1,
                      day_last_heat = sample.int(30, .N, replace = T) * 1)]
   if (param_processed$is_ts[2]) {
     # TODO: ditto. Make a separate function because it does same thing with the previous codes.
-    groups[[param_group_id[2]]] <-
-      remove_from_group(groups[[param_group_id[2]]], cows[row_h2m, cow_id])
+    areas[[param_area_id[2]]] <-
+      remove_from_area(areas[[param_area_id[2]]], cows[row_h2m, cow_id])
   }
   if (param_processed$is_ts[3]) {
-    groups[[param_group_id[3]]] <-
-      find_empty_chamber(groups[[param_group_id[3]]], cows[row_h2m, ])
+    areas[[param_area_id[3]]] <-
+      find_empty_chamber(areas[[param_area_id[3]]], cows[row_h2m, ])
   }
 
   # Dry to milking
@@ -378,37 +376,37 @@ change_stage <- function(cows, groups, i, param_group, param_calculated,
                      date_last_delivery = i,
                      parity = parity + 1,
                      date_got_pregnant = NA,
-                     group_id = param_group_id[3],
+                     area_id = param_area_id[3],
                      day_heat = sample.int(30, .N, replace = T) * 1,
                      day_last_heat = sample.int(30, .N, replace = T) * 1)]
   if (param_processed$is_ts[4]) {
     # TODO: ditto
-    groups[[param_group_id[4]]] <-
-      remove_from_group(groups[[param_group_id[4]]], cows[row_d2m, cow_id])
+    areas[[param_area_id[4]]] <-
+      remove_from_area(areas[[param_area_id[4]]], cows[row_d2m, cow_id])
   }
   if (param_processed$is_ts[3]) {
-    groups[[param_group_id[3]]] <-
-      find_empty_chamber(groups[[param_group_id[3]]], cows[row_d2m, ])
+    areas[[param_area_id[3]]] <-
+      find_empty_chamber(areas[[param_area_id[3]]], cows[row_d2m, ])
   }
 
   # Milking to dry
   row_m2d <- which(cows$stage == "milking" &
                      is_dried(i - cows$date_last_delivery, param_calculated))
   cows[row_m2d, ':='(stage = "dry",
-                     group_id = param_group_id[4])]
+                     area_id = param_area_id[4])]
 
   if (param_processed$is_ts[3]) {
     # TODO: ditto
-    groups[[param_group_id[3]]] <-
-      remove_from_group(groups[[param_group_id[3]]], cows[row_m2d, cow_id])
+    areas[[param_area_id[3]]] <-
+      remove_from_area(areas[[param_area_id[3]]], cows[row_m2d, cow_id])
   }
   if (param_processed$is_ts[4]) {
-    groups[[param_group_id[4]]] <-
-      find_empty_chamber(groups[[param_group_id[4]]], cows[row_m2d, ])
+    areas[[param_area_id[4]]] <-
+      find_empty_chamber(areas[[param_area_id[4]]], cows[row_m2d, ])
   }
   # TODO: Consider cows which will be sold at this point
 
-  return(list(cows = cows, groups = groups))
+  return(list(cows = cows, areas = areas))
 }
 
 
@@ -580,14 +578,14 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
 #' Check death and sale of current cows
 #'
 #' @param cows See [cow_table].
-#' @param groups See [tiestall_table].
+#' @param areas See [tiestall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of [cow_table] and [tiestall_table].
 #' @export
-check_removal <- function(cows, groups, i, param_calculated, param_processed) {
+check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -622,14 +620,14 @@ check_removal <- function(cows, groups, i, param_calculated, param_processed) {
   }  # TODO: ここテスト
 
   rows_removed <- c(rows_removed_death, rows_removed_sold, rows_removed_ebl)
-  groups_removed <- cows[rows_removed, group_id]
-  for (group in param_processed$ts_group) {
-    rows_removed_this_group <- rows_removed[groups_removed == group]
-    groups[[group]] <-
-      remove_from_group(groups[[group]], cows[rows_removed_this_group, cow_id])
+  areas_removed <- cows[rows_removed, area_id]
+  for (area in param_processed$ts_area) {
+    rows_removed_this_area <- rows_removed[areas_removed == area]
+    areas[[area]] <-
+      remove_from_area(areas[[area]], cows[rows_removed_this_area, cow_id])
   }
 
-  return(list(cows = cows, groups = groups))
+  return(list(cows = cows, areas = areas))
 }
 
 

@@ -7,7 +7,7 @@
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
-#' @seealso [param_farm] [param_group]
+#' @seealso [param_farm] [param_area]
 #' @export
 param_simulation <- list(
   # TODO: The function to confirm the necessary parameters are set or not
@@ -41,7 +41,7 @@ param_simulation <- list(
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
-#' @seealso [param_simulation] [param_group] [calc_param]
+#' @seealso [param_simulation] [param_area] [calc_param]
 #' @export
 param_farm <- list(
   # TODO: Unify "farm" and "herd"
@@ -80,7 +80,7 @@ param_farm <- list(
 )
 
 
-#' Parameters about barns which should be set by users
+#' Parameters about areas which should be set by users
 #'
 #' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves specified in `[area_table]`.
 #' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. See explanation of `priority` in `[area_table]` for meaning of `priority`.
@@ -90,7 +90,7 @@ param_farm <- list(
 #'
 #' @seealso [param_simulation] [param_farm]
 #' @export
-param_group <- list(
+param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
   calf_area_id = NA_real_,
   calf_area_priority = NA_real_,
@@ -105,11 +105,11 @@ param_group <- list(
   # Does a farm decide the chamber layout of milking cows based on lactation stage?
   # is_layout_on_stage = F,
 
-  # For a farm which decide the chamber layout based on parity, specify how cows are grouped.
-  # For example, c(1, 2, 4) means there are three groups (1, 2-3, >4).
+  # For a farm which decide the chamber layout based on parity, specify how cows are areaed.
+  # For example, c(1, 2, 4) means there are three areas (1, 2-3, >4).
   # layout_on_parity = NA
 
-  # FYI: grouping of dry cows and mixsing of breeding and dry cows
+  # FYI: areaing of dry cows and mixsing of breeding and dry cows
   # https://www.snowseed.co.jp/wp/wp-content/uploads/grass/grass_200509_03.pdf
 )
 
@@ -432,7 +432,7 @@ calc_param <- function(param_farm, modification = NULL) {
 #' Calculate parameters based on other parameters
 #'
 #' - `is_ts`: Wheter barns are tie-stall.
-#' - `ts_group`: Barn ID of tie-stall barns.
+#' - `ts_area`: Area ID of tie-stall Areas.
 #' - `is_md_separated_in_ts`: Whether milking and dry cows are separated.
 #' - `capacity`: The result of [set_capacity()].
 #' - `prob_rep`: The result of [set_prob_rep()]. The probability that a newborn female calf will be a replacement cow.
@@ -442,17 +442,17 @@ calc_param <- function(param_farm, modification = NULL) {
 #' @param setup_cows_res A result of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
-#' @param param_group See [param_group].
+#' @param param_area See [param_area].
 #'
 #' @return A list of calculated parameters.
 #' @export
 process_param <- function(setup_cows_res,
-                          param_simulation, param_farm, param_group) {
+                          param_simulation, param_farm, param_area) {
   list(
     param_output_filename = paste0("param_", param_simulation$output_filename),
-    is_ts = is_ts(param_group),
-    ts_group = which(is_ts(param_group)),
-    # is_md_separated_in_ts = is_md_separated_in_ts(param_group),
+    is_ts = is_ts(param_area),
+    ts_area = which(is_ts(param_area)),
+    # is_md_separated_in_ts = is_md_separated_in_ts(param_area),
     capacity = set_capacity(setup_cows_res$init_last_cow_id, param_farm),
     prob_rep = set_prob_rep(
       setup_cows_res$init_cows[stage %in% c("milking", "dry"), .N],

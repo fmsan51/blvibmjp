@@ -3,23 +3,23 @@
 #' Load initial cow status from a csv file, transform it to a [cow_table], and output the `cow_table` to a csv file `month0000.csv`.
 #'
 #' @param param_simulation See [param_simulation].
-#' @param param_group See [param_group].
+#' @param param_area See [param_area].
 #' @param save_cows Whether to save initial `cows` to a file.
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
-#' @seealso [cow_table] [setup_groups] [setup_rp_table] [setup_area_table]
+#' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, param_group, save_cows) {
+setup_cows <- function(param_simulation, param_area, save_cows) {
   cows <- fread(file = param_simulation$input_csv,
                 colClasses = sapply(a_new_calf, class))
 
-  # TODO: ここはbarnとgroupについて再考するときに再検討
-  cows[stage == "calf", group_id := 1]
-  cows[stage == "heifer", group_id := 2]
-  cows[stage == "milking", group_id := 3]
-  cows[stage == "dry", group_id := 4]
-  if (param_group$is_calf_separated) {
+  # TODO: ここはbarnとareaについて再考するときに再検討
+  cows[stage == "calf", area_id := 1]
+  cows[stage == "heifer", area_id := 2]
+  cows[stage == "milking", area_id := 3]
+  cows[stage == "dry", area_id := 4]
+  if (param_area$is_calf_separated) {
     cows[stage == "calf", is_isolated := T]
   }
 
@@ -45,7 +45,7 @@ setup_cows <- function(param_simulation, param_group, save_cows) {
 #' @param init_last_cow_id The element `init_last_cow_id` from the return of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #'
-#' @seealso [setup_cows] [setup_groups] [rp_table] [setup_area_table]
+#' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 #' @export
 setup_rp_table <- function(init_last_cow_id, param_simulation) {
   # TODO: do_aiをimproveするときに再検討
@@ -61,23 +61,23 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' Cows kept in free-stall or paddock are not shown in this matrix.
 #'
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
-#' @param param_group See [param_group].
+#' @param param_area See [param_area].
 #'
 #' @return A [tiestall_table].
 #' @seealso [setup_rp_table] [tiestall_table] [setup_cows] [setup_area_table]
 #' @export
-setup_groups <- function(init_cows, param_group) {
-  # TODO: groupsとbarnsの見直しに合わせてここも変更
-  init_groups <- vector("list", param_group$n_group)
-  for (i in 1:param_group$n_group) {
-    xy <- param_group$xy_chamber[[i]]
+setup_areas <- function(init_cows, param_area) {
+  # TODO: areasとbarnsの見直しに合わせてここも変更
+  init_areas <- vector("list", param_area$n_area)
+  for (i in 1:param_area$n_area) {
+    xy <- param_area$xy_chamber[[i]]
     if (!anyNA(xy)) {
-      init_groups[[i]] <- make_ts_group(init_cows[group_id == i, ],
+      init_areas[[i]] <- make_ts_area(init_cows[area_id == i, ],
                                         xy[1], xy[2])
-      init_groups[[i]][, group_id := i]
+      init_areas[[i]][, area_id := i]
     }
   }
-  return(init_groups)
+  return(init_areas)
 }
 
 
@@ -87,7 +87,7 @@ setup_groups <- function(init_cows, param_group) {
 #'
 #' @param area_table See [area_table].
 #'
-#' @seealso [area_table] [setup_cows] [setup_rp_table] [setup_groups]
+#' @seealso [area_table] [setup_cows] [setup_rp_table] [setup_areas]
 #' @export
 setup_area_table <- function(area_table) {
   # translate condition from a form that users can easily understand

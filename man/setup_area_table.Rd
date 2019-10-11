@@ -13,5 +13,5 @@ setup_area_table(area_table)
 Make \code{area_table}.
 }
 \seealso{
-\link{area_table} \link{setup_cows} \link{setup_rp_table} \link{setup_groups}
+\link{area_table} \link{setup_cows} \link{setup_rp_table} \link{setup_areas}
 }

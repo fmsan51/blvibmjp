@@ -2,19 +2,19 @@
 % Please edit documentation in R/main_function.R
 \name{change_stage}
 \alias{change_stage}
-\title{Change stage of cows and move cows between barns accordinglly}
+\title{Change stage of cows and move cows between areas accordinglly}
 \usage{
-change_stage(cows, groups, i, param_group, param_calculated,
+change_stage(cows, areas, i, param_area, param_calculated,
   param_processed)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{groups}{See \link{tiestall_table}.}
+\item{areas}{See \link{tiestall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
-\item{param_group}{See \link{param_group}.}
+\item{param_area}{See \link{param_area}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 
@@ -24,5 +24,5 @@ change_stage(cows, groups, i, param_group, param_calculated,
 A list consists of \code{cow_table} and \code{tiestall_table}.
 }
 \description{
-Change stage of cows and move cows between barns accordinglly
+Change stage of cows and move cows between areas accordinglly
 }
