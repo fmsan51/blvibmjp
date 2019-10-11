@@ -22,8 +22,8 @@
 #'     - "died": culled or slaughtered.
 #'     - "ebl": culled due to onset of the disease.
 #'     - "sold": send to a market or another farm.
-#      - "will_die": (still alive and) will die.
-#      - "will_be_slaughtered": (still alive and) will be slaughtered.
+#'     - "will_die": (still alive and) will die.
+#'     - "will_be_slaughtered": (still alive and) will be slaughtered.
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
@@ -33,6 +33,7 @@
 #' - `parity`
 #' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths.
 #' - `date_got_pregnant`: NA means that the cow is open.
+#' - `date_dried`: NA means that the cow is milking.
 #' - `n_ai`: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 #' - `day_heat`: Day in month of the NEXT heat.
 #' - `day_last_heat`: Day in month of the LAST heat.
@@ -55,10 +56,10 @@
 #'     - "comranch": infected at a communal ranch.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' -`area_id`: Area ID.
-#' -`chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
-#' -`is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
-#' -`i_month`: The number of months past from the start of a simulation.
+#' - `area_id`: Area ID.
+#' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
+#' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
+#' - `i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table][data.table::data.table]
 #' @seealso [tiestall_table] [rp_table] [area_table]
@@ -66,6 +67,7 @@
 #' @name cow_table
 #' @export
 a_new_calf <- data.table(
+                         # TODO: Add notes indicating which parameter is necessary and which is not.
   row_id = NA_integer_,
   # TODO:これもう使わないから削除。
   cow_id = NA_integer_,
@@ -88,6 +90,7 @@ a_new_calf <- data.table(
   parity = NA_real_,
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
+  date_dried = NA_real_,  # TODO: make function to set this 
   n_ai = NA_real_,
   day_heat = NA_real_,
   day_last_heat = NA_real_,

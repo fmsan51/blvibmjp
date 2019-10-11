@@ -112,9 +112,9 @@ setup_area_table <- function(area_table) {
                           "integerize(\\1)")
   
   # fixed = T because it's about 2-3x faster
-  cond <- gsub("delivery", "status == \"delivered\"", cond, fixed = T)
-  cond <- gsub("pregnancy", "status == \"pregnant\"", cond, fixed = T)
-  cond <- gsub("dry", "status == \"dried\"", cond, fixed = T)
+  cond <- gsub("delivery", "i_month == date_delivered", cond, fixed = T)
+  cond <- gsub("pregnancy", "i_month == date_got_pregnant", cond, fixed = T)
+  cond <- gsub("dry", "i_month == date_dried", cond, fixed = T)
   cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
   cond <- gsub("stay", "month_in_area", cond, fixed = T)
   area_table$condition <- cond

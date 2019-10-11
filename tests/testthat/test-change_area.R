@@ -18,7 +18,16 @@ test_that("condition works", {
               next_area = 2:9,
               priority = 1)]
   cows <- a_new_calf[rep(1, 8 * 2), ]
-  cows <- areaarea_id
+  cows$area_id <- rep(1:8, each = 2)
+  cows[c(1:2), age := c(21, 20)]
+  cows[c(3:4), parity := c(2, 1)]
+  day <- 10
+  cows[c(5:6), `:=`(date_last_delivery = c(day, day - 1),
+                    i_month = day)]
+  cows[c(7:8), date_got_pregnant := c(day, day - 1)]
+  cows[c(9:10), stage := c("dry", "milking")]
+  ceows$age[c(1:2, 15:16)] <- c(21, 20, 21, 21)
+  cows$parity[c(3:4, 15:16)] <- c()
 
 
 })
