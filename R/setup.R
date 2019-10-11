@@ -90,6 +90,13 @@ setup_areas <- function(init_cows, param_area) {
 #' @seealso [area_table] [setup_cows] [setup_rp_table] [setup_areas]
 #' @export
 setup_area_table <- function(area_table) {
+  # Sort next_area along with priority
+  area_table$next_area <- mapply(function(next_area, priority) {
+                                   next_area[order(priority)]
+                                 },
+                                 area_table$next_area, area_table$priority,
+                                 SIMPLIFY = FALSE)
+
   # translate condition from a form that users can easily understand
   # to a form that functions can easily understand
   cond <- area_table$condition
@@ -111,6 +118,11 @@ setup_area_table <- function(area_table) {
   cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
   cond <- gsub("stay", "month_in_area", cond, fixed = T)
   area_table$condition <- cond
+  
+  attr(area_table, "areas") <- unique(area_table$area_id)
+  attr(area_table, "capacity") <- area_table[!duplicated(sort(area_id)), 
+                                             list(area_id, capacity)]
+
   return(area_table)
 }
 

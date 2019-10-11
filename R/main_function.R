@@ -659,11 +659,59 @@ extract_owned_cows <- function(cows) {
 #' Check and move cows between areas
 #'
 #' @param cows See [cow_table].
+#' @param barns See [tiestall_table].
 #' @param area See [area_table].
 #'
 #' @return A [cow_table].
 #' @export
 change_area <- function(cows, area) {
-
+  # TODO: Make a function to setup list composed of NULL and tiestall_table.
+  cowid_moved <- numeric(length(sum(cow$is_owned)))
+  for (i_area in attr(area, "areas")) {
+    n_cow_in_the_area <- cows[is_owned & area_id == i_area, .N]
+    current_vacancy <-
+      attr(area, "capacity")[as.character(i_area)] - n_cow_in_the_area
+    conditions <- area[area_id == i_area, condition]
+    next_areas <- area[area_id == i_area, next_area]
+    priorities <- area[area_id == i_area, priority]
+    for (i in length(conditions)) {
+      cowid_met_condition <- cows[eval(parse(text = conditions[i])) & is_owned,
+                                  cow_id]
+      cowid_to_move <- 
+        !cowid_met_condition[!cowid_met_condition %in% cowid_moved]
+      if (is.wholenumbers(priorities[i])) {
+        # When priority is represented by integer
+        for (next_area in next_areas[[i]]) {
+          vacancy_of_the_area <- current_vacancy[as.character(next_area)]
+          if (vacancy_of_the_area > 0) {
+            if (length(cowid_to_move) <= vacancy_of_the_area) {
+              # When there is enough space to add cows
+              # TODO: Assign cows to empty chambers
+              cows[cowid %in% cowid_to_move, area_id := next_area]
+              cowid_moved_to_the_area <- cowid_to_move
+              current_vacancy[as.character(next_area)] <- 
+                vacancy_of_the_area - length(cowid_to_move)
+              break
+            } else {
+              # When there is not enough space to add cows
+              # TODO: Assign cows to empty chambers
+              cowid_moved_to_the_area <-
+                sample(cowid_to_move, vacancy_of_the_area)
+              cowid_to_move <- 
+                cowid_to_move[!cowid_to_move %in% cowid_moved_to_the_area]
+              current_vacancy[as.character(next_area)] <- 0
+            }
+            cowid_moved[
+              seq_along(cowid_moved_to_the_area) + which(cowid_moved == 0)[1] - 1
+              ] <- cowid_assigned_to_the_area
+            # TODO: How to control when # of cowid_to_assign > vacancy
+          }
+        }
+      } else {
+        # When priority is represented as weight
+        # TODO: How to control when # of cowid_to_assign > vacancy
+      }
+    }
+  }
 }
 

@@ -188,15 +188,15 @@ a_chamber <- data.table(
 #' - `area_type` (`"free"`/`"tie"`/`"outside"`): Type of a area. Specify one-of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall) or `"outside"` (paddock or rangeland, etc.).
 #' - `capacity`: Capacity of the area in head. `Inf` is set if you specify `NA`.
 #' - `condition`: Condition that cows in the area move to the next area(s). Describe logical conditions as character (see Example). You can use following terms to specify `condition`:
-#'     - `age`: Age in month. Use like `age > 20`.
+#'     - `age`: Age in month. Use like `age == 20`.
 #'     - `parity`: Parity. Use like `parity > 1`.
 #'     - `delivery`, `pregnancy`, `dry`
-#'     - `dim`: Day in milking. Use like `dim > 100`.
+#'     - `dim`: Days in milking. Use like `dim > 100`.
 #'     - `NA`: Cows don't move from the area.
 #' - `next_area`: The next area cow will move to specified by `area_id`. You can specify multiple areas like `c(1:2, 4)`. `NA` means that cows don't move from the current area.
 #' - `priority`: The priority for `next_area`. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to `next_area`. If `priority` is set by integer, the area have multiple `next_area` and `capacity` is set, cows go to the area with highest `priority` (= nearest to 1) which is not full. If multiple areas have the same `priority`, cows are romdomly allocated to the areas. If `priority` is set by numeric which is summed to 1, `priority` is regarded as probability in accordance to which cows go to `next_area`.
 #'
-#' You can specify more than one set of `condition` and `next` to one `current` area.
+#' You can specify more than one set of `condition` and `next` to one `current` area. If a cow meets multiple conditions, the condition in the fastest row will be used.
 #'
 #' @examples
 #' # A farm has four areas:

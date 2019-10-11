@@ -67,3 +67,20 @@ integerize <- function(number) {
   floor(number) + (runif(length(number)) < number %% 1)
 }
 
+
+#' Test if a numeric vector is consisted of whole numbers or not
+#'
+#' Test if all the components of a numeric vector is whole number or not. 
+#'
+#' @param number numeric vector.
+#'
+#' @examples
+#' blvibmjp:::is.wholenumbers(3L)  # TRUE
+#' blvibmjp:::is.wholenumbers(3)  # TRUE
+#' blvibmjp:::is.wholenumbers(pi)  # FALSE
+#'
+#' @return A logical value.
+is.wholenumbers <- function(number) {
+  all(number %% 1 == 0)
+}
+
