@@ -56,7 +56,7 @@
 #'     - "comranch": infected at a communal ranch.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' - `area_id`: Area ID.
+#' - `area_id`: Area ID. Negative `area_id` indicates that a cow is kept in a tie-stall barn but no chamber is assigned. Such cows can freely walk in the barn and contant with any cows in the barn. Such cows arise when cows must assigned to the barn but there is no empty barns. Chambers will be assigned to the cows immediately after empty chambers are made.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `i_month`: The number of months past from the start of a simulation.

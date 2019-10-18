@@ -123,6 +123,8 @@ setup_area_table <- function(area_table) {
   attr(area_table, "capacity") <- area_table[!duplicated(sort(area_id)), 
                                              list(area_id, capacity)]
 
+  # TODO: warn when capacity > cows at the start of a simulation.
+
   return(area_table)
 }
 

@@ -679,34 +679,39 @@ change_area <- function(cows, area) {
                                   cow_id]
       cowid_to_move <- 
         !cowid_met_condition[!cowid_met_condition %in% cowid_moved]
+      cowid_to_move <- c(cowid_to_move, cows[should_move, cowid])
       if (is.wholenumbers(priorities[i])) {
         # When priority is represented by integer
         for (next_area in next_areas[[i]]) {
-          vacancy_in_the_area <- current_vacancy[as.character(next_area)]
-          if (vacancy_in_the_area > 0) {
-            if (length(cowid_to_move) <= vacancy_in_the_area) {
-              # When there is enough space to add cows
-              # TODO: Assign cows to empty chambers
-              cows[cowid %in% cowid_to_move, area_id := next_area]
-              cowid_moved_to_the_area <- cowid_to_move
-              current_vacancy[as.character(next_area)] <- 
-                vacancy_in_the_area - length(cowid_to_move)
-              break
-            } else {
-              # When there is not enough space to add cows
-              # TODO: Assign cows to empty chambers
-              cowid_moved_to_the_area <-
-                sample(cowid_to_move, vacancy_in_the_area)
-              # a[!a %in% b] is about 15x faster than setdiff(a, b)
-              cowid_to_move <-
-                cowid_to_move[!cowid_to_move %in% cowid_moved_to_the_area]
-              current_vacancy[as.character(next_area)] <- 0
-            }
-            cowid_moved[
-              seq_along(cowid_moved_to_the_area) + which(cowid_moved == 0)[1] - 1
-              ] <- cowid_assigned_to_the_area
-            # TODO: How to control when # of cowid_to_assign > vacancy
+          if (length(cowid_to_move) == 0) {
+            break
           }
+          vacancy_in_the_area <- current_vacancy[as.character(next_area)]
+          cowid_moved_to_the_area <-
+            sample(cowid_to_move, vacancy_in_the_area)
+          # TODO: Assign cows to empty chambers
+          cows[cowid %in% cowid_moved_to_the_area & should_move,
+               `:=`(area_id = next_area,
+                    should_move = F)]
+          cows[cowid %in% cowid_moved_to_the_area, area_id := next_area]
+          current_vacancy[as.character(next_area)] <-
+            vacancy_in_the_area - length(cowid_to_move)
+          # a[!a %in% b] is about 15x faster than setdiff(a, b)
+          cowid_moved[
+            seq_along(cowid_moved_to_the_area) + which(cowid_moved == 0)[1] - 1
+            ] <- cowid_assigned_to_the_area
+          cowid_to_move <- 
+            cowid_to_move[!cowid_to_move %in% cowid_moved_to_the_area]
+          # TODO: How to control when # of cowid_to_assign > vacancy
+        }
+        if (length(cowid_to_move) > 0) {
+          # When there is not enough vacancy for cows,
+          # cows are assigned to areas poportionally to area capacities
+          # ignoring the vacancy.
+          # chamber_id is not assined for such cows until enough vacancy is
+          # obtained. The cows are assumed as not tied to chambers, but freely
+          # walk isles in a barn and can contact with any cows in the barn.
+          capacities <- attr(area, "capacity")[as.character
         }
       } else {
         # When priority is represented as weight
