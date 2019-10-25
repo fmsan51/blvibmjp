@@ -57,17 +57,18 @@
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
 #' - `area_id`: Area ID. Negative `area_id` indicates that a cow is kept in a tie-stall barn but no chamber is assigned. Such cows can freely walk in the barn and contant with any cows in the barn. Such cows arise when cows must assigned to the barn but there is no empty barns. Chambers will be assigned to the cows immediately after empty chambers are made.
+#' - `months_in_area`: The number of month a cow stayed in the current area.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table][data.table::data.table]
-#' @seealso [tiestall_table] [rp_table] [area_table]
+#' @seealso [tiestall_table] [area_table] [movement_table] [rp_table]
 #'
 #' @name cow_table
 #' @export
 a_new_calf <- data.table(
-                         # TODO: Add notes indicating which parameter is necessary and which is not.
+  # TODO: Add notes indicating which parameter is necessary and which is not.
   row_id = NA_integer_,
   # TODO:これもう使わないから削除。
   cow_id = NA_integer_,
@@ -115,6 +116,7 @@ a_new_calf <- data.table(
   # TODO: これ削除
 
   area_id = NA_integer_,
+  months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)
   chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tiestall_table holds chamber_id.
@@ -153,7 +155,7 @@ a_new_calf <- data.table(
 #' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
 #'
 #' @format [data.table][data.table::data.table]
-#' @seealso [cow_table] [area_table] [rp_table]
+#' @seealso [cow_table] [area_table] [movement_table] [rp_table]
 #' @name tiestall_table
 #' @export
 a_chamber <- data.table(
@@ -181,7 +183,7 @@ a_chamber <- data.table(
 
 
 
-## ---- area_templabe ----
+## ---- area_template ----
 
 #' A data.table to manage areas in a farm
 #'
@@ -190,10 +192,30 @@ a_chamber <- data.table(
 #'
 #' - `area_id` (integer): Area ID.
 #' - `area_type` (`"free"`/`"tie"`/`"outside"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall) or `"outside"` (paddock or rangeland, etc.).
-#' - `capacity` (numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
+#' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
+#'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
+#'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
+#' 
+#' @note
+#' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
+#' - `n_cows`: The number of cows currently kept in a area.
+#' - `capacity`: Max number of cows can be kept in a area.
+#'
+#' @examples
+#' # A farm has three areas:
+#' # - A freebarn for calves (max capacity is 30 calves).
+#' # - A paddock for heifers (capacity is not limited).
+#' # - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
+#' areas <- a_area[rep(1, 3), ]
+#' areas[, `:=`(area_id = 1:3,
+#'              area_type = c("free", "outside", "tie"),
+#'              capacity = list(30, NA, c(40, 40, 30, 30))]
+#' @seealso [cow_table] [tiestall_table] [movement_table] [rp_table]
+#' @name area_table
+#' @export
 a_area <- data.table(area_id = NA_integer_,
                      area_type = NA_character_,
-                     capacity = NA_real_)
+                     capacity = list(NA))
 
 ## ---- movement_template ----
 
@@ -202,44 +224,62 @@ a_area <- data.table(area_id = NA_integer_,
 #' `movement_table` is a [data.table][data.table::data.table] to manage cow movement among areas.
 #' Users must specify one `movement_table` consisted of following items before starting a simulation.
 #'
-#' - `condition` (character): Condition that cows in the area move to the next area(s). Describe logical conditions as character (see Example). You can use following terms to specify `condition`:
+#' - `current_area` (integer): The current area a cow is kept specified by `area_id` in [area_table].
+#' - `condition` (character): Condition that cows in the area move to the next area(s). Describe conditions by character which can be evaluated as logical (see Example). You can use following terms to specify `condition`:
 #'     - `age`: Age in month. Use like `age == 20`.
 #'     - `parity`: Parity. Use like `parity > 1`.
-#'     - `delivery`, `pregnancy`, `dry`
+#'     - `months_from_delivery`, `months_from_pregnancy`, `months_from_dry`: The number of months from delivery, pregnancy or dry. Use like `months_from_delivery == 0` (this means the month a cow delivered).
+#'     - `delivery`, `pregnancy`, `dry`: A shorthand form of `months_from_delivery == 0` and so on.
 #'     - `dim`: Days in milking. Use like `dim > 100`.
 #'     - `month`: Month in a year (1 = Jan, 2 = Feb, ...). Use like `month == 3`.
-#' - `next_area`: The next area cow will move to specified by `area_id`. You can specify multiple areas like `c(1:2, 4)`. `NA` means that cows don't move from the current area.
-#' - `priority`: The priority for `next_area`. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to `next_area`. If `priority` is set by integer, the area have multiple `next_area` and `capacity` is set, cows go to the area with highest `priority` (= nearest to 1) which is not full. If multiple areas have the same `priority`, cows are romdomly allocated to the areas. If `priority` is set by numeric which is summed to 1, `priority` is regarded as probability in accordance to which cows go to `next_area`.
+#'     - `stay`: The number of months for which a cow stayed in a area. Use like `stay == 3`.
+#' - `next_area` (list consisted of integer): The next area a cow will move to specified by `area_id` in [area_table]. You can specify multiple areas like `c(1:2, 4)`.
+#' - `priority` (list consisted of integer and/or numeric): The priority for `next_area`. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to `next_area`. If `priority` is set by integer, cows move to the area with highest `priority` (= nearest to 1) which is not full. If multiple areas have the same `priority`, cows are romdomly allocated to the areas. If `priority` is set by numeric which is summed to 1, `priority` is regarded as probability in accordance to which cows move to `next_area`.
 #'
-#' You can specify more than one set of `condition` and `next` to one `current` area. If a cow meets multiple conditions, the condition in the fastest row will be used.
+#' If a cow meets multiple conditions, the condition in the fastest row will be used.
 #'
 #' @examples
-#' # A farm has four areas:
-#' # - A freebarn for calves younger than 3 months old.
-#' # - A paddock for heifers.
-#' # - A tie-stall barn and a free-stall barn for adult cows.
-#' # A cow is moved to the tie-stall barn right after the delivery if the barn is not full.
-#' # Otherwise, the cow is moved (or stayed) to the free-stall barn.
-#' movement <- a_area[rep(1, 4), ]
-#' movement[, `:=`(area_id = 1:4,
-#'                 area_type = c("free", "free", "tie", "free"),
-#'                 capacity = c(NA, NA, 60, NA),
-#'                 condition = c("age > 2", "delivery", NA, "delivlery"),
-#'                 next_area = list(2, 3:4, NA, 3:4),
-#'                 priority = list(NA, NA, NA, c(1, 2)))]
+#' movements <- a_movement[rep(1, 4), ]
+#' movements[, `:=`(condition = c("age > 2", "delivery0", NA, "delivery"),
+#'                  next_area = list(2L, 3:4, NA, 3:4),
+#'                  priority = list(NA, NA, NA, c(1, 2)))]
 #'
-#' @seealso [cow_table] [tiestall_table] [rp_table]
-#' @name area_table
+#' @seealso [cow_table] [tiestall_table] [area_table] [rp_table]
+#' @name movement_table
 #' @export
-a_area <- data.table(area_id = NA_real_,
-                     area_type = NA_character_,
-                     capacity = NA_real_,
-                     condition = list(NA),
-                     next_area = list(NA),
-                     priority = list(NA))
+a_movement <- data.table(condition = NA_character_,
+                         next_area = list(NA),
+                         priority = list(NA))
 # TODO: Make UI to setup this.
 
-## ---- rectal_palpation_template ----
+## ---- communal_pasture_template ----
+
+#' A data.table to manage use of a communal pasture
+#'
+#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm. 
+#' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
+#' 
+#' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
+#' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
+#' 
+#' @examples
+#' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
+#' # Delivered cows are send to the communal pasture from a delivered cow barn (area_id = 4) in April and come back to the same barn in October.
+#' communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
+#' communal_pasture_use[,
+#'  `:=`(area_out = c(2, 4),
+#'       area_back = c(3, 4),
+#'       condition_out = c("age == 20", "month == 4"),
+#'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
+#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @name communal_pasture_table
+#' @export
+a_communal_pasture_use <- data.table(area_out = NA_integer_,
+                                     area_back = NA_integer_,
+                                     condition_out = NA_character_,
+                                     condition_back = NA_character_)
+
+# ---- rectal_palpation_template ----
 
 #' A data.table to manage cow status related with rectal palpation
 #'
@@ -254,7 +294,7 @@ a_area <- data.table(area_id = NA_real_,
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
 #' @format [data.table] [data.table::data.table]
-#' @seealso [cow_table] [area_table] [tiestall_table]
+#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table]
 #' @name rp_table
 #' @export
 one_day_rp <- data.table(cow_id = NA_integer_,

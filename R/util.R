@@ -75,12 +75,12 @@ integerize <- function(number) {
 #' @param number numeric vector.
 #'
 #' @examples
-#' blvibmjp:::is.wholenumbers(3L)  # TRUE
-#' blvibmjp:::is.wholenumbers(3)  # TRUE
-#' blvibmjp:::is.wholenumbers(pi)  # FALSE
+#' blvibmjp:::is.wholenumber(3L)  # TRUE
+#' blvibmjp:::is.wholenumber(3)  # TRUE
+#' blvibmjp:::is.wholenumber(pi)  # FALSE
 #'
 #' @return A logical value.
-is.wholenumbers <- function(number) {
+is.wholenumber <- function(number) {
   all(number %% 1 == 0)
 }
 
