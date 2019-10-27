@@ -36,14 +36,16 @@ You can specify more than one set of \code{condition} and \code{next} to one \co
 # A farm has four areas:
 # - A freebarn for calves younger than 3 months old.
 # - A paddock for heifers.
-# - A tie-stall barn and a free-stall barn for adult cows. A cow is moved to the tie-stall barn right after the delivery if the barn is not full. Otherwise, the cow is moved (or stayed) to the free-stall barn.
+# - A tie-stall barn and a free-stall barn for adult cows.
+# A cow is moved to the tie-stall barn right after the delivery if the barn is not full.
+# Otherwise, the cow is moved (or stayed) to the free-stall barn.
 movement <- a_area[rep(1, 4), ]
 movement[, `:=`(area_id = 1:4,
                 area_type = c("free", "free", "tie", "free"),
                 capacity = c(NA, NA, 60, NA),
                 condition = c("age > 2", "delivery", NA, "delivlery"),
                 next_area = list(2, 3:4, NA, 3:4),
-                priority = list(NA, NA, NA, c(1, 2))]
+                priority = list(NA, NA, NA, c(1, 2)))]
 
 }
 \seealso{

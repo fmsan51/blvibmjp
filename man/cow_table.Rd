@@ -66,7 +66,7 @@ FALSE: The cow Will be sold to beef operations.
 }
 \item \code{susceptibility_ial_to_ipl}: Genetic susceptibility to disease progress (Ial -> Ipl).
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).
--\code{group_id}: Barn ID.
+-\code{area_id}: Area ID.
 -\code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
 -\code{is_isolated}: Whether the cow is isolated for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
 -\code{i_month}: The number of months past from the start of a simulation.

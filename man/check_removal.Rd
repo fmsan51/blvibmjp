@@ -4,12 +4,12 @@
 \alias{check_removal}
 \title{Check death and sale of current cows}
 \usage{
-check_removal(cows, groups, i, param_calculated, param_processed)
+check_removal(cows, areas, i, param_calculated, param_processed)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{groups}{See \link{tiestall_table}.}
+\item{areas}{See \link{tiestall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 

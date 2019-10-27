@@ -2,8 +2,8 @@
 % Please edit documentation in R/probability_function.R
 \name{age_die}
 \alias{age_die}
-\alias{age_slaughtered}
 \alias{longevity}
+\alias{age_slaughtered}
 \title{Expected age of death or slaugher}
 \usage{
 age_die(n_cows, param_calculated)

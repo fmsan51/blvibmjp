@@ -1,4 +1,3 @@
-## ---- infection_status_change ----
 #' Calculate months to progress the disease
 #'
 #' When a cow is infected, the number of months necessary to progress the disease is calculated at the month a cow is infected.
@@ -60,7 +59,6 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
 # TODO: test
 
 
-## ---- is_ebl_detected
 #' Whether a EBL cow is detected
 #'
 #' @param id_cow_ebl The ID of EBL cows.
@@ -71,6 +69,7 @@ is_ebl_detected <- function(id_cow_ebl, param_calculated) {
   sample(c(T, F), size = length(id_cow_ebl), replace = T,
          prob = param_calculated$probs_ebl_detected)
 }
+
 
 #' The number of months until EBL cows die
 #'
@@ -86,9 +85,6 @@ n_month_until_ebl_die <- function(rows_cow_overlooked, param_calculated) {
 }
 
 
-## ---- infection_route ----
-
-## ---- is_infected_insects
 #' Wheter cows are infected by insects
 #'
 #' @param id_cow_s ID of infected cows.
@@ -103,8 +99,6 @@ is_infected_insects <- function(id_cow_s, month, param_calculated) {
   return(is_infected)
 }
 
-
-## ---- is_infected_contact
 
 #' Whether cows are infected by direct contact
 #'
@@ -122,7 +116,6 @@ is_infected_contact <- function() {
 # TODO: そういや全国平均感染率は感染農場も非感染農場も一緒にしてるんだった。あとで感染農場のみにしぼって計算し直す。
 
 
-## ---- is_infected_needles
 #' Whether cows are infected by contaminated needles
 #'
 #' @param id_cow_s `cow_id` of infected cows.
@@ -135,7 +128,6 @@ is_infected_needles <- function(id_cow_s, param_calculated) {
 }
 
 
-## ---- is_infected_rp
 #' Whether cows are infected by rectal palpation
 #'
 #' @param n_cows_palpated ID of rectally palpated cows.
@@ -149,8 +141,6 @@ is_infected_rp <- function(n_cows_palpated, param_calculated) {
 }
 
 
-
-## ---- is_infected_vertical
 #' Wheter newborns are infected vertically
 #'
 #' @param status_mother The `infection_status` of dams.
@@ -172,7 +162,6 @@ is_infected_vertical <- function(status_mother, param_calculated) {
 }
 
 
-## ---- is_infected_introduced
 #' Whether introduced cows are infected
 #'
 #' @return A logical vector
@@ -182,7 +171,6 @@ is_infected_introduced <- function() {
 }
 
 
-## ---- is_infected_comranch
 #' Whether cows are infected at a communal ranch
 #'
 #' When a cow is come back from a communal ranch, the probability of infection at communal ranch was calculated.
@@ -194,10 +182,6 @@ is_infected_comranch <- function() {
 }
 
 
-
-## ---- artificial_insemination ----
-
-## ---- is_ai_started_milking
 #' Whether the first AIs for milking cows are conducted
 #'
 #' @param n_month_from_delivery The month past from the last delivery.
@@ -214,7 +198,6 @@ is_ai_started_milking <- function(n_month_from_delivery, param_calculated) {
 }
 
 
-## ---- is_ai_started_heifer
 #' Whether the first AIs for hifers are conducted
 #'
 #' @param ages Age of heifers.
@@ -231,7 +214,6 @@ is_ai_started_heifer <- function(ages, param_calculated) {
 }
 
 
-## ---- is_heat_detected
 #' Whether a heat is detected
 #'
 #' @param n_cows The number of cows which come into heat.
@@ -244,8 +226,6 @@ is_heat_detected <- function(n_cows, param_calculated) {
 }
 
 
-
-## ---- is_first_ai_successed
 #' Whether a cow is concepted at the first or later AI
 #'
 #' @param n_cows The number of cows on which the first AI were conducted.
@@ -259,7 +239,6 @@ is_first_ai_successed <- function(n_cows, param_calculated) {
 }
 
 
-## ---- is_ai_successed
 #' @rdname is_ai_successed
 is_ai_successed <- function(n_cows, param_calculated) {
   sample(c(T, F), size = n_cows, replace = T,
@@ -267,7 +246,6 @@ is_ai_successed <- function(n_cows, param_calculated) {
 }
 
 
-## ---- heat_cycle
 #' Heat cycle
 #'
 #' @param n_cows The number of cows to which heat cycle should be calculated.
@@ -279,10 +257,6 @@ heat_cycle <- function(n_cows, param_calculated) {
 }
 
 
-## ---- milking_status ----
-
-
-## ---- is_dried
 #' Whether a cow is dried
 #'
 #' @param months_from_delivery The number of months past from the last delivery.
@@ -297,10 +271,6 @@ is_dried <- function(months_from_delivery, param_calculated) {
 }
 
 
-## ---- reproduction ----
-
-
-## ---- susceptibility
 #' Calculate susceptibility of newborns to the pathogen
 #'
 #' @param n_newborns The number of newborns.
@@ -329,7 +299,6 @@ susceptibility <- function(n_newborns,
 # TODO: test
 
 
-## ---- n_newborn_per_dam
 #' The number of newborns per dam
 #'
 #' @param n_dams The number of dams.
@@ -342,8 +311,6 @@ n_newborn_per_dam <- function(n_dams, param_calculated) {
 # Probability to be triplets or more is ignored.
 
 
-
-## ---- sex_ratio
 #' Sex ratio of newborns
 #'
 #' `sex_newborns()` returns sex of singleton newborns.
@@ -360,6 +327,7 @@ sex_newborns <- function(n_newborns, param_calculated) {
          prob = param_calculated$probs_female)
 }
 
+
 #' @rdname sex_newborns
 sex_twins <- function(n_calves, param_calculated) {
   # TODO: なんでここn_newbornsじゃなくてn_calvesなんだ？
@@ -371,7 +339,7 @@ sex_twins <- function(n_calves, param_calculated) {
 }
 # TODO: 性判別精液は双子が少ない？？
 
-## ---- is_replacement
+
 #' Whether a newborn will be a replacement
 #'
 #' @param n_calves The number of newborns.
@@ -379,7 +347,7 @@ sex_twins <- function(n_calves, param_calculated) {
 #' @param n_delivered The number of delivered cows in a herd.
 #' @param param_farm See [param_farm].
 #' @param param_processed Return from [process_param()].
-
+#'
 #' @name is_replacement
 #' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」
 #' @encoding UTF-8
@@ -402,6 +370,7 @@ set_prob_rep <- function(n_delivered, param_farm) {
   return(prob_rep)
 }
 
+
 #' @name is_replacement
 is_replacement <- function(n_calves, herd_size, param_processed) {
   # capacity: upper and lower limits of number of cattle should be kept in the farm
@@ -423,7 +392,6 @@ is_replacement <- function(n_calves, herd_size, param_processed) {
 }
 
 
-## ---- is_stillbirth
 #' Whether a delivery end up in stillbirth or abortion
 #'
 #' Here, stillbirth means stillbirth and abortion.
@@ -445,7 +413,7 @@ is_stillbirth <- function(parity, param_calculated) {
 # TODO: 母牛死亡について考慮
 # TODO: ここstillbirthとabortionの両方調べたっけ
 
-## ---- longevity ----
+
 #' Expected age of death or slaugher
 #'
 #' @param n_cows The number of cows to calculate expected age of death.
@@ -465,7 +433,8 @@ age_die <- function(n_cows, param_calculated) {
   return(trunc(value))
 }
 
-#' @rdname longevity
+
+#' @name longevity
 age_slaughtered <- function(n_cows, param_calculated) {
   value <- rgamma(n_cows,
                   shape = param_calculated$slaughter_shape,
@@ -473,7 +442,8 @@ age_slaughtered <- function(n_cows, param_calculated) {
   return(trunc(value))
 }
 
-#' @rdname longevity
+
+#' @name longevity
 longevity <- function(n_cows, param_calculated) {
   # TODO: これcause_deathとかのが正確やな
   longevity <- list(

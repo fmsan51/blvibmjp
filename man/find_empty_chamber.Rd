@@ -4,10 +4,10 @@
 \alias{find_empty_chamber}
 \title{Find empty chambers in a tiestall_table}
 \usage{
-find_empty_chamber(group, added_cows)
+find_empty_chamber(area, added_cows)
 }
 \arguments{
-\item{group}{See \link{tiestall_table}.}
+\item{area}{See \link{tiestall_table}.}
 
 \item{added_cows}{A \link{cow_table} consisted of cows to add to the barn.}
 }

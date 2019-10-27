@@ -2,16 +2,16 @@
 % Please edit documentation in R/barn.R
 \name{is_ts}
 \alias{is_ts}
-\title{Check wheter a barn is tie-stall}
+\title{Check wheter a area is a tie-stall barn}
 \usage{
-is_ts(param_group)
+is_ts(param_area)
 }
 \arguments{
-\item{param_group}{See \link{param_group}.}
+\item{param_area}{See \link{param_area}.}
 }
 \value{
-A logical vector of length 4 which indicates whether barns are tie-stall or not.
+A logical vector of length 4 which indicates whether areas are tie-stall or not.
 }
 \description{
-Check wheter a barn is tie-stall
+Check wheter a area is a tie-stall barn
 }

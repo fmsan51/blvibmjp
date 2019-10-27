@@ -4,7 +4,7 @@
 \name{param_farm}
 \alias{param_farm}
 \title{Parameters about farms which should be set by users}
-\format{An object of class \code{list} of length 18.}
+\format{An object of class \code{list} of length 20.}
 \usage{
 param_farm
 }
@@ -24,12 +24,14 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{months_grazing} (1-12), \code{hours_grazing} (0-23): Months and hours for grazing. (default: no grazing)
 \item \code{capacity_in_head} c(lower, upper): Lower/upper limit of the herd size. Set either this or \code{capacity_as_ratio} below.
 \item \code{capacity_as_ratio} c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = \code{lower * initial_herd_size}, upper limit = \code{upper * initial_herd_size}). Set either this or \code{capacity_in_head} above. When both of \code{capacity_in_head} and \code{capacity_as_ratio} is NA, \code{capacity_as_ratio} is set to \code{c(0.9, 1.1)}.
+\item \code{n_introduced} c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
+\item \code{days_qualantine}: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
 }
 }
 \seealso{
-\link{param_simulation} \link{param_group} \link{calc_param}
+\link{param_simulation} \link{param_area} \link{calc_param}
 }
 \keyword{datasets}

@@ -1,4 +1,3 @@
-## ---- read_initial_cows ----
 #' Read cow_table at the start of a simulation from a csv and modify data ready to plot
 #'
 #' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 1, and redefine infection routes.
@@ -20,8 +19,6 @@ read_initial_cows <- function(path_to_csv, levels_route = NULL,
 }
 
 
-
-## ---- read_final_cows ----
 #' Read cow information at the end of a simulation
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
@@ -50,8 +47,6 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 }
 
 
-## ---- prevalence_graph ----
-
 #' Calculate prevalence from `cow_table` or a csv file
 #'
 #' Calculate monthly prevalences from `cow_table` or a csv file. Set either one of `cows` or `path_to_csv`.
@@ -77,8 +72,6 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 }
 
 
-
-## ---- plot_prevalences
 #' Plot the change in prevalence
 #'
 #' @param simulation_length See [param_simulation].
@@ -96,8 +89,6 @@ plot_prevalences <- function(simulation_length, path_to_csv) {
 }
 
 
-
-## ---- redefine_levels_route ----
 #' Redefine infection routes
 #'
 #' Recategorize `cause_infection` column in a `cow_table`.
@@ -139,8 +130,6 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 }
 
 
-
-## ---- infection_route_graph ----
 #' Plot monthly infection routes nicely
 #'
 #' @param path_to_csv Path to an output csv file.
@@ -166,7 +155,7 @@ plot_infection_route <- function(path_to_csv,
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
 
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
-    geom_area(aes(group = cause_infection, fill = cause_infection)) +
+    geom_area(aes(area = cause_infection, fill = cause_infection)) +
     scale_x_continuous(breaks = seq(0, max(infection_route$i_month), 6),
                        minor_breaks = seq(0, max(infection_route$i_month), 3)) +
     ylim(0, max_ylim)
@@ -190,8 +179,6 @@ plot_infection_route <- function(path_to_csv,
 }
 
 
-## ---- infection_route_table ----
-
 #' Summarize infection routes
 #'
 #' Calculate monthly infection routes at the end of simulations.
@@ -212,7 +199,6 @@ table_route <- function(output_filename, output_dir, n_simulation,
 # TODO: add examples
 
 
-## ---- summary_route ----
 #' @name table_route
 summary_route <- function(cows) {
   table_route <- cows[, .N, by = .(i_simulation, cause_infection)]
@@ -226,9 +212,6 @@ summary_route <- function(cows) {
 }
 
 
-
-## ---- infection_status_table ----
-
 #' Summarize infection status
 #'
 #' Calculate monthly infection status at the end of simulations.
@@ -239,8 +222,8 @@ summary_route <- function(cows) {
 #' @seealso [table_route]
 #' @name table_infection_status
 #' @export
-table_infection_status <-
-  function(output_filename, output_dir, n_simulation, simulation_length) {
+table_infection_status <- function(output_filename, output_dir, 
+                                   n_simulation, simulation_length) {
     cows <- read_final_cows(output_filename, output_dir, n_simulation,
                             simulation_length)
     summary <- summary_infection_status(cows)
@@ -248,9 +231,6 @@ table_infection_status <-
   }
 # TODO: add examples
 
-
-
-## ---- summary_status ----
 
 #' @name table_infection_status
 summary_infection_status <- function(cows) {
@@ -268,3 +248,4 @@ summary_infection_status <- function(cows) {
   table_status <- cbind(table_status, p_status)
   return(table_status)
 }
+

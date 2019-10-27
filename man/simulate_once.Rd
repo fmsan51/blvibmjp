@@ -4,24 +4,24 @@
 \alias{simulate_once}
 \title{Body of the simulation}
 \usage{
-simulate_once(setup_cows_res, init_groups, day_rp, i_simulation, result,
-  result_groups, param_simulation, param_group, param_processed,
+simulate_once(setup_cows_res, init_areas, day_rp, i_simulation, result,
+  result_areas, param_simulation, param_area, param_processed,
   param_modification, save_cows, save_param)
 }
 \arguments{
 \item{setup_cows_res}{A result of \code{\link[=setup_cows]{setup_cows()}}.}
 
-\item{init_groups}{A result of \code{\link[=setup_groups]{setup_groups()}}.}
+\item{init_areas}{A result of \code{\link[=setup_areas]{setup_areas()}}.}
 
 \item{day_rp}{A result of \code{\link[=setup_rp_table]{setup_rp_table()}}.}
 
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_groups}{Lists to store a \code{cow_table} and a \code{tiestall_table} respectively.}
+\item{result, result_areas}{Lists to store a \code{cow_table} and a \code{tiestall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
 
-\item{param_group}{See \link{param_group}.}
+\item{param_area}{See \link{param_area}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 
@@ -30,7 +30,7 @@ simulate_once(setup_cows_res, init_groups, day_rp, i_simulation, result,
 \item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
 }
 \value{
-A list composed of two components: \code{result_combined} and \code{result_groups_combined}
+A list composed of two components: \code{result_combined} and \code{result_areas_combined}
 }
 \description{
 Run simulation once.
