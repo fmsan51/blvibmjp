@@ -63,34 +63,65 @@ setup_areas <- function(init_cows, param_area) {
   for (i in 1:param_area$n_area) {
     xy <- param_area$xy_chamber[[i]]
     if (!anyNA(xy)) {
-      init_areas[[i]] <- make_ts_area(init_cows[area_id == i, ],
-                                        xy[1], xy[2])
+      init_areas[[i]] <- make_ts_area(init_cows[area_id == i, ], xy[1], xy[2])
       init_areas[[i]][, area_id := i]
     }
   }
   return(init_areas)
 }
+# NOTE: Is this function really necessary?
 
 
 #' Setup of `area_table`
 #'
-#' Make `area_table`.
+#' Setup [area_table].
 #'
 #' @param area_table See [area_table].
+#' @param cows See [cow_table].
+#' @param use_communal_pasture logical. Whether a farm uses a communal pasture or not.
 #'
-#' @seealso [area_table] [setup_cows] [setup_rp_table] [setup_areas]
+#' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 #' @export
-setup_area_table <- function(area_table) {
+setup_area_table <- function(area_table, cows, use_communal_pasture) {
+  area_table$capacity[is.na(area_table$capacity)] <- Inf
+  if (use_communal_pasture) {
+    area_table <- rbindlist(list(area_table,
+                                 list(area_id = nrow(area_table) + 1L,
+                                      area_type = "communal pasture",
+                                      capacity = "Inf")
+                                 )
+                            )
+  }
+
+  attr(area_table, "capacity") <- vapply(area_table$capacity, sum, 1)
+  attr(area_table, "tie_stall") <- 
+    area_table$area_id[area_tabe$area_type == "tie"]
+  return(area_table)
+}
+
+
+#' Setup of `movement_table`
+#'
+#' Setup `movement_table` from [area_table], [movement_table] and [communal_pasture_table].
+#'
+#' @param area_table See [area_table].
+#' @param movement_table See [movement_table].
+#' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
+#'
+#' @seealso [area_table] [movement_table] [communal_pasture_table] [setup_cows] [setup_rp_table] [setup_areas]
+#' @export
+setup_movement_table <- function(area_table, movement_table,
+                                 communal_pasture_table) {
   # Sort next_area along with priority
-  area_table$next_area <- mapply(function(next_area, priority) {
-                                   next_area[order(priority)]
-                                 },
-                                 area_table$next_area, area_table$priority,
-                                 SIMPLIFY = FALSE)
+  movement_table$next_area <- 
+    mapply(function(next_area, priority) {next_area[order(priority)]},
+           movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
+  # Sort prority (don't bring this before the previous line)
+  movement_table$priority <- lapply(movement_table$priority, sort)
 
   # translate condition from a form that users can easily understand
   # to a form that functions can easily understand
-  cond <- area_table$condition
+  cond <- movement_table$condition
   convert_day_to_month <- function(day) {
     day <- as.numeric(day)
     month <- round(day / (365 / 12), 3)  # rounded for readability
@@ -103,18 +134,48 @@ setup_area_table <- function(area_table) {
                           "integerize(\\1)")
   
   # fixed = T because it's about 2-3x faster
-  cond <- gsub("delivery", "i_month == date_delivered", cond, fixed = T)
-  cond <- gsub("pregnancy", "i_month == date_got_pregnant", cond, fixed = T)
-  cond <- gsub("dry", "i_month == date_dried", cond, fixed = T)
-  cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
-  cond <- gsub("stay", "month_in_area", cond, fixed = T)
-  area_table$condition <- cond
+  cond <- gsub("months_from_delivery", "i_month - date_last_delivery",
+               cond, fixed = T)
+  cond <- gsub("months_from_pregnancy", "i_month - date_got_pregnant",
+               cond, fixed = T)
+  cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
   
-  attr(area_table, "areas") <- unique(area_table$area_id)
-  attr(area_table, "capacity") <- area_table[!duplicated(sort(area_id)), 
-                                             list(area_id, capacity)]
+  # (?^|[^_]) is about 3x faster than (?<!_)
+  cond <- gsub("(?^|[^_])delivery", "\\1i_month == date_delivered", cond)
+  cond <- gsub("(?^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
+  cond <- gsub("(?^|[^_])dry", "\\1i_month == date_dried", cond)
+  cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
+  cond <- gsub("stay", "months_in_area", cond, fixed = T)
+  movement_table$condition <- cond
+ 
+  # Add movement from/to a communal pasture to movement_table
+  if (!is.null(communal_pasture_table)) {
+    compas_area_id <- nrow(area_id) + 1L
 
-  return(area_table)
+    # Set movement to a communal pasture with the highest priority
+    # (= in the top rows)
+    move_to_compas <- data.table(current_area = communal_pasture_table$area_out,
+                                 condition = communal_pasture_table$cond_out,
+                                 next_area = compas_area_id,
+                                 priority = 1)
+    move_from_compas <- data.table(current_area = compas_area_id,
+                                   condition = communal_pasture_table$cond_back,
+                                   next_area = communal_pasture_table$area_back,
+                                   priority = 1)
+    movement_table <- rbindlist(list(move_to_compas, move_from_compas,
+                                     movement_table))
+  }
+
+  # TODO: warn when capacity > cows at the start of a simulation.
+
+  # Attributes is added instead of converting area_id column to factor
+  # because I don't want to change class of the columns from the original one
+  attr(movement_table, "factored_current_area") <-
+    factor(movement_table$current_area, levels = area_table$area_id)
+  attr(movement_table, "is_priority_specified_by_integer") <-
+    vapply(movement_table$priority, function(x) all(is.wholenumber(x)), T)
+
+  return(movement_table)
 }
 
 
