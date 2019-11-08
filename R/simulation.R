@@ -63,7 +63,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #' @param init_areas A result of [setup_areas()].
 #' @param day_rp A result of [setup_rp_table()].
 #' @param i_simulation The iteration number of simulations.
-#' @param result,result_areas Lists to store a `cow_table` and a `tiestall_table` respectively.
+#' @param result,result_areas Lists to store a `cow_table` and a `tie_stall_table` respectively.
 #' @param param_simulation See [param_simulation].
 #' @param param_area See [param_area].
 #' @param param_processed A result of [process_param()].

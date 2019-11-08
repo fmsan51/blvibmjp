@@ -63,7 +63,7 @@
 #' - `i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table][data.table::data.table]
-#' @seealso [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @seealso [tie_stall_table] [area_table] [movement_table] [rp_table]
 #'
 #' @name cow_table
 #' @export
@@ -119,19 +119,19 @@ a_new_calf <- data.table(
   months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)
-  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tiestall_table holds chamber_id.
+  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tie_stall_table holds chamber_id.
   is_isolated = NA,
   i_month = NA_real_
 )
 # TODO: consider whether status can removed from the codes.
 
 
-# ---- tiestall_template ----
+# ---- tie_stall_template ----
 
 #' A data.table to store status of a tie-stall barn
 #'
-#' `tiestall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
-#' Each tie-stall barn have each `tiestall_table`.
+#' `tie_stall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
+#' Each tie-stall barn have each `tie_stall_table`.
 #' The rows are consisted of `a_chamber`, which indicates one chamber in a barn.
 #'
 #' `chamber_id` and `adjoin_previous/next_chamber` are fixed. Values will not be changed while a simulation.
@@ -156,7 +156,7 @@ a_new_calf <- data.table(
 #'
 #' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [area_table] [movement_table] [rp_table]
-#' @name tiestall_table
+#' @name tie_stall_table
 #' @export
 a_chamber <- data.table(
   chamber_id = NA_integer_,
@@ -207,7 +207,7 @@ a_chamber <- data.table(
 #' areas[, `:=`(area_id = 1:3,
 #'              area_type = c("free", "outside", "tie"),
 #'              capacity = list(30, NA, c(40, 40, 30, 30))]
-#' @seealso [cow_table] [tiestall_table] [movement_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [movement_table] [rp_table]
 #' @name area_table
 #' @export
 a_area <- data.table(area_id = NA_integer_,
@@ -243,7 +243,7 @@ a_area <- data.table(area_id = NA_integer_,
 #'                  next_area = list(2L, 3:4, 3:4),
 #'                  priority = list(NA, NA, c(1, 2)))]
 #'
-#' @seealso [cow_table] [tiestall_table] [area_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [rp_table]
 #' @name movement_table
 #' @export
 a_movement <- data.table(current_area = NA_integer_,
@@ -272,7 +272,7 @@ a_movement <- data.table(current_area = NA_integer_,
 #'       area_back = c(3, 4),
 #'       condition_out = c("age == 20", "month == 4"),
 #'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
-#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table] [rp_table]
 #' @name communal_pasture_table
 #' @export
 a_communal_pasture_use <- data.table(area_out = NA_integer_,
@@ -296,7 +296,7 @@ a_communal_pasture_use <- data.table(area_out = NA_integer_,
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
 #' @format [data.table] [data.table::data.table]
-#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table]
 #' @name rp_table
 #' @export
 one_day_rp <- data.table(cow_id = NA_integer_,

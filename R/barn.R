@@ -1,12 +1,12 @@
-#' Make a tiestall_table from a cow_table
+#' Make a tie_stall_table from a cow_table
 #'
-#' Make a [tiestall_table] based on x, y coordinates in a [cow_table].
+#' Make a [tie_stall_table] based on x, y coordinates in a [cow_table].
 #'
 #' @param cows See [cow_table].
 #' @param n_x The number of chambers in a lane.
 #' @param n_y The number of lanes in a tie-stall barn.
 #'
-#' @return A [tiestall_table].
+#' @return A [tie_stall_table].
 #' @export
 make_ts_area <- function(cows, n_x, n_y) {
   # TODO: これcsvから読み込むような形にしたい
@@ -82,10 +82,10 @@ is_md_separated_in_ts <- function(param_calculated) {
 
 #' Remove dead or sold cows from a area
 #'
-#' @param area See [tiestall_table].
+#' @param area See [tie_stall_table].
 #' @param cow_id_removed The ID of cows removed from the area.
 #'
-#' @return A [tiestall_table].
+#' @return A [tie_stall_table].
 remove_from_area <- function(area, cow_id_removed) {
   # Remove chambers for isolation
   removed_chamber <- area[cow_id %in% cow_id_removed, chamber_id]
@@ -109,14 +109,14 @@ remove_from_area <- function(area, cow_id_removed) {
 }
 
 
-#' Find empty chambers in a tiestall_table
+#' Find empty chambers in a tie_stall_table
 #'
-#' Find empty chambers in a tiestall_table and assign cows to chambers.
+#' Find empty chambers in a tie_stall_table and assign cows to chambers.
 #'
-#' @param area See [tiestall_table].
+#' @param area See [tie_stall_table].
 #' @param added_cows A [cow_table] consisted of cows to add to the area.
 #'
-#' @return A [tiestall_table].
+#' @return A [tie_stall_table].
 find_empty_chamber <- function(area, added_cows) {
   area <- copy(area)
 

@@ -323,13 +323,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 #' Change stage of cows and move cows between areas accordinglly
 #'
 #' @param cows See [cow_table].
-#' @param areas See [tiestall_table].
+#' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
-#' @return A list consists of `cow_table` and `tiestall_table`.
+#' @return A list consists of `cow_table` and `tie_stall_table`.
 #' @export
 change_stage <- function(cows, areas, i, param_area, param_calculated,
                          param_processed) {
@@ -578,12 +578,12 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
 #' Check death and sale of current cows
 #'
 #' @param cows See [cow_table].
-#' @param areas See [tiestall_table].
+#' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
-#' @return A list consisted of [cow_table] and [tiestall_table].
+#' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
 check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   # Removal by death
@@ -659,7 +659,7 @@ extract_owned_cows <- function(cows) {
 #' Check and move cows between areas
 #'
 #' @param cows See [cow_table].
-#' @param barns See [tiestall_table].
+#' @param barns See [tie_stall_table].
 #' @param area See [area_table].
 #'
 #' @return A [cow_table].
@@ -799,7 +799,7 @@ change_area <- function(cows, movement_table) {
   # TODO: Make allocate_chambers()
   return(cows)
 }
-# TODO: Make a function to setup tiestall_table.
+# TODO: Make a function to setup tie_stall_table.
 
 # TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
 

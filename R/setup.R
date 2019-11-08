@@ -46,20 +46,20 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 }
 
 
-#' Setup of `tiestall_table`
+#' Setup of `tie_stall_table`
 #'
 #' Make chamber matrix, which indicates in which chamber each cow is.
 #' Cows kept in free-stall or paddock are not shown in this matrix.
 #'
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
 #'
-#' @return A list composed of [tiestall_table] and NA.
-#' @seealso [setup_rp_table] [tiestall_table] [setup_cows] [setup_area_table]
+#' @return A list composed of [tie_stall_table] and NA.
+#' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
 #' @export
 setup_areas <- function(init_cows) {
   # NOTE: currently, initial area_id must be set by users.
   # Want to make a function to calculate initial area_id.
-  return(tiestall_table)
+  return(tie_stall_table)
 }
 # NOTE: Is this function really necessary?
 
