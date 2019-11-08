@@ -182,7 +182,6 @@ a_chamber <- data.table(
 )
 
 
-
 # ---- area_template ----
 
 #' A data.table to manage areas in a farm
@@ -216,6 +215,7 @@ a_chamber <- data.table(
 a_area <- data.table(area_id = NA_integer_,
                      area_type = NA_character_,
                      capacity = list(NA))
+
 
 # ---- movement_template ----
 
@@ -254,9 +254,9 @@ a_movement <- data.table(current_area = NA_integer_,
                          priority = list(NA))
 # TODO: Make UI to setup this.
 
+
 # ---- communal_pasture_template ----
 
-## ---- communal_pasture_template ----
 #' A data.table to manage use of a communal pasture
 #'
 #' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
@@ -284,6 +284,7 @@ a_communal_pasture_use <- data.table(area_out = NA_integer_,
 
 
 # ---- rectal_palpation_template ----
+
 #' A data.table to manage cow status related with rectal palpation
 #'
 #' `rp_table` is a [data.table][data.table::data.table] to manage cow status related with rectal palpation.
@@ -308,4 +309,3 @@ one_day_rp <- data.table(cow_id = NA_integer_,
                          is_after_inf = NA,
                          is_infected = NA)
 # TODO: 名前は検討
-
