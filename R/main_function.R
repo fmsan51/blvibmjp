@@ -659,12 +659,13 @@ extract_owned_cows <- function(cows) {
 #' Check and move cows between areas
 #'
 #' @param cows See [cow_table].
-#' @param barns See [tie_stall_table].
-#' @param area See [area_table].
+#' @param movement_table See [movement_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
 #'
-#' @return A [cow_table].
+#' @return A list composed of [cow_table] and [area_list].
 #' @export
-change_area <- function(cows, movement_table) {
+change_area <- function(cows, movement_table, areas, area_list) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
@@ -787,17 +788,14 @@ change_area <- function(cows, movement_table) {
   }
   cow_id_allocated_to_full_areas <- 
     cow_id_allocated_to_full_areas[cow_id_allocated_to_full_areas != 0]
-  allocated_areas <- cows[match(vec_cows_to_move, cow_id), area_id]
-  is_allocated_to_chambers <- 
-    allocated_areas %in% attr(area_table, "tie_stall") &
-    !vec_cows_to_move %in% cow_id_allocated_to_full_areas
-  cow_id_to_allocate_chamber_id <- vec_cows_to_move[is_allocated_to_chambers]
-  allocated_tie_stalls <- cows[is_allocated_to_chambers]
-  cows_to_allocate_chambers <- split(cow_id_to_allocate_chamber_id,
-                                     allocated_tie_stalls)
-  cows <- allocate_chambers(cows, cows_to_allocate_chambers)
-  # TODO: Make allocate_chambers()
-  return(cows)
+  # a[!a %in% b] is 5x faster than setdiff()
+  cow_id_to_allocate_chambers <- 
+    vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
+  cows_to_allocate_chambers <- 
+    calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
+  cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
+  area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
+  return(list(cows = cows, area_list = area_list))
 }
 # TODO: Make a function to setup tie_stall_table.
 

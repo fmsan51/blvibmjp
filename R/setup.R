@@ -5,12 +5,13 @@
 #' @param param_simulation See [param_simulation].
 #' @param param_area See [param_area].
 #' @param save_cows Whether to save initial `cows` to a file.
+#' @param area_table See [area_table].
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, param_area, save_cows) {
+setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
   cows <- fread(file = param_simulation$input_csv,
                 colClasses = sapply(a_new_calf, class))
 
@@ -20,12 +21,15 @@ setup_cows <- function(param_simulation, param_area, save_cows) {
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
   init_cows[1:init_last_cow_id, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
+  
+  area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
+  init_cows <- assign_chambers(init_cows, area_list, area_assignment)
 
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
 
-  return(list(init_cows = cows, init_last_cow_id = init_last_cow_id))
+  return(list(init_cows = init_cows, init_last_cow_id = init_last_cow_id))
 }
 
 
@@ -52,14 +56,32 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' Cows kept in free-stall or paddock are not shown in this matrix.
 #'
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
+#' @param areas See [area_table].
 #'
 #' @return A list composed of [tie_stall_table] and NA.
 #' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
+#' @name area_list
 #' @export
-setup_areas <- function(init_cows) {
+setup_areas <- function(init_cows, areas) {
+  area_list <- vector("list", nrow(areas))
+  names(area_list) <- areas$area_id
+  for (i_area in attr(area, "tie_stall")) {
+    area_capacity <- areas$capacity[i_area == areas$area_id]
+    a_tie_stall <- a_chamber[rep(1, sum(area_capacity)), ]
+    a_tie_stall[, `:=`(chamber_id = seq_along(area_capacity),
+                       adjoint_previous_chamber = T,
+                       adjoint_next_chamber = T)]
+    a_tie_stall[area_capacity, adjoint_previous_chamber = F]
+
+    area_list[[area]] <- a_tie_stall
+  }
+
+  area_assignment <- calculate_area_assignment(init_cows, areas, NULL)
+  area_list <- assign_cows(init_cows, area_list, area_assignment)
+  
   # NOTE: currently, initial area_id must be set by users.
   # Want to make a function to calculate initial area_id.
-  return(tie_stall_table)
+  return(area_list)
 }
 # NOTE: Is this function really necessary?
 
@@ -85,7 +107,8 @@ setup_area_table <- function(area_table, cows, use_communal_pasture) {
                             )
   }
 
-  attr(area_table, "capacity") <- vapply(area_table$capacity, sum, 1)
+  attr(area_table, "capacity") <- 
+    setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
   attr(area_table, "tie_stall") <- 
     area_table$area_id[area_tabe$area_type == "tie"]
 

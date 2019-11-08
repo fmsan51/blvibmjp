@@ -8,7 +8,7 @@
 #'
 #' @return A [tie_stall_table].
 #' @export
-make_ts_area <- function(cows, n_x, n_y) {
+depreciate_make_ts_area <- function(cows, n_x, n_y) {
   # TODO: これcsvから読み込むような形にしたい
   area <- a_chamber[rep(1, n_x * n_y), ]
   area[, chamber_id := seq_len(.N)]
@@ -51,7 +51,7 @@ make_ts_area <- function(cows, n_x, n_y) {
 #' @param param_area See [param_area].
 #'
 #' @return A logical vector of length 4 which indicates whether barns are tie-stall or not.
-is_ts <- function(param_area) {
+depreciate_is_ts <- function(param_area) {
   # TODO: このfunction必要ないのでは？
   is_ts <- logical(4)
   for (area_id in 1:4) {
@@ -67,7 +67,7 @@ is_ts <- function(param_area) {
 #' @param param_calculated A list of parameters. See [calc_param()].
 #'
 #' @return A logical value.
-is_md_separated_in_ts <- function(param_calculated) {
+depreciate_is_md_separated_in_ts <- function(param_calculated) {
   # TODO: areaについて設定考えるときに変更
   area_m <- param_calculated$areas[3]
   area_d <- param_calculated$areas[4]
@@ -117,7 +117,7 @@ remove_from_area <- function(area, cow_id_removed) {
 #' @param added_cows A [cow_table] consisted of cows to add to the area.
 #'
 #' @return A [tie_stall_table].
-find_empty_chamber <- function(area, added_cows) {
+depreciated_find_empty_chamber <- function(area, added_cows) {
   area <- copy(area)
 
   empty_chamber <- area[is.na(cow_id), chamber_id]
@@ -173,13 +173,68 @@ remove_from_areas <- function(cows, removed_cow_id) {
 #' Assign `chamber_id` to cows allocated to tie-stall barns.
 #'
 #' @param cows See [cow_table].
-#' @param area_assignment A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_id_to_be_assigned_to_chambers_in_the_area), ...)`.
+#' @param area_list See [setup_areas].
+#' @param area_assignment See [calculate_area_assignment()].
+#' 
+#' @note This function assign `chamber_id` just for `cows`. Assignment of `cow_id` in `area_list` must be done by [assign_cows] after using this function.
 #'
-#' @return A [cow_table] in which `chamber_id` is assigned according to `area_assignment`.
-assign_chambers <- function(cows, area_assignment) {
-  
+#' @return A [cow_table].
+assign_chambers <- function(cows, area_list, area_assignment) {
+  for (i_area in names(area_assignment)) {
+    assigned_area <- area_list[[i_area]]
+    assigned_cows <- area_assignment[[i_area]]
+    empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
+    assined_chambers <- sample(empty_chambers, length(assigned_cows))
+    cows$chamber_id[cows$cow_id %in% assigned_cows] <- assigned_chambers
+  }
   return(cows)
 }
+# TODO: Think a way to combine assign_chambers and assign_cows
+
+
+#' Assign cows to area_list according to cow_table.
+#'
+#' Assign `chamber_id` to cows allocated to tie-stall barns.
+#'
+#' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#' @param area_assignment See [calculate_area_assignment()].
+#'
+#' @note This function assign `cow_id` just for `area_list`. Assignment of `chamber_id` in `cows` must be done by [assign_chambers] before using this function.
+#'
+#' @return A [area_list].
+assign_cows <- function(cows, area_list, area_assignment) {
+  for (i_area in names(area_assignment)) {
+    assigned_area <- area_list[[i_area]]
+    assigned_cows <- area_assignment[[i_area]]
+    assigned_chambers <- assigned_cows$chamber_id[match(assigned_cows, cow_id)]
+    assigned_area$cow_id[assigned_chambers] <- assigned_cows
+    area_list[[i_area]] <- assigned_area
+  }
+  return(area_list)
+}
+
+
+#' Make area_assignment list
+#'
+#' Make an `area_assignment` list which is used for [assign_chambers()] and [assign_cows()].
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param assigned_cow_id integer vector. An `area_assignment` list will be made only about cows specified by this parameter. When `NA` is set, all the cows are used.
+#' 
+#' @return A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
+calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
+  if (is.null(assigned_cow_id)) {
+    cows_assigned <- cows
+  } else {
+    cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
+  }
+  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
+                                   split(.SD[["cow_id"]], area_id)]
+  return(area_assignment)
+}
+
 
 #' Calculate capacity of an area based on inputed parameters
 #'
