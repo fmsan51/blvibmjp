@@ -126,7 +126,7 @@ a_new_calf <- data.table(
 # TODO: consider whether status can removed from the codes.
 
 
-## ---- tiestall_template ----
+# ---- tiestall_template ----
 
 #' A data.table to store status of a tie-stall barn
 #'
