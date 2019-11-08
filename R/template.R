@@ -138,8 +138,8 @@ a_new_calf <- data.table(
 #' Other variables are flexible. Values will may be changed while a simulation.
 #'
 #' - `chamber_id`: Chamber ID.
-#' - `is_edge1`: Whether the chamber is at a right end of a lane.
-#' - `is_edge2`: Whether the chamer is at a left end of a lane.
+#' - `is_edge1`: Whether the chamber adjoins the `chamber_id - 1`th chamber.
+#' - `is_edge2`: Whether the chamber adjoins the `chamber_id + 1`th chamber.
 #' - `cow_id`: Cow ID in a lane.
 #' - `cow_status`: Infection status of the cow.
 #' - `is_exposed`:
