@@ -14,15 +14,6 @@ setup_cows <- function(param_simulation, param_area, save_cows) {
   cows <- fread(file = param_simulation$input_csv,
                 colClasses = sapply(a_new_calf, class))
 
-  # TODO: ここはbarnとareaについて再考するときに再検討
-  cows[stage == "calf", area_id := 1]
-  cows[stage == "heifer", area_id := 2]
-  cows[stage == "milking", area_id := 3]
-  cows[stage == "dry", area_id := 4]
-  if (param_area$is_calf_separated) {
-    cows[stage == "calf", is_isolated := T]
-  }
-
   # Prepare cow_table with many rows to reserve enough memory while simulation
   init_last_cow_id <- nrow(cows)
   max_herd_size <- init_last_cow_id * param_simulation$simulation_length * 2
