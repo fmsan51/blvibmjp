@@ -134,7 +134,7 @@ a_new_calf <- data.table(
 #' Each tie-stall barn have each `tiestall_table`.
 #' The rows are consisted of `a_chamber`, which indicates one chamber in a barn.
 #'
-#' `chamber_id`, `adjoin_previous/next_chamber`, and `area_id` are fixed. Values will not be changed while a simulation.
+#' `chamber_id` and `adjoin_previous/next_chamber` are fixed. Values will not be changed while a simulation.
 #' Other variables are flexible. Values will may be changed while a simulation.
 #'
 #' - `chamber_id`: Chamber ID.
@@ -177,8 +177,6 @@ a_chamber <- data.table(
   next_neighbor_status = NA_character_,
   next_neighbor_isolated = NA,
   next_neighbor_infectivity = F,
-
-  area_id = NA_integer_
 )
 
 
