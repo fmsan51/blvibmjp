@@ -91,7 +91,7 @@ a_new_calf <- data.table(
   parity = NA_real_,
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
-  date_dried = NA_real_,  # TODO: make function to set this 
+  date_dried = NA_real_,  # TODO: make function to set this
   n_ai = NA_real_,
   day_heat = NA_real_,
   day_last_heat = NA_real_,
@@ -195,7 +195,7 @@ a_chamber <- data.table(
 #' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
 #'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
 #'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
-#' 
+#'
 #' @note
 #' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
 #' - `capacity`: Max number of cows can be kept in a area.
@@ -254,16 +254,17 @@ a_movement <- data.table(current_area = NA_integer_,
                          priority = list(NA))
 # TODO: Make UI to setup this.
 
+# ---- communal_pasture_template ----
 
 ## ---- communal_pasture_template ----
 #' A data.table to manage use of a communal pasture
 #'
-#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm. 
+#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
 #' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
-#' 
+#'
 #' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
 #' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
-#' 
+#'
 #' @examples
 #' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
 #' # Delivered cows are send to the communal pasture from a delivered cow barn (area_id = 4) in April and come back to the same barn in October.
