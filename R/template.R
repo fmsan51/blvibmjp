@@ -134,12 +134,12 @@ a_new_calf <- data.table(
 #' Each tie-stall barn have each `tiestall_table`.
 #' The rows are consisted of `a_chamber`, which indicates one chamber in a barn.
 #'
-#' `chamber_id`, `is_edge`, and `area_id` are fixed. Values will not be changed while a simulation.
+#' `chamber_id`, `adjoin_previous/next_chamber`, and `area_id` are fixed. Values will not be changed while a simulation.
 #' Other variables are flexible. Values will may be changed while a simulation.
 #'
 #' - `chamber_id`: Chamber ID.
-#' - `is_edge1`: Whether the chamber adjoins the `chamber_id - 1`th chamber.
-#' - `is_edge2`: Whether the chamber adjoins the `chamber_id + 1`th chamber.
+#' - `adjoin_previous_chamber`: Whether the chamber adjoins the `chamber_id - 1`th chamber.
+#' - `adjoin_next_chamber`: Whether the chamber adjoins the `chamber_id + 1`th chamber.
 #' - `cow_id`: Cow ID in a lane.
 #' - `cow_status`: Infection status of the cow.
 #' - `is_exposed`:
@@ -148,11 +148,11 @@ a_new_calf <- data.table(
 #'     NA = No cow in the chamber.
 #' - `is_isolated`: Whether the cow is isolated or not.
 #' - `hazard_ratio`: Hazard ratio of infection to the cow calculated based on neighbors' infection status.
-#' - `neighbor1_status`: Infection status of the neighbor in the right chamber.
-#' - `neighbor1_isolated`: Whether the cow in the right chamber is isolated or not.
-#' - `neighbor1_infectivity`:
+#' - `previous_neighbor_status`: Infection status of the neighbor in the right chamber.
+#' - `previous_neighbor_isolated`: Whether the cow in the right chamber is isolated or not.
+#' - `previous_neighbor_infectivity`:
 #'     TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
-#' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
+#' - `next_neighbor_status`, `next_neighbor_isolated`, `next_neighbor_infectivity`: Variables about the neighbor in the left chamber.
 #'
 #' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [area_table] [movement_table] [rp_table]
@@ -160,8 +160,8 @@ a_new_calf <- data.table(
 #' @export
 a_chamber <- data.table(
   chamber_id = NA_integer_,
-  is_edge1 = NA,
-  is_edge2 = NA,
+  adjoint_previous_chamber = NA,
+  adjoint_next_chamber = NA,
 
   cow_id = NA_integer_,
   cow_status = NA_character_,
@@ -169,14 +169,14 @@ a_chamber <- data.table(
   is_isolated = NA,
   hazard_ratio = NA_real_,
 
-  neighbor1_status = NA_character_,
-  neighbor1_isolated = NA,
-  neighbor1_infectivity = F,
+  previous_neighbor_status = NA_character_,
+  previous_neighbor_isolated = NA,
+  previous_neighbor_infectivity = F,
   # TODO: ここ自分がisolatedかどうかは無視することになってる。ややこしいので変えたい
-  # TODO: ここもneighbor1がいないときはNA、みたいに変える
-  neighbor2_status = NA_character_,
-  neighbor2_isolated = NA,
-  neighbor2_infectivity = F,
+  # TODO: ここもprevious_neighborがいないときはNA、みたいに変える
+  next_neighbor_status = NA_character_,
+  next_neighbor_isolated = NA,
+  next_neighbor_infectivity = F,
 
   area_id = NA_integer_
 )

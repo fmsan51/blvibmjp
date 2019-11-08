@@ -52,22 +52,14 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' Cows kept in free-stall or paddock are not shown in this matrix.
 #'
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
-#' @param param_area See [param_area].
 #'
-#' @return A [tiestall_table].
+#' @return A list composed of [tiestall_table] and NA.
 #' @seealso [setup_rp_table] [tiestall_table] [setup_cows] [setup_area_table]
 #' @export
-setup_areas <- function(init_cows, param_area) {
-  # TODO: areasとbarnsの見直しに合わせてここも変更
-  init_areas <- vector("list", param_area$n_area)
-  for (i in 1:param_area$n_area) {
-    xy <- param_area$xy_chamber[[i]]
-    if (!anyNA(xy)) {
-      init_areas[[i]] <- make_ts_area(init_cows[area_id == i, ], xy[1], xy[2])
-      init_areas[[i]][, area_id := i]
-    }
-  }
-  return(init_areas)
+setup_areas <- function(init_cows) {
+  # NOTE: currently, initial area_id must be set by users.
+  # Want to make a function to calculate initial area_id.
+  return(tiestall_table)
 }
 # NOTE: Is this function really necessary?
 
