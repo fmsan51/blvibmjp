@@ -80,7 +80,7 @@ setup_area_table <- function(area_table, cows, use_communal_pasture) {
     area_table <- rbindlist(list(area_table,
                                  list(area_id = nrow(area_table) + 1L,
                                       area_type = "communal pasture",
-                                      capacity = "Inf")
+                                      capacity = list(Inf))
                                  )
                             )
   }
@@ -88,6 +88,7 @@ setup_area_table <- function(area_table, cows, use_communal_pasture) {
   attr(area_table, "capacity") <- vapply(area_table$capacity, sum, 1)
   attr(area_table, "tie_stall") <- 
     area_table$area_id[area_tabe$area_type == "tie"]
+
   return(area_table)
 }
 
