@@ -78,7 +78,7 @@ setup_area_table <- function(area_table, cows, use_communal_pasture) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
   if (use_communal_pasture) {
     area_table <- rbindlist(list(area_table,
-                                 list(area_id = nrow(area_table) + 1L,
+                                 list(area_id = max(area_table$area_id) + 1L,
                                       area_type = "communal pasture",
                                       capacity = list(Inf))
                                  )
@@ -143,7 +143,8 @@ setup_movement_table <- function(area_table, movement_table,
  
   # Add movement from/to a communal pasture to movement_table
   if (!is.null(communal_pasture_table)) {
-    compas_area_id <- nrow(area_id) + 1L
+    compas_area_id <- 
+      area_table$area_id[area_table$area_type == "communal pasture"]
 
     # Set movement to a communal pasture with the highest priority
     # (= in the top rows)
