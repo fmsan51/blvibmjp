@@ -255,8 +255,34 @@ a_movement <- data.table(current_area = NA_integer_,
 # TODO: Make UI to setup this.
 
 
-## ---- rectal_palpation_template ----
+## ---- communal_pasture_template ----
+#' A data.table to manage use of a communal pasture
+#'
+#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm. 
+#' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
+#' 
+#' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
+#' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
+#' 
+#' @examples
+#' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
+#' # Delivered cows are send to the communal pasture from a delivered cow barn (area_id = 4) in April and come back to the same barn in October.
+#' communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
+#' communal_pasture_use[,
+#'  `:=`(area_out = c(2, 4),
+#'       area_back = c(3, 4),
+#'       condition_out = c("age == 20", "month == 4"),
+#'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
+#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @name communal_pasture_table
+#' @export
+a_communal_pasture_use <- data.table(area_out = NA_integer_,
+                                     area_back = NA_integer_,
+                                     condition_out = NA_character_,
+                                     condition_back = NA_character_)
 
+
+# ---- rectal_palpation_template ----
 #' A data.table to manage cow status related with rectal palpation
 #'
 #' `rp_table` is a [data.table][data.table::data.table] to manage cow status related with rectal palpation.
