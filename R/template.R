@@ -132,7 +132,7 @@ a_new_calf <- data.table(
 #'
 #' `tiestall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
 #' Each tie-stall barn have each `tiestall_table`.
-#' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
+#' The rows are consisted of `a_chamber`, which indicates one chamber in a barn.
 #'
 #' `chamber_id`, `is_edge`, and `area_id` are fixed. Values will not be changed while a simulation.
 #' Other variables are flexible. Values will may be changed while a simulation.
