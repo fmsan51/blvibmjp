@@ -159,7 +159,7 @@ a_new_calf <- data.table(
 #' @name tie_stall_table
 #' @export
 a_chamber <- data.table(
-  chamber_id = NA_integer_,
+  chamber_id = NA_integer_,  # NOTE: use NA_real_ and specify obstacles by 0.5
   adjoint_previous_chamber = NA,
   adjoint_next_chamber = NA,
 
