@@ -68,7 +68,7 @@
 #' @name cow_table
 #' @export
 a_new_calf <- data.table(
-                         # TODO: Add notes indicating which parameter is necessary and which is not.
+  # TODO: Add notes indicating which parameter is necessary and which is not.
   row_id = NA_integer_,
   # TODO:これもう使わないから削除。
   cow_id = NA_integer_,
