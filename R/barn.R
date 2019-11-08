@@ -165,6 +165,22 @@ remove_from_areas <- function(cows, removed_cow_id) {
                                         chamber_id = NA_integer_)]
   return(cows)
 }
+
+
+
+#' Assign chamber_id to cows allocated to tie-stall barns
+#'
+#' Assign `chamber_id` to cows allocated to tie-stall barns.
+#'
+#' @param cows See [cow_table].
+#' @param area_assignment A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_id_to_be_assigned_to_chambers_in_the_area), ...)`.
+#'
+#' @return A [cow_table] in which `chamber_id` is assigned according to `area_assignment`.
+assign_chambers <- function(cows, area_assignment) {
+  
+  return(cows)
+}
+
 #' Calculate capacity of an area based on inputed parameters
 #'
 #' @param herd_size The herd size in a simulated herd.
