@@ -152,6 +152,19 @@ find_empty_chamber <- function(area, added_cows) {
 # TODO: 移動させた後にarea_idを変えるコードがどこかにあることを確認する
 
 
+#' Remove cows from areas
+#'
+#' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
+#'
+#' @param cows See [cow_table].
+#' @param removed_cow_id `cow_id` of cows to be removed from current areas.
+#'
+#' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
+remove_from_areas <- function(cows, removed_cow_id) {
+  cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
+                                        chamber_id = NA_integer_)]
+  return(cows)
+}
 #' Calculate capacity of an area based on inputed parameters
 #'
 #' @param herd_size The herd size in a simulated herd.
