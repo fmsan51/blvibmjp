@@ -1,45 +1,45 @@
-#' Make a tiestall_table from a cow_table
+#' Make a tie_stall_table from a cow_table
 #'
-#' Make a [tiestall_table] based on x, y coordinates in a [cow_table].
+#' Make a [tie_stall_table] based on x, y coordinates in a [cow_table].
 #'
 #' @param cows See [cow_table].
 #' @param n_x The number of chambers in a lane.
 #' @param n_y The number of lanes in a tie-stall barn.
 #'
-#' @return A [tiestall_table].
+#' @return A [tie_stall_table].
 #' @export
-make_ts_area <- function(cows, n_x, n_y) {
+depreciate_make_ts_area <- function(cows, n_x, n_y) {
   # TODO: これcsvから読み込むような形にしたい
   area <- a_chamber[rep(1, n_x * n_y), ]
   area[, chamber_id := seq_len(.N)]
-  area[, is_edge1 := F]
-  area[, is_edge2 := F]
-  area[seq(1, n_x * n_y, by = n_x), is_edge1 := T]
-  area[seq(n_x, n_x * n_y, by = n_x), is_edge2 := T]
+  area[, adjoint_previous_chamber := F]
+  area[, adjoint_next_chamber := F]
+  area[seq(1, n_x * n_y, by = n_x), adjoint_previous_chamber := T]
+  area[seq(n_x, n_x * n_y, by = n_x), adjoint_next_chamber := T]
 
   area[cows$chamber_id, ':='(cow_id = cows$cow_id,
                               cow_status = cows$infection_status,
                               is_isolated = cows$is_isolated)]
-  area[, ':='(neighbor1_status = shift(cow_status, type = "lag"),
-               neighbor1_isolated = shift(is_isolated, type = "lag"),
-               neighbor2_status = shift(cow_status, type = "lead"),
-               neighbor2_isolated = shift(is_isolated, type = "lead"))]
+  area[, ':='(previous_neighbor_status = shift(cow_status, type = "lag"),
+               previous_neighbor_isolated = shift(is_isolated, type = "lag"),
+               next_neighbor_status = shift(cow_status, type = "lead"),
+               next_neighbor_isolated = shift(is_isolated, type = "lead"))]
 
   # TODO: これifelseの結果NAになる場合の対処はできているか？
   # そもそもNAにならないのか？
-  area[, ':='(neighbor1_infectivity = ifelse(is_edge1 == F &
-                                                neighbor1_isolated == F &
-                                                neighbor1_status != "s",
+  area[, ':='(previous_neighbor_infectivity = ifelse(adjoint_previous_chamber == F &
+                                                previous_neighbor_isolated == F &
+                                                previous_neighbor_status != "s",
                                               T, F),
-               neighbor2_infectivity = ifelse(is_edge2 == F &
-                                                neighbor2_isolated == F &
-                                                neighbor2_status != "s",
+               next_neighbor_infectivity = ifelse(adjoint_next_chamber == F &
+                                                next_neighbor_isolated == F &
+                                                next_neighbor_status != "s",
                                               T, F))]
 
   area[!is.na(cow_id),
         is_exposed := (is_isolated == F &
-                         (neighbor1_infectivity == T |
-                          neighbor2_infectivity == T)
+                         (previous_neighbor_infectivity == T |
+                          next_neighbor_infectivity == T)
                        )]
 
   return(area)
@@ -51,7 +51,7 @@ make_ts_area <- function(cows, n_x, n_y) {
 #' @param param_area See [param_area].
 #'
 #' @return A logical vector of length 4 which indicates whether barns are tie-stall or not.
-is_ts <- function(param_area) {
+depreciate_is_ts <- function(param_area) {
   # TODO: このfunction必要ないのでは？
   is_ts <- logical(4)
   for (area_id in 1:4) {
@@ -67,7 +67,7 @@ is_ts <- function(param_area) {
 #' @param param_calculated A list of parameters. See [calc_param()].
 #'
 #' @return A logical value.
-is_md_separated_in_ts <- function(param_calculated) {
+depreciate_is_md_separated_in_ts <- function(param_calculated) {
   # TODO: areaについて設定考えるときに変更
   area_m <- param_calculated$areas[3]
   area_d <- param_calculated$areas[4]
@@ -82,22 +82,22 @@ is_md_separated_in_ts <- function(param_calculated) {
 
 #' Remove dead or sold cows from a area
 #'
-#' @param area See [tiestall_table].
+#' @param area See [tie_stall_table].
 #' @param cow_id_removed The ID of cows removed from the area.
 #'
-#' @return A [tiestall_table].
+#' @return A [tie_stall_table].
 remove_from_area <- function(area, cow_id_removed) {
   # Remove chambers for isolation
   removed_chamber <- area[cow_id %in% cow_id_removed, chamber_id]
 
   contact1 <- removed_chamber + 1
   contact2 <- removed_chamber - 1
-  area[contact1[contact1 != (.N + 1)], ':='(neighbor1_status = NA,
-                                             neighbor1_isolated = NA,
-                                             neighbor1_infectivity = F)]
-  area[contact2[contact2 != 0], ':='(neighbor2_status = NA,
-                                      neighbor2_isolated = NA,
-                                      neighbor2_infectivity = F)]
+  area[contact1[contact1 != (.N + 1)], ':='(previous_neighbor_status = NA,
+                                             previous_neighbor_isolated = NA,
+                                             previous_neighbor_infectivity = F)]
+  area[contact2[contact2 != 0], ':='(next_neighbor_status = NA,
+                                      next_neighbor_isolated = NA,
+                                      next_neighbor_infectivity = F)]
 
   area[removed_chamber, ':='(cow_id = NA,
                               cow_status = NA,
@@ -109,15 +109,15 @@ remove_from_area <- function(area, cow_id_removed) {
 }
 
 
-#' Find empty chambers in a tiestall_table
+#' Find empty chambers in a tie_stall_table
 #'
-#' Find empty chambers in a tiestall_table and assign cows to chambers.
+#' Find empty chambers in a tie_stall_table and assign cows to chambers.
 #'
-#' @param area See [tiestall_table].
+#' @param area See [tie_stall_table].
 #' @param added_cows A [cow_table] consisted of cows to add to the area.
 #'
-#' @return A [tiestall_table].
-find_empty_chamber <- function(area, added_cows) {
+#' @return A [tie_stall_table].
+depreciated_find_empty_chamber <- function(area, added_cows) {
   area <- copy(area)
 
   empty_chamber <- area[is.na(cow_id), chamber_id]
@@ -127,29 +127,113 @@ find_empty_chamber <- function(area, added_cows) {
                             cow_status = added_cows$infection_status,
                             is_isolated = added_cows$is_isolated)]
 
-  neighbor2 <- added_chamber[which(added_chamber != nrow(area))] + 1
-  neighbor1 <- added_chamber[which(added_chamber != 1)] - 1
-  area[neighbor2, ':='(neighbor1_status = area[neighbor2 - 1, cow_status],
-                        neighbor1_isolated = area[neighbor2 - 1, is_isolated])]
-  area[neighbor1, ':='(neighbor2_status = area[neighbor1 + 1, cow_status],
-                        neighbor2_isolated = area[neighbor1 + 1, is_isolated])]
+  next_neighbor <- added_chamber[which(added_chamber != nrow(area))] + 1
+  previous_neighbor <- added_chamber[which(added_chamber != 1)] - 1
+  area[next_neighbor, ':='(previous_neighbor_status = area[next_neighbor - 1, cow_status],
+                        previous_neighbor_isolated = area[next_neighbor - 1, is_isolated])]
+  area[previous_neighbor, ':='(next_neighbor_status = area[previous_neighbor + 1, cow_status],
+                        next_neighbor_isolated = area[previous_neighbor + 1, is_isolated])]
 
   # TODO: ここ、infectivityがNAになる場合の対処はできているか？　そもそもNAにならないのか？
-  area[c(added_chamber, neighbor2, neighbor1),
-        ':='(neighbor1_infectivity = ifelse(is_edge1 == F &
-                                             neighbor1_isolated == F &
-                                             neighbor1_status != "s", T, F),
-             neighbor2_infectivity = ifelse(is_edge2 == F &
-                                             neighbor2_isolated == F &
-                                             neighbor2_status != "s", T, F))]
+  area[c(added_chamber, next_neighbor, previous_neighbor),
+        ':='(previous_neighbor_infectivity = ifelse(adjoint_previous_chamber == F &
+                                             previous_neighbor_isolated == F &
+                                             previous_neighbor_status != "s", T, F),
+             next_neighbor_infectivity = ifelse(adjoint_next_chamber == F &
+                                             next_neighbor_isolated == F &
+                                             next_neighbor_status != "s", T, F))]
   area[, is_exposed := (is_isolated == F &
-                         (neighbor1_infectivity == T |
-                          neighbor2_infectivity == T))]
+                         (previous_neighbor_infectivity == T |
+                          next_neighbor_infectivity == T))]
   area[is.na(cow_id), is_exposed := NA]
 
   return(area)
 }
 # TODO: 移動させた後にarea_idを変えるコードがどこかにあることを確認する
+
+
+#' Remove cows from areas
+#'
+#' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
+#'
+#' @param cows See [cow_table].
+#' @param removed_cow_id `cow_id` of cows to be removed from current areas.
+#'
+#' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
+remove_from_areas <- function(cows, removed_cow_id) {
+  cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
+                                        chamber_id = NA_integer_)]
+  return(cows)
+}
+
+
+
+#' Assign chamber_id to cows allocated to tie-stall barns
+#'
+#' Assign `chamber_id` to cows allocated to tie-stall barns.
+#'
+#' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#' @param area_assignment See [calculate_area_assignment()].
+#' 
+#' @note This function assign `chamber_id` just for `cows`. Assignment of `cow_id` in `area_list` must be done by [assign_cows] after using this function.
+#'
+#' @return A [cow_table].
+assign_chambers <- function(cows, area_list, area_assignment) {
+  for (i_area in names(area_assignment)) {
+    assigned_area <- area_list[[i_area]]
+    assigned_cows <- area_assignment[[i_area]]
+    empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
+    assined_chambers <- sample(empty_chambers, length(assigned_cows))
+    cows$chamber_id[cows$cow_id %in% assigned_cows] <- assigned_chambers
+  }
+  return(cows)
+}
+# TODO: Think a way to combine assign_chambers and assign_cows
+
+
+#' Assign cows to area_list according to cow_table.
+#'
+#' Assign `chamber_id` to cows allocated to tie-stall barns.
+#'
+#' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#' @param area_assignment See [calculate_area_assignment()].
+#'
+#' @note This function assign `cow_id` just for `area_list`. Assignment of `chamber_id` in `cows` must be done by [assign_chambers] before using this function.
+#'
+#' @return A [area_list].
+assign_cows <- function(cows, area_list, area_assignment) {
+  for (i_area in names(area_assignment)) {
+    assigned_area <- area_list[[i_area]]
+    assigned_cows <- area_assignment[[i_area]]
+    assigned_chambers <- assigned_cows$chamber_id[match(assigned_cows, cow_id)]
+    assigned_area$cow_id[assigned_chambers] <- assigned_cows
+    area_list[[i_area]] <- assigned_area
+  }
+  return(area_list)
+}
+
+
+#' Make area_assignment list
+#'
+#' Make an `area_assignment` list which is used for [assign_chambers()] and [assign_cows()].
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param assigned_cow_id integer vector. An `area_assignment` list will be made only about cows specified by this parameter. When `NA` is set, all the cows are used.
+#' 
+#' @return A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
+calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
+  if (is.null(assigned_cow_id)) {
+    cows_assigned <- cows
+  } else {
+    cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
+  }
+  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
+                                   split(.SD[["cow_id"]], area_id)]
+  return(area_assignment)
+}
 
 
 #' Calculate capacity of an area based on inputed parameters

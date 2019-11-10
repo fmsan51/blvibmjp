@@ -56,14 +56,14 @@
 #'     - "comranch": infected at a communal ranch.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' - `area_id`: Area ID. Negative `area_id` indicates that a cow is kept in a tie-stall barn but no chamber is assigned. Such cows can freely walk in the barn and contant with any cows in the barn. Such cows arise when cows must assigned to the barn but there is no empty barns. Chambers will be assigned to the cows immediately after empty chambers are made.
+#' - `area_id`: Area ID.
 #' - `months_in_area`: The number of month a cow stayed in the current area.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
 #' - `i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table][data.table::data.table]
-#' @seealso [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @seealso [tie_stall_table] [area_table] [movement_table] [rp_table]
 #'
 #' @name cow_table
 #' @export
@@ -91,7 +91,7 @@ a_new_calf <- data.table(
   parity = NA_real_,
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
-  date_dried = NA_real_,  # TODO: make function to set this 
+  date_dried = NA_real_,  # TODO: make function to set this
   n_ai = NA_real_,
   day_heat = NA_real_,
   day_last_heat = NA_real_,
@@ -119,27 +119,27 @@ a_new_calf <- data.table(
   months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)
-  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tiestall_table holds chamber_id.
+  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tie_stall_table holds chamber_id.
   is_isolated = NA,
   i_month = NA_real_
 )
 # TODO: consider whether status can removed from the codes.
 
 
-## ---- tiestall_template ----
+# ---- tie_stall_template ----
 
 #' A data.table to store status of a tie-stall barn
 #'
-#' `tiestall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
-#' Each tie-stall barn have each `tiestall_table`.
-#' The rows are consists of `a_chamber`, which indicates one chamber in a barn.
+#' `tie_stall_table` is a [data.table][data.table::data.table] to store status of tie-stall barns.
+#' Each tie-stall barn have each `tie_stall_table`.
+#' The rows are consisted of `a_chamber`, which indicates one chamber in a barn.
 #'
-#' `chamber_id`, `is_edge`, and `area_id` are fixed. Values will not be changed while a simulation.
+#' `chamber_id` and `adjoin_previous/next_chamber` are fixed. Values will not be changed while a simulation.
 #' Other variables are flexible. Values will may be changed while a simulation.
 #'
 #' - `chamber_id`: Chamber ID.
-#' - `is_edge1`: Whether the chamber is at a right end of a lane.
-#' - `is_edge2`: Whether the chamer is at a left end of a lane.
+#' - `adjoin_previous_chamber`: Whether the chamber adjoins the `chamber_id - 1`th chamber.
+#' - `adjoin_next_chamber`: Whether the chamber adjoins the `chamber_id + 1`th chamber.
 #' - `cow_id`: Cow ID in a lane.
 #' - `cow_status`: Infection status of the cow.
 #' - `is_exposed`:
@@ -148,20 +148,20 @@ a_new_calf <- data.table(
 #'     NA = No cow in the chamber.
 #' - `is_isolated`: Whether the cow is isolated or not.
 #' - `hazard_ratio`: Hazard ratio of infection to the cow calculated based on neighbors' infection status.
-#' - `neighbor1_status`: Infection status of the neighbor in the right chamber.
-#' - `neighbor1_isolated`: Whether the cow in the right chamber is isolated or not.
-#' - `neighbor1_infectivity`:
+#' - `previous_neighbor_status`: Infection status of the neighbor in the right chamber.
+#' - `previous_neighbor_isolated`: Whether the cow in the right chamber is isolated or not.
+#' - `previous_neighbor_infectivity`:
 #'     TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
-#' - `neighbor2_status`, `neighbor2_isolated`, `neighbor2_infectivity`: Variables about the neighbor in the left chamber.
+#' - `next_neighbor_status`, `next_neighbor_isolated`, `next_neighbor_infectivity`: Variables about the neighbor in the left chamber.
 #'
 #' @format [data.table][data.table::data.table]
 #' @seealso [cow_table] [area_table] [movement_table] [rp_table]
-#' @name tiestall_table
+#' @name tie_stall_table
 #' @export
 a_chamber <- data.table(
-  chamber_id = NA_integer_,
-  is_edge1 = NA,
-  is_edge2 = NA,
+  chamber_id = NA_integer_,  # NOTE: use NA_real_ and specify obstacles by 0.5
+  adjoint_previous_chamber = NA,
+  adjoint_next_chamber = NA,
 
   cow_id = NA_integer_,
   cow_status = NA_character_,
@@ -169,21 +169,18 @@ a_chamber <- data.table(
   is_isolated = NA,
   hazard_ratio = NA_real_,
 
-  neighbor1_status = NA_character_,
-  neighbor1_isolated = NA,
-  neighbor1_infectivity = F,
+  previous_neighbor_status = NA_character_,
+  previous_neighbor_isolated = NA,
+  previous_neighbor_infectivity = F,
   # TODO: ここ自分がisolatedかどうかは無視することになってる。ややこしいので変えたい
-  # TODO: ここもneighbor1がいないときはNA、みたいに変える
-  neighbor2_status = NA_character_,
-  neighbor2_isolated = NA,
-  neighbor2_infectivity = F,
-
-  area_id = NA_integer_
+  # TODO: ここもprevious_neighborがいないときはNA、みたいに変える
+  next_neighbor_status = NA_character_,
+  next_neighbor_isolated = NA,
+  next_neighbor_infectivity = F,
 )
 
 
-
-## ---- area_template ----
+# ---- area_template ----
 
 #' A data.table to manage areas in a farm
 #'
@@ -198,8 +195,8 @@ a_chamber <- data.table(
 #' 
 #' @note
 #' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
-#' - `n_cows`: The number of cows currently kept in a area.
 #' - `capacity`: Max number of cows can be kept in a area.
+#' - `tie_stall`: `area_id`s of tie-stall areas.
 #'
 #' @examples
 #' # A farm has three areas:
@@ -210,14 +207,14 @@ a_chamber <- data.table(
 #' areas[, `:=`(area_id = 1:3,
 #'              area_type = c("free", "outside", "tie"),
 #'              capacity = list(30, NA, c(40, 40, 30, 30))]
-#' @seealso [cow_table] [tiestall_table] [movement_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [movement_table] [rp_table]
 #' @name area_table
 #' @export
 a_area <- data.table(area_id = NA_integer_,
                      area_type = NA_character_,
                      capacity = list(NA))
 
-## ---- movement_template ----
+# ---- movement_template ----
 
 #' A data.table to manage cows' movement between areas
 #'
@@ -239,29 +236,31 @@ a_area <- data.table(area_id = NA_integer_,
 #' If a cow meets multiple conditions, the condition in the fastest row will be used.
 #'
 #' @examples
-#' movements <- a_movement[rep(1, 4), ]
-#' movements[, `:=`(condition = c("age > 2", "delivery0", NA, "delivery"),
-#'                  next_area = list(2L, 3:4, NA, 3:4),
-#'                  priority = list(NA, NA, NA, c(1, 2)))]
+#' movements <- a_movement[rep(1, 3), ]
+#' movements[, `:=`(current_area = c(1L, 2L, 3L),
+#'                  condition = c("age > 2", "delivery", "delivery"),
+#'                  next_area = list(2L, 3:4, 3:4),
+#'                  priority = list(NA, NA, c(1, 2)))]
 #'
-#' @seealso [cow_table] [tiestall_table] [area_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [rp_table]
 #' @name movement_table
 #' @export
-a_movement <- data.table(condition = NA_character_,
+a_movement <- data.table(current_area = NA_integer_,
+                         condition = NA_character_,
                          next_area = list(NA),
                          priority = list(NA))
 # TODO: Make UI to setup this.
 
-## ---- communal_pasture_template ----
+# ---- communal_pasture_template ----
 
 #' A data.table to manage use of a communal pasture
 #'
-#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm. 
+#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
 #' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
-#' 
+#'
 #' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
 #' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
-#' 
+#'
 #' @examples
 #' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
 #' # Delivered cows are send to the communal pasture from a delivered cow barn (area_id = 4) in April and come back to the same barn in October.
@@ -271,13 +270,14 @@ a_movement <- data.table(condition = NA_character_,
 #'       area_back = c(3, 4),
 #'       condition_out = c("age == 20", "month == 4"),
 #'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
-#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table] [rp_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table] [rp_table]
 #' @name communal_pasture_table
 #' @export
 a_communal_pasture_use <- data.table(area_out = NA_integer_,
                                      area_back = NA_integer_,
                                      condition_out = NA_character_,
                                      condition_back = NA_character_)
+
 
 # ---- rectal_palpation_template ----
 
@@ -294,7 +294,7 @@ a_communal_pasture_use <- data.table(area_out = NA_integer_,
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
 #' @format [data.table] [data.table::data.table]
-#' @seealso [cow_table] [tiestall_table] [area_table] [movement_table]
+#' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table]
 #' @name rp_table
 #' @export
 one_day_rp <- data.table(cow_id = NA_integer_,
@@ -305,4 +305,3 @@ one_day_rp <- data.table(cow_id = NA_integer_,
                          is_after_inf = NA,
                          is_infected = NA)
 # TODO: 名前は検討
-

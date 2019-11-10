@@ -82,11 +82,8 @@ param_farm <- list(
 
 #' Parameters about areas which should be set by users
 #'
-#' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves specified in `[area_table]`.
-#' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. See explanation of `priority` in `[area_table]` for meaning of `priority`.
-#' - `xy_chamber`: The number of chambers per lane and the number of lanes.
-#' - `is_calf_separated`: Whether each calf is separated.
-#' - `is_milking_dry_separated`: (For a farm which miling and dry cows are kept in same tie-stall barn,) whether dry cows are separated from milking cows.
+#' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves. For detail of `area_id`, see `[area_table]`.
+#' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. For detail of `priority`, see [area_table].
 #'
 #' @seealso [param_simulation] [param_farm]
 #' @export
@@ -94,13 +91,6 @@ param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
   calf_area_id = NA_real_,
   calf_area_priority = NA_real_,
-  xy_chamber = NA,
-  is_calf_separated = NA,
-
-  # (For a farm which miling and dry cows are kept in same tie-stall barn,)
-  # are dry cows are separated from milking cows?
-  # (NA means milking cows and dry cows are in different barns.)
-  is_milking_dry_separated = NA
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?
   # is_layout_on_stage = F,
