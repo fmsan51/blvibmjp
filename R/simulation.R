@@ -14,7 +14,7 @@
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param_simulation$output_dir`.
 simulate_blv_spread <- function(param_simulation, param_farm, param_area,
-                                area_table, movement_table, 
+                                area_table, movement_table,
                                 communal_pasture_table = NULL,
                                 list_param_modification = NULL,
                                 save_cows = T, save_param = T,
@@ -83,8 +83,8 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #'
 #' @return A list composed of two components: `result_combined` and `result_areas_combined`
 #' @export
-simulate_once <- function(setup_cows_res, area_list, area_table, 
-                          movement_table, day_rp, i_simulation, 
+simulate_once <- function(setup_cows_res, area_list, area_table,
+                          movement_table, day_rp, i_simulation,
                           result, result_areas,
                           param_simulation, param_area, param_processed,
                           param_modification, save_cows, save_param) {
@@ -101,7 +101,7 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     # Here, 1:n, not seq_len(n), is used due to the speed
     month <- (i + param_simulation$simulation_start - 2) %% 12 + 1
     cows <- set_i_month(cows, i)
-    
+
     cows <- add_1_to_age(cows)
     # TODO: change_stage と move_area を分けたい
     cows <- do_ai(cows, i, day_rp, param_calculated)
@@ -141,4 +141,4 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
   return(result_combined)
 }
 # TODO: simulationが強制終了したとき用の備え
-
+# TODO: Make functions to load area_table, area_list, ... from csv files
