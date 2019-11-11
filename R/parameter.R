@@ -71,7 +71,7 @@ param_farm <- list(
   # TODO: Warn if capacity doesn't follow current number of cows
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
-  use_comunnal_pasture = NA,
+  use_comunnal_pasture = F,
 
   change_needles = NA,
   # TODO: Make it to prop
