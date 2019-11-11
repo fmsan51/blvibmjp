@@ -107,6 +107,7 @@ setup_area_table <- function(area_table, cows, param_farm) {
                             )
   }
 
+
   attr(area_table, "capacity") <- 
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
   attr(area_table, "tie_stall") <- 
@@ -132,8 +133,6 @@ setup_movement_table <- function(area_table, movement_table,
   movement_table$next_area <- 
     mapply(function(next_area, priority) {next_area[order(priority)]},
            movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
-  # Sort prority (don't bring this before the previous line)
-  movement_table$priority <- lapply(movement_table$priority, sort)
 
   # translate condition from a form that users can easily understand
   # to a form that functions can easily understand
@@ -190,7 +189,7 @@ setup_movement_table <- function(area_table, movement_table,
   attr(movement_table, "factored_current_area") <-
     factor(movement_table$current_area, levels = area_table$area_id)
   attr(movement_table, "is_priority_specified_by_integer") <-
-    vapply(movement_table$priority, function(x) all(is.wholenumber(x)), T)
+    vapply(movement_table$priority, is.wholenumber, T)
 
   return(movement_table)
 }
