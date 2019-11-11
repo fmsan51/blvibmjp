@@ -75,7 +75,7 @@ param_farm <- list(
 
   change_needles = NA,
   # TODO: Make it to prop
-  change_gloves = F,
+  change_gloves = T,
   # TODO: ditto
 
   days_milking = NA
