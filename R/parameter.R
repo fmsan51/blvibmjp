@@ -71,7 +71,7 @@ param_farm <- list(
   # TODO: Warn if capacity doesn't follow current number of cows
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
-  use_comunnal_pasture = F,
+  use_communal_pasture = F,
 
   change_needles = NA,
   # TODO: Make it to prop
@@ -423,32 +423,36 @@ calc_param <- function(param_farm, modification = NULL) {
 
 #' Calculate parameters based on other parameters
 #'
-#' - `is_ts`: Wheter barns are tie-stall.
-#' - `ts_area`: Area ID of tie-stall Areas.
-#' - `is_md_separated_in_ts`: Whether milking and dry cows are separated.
-#' - `capacity`: The result of [set_capacity()].
+#' - `param_output_filename`: Name of a file to which output simulation parameters.
+#' - `herd_size_limits`: Lower and upper limits of the number of cattle should be kept in the herd.
 #' - `prob_rep`: The result of [set_prob_rep()]. The probability that a newborn female calf will be a replacement cow.
+#' - `graze_cows`: Whether cows are grazed or not.
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
 #' @param setup_cows_res A result of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
-#' @param param_area See [param_area].
 #'
 #' @return A list of calculated parameters.
 #' @export
-process_param <- function(setup_cows_res,
-                          param_simulation, param_farm, param_area) {
+process_param <- function(setup_cows_res, param_simulation, param_farm) {
+  herd_size <- sum(setup_cows_res$init_cows$is_owned, na.rm = T)
+
   list(
     param_output_filename = paste0("param_", param_simulation$output_filename),
-    is_ts = is_ts(param_area),
-    ts_area = which(is_ts(param_area)),
-    # is_md_separated_in_ts = is_md_separated_in_ts(param_area),
-    capacity = set_capacity(setup_cows_res$init_last_cow_id, param_farm),
+    herd_size_limits = if (!anyNA(param_farm$capacity_in_head)) {
+        param_farm$capacity_in_head
+      } else if (!anyNA(param_farm$capacity_as_ratio)) {
+        herd_size * capacity_as_ratio
+      } else {
+        herd_size * c(0.9, 1.1)
+      },
     prob_rep = set_prob_rep(
       setup_cows_res$init_cows[stage %in% c("milking", "dry"), .N],
-      param_farm)
+      param_farm),
+    graze_cows = anyNA(param_farm$hours_grazing)
   )
 }
+# TODO: Is this function really necessary?
 

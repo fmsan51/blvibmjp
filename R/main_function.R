@@ -320,93 +320,34 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 }
 
 
-#' Change stage of cows and move cows between areas accordinglly
+#' Change stage of cows accordinglly
 #'
 #' @param cows See [cow_table].
-#' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
-#' @param param_processed Return from [process_param()].
 #'
 #' @return A list consists of `cow_table` and `tie_stall_table`.
 #' @export
-change_stage <- function(cows, areas, i, param_area, param_calculated,
-                         param_processed) {
+change_stage <- function(cows, i, param_calculated) {
   # TODO: 12-23mo is heifer (temporary)
-  param_area_id <- 1:(param_area$n_area)
-
   # Calf to heifer
-  row_c2h <- which(cows$age == 12)
-  cows[row_c2h, ':='(stage = "heifer",
-                     parity = 0,
-                     area_id = param_area_id[2])]
-  if (param_processed$is_ts[1]) {
-    areas[[1]] <- remove_from_area(areas[[1]], cows[row_c2h, cow_id])
-  }
-  if (param_processed$is_ts[2]) {
-    areas[[param_area_id[2]]] <-
-      find_empty_chamber(areas[[param_area_id[2]]], cows[row_c2h, ])
-  }
-    # TODO: Consider when the barn is full
-    # TODO: Consider when cows at different stage are kept in different areas in the same barn.
+  cows[age == 12, ':='(stage = "heifer",
+                       parity = 0)]
 
-  # Heifer to milking
-  row_h2m <- which(cows$stage == "heifer" & (i - cows$date_got_pregnant) == 10)
-  cows[row_h2m, ':='(stage = "milking",
-                     date_last_delivery = i,
-                     parity = 1,
-                     date_got_pregnant = NA,
-                     area_id = param_area_id[3],
-                     day_heat = sample.int(30, .N, replace = T) * 1,
-                     day_last_heat = sample.int(30, .N, replace = T) * 1)]
-  if (param_processed$is_ts[2]) {
-    # TODO: ditto. Make a separate function because it does same thing with the previous codes.
-    areas[[param_area_id[2]]] <-
-      remove_from_area(areas[[param_area_id[2]]], cows[row_h2m, cow_id])
-  }
-  if (param_processed$is_ts[3]) {
-    areas[[param_area_id[3]]] <-
-      find_empty_chamber(areas[[param_area_id[3]]], cows[row_h2m, ])
-  }
-
-  # Dry to milking
-  row_d2m <- which((i - cows$date_got_pregnant) == 10)
-  cows[row_d2m, ':='(stage = "milking",
-                     date_last_delivery = i,
-                     parity = parity + 1,
-                     date_got_pregnant = NA,
-                     area_id = param_area_id[3],
-                     day_heat = sample.int(30, .N, replace = T) * 1,
-                     day_last_heat = sample.int(30, .N, replace = T) * 1)]
-  if (param_processed$is_ts[4]) {
-    # TODO: ditto
-    areas[[param_area_id[4]]] <-
-      remove_from_area(areas[[param_area_id[4]]], cows[row_d2m, cow_id])
-  }
-  if (param_processed$is_ts[3]) {
-    areas[[param_area_id[3]]] <-
-      find_empty_chamber(areas[[param_area_id[3]]], cows[row_d2m, ])
-  }
+  # Heifer/Dry to milking
+  cows[(i - date_got_pregnant) == 10,
+       ':='(stage = "milking",
+            date_last_delivery = i,
+            parity = parity + 1,
+            date_got_pregnant = NA,
+            day_heat = sample.int(30, .N, replace = T) * 1,
+            day_last_heat = sample.int(30, .N, replace = T) * 1)]
 
   # Milking to dry
-  row_m2d <- which(cows$stage == "milking" &
-                     is_dried(i - cows$date_last_delivery, param_calculated))
-  cows[row_m2d, ':='(stage = "dry",
-                     area_id = param_area_id[4])]
+  cows[stage == "milking" & is_dried(i - date_last_delivery, param_calculated),
+       stage := "dry"]
 
-  if (param_processed$is_ts[3]) {
-    # TODO: ditto
-    areas[[param_area_id[3]]] <-
-      remove_from_area(areas[[param_area_id[3]]], cows[row_m2d, cow_id])
-  }
-  if (param_processed$is_ts[4]) {
-    areas[[param_area_id[4]]] <-
-      find_empty_chamber(areas[[param_area_id[4]]], cows[row_m2d, ])
-  }
-  # TODO: Consider cows which will be sold at this point
-
-  return(list(cows = cows, areas = areas))
+  return(cows)
 }
 
 
@@ -482,7 +423,8 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 #' @export
 add_newborns <- function(cows, i, last_cow_id, param_calculated,
                          param_processed) {
-  rows_mothers <- which(cows$date_last_delivery == i)  # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
+  rows_mothers <- which(cows$date_last_delivery == i)
+  # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
   # TODO: Consider the functions to change stage and consider delivery could be the same or not.
   n_cows <- sum(!is.na(cows$cow_id))
@@ -507,7 +449,7 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
                     is_owned = T,
                     is_introduced = F,
                     is_in_common_ranch = F,
-                    is_grazed = F,  # TODO: とりあえず放牧はしていないことにする
+                    is_grazed = param_processed$graze_cows,
                     parity = 0,
                     n_ai = 0,
                     day_heat = sample.int(30, n_newborns, replace = T) * 1,
@@ -665,7 +607,7 @@ extract_owned_cows <- function(cows) {
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
-change_area <- function(cows, movement_table, areas, area_list) {
+change_area <- function(cows, movement_table, area_table, area_list) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
@@ -677,14 +619,14 @@ change_area <- function(cows, movement_table, areas, area_list) {
 
   # Remove duplicated cow_id
   duplicated_cow_id <-
-    relist(!duplicated(flatten_dbl(cows_to_move)), cows_to_move)
+    relist(!duplicated(flatten_dbl(cow_id_met_condition)), cow_id_met_condition)
   cow_id_to_move <- mapply(function(x, y) {x[y]},
                            cow_id_met_condition, duplicated_cow_id,
                            SIMPLIFY = FALSE)
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <-
-    table(factor(cows[is_owned, area_id], levels = area_table$area_id))
+    table(factor(cows[(is_owned), area_id], levels = area_table$area_id))
   n_cows_to_move_by_each_condition <- sapply(cow_id_to_move, length)
   n_cows_to_move_in_each_area <- tapply(
     n_cows_to_move_by_each_condition,
@@ -696,8 +638,7 @@ change_area <- function(cows, movement_table, areas, area_list) {
   # Remove cows from areas
   vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
   cows <- remove_from_areas(cows, vec_cows_to_move)
-
-  cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned))
+  cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned, na.rm = T))
   cow_id_allocated_to_full_areas_index <- 0
 
   # Decide to which next_area cows will move
@@ -707,17 +648,17 @@ change_area <- function(cows, movement_table, areas, area_list) {
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
       # For conditions with priorities specified by integers
 
-      i_next_area <- movement_table$next_area[i_movement]
+      i_next_area <- movement_table$next_area[[i_movement]]
       chr_i_next_area <- as.character(i_next_area)
       empty_spaces_in_next_areas <- empty_spaces[chr_i_next_area]
       allocated_area_index <-
-        findInterval(seq_along(ith_cow_id),
+        findInterval(seq_along(i_cow_id),
                      c(0, cumsum(empty_spaces_in_next_areas)), left.open = T)
       allocated_areas <- i_next_area[allocated_area_index]
       empty_spaces[chr_i_next_area] <-
         table(factor(allocated_areas, levels = chr_i_next_area))
 
-      # When length(ith_cow_id) is larger than sum(empty_spaces_in_next_area),
+      # When length(i_cow_id) is larger than sum(empty_spaces_in_next_area),
       # allocated_area_index includes NA.
       # Then allocate such cows into full areas according to capacity.
       if (anyNA(allocated_areas)) {
