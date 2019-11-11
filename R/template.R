@@ -176,7 +176,7 @@ a_chamber <- data.table(
   # TODO: ここもprevious_neighborがいないときはNA、みたいに変える
   next_neighbor_status = NA_character_,
   next_neighbor_isolated = NA,
-  next_neighbor_infectivity = F,
+  next_neighbor_infectivity = F
 )
 
 
@@ -192,7 +192,7 @@ a_chamber <- data.table(
 #' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
 #'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
 #'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
-#' 
+#'
 #' @note
 #' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
 #' - `capacity`: Max number of cows can be kept in a area.

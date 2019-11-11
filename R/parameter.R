@@ -36,7 +36,7 @@ param_simulation <- list(
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
 #' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
-#' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0)) 
+#' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
@@ -92,7 +92,7 @@ param_farm <- list(
 param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
   calf_area_id = NA_real_,
-  calf_area_priority = NA_real_,
+  calf_area_priority = NA_real_
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?
   # is_layout_on_stage = F,
