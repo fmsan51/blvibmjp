@@ -35,6 +35,7 @@ param_simulation <- list(
 #' - `months_grazing` (1-12), `hours_grazing` (0-23): Months and hours for grazing. (default: no grazing)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
+#' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0)) 
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
@@ -70,6 +71,7 @@ param_farm <- list(
   # TODO: Warn if capacity doesn't follow current number of cows
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
+  use_comunnal_pasture = NA,
 
   change_needles = NA,
   # TODO: Make it to prop
