@@ -13,6 +13,7 @@
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param_simulation$output_dir`.
+#' @export
 simulate_blv_spread <- function(param_simulation, param_farm, param_area,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
