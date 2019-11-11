@@ -92,13 +92,13 @@ setup_tie_stall_table <- function(init_cows, areas) {
 #'
 #' @param area_table See [area_table].
 #' @param cows See [cow_table].
-#' @param use_communal_pasture logical. Whether a farm uses a communal pasture or not.
+#' @param param_farm See [param_farm].
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 #' @export
-setup_area_table <- function(area_table, cows, use_communal_pasture) {
+setup_area_table <- function(area_table, cows, param_farm) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (use_communal_pasture) {
+  if (param_farm$use_communal_pasture) {
     area_table <- rbindlist(list(area_table,
                                  list(area_id = max(area_table$area_id) + 1L,
                                       area_type = "communal pasture",
