@@ -24,6 +24,6 @@ The rows are consists of \code{day_rp}, which indicates one chance of rectal pal
 }
 }
 \seealso{
-\link{cow_table} \link{area_table} \link{tiestall_table}
+\link{cow_table} \link{tie_stall_table} \link{area_table} \link{movement_table}
 }
 \keyword{datasets}

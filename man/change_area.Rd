@@ -4,15 +4,19 @@
 \alias{change_area}
 \title{Check and move cows between areas}
 \usage{
-change_area(cows, area)
+change_area(cows, movement_table, areas, area_list)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{area}{See \link{area_table}.}
+\item{movement_table}{See \link{movement_table}.}
+
+\item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
+
+\item{area_table}{See \link{area_table}.}
 }
 \value{
-A \link{cow_table}.
+A list composed of \link{cow_table} and \link{area_list}.
 }
 \description{
 Check and move cows between areas

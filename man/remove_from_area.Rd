@@ -2,18 +2,18 @@
 % Please edit documentation in R/barn.R
 \name{remove_from_area}
 \alias{remove_from_area}
-\title{Remove dead or sold cows from an area}
+\title{Remove dead or sold cows from a area}
 \usage{
 remove_from_area(area, cow_id_removed)
 }
 \arguments{
-\item{area}{See \link{tiestall_table}.}
+\item{area}{See \link{tie_stall_table}.}
 
 \item{cow_id_removed}{The ID of cows removed from the area.}
 }
 \value{
-A \link{tiestall_table}.
+A \link{tie_stall_table}.
 }
 \description{
-Remove dead or sold cows from an area
+Remove dead or sold cows from a area
 }

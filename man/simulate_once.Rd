@@ -4,20 +4,24 @@
 \alias{simulate_once}
 \title{Body of the simulation}
 \usage{
-simulate_once(setup_cows_res, init_areas, day_rp, i_simulation, result,
-  result_areas, param_simulation, param_area, param_processed,
-  param_modification, save_cows, save_param)
+simulate_once(setup_cows_res, area_list, area_table, movement_table,
+  day_rp, i_simulation, result, result_areas, param_simulation, param_area,
+  param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
 \item{setup_cows_res}{A result of \code{\link[=setup_cows]{setup_cows()}}.}
 
-\item{init_areas}{A result of \code{\link[=setup_areas]{setup_areas()}}.}
+\item{area_list}{A result of \code{\link[=setup_areas]{setup_areas()}}.}
+
+\item{area_table}{A result of \code{\link[=setup_area_table]{setup_area_table()}}.}
+
+\item{movement_table}{A result of \code{\link[=setup_movement_table]{setup_movement_table()}}.}
 
 \item{day_rp}{A result of \code{\link[=setup_rp_table]{setup_rp_table()}}.}
 
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_areas}{Lists to store a \code{cow_table} and a \code{tiestall_table} respectively.}
+\item{result, result_areas}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
 

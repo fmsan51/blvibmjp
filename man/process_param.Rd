@@ -20,7 +20,7 @@ A list of calculated parameters.
 }
 \description{
 \itemize{
-\item \code{is_ts}: Whether barns are tie-stall.
+\item \code{is_ts}: Wheter barns are tie-stall.
 \item \code{ts_area}: Area ID of tie-stall Areas.
 \item \code{is_md_separated_in_ts}: Whether milking and dry cows are separated.
 \item \code{capacity}: The result of \code{\link[=set_capacity]{set_capacity()}}.

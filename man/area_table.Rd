@@ -4,51 +4,44 @@
 \name{area_table}
 \alias{area_table}
 \alias{a_area}
-\title{A data.table to manage cows' movement between barns}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 6 columns.}
+\title{A data.table to manage areas in a farm}
+\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.}
 \usage{
 a_area
 }
 \description{
-\code{area_table} is a \link[data.table:data.table]{data.table} to manage cow movement among hatches, barns, paddocks etc. in a farm.
-A \code{area_table} is consisted of following items and users must specify before starting a simulation.
+\code{area_table} is a \link[data.table:data.table]{data.table} to manage areas (barns, paddocks, hatches, etc.) in a farm.
+Users must specify one \code{area_table} consisted of following items before starting a simulation.
 }
 \details{
 \itemize{
-\item \code{area_id}: Area id. Specify by integers.
-\item \code{area_type} (\code{"free"}/\code{"tie"}/\code{"outside"}): Type of a area. Specify one-of \code{"free"} (hatch, freebarn, free-stall, etc.), \code{"tie"} (tie-stall) or \code{"outside"} (paddock or rangeland, etc.).
-\item \code{capacity}: Capacity of the area in head. \code{Inf} is set if you specify \code{NA}.
-\item \code{condition}: Condition that cows in the area move to the next area(s). Describe logical conditions as character (see Example). You can use following terms to specify \code{condition}:
+\item \code{area_id} (integer): Area ID.
+\item \code{area_type} (\code{"free"}/\code{"tie"}/\code{"outside"}): Type of a area. Specify one of \code{"free"} (hatch, freebarn, free-stall, etc.), \code{"tie"} (tie-stall) or \code{"outside"} (paddock or rangeland, etc.).
+\item \code{capacity} (list consisted of numeric): Max number of cows to be kept in the area. \code{Inf} is set if you specify \code{NA}.
 \itemize{
-\item \code{age}: Age in month. Use like \code{age > 20}.
-\item \code{parity}: Parity. Use like \code{parity > 1}.
-\item \code{delivery}, \code{pregnancy}, \code{dry}
-\item \code{dim}: Day in milking. Use like \code{dim > 100}.
-\item \code{NA}: Cows don't move from the area.
+\item For an area with \code{area_type} of "free" or "outside": specify by a numeric.
+\item For an area with \code{area_type} of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
 }
-\item \code{next_area}: The next area cow will move to specified by \code{area_id}. You can specify multiple areas like \code{c(1:2, 4)}. \code{NA} means that cows don't move from the current area.
-\item \code{priority}: The priority for \code{next_area}. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to \code{next_area}. If \code{priority} is set by integer, the area have multiple \code{next_area} and \code{capacity} is set, cows go to the area with highest \code{priority} (= nearest to 1) which is not full. If multiple areas have the same \code{priority}, cows are romdomly allocated to the areas. If \code{priority} is set by numeric which is summed to 1, \code{priority} is regarded as probability in accordance to which cows go to \code{next_area}.
 }
-
-You can specify more than one set of \code{condition} and \code{next} to one \code{current} area.
+}
+\note{
+Several parameters are calculated by \link{setup_area_table} and added to a \code{area_table} as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
+\itemize{
+\item \code{capacity}: Max number of cows can be kept in a area.
+\item \code{tie_stall}: \code{area_id}s of tie-stall areas.
+}
 }
 \examples{
-# A farm has four areas:
-# - A freebarn for calves younger than 3 months old.
-# - A paddock for heifers.
-# - A tie-stall barn and a free-stall barn for adult cows.
-# A cow is moved to the tie-stall barn right after the delivery if the barn is not full.
-# Otherwise, the cow is moved (or stayed) to the free-stall barn.
-movement <- a_area[rep(1, 4), ]
-movement[, `:=`(area_id = 1:4,
-                area_type = c("free", "free", "tie", "free"),
-                capacity = c(NA, NA, 60, NA),
-                condition = c("age > 2", "delivery", NA, "delivlery"),
-                next_area = list(2, 3:4, NA, 3:4),
-                priority = list(NA, NA, NA, c(1, 2)))]
-
+# A farm has three areas:
+# - A freebarn for calves (max capacity is 30 calves).
+# - A paddock for heifers (capacity is not limited).
+# - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
+areas <- a_area[rep(1, 3), ]
+areas[, `:=`(area_id = 1:3,
+             area_type = c("free", "outside", "tie"),
+             capacity = list(30, NA, c(40, 40, 30, 30))]
 }
 \seealso{
-\link{cow_table} \link{tiestall_table} \link{rp_table}
+\link{cow_table} \link{tie_stall_table} \link{movement_table} \link{rp_table}
 }
 \keyword{datasets}

@@ -10,7 +10,7 @@ integerize(number)
 \item{number}{numeric vector.}
 }
 \value{
-numerc vector of the same lenth with the input.
+numerc vector of the same length with the input.
 }
 \description{
 Convert non-integer to integer. \cr

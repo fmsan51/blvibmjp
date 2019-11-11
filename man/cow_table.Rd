@@ -32,6 +32,8 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item "died": culled or slaughtered.
 \item "ebl": culled due to onset of the disease.
 \item "sold": send to a market or another farm.
+\item "will_die": (still alive and) will die.
+\item "will_be_slaughtered": (still alive and) will be slaughtered.
 }
 \item \code{is_replacement}:
 TRUE: The cow will be kept in the farm as replacement.
@@ -42,6 +44,7 @@ FALSE: The cow Will be sold to beef operations.
 \item \code{parity}
 \item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths.
 \item \code{date_got_pregnant}: NA means that the cow is open.
+\item \code{date_dried}: NA means that the cow is milking.
 \item \code{n_ai}: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 \item \code{day_heat}: Day in month of the NEXT heat.
 \item \code{day_last_heat}: Day in month of the LAST heat.
@@ -60,19 +63,20 @@ FALSE: The cow Will be sold to beef operations.
 \item "contact": by direct contact with an infected cow.
 \item "needles": by a contaminated needle.
 \item "rp": by rectal palpation.
-\item "vertical": vertical transimisson (intrauterine and by the dam's milk).
+\item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
 \item "comranch": infected at a communal ranch.
 }
 \item \code{susceptibility_ial_to_ipl}: Genetic susceptibility to disease progress (Ial -> Ipl).
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).
--\code{area_id}: Area ID.
--\code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
--\code{is_isolated}: Whether the cow is isolated for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
--\code{i_month}: The number of months past from the start of a simulation.
+\item \code{area_id}: Area ID.
+\item \code{months_in_area}: The number of month a cow stayed in the current area.
+\item \code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
+\item \code{is_isolated}: Whether the cow is isolated for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
+\item \code{i_month}: The number of months past from the start of a simulation.
 }
 }
 \seealso{
-\link{tiestall_table} \link{rp_table} \link{area_table}
+\link{tie_stall_table} \link{area_table} \link{movement_table} \link{rp_table}
 }
 \keyword{datasets}
