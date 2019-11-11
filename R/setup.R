@@ -4,7 +4,7 @@
 #'
 #' @param param_simulation See [param_simulation].
 #' @param param_area See [param_area].
-#' @param save_cows Whether to save initial `cows` to a file.
+#' @param save_cows logical. Whether to save initial `cows` to a file.
 #' @param area_table See [area_table].
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
@@ -56,27 +56,27 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' Cows kept in free-stall or paddock are not shown in this matrix.
 #'
 #' @param init_cows The element `init_cows` of a result of [setup_cows()].
-#' @param areas See [area_table].
+#' @param area_table See [area_table].
 #'
 #' @return A list composed of [tie_stall_table] and NA.
 #' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
 #' @name area_list
 #' @export
-setup_tie_stall_table <- function(init_cows, areas) {
-  area_list <- vector("list", nrow(areas))
-  names(area_list) <- areas$area_id
-  for (i_area in attr(area, "tie_stall")) {
-    area_capacity <- areas$capacity[i_area == areas$area_id]
+setup_tie_stall_table <- function(init_cows, area_table) {
+  area_list <- vector("list", nrow(area_table))
+  names(area_list) <- area_table$area_id
+  for (i_area in attr(area_table, "tie_stall")) {
+    area_capacity <- area_table$capacity[i_area == area_table$area_id]
     a_tie_stall <- a_chamber[rep(1, sum(area_capacity)), ]
     a_tie_stall[, `:=`(chamber_id = seq_along(area_capacity),
                        adjoint_previous_chamber = T,
                        adjoint_next_chamber = T)]
     a_tie_stall[area_capacity, adjoint_previous_chamber = F]
 
-    area_list[[area]] <- a_tie_stall
+    area_list[[area_table]] <- a_tie_stall
   }
 
-  area_assignment <- calculate_area_assignment(init_cows, areas, NULL)
+  area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   area_list <- assign_cows(init_cows, area_list, area_assignment)
   
   # NOTE: currently, initial area_id must be set by users.
@@ -107,11 +107,10 @@ setup_area_table <- function(area_table, cows, param_farm) {
                             )
   }
 
-
   attr(area_table, "capacity") <- 
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
   attr(area_table, "tie_stall") <- 
-    area_table$area_id[area_tabe$area_type == "tie"]
+    area_table$area_id[area_table$area_type == "tie"]
 
   return(area_table)
 }
@@ -156,10 +155,10 @@ setup_movement_table <- function(area_table, movement_table,
   cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
   
   # (?^|[^_]) is about 3x faster than (?<!_)
-  cond <- gsub("(?^|[^_])delivery", "\\1i_month == date_delivered", cond)
-  cond <- gsub("(?^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
-  cond <- gsub("(?^|[^_])dry", "\\1i_month == date_dried", cond)
-  cond <- gsub("dim", "i_month - date_delivered", cond, fixed = T)
+  cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
+  cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
+  cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)
+  cond <- gsub("dim", "i_month - date_last_delivery", cond, fixed = T)
   cond <- gsub("stay", "months_in_area", cond, fixed = T)
   movement_table$condition <- cond
  
@@ -181,8 +180,10 @@ setup_movement_table <- function(area_table, movement_table,
     movement_table <- rbindlist(list(move_to_compas, move_from_compas,
                                      movement_table))
   }
-
   # TODO: warn when capacity > cows at the start of a simulation.
+
+  movement_table$priority <- lapply(movement_table$priority,
+                                    function(x) ifelse(is.na(x), 1, x))
 
   # Attributes is added instead of converting area_id column to factor
   # because I don't want to change class of the columns from the original one

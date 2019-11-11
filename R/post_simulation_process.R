@@ -58,7 +58,7 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 #'
 #' @export
 calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
-  stopifnot(sum(is.null(cows), is.null(path_to_csv)) != 1)
+  stopifnot(sum(is.null(cows), is.null(path_to_csv)) == 1)
   if (is.null(cows)) {
     cows <- fread(path_to_csv)
   }
@@ -66,7 +66,7 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 
   prevalences <- cows[,
                       list(prevalence = .SD[infection_status != "s", .N] / .N),
-                      by = i_month]
+                      by = i_month][!is.na(i_month)]
 
   return(prevalences)
 }
@@ -155,9 +155,11 @@ plot_infection_route <- function(path_to_csv,
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
 
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
-    geom_area(aes(area = cause_infection, fill = cause_infection)) +
-    scale_x_continuous(breaks = seq(0, max(infection_route$i_month), 6),
-                       minor_breaks = seq(0, max(infection_route$i_month), 3)) +
+    geom_area(aes(fill = cause_infection)) +
+    scale_x_continuous(breaks =
+                         seq(0, max(infection_route$i_month, na.rm = T), 6),
+                       minor_breaks = 
+                         seq(0, max(infection_route$i_month, na.rm = T), 3)) +
     ylim(0, max_ylim)
 
   if (!is.null(title)) {

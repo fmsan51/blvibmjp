@@ -11,7 +11,7 @@ setup_cows(param_simulation, param_area, save_cows, area_table)
 
 \item{param_area}{See \link{param_area}.}
 
-\item{save_cows}{Whether to save initial \code{cows} to a file.}
+\item{save_cows}{logical. Whether to save initial \code{cows} to a file.}
 
 \item{area_table}{See \link{area_table}.}
 }

@@ -4,7 +4,7 @@
 \alias{process_param}
 \title{Calculate parameters based on other parameters}
 \usage{
-process_param(setup_cows_res, param_simulation, param_farm, param_area)
+process_param(setup_cows_res, param_simulation, param_farm)
 }
 \arguments{
 \item{setup_cows_res}{A result of \code{\link[=setup_cows]{setup_cows()}}.}
@@ -12,19 +12,16 @@ process_param(setup_cows_res, param_simulation, param_farm, param_area)
 \item{param_simulation}{See \link{param_simulation}.}
 
 \item{param_farm}{See \link{param_farm}.}
-
-\item{param_area}{See \link{param_area}.}
 }
 \value{
 A list of calculated parameters.
 }
 \description{
 \itemize{
-\item \code{is_ts}: Wheter barns are tie-stall.
-\item \code{ts_area}: Area ID of tie-stall Areas.
-\item \code{is_md_separated_in_ts}: Whether milking and dry cows are separated.
-\item \code{capacity}: The result of \code{\link[=set_capacity]{set_capacity()}}.
+\item \code{param_output_filename}: Name of a file to which output simulation parameters.
+\item \code{herd_size_limits}: Lower and upper limits of the number of cattle should be kept in the herd.
 \item \code{prob_rep}: The result of \code{\link[=set_prob_rep]{set_prob_rep()}}. The probability that a newborn female calf will be a replacement cow.
+\item \code{graze_cows}: Whether cows are grazed or not.
 }
 }
 \details{

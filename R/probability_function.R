@@ -373,9 +373,8 @@ set_prob_rep <- function(n_delivered, param_farm) {
 
 #' @name is_replacement
 is_replacement <- function(n_calves, herd_size, param_processed) {
-  # capacity: upper and lower limits of number of cattle should be kept in the farm
-  spaces <- (param_processed$capacity - herd_size) *
-              (param_processed$capacity > herd_size)
+  spaces <- (param_processed$herd_size_limits - herd_size) *
+              (param_processed$herd_size_limits > herd_size)
   spaces <- spaces * (spaces <= n_calves) + n_calves * (spaces > n_calves)
 
   n_selected <- rbinom(1, n_calves, param_processed$prob_rep)

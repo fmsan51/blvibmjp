@@ -5,7 +5,7 @@
 #' @importFrom data.table copy data.table dcast.data.table fread fwrite melt.data.table rbindlist shift := .N .SD
 #' @importFrom forcats fct_other
 #' @importFrom glue glue
-#' @importFrom ggplot2 aes geom_area geom_point ggplot labs scale_fill_manual scale_x_continuous xlim ylim
+#' @importFrom ggplot2 aes geom_area geom_point ggplot labs scale_fill_manual scale_x_continuous xlab xlim ylab ylim
 #' @importFrom lubridate day dmy dym interval mdy myd today tz ydm ymd
 #' @importFrom purrr flatten_dbl
 #' @importFrom rlang ensyms eval_tidy expr enquos quos_auto_name !!!

@@ -2,26 +2,20 @@
 % Please edit documentation in R/main_function.R
 \name{change_stage}
 \alias{change_stage}
-\title{Change stage of cows and move cows between areas accordinglly}
+\title{Change stage of cows accordinglly}
 \usage{
-change_stage(cows, areas, i, param_area, param_calculated, param_processed)
+change_stage(cows, i, param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{tie_stall_table}.}
-
 \item{i}{The number of months from the start of the simulation.}
 
-\item{param_area}{See \link{param_area}.}
-
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
-
-\item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
 }
 \value{
 A list consists of \code{cow_table} and \code{tie_stall_table}.
 }
 \description{
-Change stage of cows and move cows between areas accordinglly
+Change stage of cows accordinglly
 }

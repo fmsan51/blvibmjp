@@ -5,7 +5,7 @@
 \title{Body of the simulation}
 \usage{
 simulate_once(setup_cows_res, area_list, area_table, movement_table,
-  day_rp, i_simulation, result, result_areas, param_simulation, param_area,
+  day_rp, i_simulation, result, result_area, param_simulation, param_area,
   param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
@@ -21,7 +21,7 @@ simulate_once(setup_cows_res, area_list, area_table, movement_table,
 
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_areas}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
+\item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
 
@@ -34,7 +34,7 @@ simulate_once(setup_cows_res, area_list, area_table, movement_table,
 \item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
 }
 \value{
-A list composed of two components: \code{result_combined} and \code{result_areas_combined}
+A list composed of two components: \code{result_combined} and \code{result_area_combined}
 }
 \description{
 Run simulation once.
