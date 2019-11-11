@@ -62,7 +62,7 @@ setup_rp_table <- function(init_last_cow_id, param_simulation) {
 #' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
 #' @name area_list
 #' @export
-setup_areas <- function(init_cows, areas) {
+setup_tie_stall_table <- function(init_cows, areas) {
   area_list <- vector("list", nrow(areas))
   names(area_list) <- areas$area_id
   for (i_area in attr(area, "tie_stall")) {

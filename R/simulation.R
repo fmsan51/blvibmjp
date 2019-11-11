@@ -19,7 +19,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   }
 
   setup_cows_res <- setup_cows(param_simulation, param_area, save_cows)
-  init_areas <- setup_areas(setup_cows_res$init_cows, param_area)
+  init_areas <- setup_tie_stall_table(setup_cows_res$init_cows, param_area)
   day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
   param_processed <- process_param(setup_cows_res, param_simulation, param_farm,
                                    param_area)
