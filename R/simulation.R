@@ -143,3 +143,4 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
 }
 # TODO: simulationが強制終了したとき用の備え
 # TODO: Make functions to load area_table, area_list, ... from csv files
+
