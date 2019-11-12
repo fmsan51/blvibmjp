@@ -283,15 +283,15 @@ susceptibility <- function(n_newborns,
                            susceptibility_ipl_to_ebl_dam,
                            param_calculated) {
   inherit_from_dam <- sample(c(T, F), n_newborns, replace = T)
-  ial_to_ipl <- ifelse(inherit_from_dam,
-                       susceptibility_ial_to_ipl_dam,
-                       sample(c(T, F), n_newborns, replace = T,
-                              prob = param_calculated$probs_develop_ipl))
-  ipl_to_ebl <- ifelse(inherit_from_dam,
-                       susceptibility_ipl_to_ebl_dam,
-                       sample(c(T, F), n_newborns, replace = T,
-                              prob = param_calculated$probs_develop_ebl) &
-                       ial_to_ipl)
+  ial_to_ipl <- fifelse(inherit_from_dam,
+                        susceptibility_ial_to_ipl_dam,
+                        sample(c(T, F), n_newborns, replace = T,
+                               prob = param_calculated$probs_develop_ipl))
+  ipl_to_ebl <- fifelse(inherit_from_dam,
+                        susceptibility_ipl_to_ebl_dam,
+                        sample(c(T, F), n_newborns, replace = T,
+                               prob = param_calculated$probs_develop_ebl) &
+                        ial_to_ipl)
   susceptibility <- list(ial_to_ipl = ial_to_ipl, ipl_to_ebl = ipl_to_ebl)
   return(susceptibility)
 }
