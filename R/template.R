@@ -63,11 +63,7 @@
 #' - `i_month`: The number of months past from the start of a simulation.
 #'
 #' @format [data.table][data.table::data.table]
-<<<<<<< HEAD
-#' @seealso [barn_table] [rp_table]
-=======
 #' @seealso [tie_stall_table] [area_table] [movement_table] [rp_table]
->>>>>>> feature/movement
 #'
 #' @name cow_table
 #' @export
