@@ -47,9 +47,8 @@ FALSE: The cow Will be sold to beef operations.
 \item \code{date_dried}: NA means that the cow is milking.
 \item \code{n_ai}: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 \item \code{day_heat}: Day in month of the NEXT heat.
-\item \code{day_last_heat}: Day in month of the LAST heat.
-\item \code{day_last_heat_detected}: Day in month of the last DETECTED heat.
-\item \code{n_heat_from_ai}: The number of heat from the last AI.
+\item \code{day_last_detected_heat}: Dey in month of the LAST heat.
+\item \code{is_to_test_pregnancy}: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 \item \code{infection_status}: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
 \item \code{date_ial}: The month when \code{infection_status} changes from "s" to "ial".
 \item \code{date_ipl}: The month when \code{infection_status} changes from "ial" to "ipl".
