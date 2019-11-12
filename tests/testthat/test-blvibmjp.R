@@ -1,6 +1,7 @@
 # test_that("simulation runs", {
+
   param_simulation$n_simulation <- 1
-  param_simulation$simulation_length <- 12
+  param_simulation$simulation_length <- 60
   param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
                                             package = "blvibmjp")
   param_simulation$output_dir <-
@@ -33,7 +34,8 @@
   #     names(param_modification[[i]]) <- name_param
   #   }
   # }
-
+tic()
+set.seed(1)
   expect_warning(
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
@@ -42,7 +44,7 @@
                         save_cows = T, save_param = T,
                         i_simulation_start = 1),
     NA)
-
+toc()
   # simulation_csv <- system.file("testdata", "output", "simulation01.csv",
   #                               package = "blvibmjp")
   # calculate_prevalences(path_to_csv = simulation_csv)
