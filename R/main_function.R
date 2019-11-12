@@ -51,13 +51,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     cows_first_ai[day_next_heat <= 30,
                   day_next_heat := day_next_heat +
                     heat_cycle(.N, param_calculated)]
-    cows_first_ai[, ':='(day_next_heat = ifelse(day_next_heat - 30 > 0,
-                                                day_next_heat - 30, 1),
+    cows_first_ai[, ':='(day_next_heat = fifelse(day_next_heat - 30 > 0,
+                                                 day_next_heat - 30, 1),
                          is_heat1_detected =
                            is_heat_detected(n_cows_first_ai, param_calculated),
                          is_heat2_detected =
                            is_heat_detected(n_cows_first_ai, param_calculated))]
-    cows_first_ai[, is_ai1_successed := ifelse(
+    cows_first_ai[, is_ai1_successed := fifelse(
                       is_heat1_detected,
                       is_first_ai_successed(n_cows_first_ai, param_calculated),
                       F)]
@@ -68,21 +68,21 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
     cows_first_ai[is_heat2_detected == T,
                   is_ai2_successed :=
-                    ifelse(is_heat1_detected,
-                           is_ai_successed(.N, param_calculated),
-                           is_first_ai_successed(.N, param_calculated))]
+                    fifelse(is_heat1_detected,
+                            is_ai_successed(.N, param_calculated),
+                            is_first_ai_successed(.N, param_calculated))]
 
-    cows_first_ai[, n_ai := ifelse(n_heat == 1,
-                                   is_heat1_detected * 1,
-                                   is_heat1_detected + is_heat2_detected)]
+    cows_first_ai[, n_ai := fifelse(n_heat == 1,
+                                    is_heat1_detected * 1,
+                                    is_heat1_detected + is_heat2_detected)]
     while (sum(cows_first_ai$n_ai == 0) != 0) {
       cows_first_ai[n_ai == 0,
                     is_heat1_detected :=
                       is_heat_detected(.N, param_calculated)]
       cows_first_ai[n_ai == 0,
                     is_ai1_successed :=
-                      ifelse(is_heat1_detected,
-                             is_first_ai_successed(.N, param_calculated), F)]
+                      fifelse(is_heat1_detected,
+                              is_first_ai_successed(.N, param_calculated), F)]
       cows_first_ai[n_ai == 0 & is_ai1_successed == T,
                     ':='(day_heat2 = NA_real_,
                          day_next_heat = NA_real_)]
@@ -94,23 +94,23 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                       is_heat_detected(.N, param_calculated)]
       cows_first_ai[n_ai == 0 & is_heat2_detected == T,
                     is_ai2_successed :=
-                      ifelse(is_heat1_detected,
-                             is_ai_successed(.N, param_calculated),
-                             is_first_ai_successed(.N, param_calculated))]
-      cows_first_ai[, n_ai := ifelse(n_heat == 1,
-                                     is_heat1_detected * 1,
-                                     is_heat1_detected + is_heat2_detected)]
+                      fifelse(is_heat1_detected,
+                              is_ai_successed(.N, param_calculated),
+                              is_first_ai_successed(.N, param_calculated))]
+      cows_first_ai[, n_ai := fifelse(n_heat == 1,
+                                      is_heat1_detected * 1,
+                                      is_heat1_detected + is_heat2_detected)]
     }
 
-    cows_first_ai[, ':='(day_last_heat = ifelse(is.na(day_heat2),
-                                                day_heat1, day_heat2),
+    cows_first_ai[, ':='(day_last_heat = fifelse(is.na(day_heat2),
+                                                 day_heat1, day_heat2),
                          day_last_heat_detected =
-                           ifelse(n_heat == 1,
-                                  day_heat1,
-                                  ifelse(is_heat2_detected,
-                                         day_heat2, day_heat1)),
+                           fifelse(n_heat == 1,
+                                   day_heat1,
+                                   fifelse(is_heat2_detected,
+                                           day_heat2, day_heat1)),
                          n_heat_from_ai =
-                           ifelse(n_heat == 2 & !is_heat2_detected, 1, 0),
+                           fifelse(n_heat == 2 & !is_heat2_detected, 1, 0),
                          is_pregnant = (is_ai1_successed | is_ai2_successed))]
     cows_first_ai[is.na(is_pregnant), is_pregnant := F]
 
@@ -174,8 +174,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     cows_ai[day_next_heat <= 30, day_heat2 := day_next_heat]
     cows_ai[day_next_heat <= 30,
             day_next_heat := day_next_heat + heat_cycle(.N, param_calculated)]
-    cows_ai[, ':='(day_next_heat = ifelse(day_next_heat - 30 > 0,
-                                          day_next_heat - 30, 1),
+    cows_ai[, ':='(day_next_heat = fifelse(day_next_heat - 30 > 0,
+                                           day_next_heat - 30, 1),
                    is_heat1_detected =
                      is_heat_detected(n_cows_ai, param_calculated),
                    is_heat2_detected =
@@ -191,7 +191,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     cows_ai[is_heat2_detected == T,
             is_ai2_successed := is_ai_successed(.N, param_calculated)]
     cows_ai[, n_ai := n_ai + is_heat1_detected +
-              ifelse(n_heat == 1, 0, is_heat2_detected)]
+              fifelse(n_heat == 1, F, is_heat2_detected)]
 
     cows_ai[, n_heat_from_ai := (n_heat_from_ai + 1) * !is_heat1_detected]
 
@@ -212,13 +212,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     cows_ai[!is.na(day_heat2),
             n_heat_from_ai := (n_heat_from_ai + 1) * (!is_heat2_detected)]
 
-    cows_ai[, ':='(day_last_heat = ifelse(is.na(day_heat2),
-                                          day_heat1, day_heat2),
+    cows_ai[, ':='(day_last_heat = fifelse(is.na(day_heat2),
+                                           day_heat1, day_heat2),
                    day_last_heat_detected =
-                     ifelse(is_heat2_detected & n_heat == 2,
-                            day_heat2,
-                            ifelse(is_heat1_detected,
-                                   day_heat1, day_last_heat_detected)),
+                     fifelse(is_heat2_detected & n_heat == 2,
+                             day_heat2,
+                             fifelse(is_heat1_detected,
+                                     day_heat1, day_last_heat_detected)),
                    is_pregnant = (is_ai1_successed | is_ai2_successed))]
     cows_ai[is.na(is_pregnant), is_pregnant := F]
 
@@ -533,8 +533,8 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   cows[rows_removed_death, ':='(is_owned = F,
                                 date_death = i,
                                 cause_removal =
-                                  ifelse(cause_removal == "will_die",
-                                         "dead", "slaughtered"))]
+                                  fifelse(cause_removal == "will_die",
+                                          "dead", "slaughtered"))]
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &

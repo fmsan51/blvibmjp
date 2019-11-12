@@ -197,7 +197,7 @@ calc_param <- function(param_farm, modification = NULL) {
   # Infection probability per day
   # TODO: temporary, just by inspiration
   change_needles <- set_param(param_farm$change_needles, T)
-  prob_inf_needles <- ifelse(change_needles, 0, 0.005)
+  prob_inf_needles <- fifelse(change_needles, 0, 0.005)
   param$probs_inf_needles <- c(prob_inf_needles, 1 - prob_inf_needles)
 
   ## infection_rp ----
@@ -208,7 +208,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # 直検1回ごとの感染確率
   change_gloves <- set_param(param_farm$change_gloves, T)
-  prob_inf_rp <- ifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
+  prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
   param$probs_inf_rp <- c(prob_inf_rp, 1 - prob_inf_rp)
 
 
