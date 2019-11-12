@@ -1,5 +1,3 @@
-## ---- add_1_to_age
-
 #' Increment age in a cow table
 #'
 #' Add 1 to `age` variable in a cow table.
@@ -14,8 +12,6 @@ add_1_to_age <- function(cows) {
 }
 
 
-## ---- do_ai
-
 #' Conduct AI and check chance of infection
 #'
 #' @param cows See [cow_table].
@@ -26,7 +22,7 @@ add_1_to_age <- function(cows) {
 #' @return A [cow_table].
 #' @export
 do_ai <- function(cows, i, day_rp, param_calculated) {
-  # TODO: あまりに長いので適度に分割したい
+  # TODO: Divide this function to smaller ones because it's too long
   day_rp_last_row <- 0
 
   rows_h <- which(cows$stage == "heifer" & cows$n_ai == 0 &
@@ -41,7 +37,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     ]
   rows_ai_started <- c(rows_h_ai_started, rows_m_ai_started)
 
-  # 初回授精 (初回授精開始日と一致させるためには、この月の授精は必ず発見されなくてはならないので、初回以降と別にしている)
+  # The first AI
+  # (This is separated from the AI after the first because the heat of this month must be found in order to follow the date of doing first AI from data)
   if (length(rows_ai_started) != 0) {
     cows_first_ai <- cows[rows_ai_started, .(cow_id, infection_status, day_heat)]
     n_cows_first_ai <- nrow(cows_first_ai)
@@ -123,7 +120,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                                day_last_heat_detected =
                                  cows_first_ai$day_last_heat_detected,
                                n_heat_from_ai = cows_first_ai$n_heat_from_ai)]
-    # TODO: リピートブリーダーは処分するかもしれないのでとりあえず授精回数を記録しておく。
+    # TODO: n_ai is recorded (it's used currently nowhere) in case of considering repeatbreader.
 
     cows[rows_ai_started[cows_first_ai$is_pregnant],
          ':='(date_got_pregnant = i,
@@ -148,7 +145,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     }
   }
 
-  # 初回以降の授精
+  # AI after the first
   rows_open <- which(cows$n_ai != 0 & is.na(cows$date_got_pregnant))
 
   if (length(rows_open) != 0) {
@@ -157,7 +154,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                       day_last_heat_detected, n_heat_from_ai)]
     n_cows_ai <- nrow(cows_ai)
 
-    # 妊娠していないが、人工授精直後の発情を見逃したため妊娠鑑定される牛 その1
+    # Case 1
+    # No conception, however pregnancy cheking is done because the heat right after the AI is overlooked
     cows_ai_done <- cows_ai[n_heat_from_ai == 1, ]
     n_cow_heat_missed <- nrow(cows_ai_done)
     if (n_cow_heat_missed != 0) {
@@ -197,7 +195,9 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
     cows_ai[, n_heat_from_ai := (n_heat_from_ai + 1) * !is_heat1_detected]
 
-    # 妊娠していないが、人工授精直後の発情を見逃したため妊娠鑑定される牛 その2
+    # Case 2
+    # No conception, however pregnancy cheking is done because the heat right after the AI is overlooked
+    # (same as case 1)
     cows_ai_done <- cows_ai[n_heat_from_ai == 1, ]
     n_cow_heat_missed <- nrow(cows_ai_done)
     if (n_cow_heat_missed != 0) {
@@ -228,7 +228,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                          day_last_heat_detected =
                            cows_ai$day_last_heat_detected,
                          n_heat_from_ai = cows_ai$n_heat_from_ai)]
-    # TODO: リピートブリーダーは処分するかもしれないのでとりあえず授精回数を記録しておく。
+    # TODO: n_ai is recorded (it's used currently nowhere) in case of considering repeatbreader.
 
     cows[rows_open[cows_ai$is_pregnant], ':='(date_got_pregnant = i,
                                               n_ai = 0)]
@@ -253,7 +253,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
   }
 
-  # 妊娠鑑定
+  # pregnancy checking
   rows_pregnant <- which(cows$date_got_pregnant == i - 1 |
                            cows$date_got_pregnant == i - 2)
   cows_pregnant <- cows[rows_pregnant, ]
@@ -270,7 +270,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   }
 
 
-  # 繁殖検診
+  # health check after the delivery
   rows_delivered <- which(cows$date_last_delivery == i - 1 |
                            cows$date_last_delivery == i - 2)
   cows_delivered <- cows[rows_delivered, ]
@@ -285,11 +285,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     day_rp_last_row <- day_rp_last_row + n_delivered
   }
 
-  # 水平感染の判定
-  # 直検を「分娩後検診」「人工授精（午前）」「人工授精（午後）」「妊娠鑑定」の4グループに分ける。
-  # 分娩後検診と妊娠鑑定は月二回(15日・30日)、人工授精は毎日行う。
-  # 各日・各グループにおいて感染牛の直後に直検が行われた牛は感染リスクがあるとする。
-  # (最初は直後でなくてもよいとしていたが、明らかに直検による感染が多すぎたので修正)
+  # Judging about horizontal infection
+  # Divide change of rectal palpation into four areas:
+  # - AI (in morning) and  AI (in afternoon) (everyday)
+  # - health check after the delivery (15th and 30th of every month)
+  # - pregnancy checking (ditto)
+  # The cow on which rectal palpation was conducted RIGHT AFTER an infected cow has a chance of infection.
+  # (At first, cows after (not RIGHT after) an infected cow has a risk of infection. But it was modified because it showed too high infection rate.)
 
   if (day_rp_last_row != 0) {
     rp_inf_check <- one_day_rp[rep(1, day_rp_last_row), ]
@@ -318,103 +320,36 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 }
 
 
-## ---- change_stage
-
-#' Change stage of cows and move cows between barns accordinglly
+#' Change stage of cows accordinglly
 #'
 #' @param cows See [cow_table].
-#' @param groups See [barn_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_group See [param_group].
 #' @param param_calculated Return from [calc_param()].
-#' @param param_processed Return from [process_param()].
 #'
-#' @return A list consists of `cow_table` and `barn_table`.
+#' @return A list consists of `cow_table` and `tie_stall_table`.
 #' @export
-change_stage <- function(cows, groups, i, param_group, param_calculated,
-                         param_processed) {
-  # TODO: groups と barns が入り混じってるのでbarnsに統一したい
-
-  # TODO: とりあえず12-23がheifer
-  param_group_id <- 1:(param_group$n_group)
-
+change_stage <- function(cows, i, param_calculated) {
+  # TODO: 12-23mo is heifer (temporary)
   # Calf to heifer
-  row_c2h <- which(cows$age == 12)
-  cows[row_c2h, ':='(stage = "heifer",
-                     parity = 0,
-                     group_id = param_group_id[2])]
-  if (param_processed$is_ts[1]) {
-    groups[[1]] <- remove_from_group(groups[[1]], cows[row_c2h, cow_id])
-  }
-  if (param_processed$is_ts[2]) {
-    groups[[param_group_id[2]]] <-
-      find_empty_chamber(groups[[param_group_id[2]]], cows[row_c2h, ])
-  }
-    # TODO: 牛舎が満杯状態のときも考慮しないと
-    # TODO: 牛舎内で牛の位置を変えることも考慮しなければ。（例えば同一牛舎内で搾乳牛エリアと乾乳牛エリアを分けているなど）
+  cows[age == 12, ':='(stage = "heifer",
+                       parity = 0)]
 
-  # Heifer to milking
-  row_h2m <- which(cows$stage == "heifer" & (i - cows$date_got_pregnant) == 10)
-  cows[row_h2m, ':='(stage = "milking",
-                     date_last_delivery = i,
-                     parity = 1,
-                     date_got_pregnant = NA,
-                     group_id = param_group_id[3],
-                     day_heat = sample.int(30, .N, replace = T) * 1,
-                     day_last_heat = sample.int(30, .N, replace = T) * 1)]
-  if (param_processed$is_ts[2]) {
-    # TODO: 同上。これ同じことやってるので別のfunctionを作りたい
-    groups[[param_group_id[2]]] <-
-      remove_from_group(groups[[param_group_id[2]]], cows[row_h2m, cow_id])
-  }
-  if (param_processed$is_ts[3]) {
-    groups[[param_group_id[3]]] <-
-      find_empty_chamber(groups[[param_group_id[3]]], cows[row_h2m, ])
-  }
-
-  # Dry to milking
-  row_d2m <- which((i - cows$date_got_pregnant) == 10)
-  cows[row_d2m, ':='(stage = "milking",
-                     date_last_delivery = i,
-                     parity = parity + 1,
-                     date_got_pregnant = NA,
-                     group_id = param_group_id[3],
-                     day_heat = sample.int(30, .N, replace = T) * 1,
-                     day_last_heat = sample.int(30, .N, replace = T) * 1)]
-  if (param_processed$is_ts[4]) {
-    # TODO: 同上
-    # DryとMilkingが同じところで飼われてるなら、牛舎内移動だけですむはず
-    groups[[param_group_id[4]]] <-
-      remove_from_group(groups[[param_group_id[4]]], cows[row_d2m, cow_id])
-  }
-  if (param_processed$is_ts[3]) {
-    groups[[param_group_id[3]]] <-
-      find_empty_chamber(groups[[param_group_id[3]]], cows[row_d2m, ])
-  }
+  # Heifer/Dry to milking
+  cows[(i - date_got_pregnant) == 10,
+       ':='(stage = "milking",
+            date_last_delivery = i,
+            parity = parity + 1,
+            date_got_pregnant = NA,
+            day_heat = sample.int(30, .N, replace = T) * 1,
+            day_last_heat = sample.int(30, .N, replace = T) * 1)]
 
   # Milking to dry
-  row_m2d <- which(cows$stage == "milking" &
-                     is_dried(i - cows$date_last_delivery, param_calculated))
-  cows[row_m2d, ':='(stage = "dry",
-                     group_id = param_group_id[4])]
+  cows[stage == "milking" & is_dried(i - date_last_delivery, param_calculated),
+       stage := "dry"]
 
-  if (param_processed$is_ts[3]) {
-    # TODO: 同上
-    groups[[param_group_id[3]]] <-
-      remove_from_group(groups[[param_group_id[3]]], cows[row_m2d, cow_id])
-  }
-  if (param_processed$is_ts[4]) {
-    groups[[param_group_id[4]]] <-
-      find_empty_chamber(groups[[param_group_id[4]]], cows[row_m2d, ])
-  }
-  # TODO: このタイミングで廃用になる牛がいるだろうので考慮
-
-  return(list(cows = cows, groups = groups))
+  return(cows)
 }
 
-
-
-## ---- change_infection_status
 
 #' Check change of infection status of cows
 #'
@@ -476,8 +411,6 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 }
 
 
-
-## ---- add_newborns
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].
@@ -490,8 +423,10 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 #' @export
 add_newborns <- function(cows, i, last_cow_id, param_calculated,
                          param_processed) {
-  rows_mothers <- which(cows$date_last_delivery == i)  # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
-  # TODO: とりあえず12ヶ月ごとに出産するとする。stageを変える関数と出産を決める関数を別にしていいのかもあとで考える。
+  rows_mothers <- which(cows$date_last_delivery == i)
+  # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
+  # TODO: Temporary delivery interval is set to 12 months.
+  # TODO: Consider the functions to change stage and consider delivery could be the same or not.
   n_cows <- sum(!is.na(cows$cow_id))
 
   if (length(rows_mothers) != 0) {  # If there is any cow delivers in 'month i'
@@ -514,7 +449,7 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
                     is_owned = T,
                     is_introduced = F,
                     is_in_common_ranch = F,
-                    is_grazed = F,  # TODO: とりあえず放牧はしていないことにする
+                    is_grazed = param_processed$graze_cows,
                     parity = 0,
                     n_ai = 0,
                     day_heat = sample.int(30, n_newborns, replace = T) * 1,
@@ -582,19 +517,17 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
 }
 
 
-
-## ---- check_removal
 #' Check death and sale of current cows
 #'
 #' @param cows See [cow_table].
-#' @param groups See [barn_table].
+#' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
-#' @return A list consisted of [cow_table] and [barn_table].
+#' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
-check_removal <- function(cows, groups, i, param_calculated, param_processed) {
+check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -629,19 +562,17 @@ check_removal <- function(cows, groups, i, param_calculated, param_processed) {
   }  # TODO: ここテスト
 
   rows_removed <- c(rows_removed_death, rows_removed_sold, rows_removed_ebl)
-  groups_removed <- cows[rows_removed, group_id]
-  for (group in param_processed$ts_group) {
-    rows_removed_this_group <- rows_removed[groups_removed == group]
-    groups[[group]] <-
-      remove_from_group(groups[[group]], cows[rows_removed_this_group, cow_id])
+  areas_removed <- cows[rows_removed, area_id]
+  for (area in param_processed$ts_area) {
+    rows_removed_this_area <- rows_removed[areas_removed == area]
+    areas[[area]] <-
+      remove_from_area(areas[[area]], cows[rows_removed_this_area, cow_id])
   }
 
-  return(list(cows = cows, groups = groups))
+  return(list(cows = cows, areas = areas))
 }
 
 
-
-## ---- set_i_month
 #' Set the variable i_month in a cow_table
 #'
 #' @param cows See [cow_table].
@@ -655,7 +586,6 @@ set_i_month <- function(cows, i) {
 }
 
 
-## ---- extract_owned_cows
 #' Extract owned cows from a cow_table
 #'
 #' @param cows See [cow_table].
@@ -666,3 +596,149 @@ extract_owned_cows <- function(cows) {
   cows <- cows[is_owned == T | is.na(is_owned), ]
   return(cows)
 }
+
+
+#' Check and move cows between areas
+#'
+#' @param cows See [cow_table].
+#' @param movement_table See [movement_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#'
+#' @return A list composed of [cow_table] and [area_list].
+#' @export
+change_area <- function(cows, movement_table, area_table, area_list) {
+  # area_tableに沿って、移動する個体、合致したconditionを抽出
+  # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
+
+  # Extract cows whose area must be changed
+  cow_id_met_condition <- lapply(
+    movement_table$condition,
+    function(x) {cows[eval(parse(text = x)) & is_owned, cow_id]}
+    )
+
+  # Remove duplicated cow_id
+  duplicated_cow_id <-
+    relist(!duplicated(flatten_dbl(cow_id_met_condition)), cow_id_met_condition)
+  cow_id_to_move <- mapply(function(x, y) {x[y]},
+                           cow_id_met_condition, duplicated_cow_id,
+                           SIMPLIFY = FALSE)
+
+  # Remove cows to move from n_cows
+  n_cows_in_each_area <-
+    table(factor(cows[(is_owned), area_id], levels = area_table$area_id))
+  n_cows_to_move_by_each_condition <- sapply(cow_id_to_move, length)
+  n_cows_to_move_in_each_area <- tapply(
+    n_cows_to_move_by_each_condition,
+    attr(movement_table, "factored_current_area"),
+    sum)
+  empty_spaces <- attr(area_table, "capacity") - n_cows_in_each_area +
+    n_cows_to_move_in_each_area
+
+  # Remove cows from areas
+  vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
+  cows <- remove_from_areas(cows, vec_cows_to_move)
+  cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned, na.rm = T))
+  cow_id_allocated_to_full_areas_index <- 0
+
+  # Decide to which next_area cows will move
+  for (i_movement in seq_len(nrow(movement_table))) {
+    i_cow_id <- sample(cow_id_to_move[[i_movement]])
+    # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
+    if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
+      # For conditions with priorities specified by integers
+
+      i_next_area <- movement_table$next_area[[i_movement]]
+      chr_i_next_area <- as.character(i_next_area)
+      empty_spaces_in_next_areas <- empty_spaces[chr_i_next_area]
+      allocated_area_index <-
+        findInterval(seq_along(i_cow_id),
+                     c(0, cumsum(empty_spaces_in_next_areas)), left.open = T)
+      allocated_areas <- i_next_area[allocated_area_index]
+      empty_spaces[chr_i_next_area] <-
+        table(factor(allocated_areas, levels = chr_i_next_area))
+
+      # When length(i_cow_id) is larger than sum(empty_spaces_in_next_area),
+      # allocated_area_index includes NA.
+      # Then allocate such cows into full areas according to capacity.
+      if (anyNA(allocated_areas)) {
+        capacity_of_next_areas <- attr(area_table, "capacity")[chr_i_next_area]
+        is_na_allocated_areas <- is.na(allocated_areas)
+        n_na_allocated_areas <- sum(is_na_allocated_areas)
+        allocated_areas[which(is_na_allocated_areas)] <-
+          sample(i_next_area, n_na_allocated_areas, replace = T,
+                 prob = capacity_of_next_areas)
+        cow_id_allocated_to_full_areas[
+          cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
+          ] <- i_cow_id[is_na_allocated_areas]
+        cow_id_allocated_to_full_areas_index <-
+          cow_id_allocated_to_full_areas_index + n_na_allocated_areas
+      }
+    } else {
+      # B. For conditions with priorities specified by real numbers
+
+      i_next_area <- movement_table$next_area[[i_movement]]
+      chr_i_next_area <- as.character(i_next_area)
+      n_cows_to_move <- length(i_cow_id)
+      i_priority <- movement_table$priority[[i_movement]]
+      vacancy <- empty_spaces[i_next_area]
+
+      if (sum(vacancy) > n_cows_to_move) {
+        n_cows_to_reallocate <- n_cows_to_move
+        n_cows_allocated_in_each_area <- setNames(numeric(length(i_next_area)),
+                                                  chr_i_next_area)
+        while (n_cows_to_reallocate > 0) {
+          # When some cows are allocated to full areas, assign cows
+          # to non-full areas.
+          # When every area is full, allocate such cows to full areas
+          # according to capacity.
+          is_overcrowded <- vacancy < 0
+          is_not_full <- vacancy > 0
+          allocated_areas <- sample(i_next_area[is_not_full],
+                                    n_cows_to_reallocate,
+                                    replace = T, prob = i_priority[is_not_full])
+          n_cows_reallocated_in_each_area <-
+            table(factor(allocated_areas, levels = chr_i_next_area))
+          vacancy <- vacancy - n_cows_reallocated_in_each_area
+          n_cows_to_reallocate_in_each_area <- -vacancy * (vacancy < 0)
+          n_cows_to_reallocate <- sum(n_cows_to_reallocate_in_each_area)
+          n_cows_allocated_in_each_area <-
+            n_cows_allocated_in_each_area + n_cows_reallocated_in_each_area -
+            n_cows_to_reallocate_in_each_area
+        }
+        allocated_areas <- rep(i_next_area,
+                               times = n_cows_allocated_in_each_area)
+      } else {
+        # When there is not enough vacancy
+        n_cows_allocated_to_full_areas <- sum(vacancy) - n_cows_to_move
+        cow_id_allocated_to_full_areas[
+          seq_len(n_cows_allocated_to_full_areas) +
+            cow_id_allocated_to_full_areas_index
+          ] <- cow_id[seq_len(n_cows_allocated_to_full_areas)]
+        cow_id_allocated_to_full_areas_index <-
+          cow_id_allocated_to_full_areas_index + n_cows_allocated_to_full_areas
+
+        capacity_of_areas <- attr(area_table, "capacity")[i_next_area]
+        allocated_areas <-
+          c(rep(i_next_area, vacancy),
+            sample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
+                   prob = capacity_of_areas))
+      }
+    }
+    cows[match(i_cow_id, cow_id), area_id := allocated_areas]
+  }
+  cow_id_allocated_to_full_areas <-
+    cow_id_allocated_to_full_areas[cow_id_allocated_to_full_areas != 0]
+  # a[!a %in% b] is 5x faster than setdiff()
+  cow_id_to_allocate_chambers <-
+    vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
+  cows_to_allocate_chambers <-
+    calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
+  cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
+  area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
+  return(list(cows = cows, area_list = area_list))
+}
+# TODO: Make a function to setup tie_stall_table.
+
+# TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
+

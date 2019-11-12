@@ -2,7 +2,7 @@
 % Please edit documentation in R/barn.R
 \name{set_capacity}
 \alias{set_capacity}
-\title{Calculate capacity of a barn based on inputed parameters}
+\title{Calculate capacity of an area based on inputed parameters}
 \usage{
 set_capacity(herd_size, param_farm)
 }
@@ -15,5 +15,5 @@ set_capacity(herd_size, param_farm)
 Numeric vector of length 2: \code{c(lower_limit_of_herd_size, upper_limit_of_herd_size)}.
 }
 \description{
-Calculate capacity of a barn based on inputed parameters
+Calculate capacity of an area based on inputed parameters
 }

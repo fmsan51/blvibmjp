@@ -5,7 +5,7 @@
 \alias{rp_table}
 \alias{one_day_rp}
 \title{A data.table to manage cow status related with rectal palpation}
-\format{\link[data.table:data.table]{data.table}}
+\format{\link{data.table} \link[data.table:data.table]{data.table::data.table}}
 \usage{
 one_day_rp
 }
@@ -24,6 +24,6 @@ The rows are consists of \code{day_rp}, which indicates one chance of rectal pal
 }
 }
 \seealso{
-\link{cow_table} \link{barn_table}
+\link{cow_table} \link{tie_stall_table} \link{area_table} \link{movement_table}
 }
 \keyword{datasets}

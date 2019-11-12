@@ -4,12 +4,12 @@
 \alias{check_removal}
 \title{Check death and sale of current cows}
 \usage{
-check_removal(cows, groups, i, param_calculated, param_processed)
+check_removal(cows, areas, i, param_calculated, param_processed)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{groups}{See \link{barn_table}.}
+\item{areas}{See \link{tie_stall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
@@ -18,7 +18,7 @@ check_removal(cows, groups, i, param_calculated, param_processed)
 \item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
 }
 \value{
-A list consisted of \link{cow_table} and \link{barn_table}.
+A list consisted of \link{cow_table} and \link{tie_stall_table}.
 }
 \description{
 Check death and sale of current cows
