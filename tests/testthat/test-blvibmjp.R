@@ -49,4 +49,3 @@
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
   # plot_infection_route(simulation_csv)
 # })
-# TODO: 全てのoptionをtest
