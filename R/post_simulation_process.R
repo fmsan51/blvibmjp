@@ -137,6 +137,7 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
 #' @param scale_fill Specify a color palette of a plot.
+#' @param use_color When `TRUE`, `color` argument in [ggplot2::aes] is specified.
 #'
 #' @return A [ggplot2::ggplot] plot.
 #'
@@ -146,7 +147,8 @@ plot_infection_route <- function(path_to_csv,
                                  max_ylim = 100, title = NULL,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
-                                 ylab = "Number of cattle", scale_fill = NULL) {
+                                 ylab = "Number of cattle", scale_fill = NULL,
+                                 use_color = F) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_levels_route(cows, levels_route, labels_route)
@@ -154,8 +156,14 @@ plot_infection_route <- function(path_to_csv,
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
 
+  if (use_color) {
+    color <- expr(cause_infection)
+  } else {
+    color <- expr(NULL)
+  }
+
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
-    geom_area(aes(fill = cause_infection)) +
+    geom_area(aes(fill = cause_infection, color = !!color)) +
     scale_x_continuous(breaks =
                          seq(0, max(infection_route$i_month, na.rm = T), 6),
                        minor_breaks = 
@@ -166,7 +174,7 @@ plot_infection_route <- function(path_to_csv,
     gp <- gp + labs(title = title)
   }
   if (!is.null(legend_title)) {
-    gp <- gp + labs(fill = legend_title)
+    gp <- gp + labs(fill = legend_title, color = legend_title)
   }
   if (!is.null(xlab)) {
     gp <- gp + xlab(xlab)
