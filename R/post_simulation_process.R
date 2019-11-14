@@ -138,6 +138,7 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
 #' @param scale_fill Specify a color palette of a plot.
 #' @param use_color When `TRUE`, `color` argument in [ggplot2::aes] is specified.
+#' @param font Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
 #'
@@ -148,7 +149,7 @@ plot_infection_route <- function(path_to_csv,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
                                  ylab = "Number of cattle", scale_fill = NULL,
-                                 use_color = F) {
+                                 use_color = F, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_levels_route(cows, levels_route, labels_route)
@@ -160,6 +161,13 @@ plot_infection_route <- function(path_to_csv,
     color <- expr(cause_infection)
   } else {
     color <- expr(NULL)
+  }
+  if (grepl("Windows", osVersion, fixed = T)) {
+    font <- ifelse(is.null(font), "Meiryo", font)
+    eval(parse(text = paste0(
+      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  } else {
+    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
   }
 
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
