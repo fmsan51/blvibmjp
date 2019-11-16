@@ -2,7 +2,7 @@
 #'
 #' This package provides functions to construct a individual based model of simulation of Bovine Leukemia virus in a tipical Japanese dairy herd.
 #'
-#' @importFrom data.table copy data.table dcast.data.table fifelse fread fwrite melt.data.table rbindlist shift := .N .SD
+#' @importFrom data.table copy data.table dcast.data.table fifelse fcoalesce fread fwrite melt.data.table rbindlist shift := .N .SD
 #' @importFrom forcats fct_other
 #' @importFrom glue glue
 #' @importFrom ggplot2 aes geom_area geom_point ggplot labs scale_fill_manual scale_x_continuous xlab xlim ylab ylim

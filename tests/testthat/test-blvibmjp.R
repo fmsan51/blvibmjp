@@ -34,8 +34,7 @@
   #     names(param_modification[[i]]) <- name_param
   #   }
   # }
-tic()
-set.seed(1)
+  tic()
   expect_warning(
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
@@ -44,7 +43,8 @@ set.seed(1)
                         save_cows = T, save_param = T,
                         i_simulation_start = 1),
     NA)
-toc()
+  toc()
+
   # simulation_csv <- system.file("testdata", "output", "simulation01.csv",
   #                               package = "blvibmjp")
   # calculate_prevalences(path_to_csv = simulation_csv)

@@ -11,15 +11,16 @@ one_day_rp
 }
 \description{
 \code{rp_table} is a \link[data.table:data.table]{data.table} to manage cow status related with rectal palpation.
-The table is automatically made and used within a simulation. You don't have to make it manually.
+The table is automatically made and used within a simulation, therefore not intended to be touched by a user.
 The rows are consists of \code{day_rp}, which indicates one chance of rectal palpation for one cow.
 }
 \details{
 \itemize{
 \item \code{cow_id}, \code{infection_status}: See \link{cow_table}.
 \item \code{day_rp}: Day in month when rectal palpation is conducted.
-\item \code{i_rp}: When more than two cows are rectally palpated in the same day due to the same reason (see \code{type} below), each cow is palpaded on \code{i_rp} th turn.
-\item \code{is_after_inf}: Whether a cow palpated on \code{i_rp} - 1 th turn is infected or not.
+\item \code{i_rp}: When more than two cows are rectally palpated in the same day due to the same reason (see \code{type} below), each cow is palpaded on \code{i_rp}th turn.
+\item \code{type}: character. Type of pregnancy diagnosis specified by one of c("ai_am", "ai_pm", "pregnancy_test", "health_check" (health checking after a delivery).
+\item \code{is_after_inf}: Whether a cow palpated on \code{i_rp - 1}th turn is infected or not.
 \item \code{is_infected}: Whether a cow is infected due to the rectal palpation.
 }
 }
