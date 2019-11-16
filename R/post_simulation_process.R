@@ -142,6 +142,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
+#' @param border_color Specify a color palette for the border.
 #' @param font Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
@@ -153,7 +154,7 @@ plot_infection_route <- function(path_to_csv,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
                                  ylab = "Number of cattle", area_color = NULL,
-                                 border = F, font = NULL) {
+                                 border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_route_levels(cows, route_levels, route_labels)
@@ -196,6 +197,14 @@ plot_infection_route <- function(path_to_csv,
   }
   if (!is.null(area_color)) {
     gp <- gp + scale_fill_manual(values = area_color, drop = F)
+  }
+  if (!is.null(border_color)) {
+    if (border) {
+      gp <- gp + scale_fill_color(values = border_color, drop = F)
+    } else {
+      warning(
+        "Argument border_color is ignored because argument border is FALSE.")
+    }
   }
   return(gp)
 }
