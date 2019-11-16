@@ -76,16 +76,26 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 #'
 #' @param simulation_length See [param_simulation].
 #' @param path_to_csv Path to a simulation output csv file.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prevalences <- function(simulation_length, path_to_csv) {
+plot_prevalences <- function(simulation_length, path_to_csv, font = NULL) {
   prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
+  if (grepl("Windows", osVersion, fixed = T)) {
+    font <- ifelse(is.null(font), "Meiryo", font)
+    eval(parse(text = paste0(
+      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  } else {
+    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  }
   ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
-    scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12))
+    scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12)) +
+    theme_bw(base_family = font) + 
+    theme(panel.border = element_blank(), axis.line = element_line())
 }
 
 
