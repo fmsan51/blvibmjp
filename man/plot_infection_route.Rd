@@ -4,21 +4,30 @@
 \alias{plot_infection_route}
 \title{Plot monthly infection routes nicely}
 \usage{
-plot_infection_route(path_to_csv, levels_route = NULL,
-  labels_route = NULL, max_ylim = 100, title = NULL,
+plot_infection_route(path_to_csv, route_levels = NULL,
+  route_labels = NULL, max_ylim = 100, title = NULL,
   legend_title = NULL, xlab = "Months in simulation",
-  ylab = "Number of cattle", scale_fill = NULL)
+  ylab = "Number of cattle", gray = F, area_color = NULL,
+  border = F, border_color = NULL, font = NULL)
 }
 \arguments{
 \item{path_to_csv}{Path to an output csv file.}
 
-\item{levels_route, labels_route}{See \link{redefine_levels_route}}
+\item{route_levels, route_labels}{See \link{redefine_route_levels}}
 
 \item{max_ylim}{Upper limit of the y-axis of the plot.}
 
 \item{title, legend_title, xlab, ylab}{Plot title, legend title, label for x-axis, label for y-axis.}
 
-\item{scale_fill}{Specify a color palette of a plot.}
+\item{gray}{When \code{TRUE}, a plot will be a grayscale image.}
+
+\item{area_color}{Specify a color palette of a plot.}
+
+\item{border}{When \code{TRUE}, each area in a plot will be surrounded by border.}
+
+\item{border_color}{Specify a color palette for the border.}
+
+\item{font}{Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
 }
 \value{
 A \link[ggplot2:ggplot]{ggplot2::ggplot} plot.
