@@ -3,17 +3,17 @@
 #' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 1, and redefine infection routes.
 #'
 #' @param path_to_csv Path to a csv file which contains [cow_table].
-#' @param levels_route,labels_route See [redefine_levels_route].
+#' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
 #' @seealso [read_final_cows]
 #' @export
-read_initial_cows <- function(path_to_csv, levels_route = NULL,
-                              labels_route = NULL) {
+read_initial_cows <- function(path_to_csv, route_levels = NULL,
+                              route_labels = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_levels_route(cows, levels_route, labels_route)
+  cows <- redefine_route_levels(cows, route_levels, route_labels)
   cows$i_simulation <- 0
   return(cows)
 }
@@ -24,7 +24,7 @@ read_initial_cows <- function(path_to_csv, levels_route = NULL,
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
 #' @param output_filename,output_dir,n_simulation,simulation_length See [param_simulation].
-#' @param levels_route,labels_route See [redefine_levels_route].
+#' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
@@ -32,7 +32,7 @@ read_initial_cows <- function(path_to_csv, levels_route = NULL,
 #' @export
 read_final_cows <- function(output_filename, output_dir, n_simulation,
                             simulation_length,
-                            levels_route = NULL, labels_route = NULL) {
+                            route_levels = NULL, route_labels = NULL) {
   all_simulations <- vector("list", n_simulation)
   for (i in seq_len(n_simulation)) {
     cows <- fread(construct_filepath(output_filename, i, output_dir))
@@ -42,7 +42,7 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
   all_simulations <- rbindlist(all_simulations)
   final_cows <-
     all_simulations[is_owned == T & i_month == simulation_length, ]
-  final_cows <- redefine_levels_route(final_cows, levels_route, labels_route)
+  final_cows <- redefine_route_levels(final_cows, route_levels, route_labels)
   return(final_cows)
 }
 
@@ -94,23 +94,23 @@ plot_prevalences <- function(simulation_length, path_to_csv) {
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param levels_route If specified, infection routes not specified in `levels_route` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
-#' @param labels_route Specify if you want to rename categories.
+#' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
+#' @param route_labels Specify if you want to rename categories.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
-redefine_levels_route <- function(cows, levels_route = NULL,
-                                  labels_route = NULL) {
+redefine_route_levels <- function(cows, route_levels = NULL,
+                                  route_labels = NULL) {
   cows <- copy(cows)
 
   cows[infection_status == "s", cause_infection := "uninfected"]
 
-  if (is.null(levels_route)) {
-    levels_route <- c("uninfected", "initial", "insects", "contact", "needles",
+  if (is.null(route_levels)) {
+    route_levels <- c("uninfected", "initial", "insects", "contact", "needles",
                       "rp", "vertical", "introduced", "comranch")
   }
-  uninf_and_route <- unique(c("uninfected", levels_route))
+  uninf_and_route <- unique(c("uninfected", route_levels))
 
   if (all(unique(cows$cause_infection) %in% uninf_and_route)) {
     cows$cause_infection <- factor(cows$cause_infection, uninf_and_route)
@@ -121,9 +121,9 @@ redefine_levels_route <- function(cows, levels_route = NULL,
                                    levels = c(uninf_and_route, "other"))
   }
 
-  if (!is.null(labels_route)) {
-    stopifnot(length(labels_route) == length(levels(cows$cause_infection)))
-    levels(cows$cause_infection) <- labels_route
+  if (!is.null(route_labels)) {
+    stopifnot(length(route_labels) == length(levels(cows$cause_infection)))
+    levels(cows$cause_infection) <- route_labels
   }
 
   return(cows)
@@ -133,7 +133,7 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #' Plot monthly infection routes nicely
 #'
 #' @param path_to_csv Path to an output csv file.
-#' @param levels_route,labels_route See [redefine_levels_route]
+#' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
 #' @param area_color Specify a color palette of a plot.
@@ -144,7 +144,7 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #'
 #' @export
 plot_infection_route <- function(path_to_csv,
-                                 levels_route = NULL, labels_route = NULL,
+                                 route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = NULL,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
@@ -152,7 +152,7 @@ plot_infection_route <- function(path_to_csv,
                                  border = F, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_levels_route(cows, levels_route, labels_route)
+  cows <- redefine_route_levels(cows, route_levels, route_labels)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
@@ -208,9 +208,9 @@ plot_infection_route <- function(path_to_csv,
 #' @name table_route
 #' @export
 table_route <- function(output_filename, output_dir, n_simulation,
-                        simulation_length, levels_route = NULL) {
+                        simulation_length, route_levels = NULL) {
   cows <- read_final_cows(output_filename, output_dir, n_simulation,
-                          simulation_length, levels_route)
+                          simulation_length, route_levels)
   summary <- summary_route(cows)
   return(summary)
 }
