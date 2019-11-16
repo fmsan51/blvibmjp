@@ -136,7 +136,7 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #' @param levels_route,labels_route See [redefine_levels_route]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
-#' @param scale_fill Specify a color palette of a plot.
+#' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
 #' @param font Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
@@ -148,7 +148,7 @@ plot_infection_route <- function(path_to_csv,
                                  max_ylim = 100, title = NULL,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
-                                 ylab = "Number of cattle", scale_fill = NULL,
+                                 ylab = "Number of cattle", area_color = NULL,
                                  border = F, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
@@ -190,8 +190,8 @@ plot_infection_route <- function(path_to_csv,
   if (!is.null(ylab)) {
     gp <- gp + ylab(ylab)
   }
-  if (!is.null(scale_fill)) {
-    gp <- gp + scale_fill_manual(values = scale_fill, drop = F)
+  if (!is.null(area_color)) {
+    gp <- gp + scale_fill_manual(values = area_color, drop = F)
   }
   return(gp)
 }
