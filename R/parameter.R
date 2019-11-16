@@ -91,7 +91,7 @@ param_farm <- list(
 #' @export
 param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
-  calf_area_id = NA_real_,
+  calf_area_id = NA_real_,  # TODO: Make multiple area settable
   calf_area_priority = NA_real_
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?

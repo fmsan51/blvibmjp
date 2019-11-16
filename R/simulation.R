@@ -30,7 +30,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
                                area_table)
   area_list <- setup_tie_stall_table(setup_cows_res$init_cows, area_table)
   area_table <- setup_area_table(area_table, setup_cows_res$init_cows,
-                                 param_farm)
+                                 param_farm, param_area)
 
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
@@ -111,7 +111,8 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     cows <- change_stage(cows, i, param_calculated)
 
     cows <- change_infection_status(cows, i, month, param_calculated)
-    res <- add_newborns(cows, i, last_cow_id, param_calculated, param_processed)
+    res <- add_newborns(cows, area_table, i, last_cow_id, param_area,
+                        param_calculated, param_processed)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
 
