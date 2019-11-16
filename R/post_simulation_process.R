@@ -144,7 +144,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
 #' @param border_color Specify a color palette for the border.
-#' @param font Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
 #'
