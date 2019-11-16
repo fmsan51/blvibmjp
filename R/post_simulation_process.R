@@ -125,7 +125,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
     if (length(route_labels) != length(levels(cows$cause_infection))) {
       stop(glue("Length of route_labels is not equals to the number of\\
                  categories in cause_infection.
-                 Don't you forget a label for 'others'?"))
+                 Did't you forget a label for 'others'?"))
     }
     levels(cows$cause_infection) <- route_labels
   }
