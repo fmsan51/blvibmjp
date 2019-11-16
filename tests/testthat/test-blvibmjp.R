@@ -2,13 +2,13 @@
 
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
-  param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
-                                            package = "blvibmjp")
+  param_simulation$input_csv <- "D:\\R-codes\\blvibmjp\\inst\\testdata\\input\\test_cow.csv"
   param_simulation$output_dir <-
     file.path(dirname(dirname(param_simulation$input_csv)), "output")
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
   param_farm$change_gloves <- T
+  param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
   area_table[, `:=`(area_id = 1:5,
@@ -34,7 +34,7 @@
   #     names(param_modification[[i]]) <- name_param
   #   }
   # }
-  tic()
+  # tic()
   expect_warning(
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
@@ -43,11 +43,10 @@
                         save_cows = T, save_param = T,
                         i_simulation_start = 1),
     NA)
-  toc()
+  # toc()
 
-  # simulation_csv <- system.file("testdata", "output", "simulation01.csv",
-  #                               package = "blvibmjp")
+  simulation_csv <- paste0(param_simulation$output_dir, "/simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  # plot_infection_route(simulation_csv)
+  plot_infection_route(simulation_csv, gray = T) + theme_bw() + theme(panel.border = element_blank(), axis.line = element_line())
 # })
