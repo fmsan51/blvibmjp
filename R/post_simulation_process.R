@@ -216,7 +216,7 @@ plot_infection_route <- function(path_to_csv,
   }
   if (!is.null(border_color)) {
     if (border) {
-      gp <- gp + scale_fill_color(values = border_color, drop = F)
+      gp <- gp + scale_color_manual(values = border_color, drop = F)
     } else {
       warning(
         "Argument border_color is ignored because argument border is FALSE.")
