@@ -140,6 +140,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
+#' @param gray When `TRUE`, a plot will be a grayscale image. 
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
 #' @param border_color Specify a color palette for the border.
@@ -153,7 +154,8 @@ plot_infection_route <- function(path_to_csv,
                                  max_ylim = 100, title = NULL,
                                  legend_title = NULL,
                                  xlab = "Months in simulation",
-                                 ylab = "Number of cattle", area_color = NULL,
+                                 ylab = "Number of cattle", 
+                                 gray = F, area_color = NULL,
                                  border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
@@ -161,6 +163,20 @@ plot_infection_route <- function(path_to_csv,
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
+  if (gray) {
+    color_specification <- c("area_color", "border_color")
+    is_color_specified <-
+      !sapply(color_specification, function(x) is.null(get(x)))
+    if (sum(is_color_specified) != 0) {
+      specified_color <- color_specification[is_color_specified]
+      warning(glue("Argument(s) {paste(specified_color, collapse = ' and ')} \\
+                    is ignored because argument gray_scale is TRUE."))
+    }
+    n_cause <- length(unique(infection_route$cause_infection))
+    area_color <- gray.colors(n_cause, 1, 0, gamma = 1)
+    border <- T
+    border_color <- rep("#000000", n_cause)
+  }
 
   if (border) {
     color <- expr(cause_infection)
