@@ -222,6 +222,8 @@ plot_infection_route <- function(path_to_csv,
         "Argument border_color is ignored because argument border is FALSE.")
     }
   }
+  gp <- gp + theme_bw(base_family = font) + 
+    theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }
 
