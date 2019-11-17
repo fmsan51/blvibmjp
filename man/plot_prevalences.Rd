@@ -5,9 +5,8 @@
 \title{Plot the change in prevalence}
 \usage{
 plot_prevalences(simulation_length, path_to_csv,
-  title = "Change of prevalence",
-  xlab = "Months from the simulation start", ylab = "Prevalence",
-  font = NULL)
+  title = "Change of prevalence", xlab = "Months in simulation",
+  ylab = "Prevalence", font = NULL)
 }
 \arguments{
 \item{simulation_length}{See \link{param_simulation}.}

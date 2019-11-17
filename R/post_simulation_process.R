@@ -84,7 +84,7 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 #' @export
 plot_prevalences <- function(simulation_length, path_to_csv,
                              title = "Change of prevalence",
-                             xlab = "Months from the simulation start",
+                             xlab = "Months in simulation",
                              ylab = "Prevalence", font = NULL) {
   prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
   if (grepl("Windows", osVersion, fixed = T)) {
