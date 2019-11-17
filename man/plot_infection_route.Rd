@@ -6,7 +6,7 @@
 \usage{
 plot_infection_route(path_to_csv, route_levels = NULL,
   route_labels = NULL, max_ylim = 100, title = NULL,
-  legend_title = NULL, xlab = "Months in simulation",
+  legend_title = "Infection route", xlab = "Months in simulation",
   ylab = "Number of cattle", gray = F, area_color = NULL,
   border = F, border_color = NULL, font = NULL)
 }
