@@ -7,7 +7,7 @@ Japanese_plot_infection_route <- list(
   title = "感染原因別頭数",
   xlab = Japanese_plot_prevalences$xlab,
   ylab = "頭数",
-  legend_title = "感染経路")
+  legend_title = "感染原因")
 
 Japanese_redefine_route_levels <- list(
   route_labels = c(
