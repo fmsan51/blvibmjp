@@ -17,7 +17,7 @@ plot_infection_route(path_to_csv, route_levels = NULL,
 
 \item{max_ylim}{Upper limit of the y-axis of the plot.}
 
-\item{title, legend_title, xlab, ylab}{Plot title, legend title, label for x-axis, label for y-axis.}
+\item{title, legend_title, xlab, ylab}{Plot title, legend title, label for x-axis and label for y-axis.}
 
 \item{gray}{When \code{TRUE}, a plot will be a grayscale image.}
 

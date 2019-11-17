@@ -166,7 +166,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' @param path_to_csv Path to an output csv file.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
-#' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
+#' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis and label for y-axis.
 #' @param gray When `TRUE`, a plot will be a grayscale image. 
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
