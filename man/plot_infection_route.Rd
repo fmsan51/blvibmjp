@@ -4,7 +4,7 @@
 \alias{plot_infection_route}
 \title{Plot monthly infection routes nicely}
 \usage{
-plot_infection_route(path_to_csv, route_levels = NULL,
+plot_infection_route(path_to_csv, language = NULL, route_levels = NULL,
   route_labels = NULL, max_ylim = 100, title = NULL,
   legend_title = "Infection route", xlab = "Months in simulation",
   ylab = "Number of cattle", gray = F, area_color = NULL,
@@ -12,6 +12,8 @@ plot_infection_route(path_to_csv, route_levels = NULL,
 }
 \arguments{
 \item{path_to_csv}{Path to an output csv file.}
+
+\item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}}
 

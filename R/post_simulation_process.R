@@ -13,7 +13,8 @@ read_initial_cows <- function(path_to_csv, route_levels = NULL,
                               route_labels = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_route_levels(cows, route_levels, route_labels)
+  cows <- redefine_route_levels(cows, lenguage = NULL,
+                                route_levels, route_labels)
   cows$i_simulation <- 0
   return(cows)
 }
@@ -42,7 +43,8 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
   all_simulations <- rbindlist(all_simulations)
   final_cows <-
     all_simulations[is_owned == T & i_month == simulation_length, ]
-  final_cows <- redefine_route_levels(final_cows, route_levels, route_labels)
+  final_cows <- redefine_route_levels(final_cows, language = NULL,
+                                      route_levels, route_labels)
   return(final_cows)
 }
 
@@ -76,17 +78,19 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 #'
 #' @param simulation_length See [param_simulation].
 #' @param path_to_csv Path to a simulation output csv file.
+#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param title,xlab,ylab Plot title, label for x-axis and label for y-axis.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prevalences <- function(simulation_length, path_to_csv,
+plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
                              title = "Change of prevalence",
                              xlab = "Months in simulation",
                              ylab = "Prevalence", font = NULL) {
   prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
+  translate_msg("plot_prevalences", language)
   if (grepl("Windows", osVersion, fixed = T)) {
     font <- ifelse(is.null(font), "Meiryo", font)
     eval(parse(text = paste0(
@@ -121,13 +125,14 @@ plot_prevalences <- function(simulation_length, path_to_csv,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
+#' @param language When set, `route_labels` are translated in this language. At present, only Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
-redefine_route_levels <- function(cows, route_levels = NULL,
+redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
                                   route_labels = NULL) {
   cows <- copy(cows)
 
@@ -144,11 +149,16 @@ redefine_route_levels <- function(cows, route_levels = NULL,
   } else {
     cows$cause_infection <- fct_other(cows$cause_infection, uninf_and_route,
                                       other_level = "other")
+    uninf_and_route <- c(uninf_and_route, "other")
     cows$cause_infection <- factor(cows$cause_infection,
-                                   levels = c(uninf_and_route, "other"))
+                                   levels = uninf_and_route)
   }
 
-  if (!is.null(route_labels)) {
+  if (!is.null(language)) {
+    route_labels <- T
+    translate_msg("redefine_route_levels", language)
+    levels(cows$cause_infection) <- route_labels[uninf_and_route]
+  } else if (!is.null(route_labels)) {
     if (length(route_labels) != length(levels(cows$cause_infection))) {
       stop(glue("Length of route_labels is not equals to the number of\\
                  categories in cause_infection.
@@ -164,6 +174,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' Plot monthly infection routes nicely
 #'
 #' @param path_to_csv Path to an output csv file.
+#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis and label for y-axis.
@@ -176,7 +187,7 @@ redefine_route_levels <- function(cows, route_levels = NULL,
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_infection_route <- function(path_to_csv,
+plot_infection_route <- function(path_to_csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = NULL,
                                  legend_title = "Infection route",
@@ -186,7 +197,8 @@ plot_infection_route <- function(path_to_csv,
                                  border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_route_levels(cows, route_levels, route_labels)
+  cows <- redefine_route_levels(cows, language, route_levels, route_labels)
+  translate_msg("plot_infection_route", language)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
@@ -324,4 +336,26 @@ summary_infection_status <- function(cows) {
   table_status <- cbind(table_status, p_status)
   return(table_status)
 }
+
+
+#' Translate plot title and labels
+#'
+#' Translate plot title and labels to other languages than English.  
+#' At present, translation only for Japanese is implemented.
+#'
+#' @param type Type of massages.
+#' @param to Language to which translate messages. At present, only Japanese is implemented.
+translate_msg <- function(type, to) {
+  if (is.null(to)) {
+    return(list())
+  }
+  msg <- get(paste0(to, "_", type))
+  msg_defined_in_parent <- mget(names(msg), parent.frame(),
+                                ifnotfound = list(".notfound"))
+  msg[msg_defined_in_parent == ".notfound"] <- NULL
+  mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)), 
+         names(msg), msg)
+  return(msg)
+}
+
 

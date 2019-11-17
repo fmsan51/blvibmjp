@@ -4,7 +4,7 @@
 \alias{plot_prevalences}
 \title{Plot the change in prevalence}
 \usage{
-plot_prevalences(simulation_length, path_to_csv,
+plot_prevalences(simulation_length, path_to_csv, language,
   title = "Change of prevalence", xlab = "Months in simulation",
   ylab = "Prevalence", font = NULL)
 }
@@ -12,6 +12,8 @@ plot_prevalences(simulation_length, path_to_csv,
 \item{simulation_length}{See \link{param_simulation}.}
 
 \item{path_to_csv}{Path to a simulation output csv file.}
+
+\item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 
 \item{title, xlab, ylab}{Plot title, label for x-axis and label for y-axis.}
 

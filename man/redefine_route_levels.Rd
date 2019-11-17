@@ -4,10 +4,13 @@
 \alias{redefine_route_levels}
 \title{Redefine infection routes}
 \usage{
-redefine_route_levels(cows, route_levels = NULL, route_labels = NULL)
+redefine_route_levels(cows, language = NULL, route_levels = NULL,
+  route_labels = NULL)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{language}{When set, \code{route_labels} are translated in this language. At present, only Japanese is implemented.}
 
 \item{route_levels}{If specified, infection routes not specified in \code{route_levels} are coarced into "other" category. See \code{cause_infection} in \link{cow_table} to know about default categories.}
 
