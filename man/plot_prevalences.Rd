@@ -4,12 +4,17 @@
 \alias{plot_prevalences}
 \title{Plot the change in prevalence}
 \usage{
-plot_prevalences(simulation_length, path_to_csv, font = NULL)
+plot_prevalences(simulation_length, path_to_csv,
+  title = "Change of prevalence",
+  xlab = "Months from the simulation start", ylab = "Prevalence",
+  font = NULL)
 }
 \arguments{
 \item{simulation_length}{See \link{param_simulation}.}
 
 \item{path_to_csv}{Path to a simulation output csv file.}
+
+\item{title, xlab, ylab}{Plot title, label for x-axis and label for y-axis.}
 
 \item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
 }
