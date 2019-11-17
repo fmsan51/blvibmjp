@@ -46,7 +46,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
     neg_months_ial_to_ipl <- months_ial_to_ipl < 0
   }
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
-  months_ial_to_ipl <- ceiling(months_ial_to_ebl)
+  months_ial_to_ipl <- ceiling(months_ial_to_ipl)
   # シミュレーションには「その月に起きた出来事」を反映する方針 (＝月の最終日におけるステータス) なのでroundではなくceiling
   # TODO: 他のroundを使ってる部分について、本当にそれでいいか考慮
   months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
