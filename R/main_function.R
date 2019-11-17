@@ -234,7 +234,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   # (At first, cows after (not RIGHT after) an infected cow has a risk of infection. But it was modified because it showed too high infection rate.)
 
   if (day_rp_last_row != 0) {
-    rp_inf_check <- one_day_rp[rep(1, day_rp_last_row), ]
+    rp_inf_check <- day_rp[1:day_rp_last_row, ]
     rp_inf_check[, i_rp := sample.int(.N), by = .(day_rp, type)]
     rp_inf_check <- rp_inf_check[order(day_rp, type, i_rp), ]
     rp_inf_check[,
