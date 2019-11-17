@@ -2,7 +2,7 @@
 
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
-  param_simulation$input_csv <- "D:\\R-codes\\blvibmjp\\inst\\testdata\\input\\test_cow.csv"
+  param_simulation$input_csv <- "D:\\R-codes\\blvibmjp\\inst\\extdata\\input\\test_cow.csv"
   param_simulation$output_dir <-
     file.path(dirname(dirname(param_simulation$input_csv)), "output")
   param_farm$months_grazing <-  6:10
@@ -22,10 +22,10 @@
                         priority = list(NA, NA, NA, NA, c(2, 1)))]
 
   # if (is_sensitivity_analysis) {
-  #   param_sensitivity <- fread(system.file("testdata", "input",
+  #   param_sensitivity <- fread(system.file("extdata", "input",
   #                              "param_sensitivity.csv", package = "blvibmjp"))
   #   fwrite(param_sensitivity,
-  #          system.file("testdata", "output", "sensitivity.csv"))
+  #          system.file("extdata", "output", "sensitivity.csv"))
   #   row_param <- seq_len(nrow(param_sensitivity) - 3) + 3
   #   param_modification <- param_sensitivity[row_param, 4:103]
   #   name_param <- param_sensitivity[[1]][row_param]
