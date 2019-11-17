@@ -1,4 +1,4 @@
 .Rproj.user
 .Rhistory
 *.Rproj
-inst/testdata/output/*
+inst/extdata/output/*

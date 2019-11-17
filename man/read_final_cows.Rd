@@ -5,12 +5,12 @@
 \title{Read cow information at the end of a simulation}
 \usage{
 read_final_cows(output_filename, output_dir, n_simulation,
-  simulation_length, levels_route = NULL, labels_route = NULL)
+  simulation_length, route_levels = NULL, route_labels = NULL)
 }
 \arguments{
 \item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param_simulation}.}
 
-\item{levels_route, labels_route}{See \link{redefine_levels_route}.}
+\item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
 \value{
 A \link{cow_table} with an additional column \code{i_simulation}.
