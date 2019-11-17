@@ -4,7 +4,7 @@
 \alias{plot_prevalences}
 \title{Plot the change in prevalence}
 \usage{
-plot_prevalences(simulation_length, path_to_csv, language,
+plot_prevalences(simulation_length, path_to_csv, language = NULL,
   title = "Change of prevalence", xlab = "Months in simulation",
   ylab = "Prevalence", font = NULL)
 }
