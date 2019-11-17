@@ -3,17 +3,18 @@
 #' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 1, and redefine infection routes.
 #'
 #' @param path_to_csv Path to a csv file which contains [cow_table].
-#' @param levels_route,labels_route See [redefine_levels_route].
+#' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
 #' @seealso [read_final_cows]
 #' @export
-read_initial_cows <- function(path_to_csv, levels_route = NULL,
-                              labels_route = NULL) {
+read_initial_cows <- function(path_to_csv, route_levels = NULL,
+                              route_labels = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_levels_route(cows, levels_route, labels_route)
+  cows <- redefine_route_levels(cows, lenguage = NULL,
+                                route_levels, route_labels)
   cows$i_simulation <- 0
   return(cows)
 }
@@ -24,7 +25,7 @@ read_initial_cows <- function(path_to_csv, levels_route = NULL,
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
 #' @param output_filename,output_dir,n_simulation,simulation_length See [param_simulation].
-#' @param levels_route,labels_route See [redefine_levels_route].
+#' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
@@ -32,7 +33,7 @@ read_initial_cows <- function(path_to_csv, levels_route = NULL,
 #' @export
 read_final_cows <- function(output_filename, output_dir, n_simulation,
                             simulation_length,
-                            levels_route = NULL, labels_route = NULL) {
+                            route_levels = NULL, route_labels = NULL) {
   all_simulations <- vector("list", n_simulation)
   for (i in seq_len(n_simulation)) {
     cows <- fread(construct_filepath(output_filename, i, output_dir))
@@ -42,7 +43,8 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
   all_simulations <- rbindlist(all_simulations)
   final_cows <-
     all_simulations[is_owned == T & i_month == simulation_length, ]
-  final_cows <- redefine_levels_route(final_cows, levels_route, labels_route)
+  final_cows <- redefine_route_levels(final_cows, language = NULL,
+                                      route_levels, route_labels)
   return(final_cows)
 }
 
@@ -76,16 +78,46 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 #'
 #' @param simulation_length See [param_simulation].
 #' @param path_to_csv Path to a simulation output csv file.
+#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prevalences <- function(simulation_length, path_to_csv) {
+plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
+                             title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
-  ggplot(prevalences, aes(x = i_month, y = prevalence)) +
+  orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
+  translate_msg("plot_prevalences", language)
+  default_msg <- list(title = "Change of prevalence",
+                      xlab = "Months in simulation",
+                      ylab = "Prevalence")
+  define_msg(orig_msg, default_msg, language)
+
+  if (grepl("Windows", osVersion, fixed = T)) {
+    font <- ifelse(is.null(font), "Meiryo", font)
+    eval(parse(text = paste0(
+      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  } else {
+    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  }
+  gp <- ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
-    scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12))
+    scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12)) +
+    theme_bw(base_family = font) + 
+    theme(panel.border = element_blank(), axis.line = element_line())
+  if (!is.null(title)) {
+    gp <- gp + labs(title = title)
+  }
+  if (!is.null(xlab)) {
+    gp <- gp + xlab(xlab)
+  }
+  if (!is.null(ylab)) {
+    gp <- gp + ylab(ylab)
+  }
+  return(gp)
 }
 
 
@@ -94,36 +126,46 @@ plot_prevalences <- function(simulation_length, path_to_csv) {
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param levels_route If specified, infection routes not specified in `levels_route` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
-#' @param labels_route Specify if you want to rename categories.
+#' @param language When set, `route_labels` are translated in this language. At present, only Japanese is implemented.
+#' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
+#' @param route_labels Specify if you want to rename categories.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
-redefine_levels_route <- function(cows, levels_route = NULL,
-                                  labels_route = NULL) {
+redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
+                                  route_labels = NULL) {
   cows <- copy(cows)
 
   cows[infection_status == "s", cause_infection := "uninfected"]
 
-  if (is.null(levels_route)) {
-    levels_route <- c("uninfected", "initial", "insects", "contact", "needles",
+  if (is.null(route_levels)) {
+    route_levels <- c("uninfected", "initial", "insects", "contact", "needles",
                       "rp", "vertical", "introduced", "comranch")
   }
-  uninf_and_route <- unique(c("uninfected", levels_route))
+  uninf_and_route <- unique(c("uninfected", route_levels))
 
   if (all(unique(cows$cause_infection) %in% uninf_and_route)) {
     cows$cause_infection <- factor(cows$cause_infection, uninf_and_route)
   } else {
     cows$cause_infection <- fct_other(cows$cause_infection, uninf_and_route,
                                       other_level = "other")
+    uninf_and_route <- c(uninf_and_route, "other")
     cows$cause_infection <- factor(cows$cause_infection,
-                                   levels = c(uninf_and_route, "other"))
+                                   levels = uninf_and_route)
   }
 
-  if (!is.null(labels_route)) {
-    stopifnot(length(labels_route) == length(levels(cows$cause_infection)))
-    levels(cows$cause_infection) <- labels_route
+  if (!is.null(language)) {
+    route_labels <- T
+    translate_msg("redefine_route_levels", language)
+    levels(cows$cause_infection) <- route_labels[uninf_and_route]
+  } else if (!is.null(route_labels)) {
+    if (length(route_labels) != length(levels(cows$cause_infection))) {
+      stop(glue("Length of route_labels is not equals to the number of\\
+                 categories in cause_infection.
+                 Did't you forget a label for 'others'?"))
+    }
+    levels(cows$cause_infection) <- route_labels
   }
 
   return(cows)
@@ -133,31 +175,55 @@ redefine_levels_route <- function(cows, levels_route = NULL,
 #' Plot monthly infection routes nicely
 #'
 #' @param path_to_csv Path to an output csv file.
-#' @param levels_route,labels_route See [redefine_levels_route]
+#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
-#' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis, label for y-axis.
-#' @param scale_fill Specify a color palette of a plot.
-#' @param use_color When `TRUE`, `color` argument in [ggplot2::aes] is specified.
-#' @param font Set a font. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
+#' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
+#' @param gray When `TRUE`, a plot will be a grayscale image. 
+#' @param area_color Specify a color palette of a plot.
+#' @param border When `TRUE`, each area in a plot will be surrounded by border.
+#' @param border_color Specify a color palette for the border.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_infection_route <- function(path_to_csv,
-                                 levels_route = NULL, labels_route = NULL,
-                                 max_ylim = 100, title = NULL,
-                                 legend_title = NULL,
-                                 xlab = "Months in simulation",
-                                 ylab = "Number of cattle", scale_fill = NULL,
-                                 use_color = F, font = NULL) {
+plot_infection_route <- function(path_to_csv, language = NULL,
+                                 route_levels = NULL, route_labels = NULL,
+                                 max_ylim = 100, title = T,
+                                 legend_title = T, xlab = T, ylab = T, 
+                                 gray = F, area_color = NULL,
+                                 border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
-  cows <- redefine_levels_route(cows, levels_route, labels_route)
+  cows <- redefine_route_levels(cows, language, route_levels, route_labels)
+  orig_msg <- list(title = title, legend_title = legend_title,
+                   xlab = xlab, ylab = ylab)
+  translate_msg("plot_infection_route", language)
+  default_msg <- list(title = "Change of prevalence",
+                      legend_title = "Infection route",
+                      xlab = "Months in simulation",
+                      ylab = "Number of cattle")
+  define_msg(orig_msg, default_msg, language)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
+  if (gray) {
+    color_specification <- c("area_color", "border_color")
+    is_color_specified <-
+      !sapply(color_specification, function(x) is.null(get(x)))
+    if (sum(is_color_specified) != 0) {
+      specified_color <- color_specification[is_color_specified]
+      warning(glue("Argument(s) {paste(specified_color, collapse = ' and ')} \\
+                    is ignored because argument gray_scale is TRUE."))
+    }
+    n_cause <- length(unique(infection_route$cause_infection))
+    area_color <- gray.colors(n_cause, 1, 0, gamma = 1)
+    border <- T
+    border_color <- rep("#000000", n_cause)
+  }
 
-  if (use_color) {
+  if (border) {
     color <- expr(cause_infection)
   } else {
     color <- expr(NULL)
@@ -190,9 +256,19 @@ plot_infection_route <- function(path_to_csv,
   if (!is.null(ylab)) {
     gp <- gp + ylab(ylab)
   }
-  if (!is.null(scale_fill)) {
-    gp <- gp + scale_fill_manual(values = scale_fill, drop = F)
+  if (!is.null(area_color)) {
+    gp <- gp + scale_fill_manual(values = area_color, drop = F)
   }
+  if (!is.null(border_color)) {
+    if (border) {
+      gp <- gp + scale_color_manual(values = border_color, drop = F)
+    } else {
+      warning(
+        "Argument border_color is ignored because argument border is FALSE.")
+    }
+  }
+  gp <- gp + theme_bw(base_family = font) + 
+    theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }
 
@@ -208,9 +284,9 @@ plot_infection_route <- function(path_to_csv,
 #' @name table_route
 #' @export
 table_route <- function(output_filename, output_dir, n_simulation,
-                        simulation_length, levels_route = NULL) {
+                        simulation_length, route_levels = NULL) {
   cows <- read_final_cows(output_filename, output_dir, n_simulation,
-                          simulation_length, levels_route)
+                          simulation_length, route_levels)
   summary <- summary_route(cows)
   return(summary)
 }
@@ -266,4 +342,53 @@ summary_infection_status <- function(cows) {
   table_status <- cbind(table_status, p_status)
   return(table_status)
 }
+
+
+#' Translate plot title and labels
+#'
+#' Translate plot title and labels to other languages than English.  
+#' At present, translation only for Japanese is implemented.
+#'
+#' @param type Type of massages.
+#' @param to Language to which translate messages. At present, only Japanese is implemented.
+translate_msg <- function(type, to) {
+  if (is.null(to)) {
+    return(list())
+  }
+  msg <- get(paste0(to, "_", type))
+  msg_defined_in_parent <- mget(names(msg), parent.frame(),
+                                ifnotfound = list(".notfound"))
+  msg[msg_defined_in_parent == ".notfound"] <- NULL
+  mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)), 
+         names(msg), msg)
+  return(msg)
+}
+
+
+#' Define plot title and labels
+#'
+#' Define plot title and labels based on arguments
+#'
+#' @param original_msg List of original title and labels before passed to [translate_msg()].
+#' @param default_msg List of default plot title and labels.
+#' @param language Language to which translate messages.
+define_msg <- function(original_msg, default_msg, language) {
+  msg <- names(original_msg)
+  original_msg_true <- vapply(original_msg, function(x) is.logical(x) && x, T)
+  original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
+  original_msg_chr <- vapply(original_msg, is.character, T)
+  env <- parent.frame()
+  mapply(function(x, value) assign(x, value, envir = env),
+         msg[original_msg_chr], original_msg[original_msg_chr])
+  lapply(msg[original_msg_false & msg == "title"],
+         function(x) assign(x, NULL, envir = env))
+  if (is.null(language)) {
+    mapply(function(x, value) assign(x, value, envir = env),
+           msg[original_msg_false & msg != "title"],
+           default_msg[original_msg_false & msg != "title"])
+    mapply(function(x, value) assign(x, value, envir = env),
+           msg[original_msg_true], default_msg[original_msg_true])
+  }
+}
+
 

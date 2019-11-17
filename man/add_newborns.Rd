@@ -4,10 +4,13 @@
 \alias{add_newborns}
 \title{Add newborns to a cow_table}
 \usage{
-add_newborns(cows, i, last_cow_id, param_calculated, param_processed)
+add_newborns(cows, area_table, i, last_cow_id, param_area,
+  param_calculated, param_processed)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{area_table}{See \link{area_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
@@ -16,6 +19,8 @@ add_newborns(cows, i, last_cow_id, param_calculated, param_processed)
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 
 \item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
+
+\item{param_area_id}{See \link{param_area}.}
 }
 \value{
 A list consisted of two elements: \code{cows} and \code{last_cow_id}.
