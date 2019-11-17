@@ -79,18 +79,22 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 #' @param simulation_length See [param_simulation].
 #' @param path_to_csv Path to a simulation output csv file.
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
-#' @param title,xlab,ylab Plot title, label for x-axis and label for y-axis.
+#' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
 plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
-                             title = "Change of prevalence",
-                             xlab = "Months in simulation",
-                             ylab = "Prevalence", font = NULL) {
+                             title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
+  orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   translate_msg("plot_prevalences", language)
+  default_msg <- list(title = "Change of prevalence",
+                      xlab = "Months in simulation",
+                      ylab = "Prevalence")
+  define_msg(orig_msg, default_msg, language)
+
   if (grepl("Windows", osVersion, fixed = T)) {
     font <- ifelse(is.null(font), "Meiryo", font)
     eval(parse(text = paste0(
@@ -174,7 +178,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
-#' @param title,legend_title,xlab,ylab Plot title, legend title, label for x-axis and label for y-axis.
+#' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param gray When `TRUE`, a plot will be a grayscale image. 
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
@@ -186,16 +190,21 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @export
 plot_infection_route <- function(path_to_csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
-                                 max_ylim = 100, title = NULL,
-                                 legend_title = "Infection route",
-                                 xlab = "Months in simulation",
-                                 ylab = "Number of cattle", 
+                                 max_ylim = 100, title = T,
+                                 legend_title = T, xlab = T, ylab = T, 
                                  gray = F, area_color = NULL,
                                  border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_route_levels(cows, language, route_levels, route_labels)
+  orig_msg <- list(title = title, legend_title = legend_title,
+                   xlab = xlab, ylab = ylab)
   translate_msg("plot_infection_route", language)
+  default_msg <- list(title = "Change of prevalence",
+                      legend_title = "Infection route",
+                      xlab = "Months in simulation",
+                      ylab = "Number of cattle")
+  define_msg(orig_msg, default_msg, language)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
@@ -353,6 +362,33 @@ translate_msg <- function(type, to) {
   mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)), 
          names(msg), msg)
   return(msg)
+}
+
+
+#' Define plot title and labels
+#'
+#' Define plot title and labels based on arguments
+#'
+#' @param original_msg List of original title and labels before passed to [translate_msg()].
+#' @param default_msg List of default plot title and labels.
+#' @param language Language to which translate messages.
+define_msg <- function(original_msg, default_msg, language) {
+  msg <- names(original_msg)
+  original_msg_true <- vapply(original_msg, function(x) is.logical(x) && x, T)
+  original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
+  original_msg_chr <- vapply(original_msg, is.character, T)
+  env <- parent.frame()
+  mapply(function(x, value) assign(x, value, envir = env),
+         msg[original_msg_chr], original_msg[original_msg_chr])
+  lapply(msg[original_msg_false & msg == "title"],
+         function(x) assign(x, NULL, envir = env))
+  if (is.null(language)) {
+    mapply(function(x, value) assign(x, value, envir = env),
+           msg[original_msg_false & msg != "title"],
+           default_msg[original_msg_false & msg != "title"])
+    mapply(function(x, value) assign(x, value, envir = env),
+           msg[original_msg_true], default_msg[original_msg_true])
+  }
 }
 
 

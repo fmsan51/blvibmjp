@@ -5,8 +5,7 @@
 \title{Plot the change in prevalence}
 \usage{
 plot_prevalences(simulation_length, path_to_csv, language = NULL,
-  title = "Change of prevalence", xlab = "Months in simulation",
-  ylab = "Prevalence", font = NULL)
+  title = T, xlab = T, ylab = T, font = NULL)
 }
 \arguments{
 \item{simulation_length}{See \link{param_simulation}.}
@@ -15,7 +14,7 @@ plot_prevalences(simulation_length, path_to_csv, language = NULL,
 
 \item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 
-\item{title, xlab, ylab}{Plot title, label for x-axis and label for y-axis.}
+\item{title, xlab, ylab}{logical or character. Plot title, label for x-axis and label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE}, a title is not shown (\code{TRUE} is valid only for \code{title}). When specified by character, the string is used as a title or label.}
 
 \item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
 }

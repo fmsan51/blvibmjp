@@ -5,10 +5,9 @@
 \title{Plot monthly infection routes nicely}
 \usage{
 plot_infection_route(path_to_csv, language = NULL, route_levels = NULL,
-  route_labels = NULL, max_ylim = 100, title = NULL,
-  legend_title = "Infection route", xlab = "Months in simulation",
-  ylab = "Number of cattle", gray = F, area_color = NULL,
-  border = F, border_color = NULL, font = NULL)
+  route_labels = NULL, max_ylim = 100, title = T, legend_title = T,
+  xlab = T, ylab = T, gray = F, area_color = NULL, border = F,
+  border_color = NULL, font = NULL)
 }
 \arguments{
 \item{path_to_csv}{Path to an output csv file.}
@@ -19,7 +18,7 @@ plot_infection_route(path_to_csv, language = NULL, route_levels = NULL,
 
 \item{max_ylim}{Upper limit of the y-axis of the plot.}
 
-\item{title, legend_title, xlab, ylab}{Plot title, legend title, label for x-axis and label for y-axis.}
+\item{title, legend_title, xlab, ylab}{logical or character. Plot title, legend title, label for x-axis and label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE}, a title is not shown (\code{TRUE} is valid only for \code{title}). When specified by character, the string is used as a title or label.}
 
 \item{gray}{When \code{TRUE}, a plot will be a grayscale image.}
 
