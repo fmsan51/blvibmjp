@@ -38,6 +38,7 @@ param_simulation <- list(
 #' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
+#' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
@@ -73,6 +74,7 @@ param_farm <- list(
 
   use_communal_pasture = F,
 
+  control_insects = F,
   change_needles = NA,
   # TODO: Make it to prop
   change_gloves = T,
@@ -176,17 +178,23 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## Probability of infection by bloodsucking insects per month per cattle ----
   # Read preps/Parameters_num_insects.Rmd
-  param$probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
-                                     0.0028,  # May
-                                     0.0107,  # Jun
-                                     0.0146,  # Jul
-                                     0.0063,  # Aug
-                                     0.0406,  # Sep
-                                     0.0140,  # Oct
-                                     0.0001,  # Nov
-                                     0        # Dec
-                                     )
-  param$insects_pressure <- 1
+  probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
+                               0.0028,  # May
+                               0.0107,  # Jun
+                               0.0146,  # Jul
+                               0.0063,  # Aug
+                               0.0406,  # Sep
+                               0.0140,  # Oct
+                               0.0001,  # Nov
+                               0        # Dec
+                               )
+  control_insects <- param_farm$control_insects
+  if (is.logical(control_insects)) {
+    insects_pressure <- fifelse(control_insects, 0.5, 1)
+  } else {
+    insects_pressure <- control_insects
+  }
+  param$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
 
   ## infection_contact ----
 

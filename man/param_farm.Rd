@@ -4,7 +4,7 @@
 \name{param_farm}
 \alias{param_farm}
 \title{Parameters about farms which should be set by users}
-\format{An object of class \code{list} of length 21.}
+\format{An object of class \code{list} of length 22.}
 \usage{
 param_farm
 }
@@ -27,6 +27,7 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{use_communal_pasture} (logical): whether use a communal pasture. (default: FALSE)
 \item \code{n_introduced} c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 \item \code{days_qualantine}: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
+\item \code{control_insects} (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., \code{control_insects = 0.8} means that the number of insects becomes 80%). When \code{TRUE}, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
