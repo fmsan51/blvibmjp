@@ -56,7 +56,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
     cat("Simulation ", i_simulation, " / ", max_simulation, "\n")
     res <- simulate_once(setup_cows_res, area_list, area_table, movement_table,
              day_rp, i_simulation, result, result_area,
-             param_simulation, param_area, param_processed,
+             param_simulation, param_farm, param_area, param_processed,
              param_modification = list_param_modification[[i_simulation]],
              save_cows, save_param)
   }
@@ -80,6 +80,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #' @param i_simulation The iteration number of simulations.
 #' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
 #' @param param_simulation See [param_simulation].
+#' @param param_farm See [param_farm].
 #' @param param_area See [param_area].
 #' @param param_processed A result of [process_param()].
 #' @param param_modification See [calc_param()].
@@ -90,8 +91,9 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 simulate_once <- function(setup_cows_res, area_list, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
-                          param_simulation, param_area, param_processed,
-                          param_modification, save_cows, save_param) {
+                          param_simulation, param_farm, param_area, 
+                          param_processed, param_modification,
+                          save_cows, save_param) {
   cows <- copy(setup_cows_res$init_cows)
   areas <- copy(area_list)
   last_cow_id <- setup_cows_res$init_last_cow_id
