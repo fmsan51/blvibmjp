@@ -107,9 +107,6 @@ plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
   if (!is.null(title)) {
     gp <- gp + labs(title = title)
   }
-  if (!is.null(legend_title)) {
-    gp <- gp + labs(fill = legend_title, color = legend_title)
-  }
   if (!is.null(xlab)) {
     gp <- gp + xlab(xlab)
   }
