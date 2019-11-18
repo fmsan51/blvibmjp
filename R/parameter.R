@@ -157,19 +157,16 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## Probabilities of disease progress ----
   # Proportion of ial cattle which develops ipl
-  prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
-  param$probs_develop_ipl <- c(prob_develop_ipl, 1 - prob_develop_ipl)
+  param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
-  prob_develop_ebl <- 0.014 / prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
-  param$probs_develop_ebl <- c(prob_develop_ebl, 1 - prob_develop_ebl)
+  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
 
   # Probability that an BLV-infected cow is detected
   # 39.7% of infected cows are detected (Tsutui et al, 2015)
   # This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
   # (Because Tsutsui et al. assumed as the same and there is no data about the length of period from clinical onset to detection.)
-  prob_ebl_detected <- rnorm(1, mean = 0.397,
-                             sd = (0.397 - 0.358) / qnorm(0.975))
-  param$probs_ebl_detected <- c(prob_ebl_detected, 1 - prob_ebl_detected)
+  param$prob_ebl_detected <- rnorm(1, mean = 0.397,
+                                   sd = (0.397 - 0.358) / qnorm(0.975))
 
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
@@ -205,8 +202,7 @@ calc_param <- function(param_farm, modification = NULL) {
   # Infection probability per day
   # TODO: temporary, just by inspiration
   change_needles <- set_param(param_farm$change_needles, T)
-  prob_inf_needles <- fifelse(change_needles, 0, 0.005)
-  param$probs_inf_needles <- c(prob_inf_needles, 1 - prob_inf_needles)
+  param$prob_inf_needles <- fifelse(change_needles, 0, 0.005)
 
   ## infection_rp ----
   # Infection by rectal palpation
@@ -216,8 +212,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # 直検1回ごとの感染確率
   change_gloves <- set_param(param_farm$change_gloves, T)
-  prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
-  param$probs_inf_rp <- c(prob_inf_rp, 1 - prob_inf_rp)
+  param$prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
   ## infection_vertical ----
@@ -231,10 +226,8 @@ calc_param <- function(param_farm, modification = NULL) {
   # 0-1% or 10+%
   # http://veterinaryrecord.bmj.com/content/176/10/254.long 10% in ial, 50% in ipl (Used in this simulation)
 
-  prob_vert_inf_ial <- (4 + 5) / 95
-  param$probs_vert_inf_ial <- c(prob_vert_inf_ial, 1 - prob_vert_inf_ial)
-  prob_vert_inf_ipl <- (10 + 4) / 29
-  param$probs_vert_inf_ipl <- c(prob_vert_inf_ipl, 1 - prob_vert_inf_ipl)
+  param$prob_vert_inf_ial <- (4 + 5) / 95
+  param$prob_vert_inf_ipl <- (10 + 4) / 29
 
   # TODO: check
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
@@ -277,21 +270,18 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # Detection of heats
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # Probability of detection of heat from Nenkan Kentei Seiseki from HRK (H23-28)
-  prob_heat_detected <- set_param(param_farm$prop_heat_detected,
-                                  runif(1, min = min(prop_heat_detected),
-                                        max = max(prop_heat_detected)))
-  param$probs_heat_detected <- c(prob_heat_detected, 1 - prob_heat_detected)
+  param$prob_heat_detected <- set_param(param_farm$prop_heat_detected,
+                                        runif(1, min = min(prop_heat_detected),
+                                              max = max(prop_heat_detected)))
 
 
   # Proportion of success of the first AI
   # From Gyugun Kentei Seisekihyo by HRK
   # (because the data of the current year is only known from Feb to Dec)
   prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  prob_first_ai_success <- runif(1,
-                                 min(prop_first_ai_success),
-                                 max(prop_first_ai_success))
-  param$probs_first_ai_success <- c(prob_first_ai_success,
-                                    1 - prob_first_ai_success)
+  param$prob_first_ai_success <- runif(1,
+                                       min(prop_first_ai_success),
+                                       max(prop_first_ai_success))
 
 
   # Proportion of success of AI after the first
@@ -300,10 +290,9 @@ calc_param <- function(param_farm, modification = NULL) {
   # (p1: the prob in which the first AI successes; p2: the prop in which AI after the first successes)
   # The probability in which the AI after the first successes
   mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
-  prop_ai_success <- (1 - prob_first_ai_success) / (mean_ai - 1)
+  prop_ai_success <- (1 - param$prob_first_ai_success) / (mean_ai - 1)
   lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
-  prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
-  param$probs_ai_success <- c(prob_ai_success, 1 - prob_ai_success)
+  param$prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
 
 
   # Heat cycle
@@ -335,15 +324,13 @@ calc_param <- function(param_farm, modification = NULL) {
   ## Probability to be twins ----
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
-  prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
-  param$probs_twin <- c(prob_twin, 1 - prob_twin)
+  param$prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
 
   ## Sex ratio ----
   sex_ratio_f <- prop_f / (prop_m + prop_f)
   lims_female <- set_param(param_farm$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
-  prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
-  param$probs_female <- c(prob_female, 1 - prob_female)
+  param$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
 
   ## Sex ratio for twins ----
   sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)
