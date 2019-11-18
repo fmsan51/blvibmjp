@@ -4,13 +4,13 @@
 \alias{read_initial_cows}
 \title{Read cow_table at the start of a simulation from a csv and modify data ready to plot}
 \usage{
-read_initial_cows(path_to_csv, levels_route = NULL,
-  labels_route = NULL)
+read_initial_cows(path_to_csv, route_levels = NULL,
+  route_labels = NULL)
 }
 \arguments{
 \item{path_to_csv}{Path to a csv file which contains \link{cow_table}.}
 
-\item{levels_route, labels_route}{See \link{redefine_levels_route}.}
+\item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
 \value{
 A \link{cow_table} with an additional column \code{i_simulation}.

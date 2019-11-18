@@ -234,7 +234,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   # (At first, cows after (not RIGHT after) an infected cow has a risk of infection. But it was modified because it showed too high infection rate.)
 
   if (day_rp_last_row != 0) {
-    rp_inf_check <- one_day_rp[rep(1, day_rp_last_row), ]
+    rp_inf_check <- day_rp[1:day_rp_last_row, ]
     rp_inf_check[, i_rp := sample.int(.N), by = .(day_rp, type)]
     rp_inf_check <- rp_inf_check[order(day_rp, type, i_rp), ]
     rp_inf_check[,
@@ -352,15 +352,17 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].
+#' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
+#' @param param_area_id See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of two elements: `cows` and `last_cow_id`.
 #' @export
-add_newborns <- function(cows, i, last_cow_id, param_calculated,
-                         param_processed) {
+add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
+                         param_calculated, param_processed) {
   rows_mothers <- which(cows$date_last_delivery == i)
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
@@ -391,7 +393,11 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
                     parity = 0,
                     n_ai = 0,
                     day_heat = sample.int(30, n_newborns, replace = T) * 1,
-                    infection_status = "s")]
+                    infection_status = "s",
+                    area_id = param_area$calf_area_id,
+                    months_in_area = 0,
+                    is_isolated = attr(area_table, "is_calf_isolated"),
+                    i_month = i)]
 
     # Setting about twins
     if (sum(newborns$n_newborns_per_cow == 2) != 0) {
@@ -441,7 +447,8 @@ add_newborns <- function(cows, i, last_cow_id, param_calculated,
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
       rows_newborns <- n_cows + seq_len(n_newborns_born)
-      newborns[, cow_id := last_cow_id + seq_len(n_newborns_born)]
+      newborns[, `:=`(row_id = rows_newborns,
+                      cow_id = last_cow_id + seq_len(n_newborns_born))]
       last_cow_id <- last_cow_id + n_newborns_born
       # Here, last_cow_id instead of max(cows$cow_id, na.rm = T) is used,
       # because these two values are different when the last newborn died already and no calve was born since then.

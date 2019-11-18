@@ -6,7 +6,7 @@
 \title{Summarize infection routes}
 \usage{
 table_route(output_filename, output_dir, n_simulation, simulation_length,
-  levels_route = NULL)
+  route_levels = NULL)
 
 summary_route(cows)
 }
@@ -19,7 +19,7 @@ summary_route(cows)
 
 \item{simulation_length}{See \link{param_simulation}.}
 
-\item{levels_route}{See \link{redefine_levels_route}.}
+\item{route_levels}{See \link{redefine_route_levels}.}
 
 \item{cows}{A \code{cow_table} read by \link{read_final_cows}.}
 }
