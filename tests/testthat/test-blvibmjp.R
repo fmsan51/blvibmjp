@@ -2,13 +2,15 @@
 
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
-  param_simulation$input_csv <- "D:\\R-codes\\blvibmjp\\inst\\extdata\\input\\test_cow.csv"
-  param_simulation$output_dir <-
-    file.path(dirname(dirname(param_simulation$input_csv)), "output")
+  # param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
+  #                                           package = "blvibmjp")
+  # param_simulation$output_dir <-
+  #   file.path(dirname(dirname(param_simulation$input_csv)), "output")
+  param_simulation$input_csv <- "D:\\R-codes\\03 BLV\\data\\input\\yamada.csv"
+  param_simulation$output_dir <- "D:\\R-codes\\03 BLV\\data\\output\\test"
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
-  param_farm$change_gloves <- T
-  param_area$calf_area_id <- 1
+  param_farm$change_gloves <- F
 
   area_table <- a_area[rep(1, 5), ]
   area_table[, `:=`(area_id = 1:5,
@@ -22,10 +24,10 @@
                         priority = list(NA, NA, NA, NA, c(2, 1)))]
 
   # if (is_sensitivity_analysis) {
-  #   param_sensitivity <- fread(system.file("extdata", "input",
+  #   param_sensitivity <- fread(system.file("testdata", "input",
   #                              "param_sensitivity.csv", package = "blvibmjp"))
   #   fwrite(param_sensitivity,
-  #          system.file("extdata", "output", "sensitivity.csv"))
+  #          system.file("testdata", "output", "sensitivity.csv"))
   #   row_param <- seq_len(nrow(param_sensitivity) - 3) + 3
   #   param_modification <- param_sensitivity[row_param, 4:103]
   #   name_param <- param_sensitivity[[1]][row_param]
@@ -44,9 +46,14 @@
                         i_simulation_start = 1),
     NA)
   # toc()
-
-  simulation_csv <- paste0(param_simulation$output_dir, "/simulation01.csv")
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+  simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  plot_infection_route(simulation_csv, gray = T) + theme_bw() + theme(panel.border = element_blank(), axis.line = element_line())
+  plot_infection_route(simulation_csv, use_color = T,
+                       max_ylim = 80, scale_fill = gray.colors(5, 1, 0, gamma = 1.2),
+                       ylab = "頭数", xlab = "シミュレーション月数", legend_title = "感染経路",
+                       levels_route = c("uninfected", "initial", "insects", "rp", "vertical"),
+                       labels_route = c("非感染", "初期感染", "経吸血昆虫", "経直検", "垂直感染")) + 
+    ggpubr::theme_pubr(base_family = "Meiryo", legend = "top")
 # })

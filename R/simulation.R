@@ -92,7 +92,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 simulate_once <- function(setup_cows_res, area_list, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
-                          param_simulation, param_farm, param_area, 
+                          param_simulation, param_farm, param_area,
                           param_processed, param_modification,
                           save_cows, save_param) {
   cows <- copy(setup_cows_res$init_cows)
