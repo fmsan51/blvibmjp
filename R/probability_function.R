@@ -66,8 +66,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
 #'
 #' @return A logical vector.
 is_ebl_detected <- function(id_cow_ebl, param_calculated) {
-  sample(c(T, F), size = length(id_cow_ebl), replace = T,
-         prob = param_calculated$probs_ebl_detected)
+  runif(length(id_cow_ebl)) < param_calculated$prob_ebl_detected
 }
 
 
@@ -93,9 +92,8 @@ n_month_until_ebl_die <- function(rows_cow_overlooked, param_calculated) {
 #'
 #' @return A logical vector.
 is_infected_insects <- function(id_cow_s, month, param_calculated) {
-  prob_inf_insetcs <- param_calculated$probs_inf_insects_month[1:12 == month]
-  is_infected <- sample(c(T, F), size = length(id_cow_s), replace = T,
-                        prob = c(prob_inf_insetcs, 1 - prob_inf_insetcs))
+  prob_inf_insects <- param_calculated$probs_inf_insects_month[1:12 == month]
+  is_infected <- runif(length(id_cow_s)) < prob_inf_insects
   return(is_infected)
 }
 
@@ -123,8 +121,7 @@ is_infected_contact <- function() {
 #'
 #' @return A logical vector.
 is_infected_needles <- function(id_cow_s, param_calculated) {
-  sample(c(T, F), size = length(id_cow_s), replace = T,
-         prob = param_calculated$probs_inf_needles)
+  runif(length(id_cow_s)) < param_calculated$prob_inf_needles
 }
 
 
@@ -135,9 +132,8 @@ is_infected_needles <- function(id_cow_s, param_calculated) {
 #'
 #' @return A logical vector.
 is_infected_rp <- function(n_cows_palpated, param_calculated) {
-  # TODO: ここ他のis_infected_xxxにそろえてid_cow_xxxにしたほうがいいかも。それとも他をn_xxxにする？
-  sample(c(T, F), size = n_cows_palpated, replace = T,
-         prob = param_calculated$probs_inf_rp)
+ # TODO: ここ他のis_infected_xxxにそろえてid_cow_xxxにしたほうがいいかも。それとも他をn_xxxにする？
+  runif(n_cows_palpated) < param_calculated$prob_inf_rp
 }
 
 
@@ -150,12 +146,10 @@ is_infected_rp <- function(n_cows_palpated, param_calculated) {
 is_infected_vertical <- function(status_mother, param_calculated) {
   n_calf <- length(status_mother)
   is_vert_inf_ial <-
-    sample(c(T, F), size = n_calf, replace = T,
-           prob = param_calculated$probs_vert_inf_ial) &
+    runif(n_calf) < param_calculated$prob_vert_inf_ial &
     (status_mother == "ial")
   is_vert_inf_ipl <-
-    sample(c(T, F), size = n_calf, replace = T,
-           prob = param_calculated$probs_vert_inf_ipl) &
+    runif(n_calf) < param_calculated$prob_vert_inf_ipl &
     (status_mother == "ipl" | status_mother == "ebl")
   is_vert_inf <- (is_vert_inf_ial | is_vert_inf_ipl)
   return(is_vert_inf)
@@ -221,8 +215,7 @@ is_ai_started_heifer <- function(ages, param_calculated) {
 #'
 #' @return A logical vector.
 is_heat_detected <- function(n_cows, param_calculated) {
-  sample(c(T, F), size = n_cows, replace = T,
-         prob = param_calculated$probs_heat_detected)
+  runif(n_cows) < param_calculated$prob_heat_detected
 }
 
 
@@ -234,15 +227,13 @@ is_heat_detected <- function(n_cows, param_calculated) {
 #' @rdname is_ai_successed
 #' @return A logical vector.
 is_first_ai_successed <- function(n_cows, param_calculated) {
-  sample(c(T, F), size = n_cows, replace = T,
-         prob = param_calculated$probs_first_ai_success)
+  runif(n_cows) < param_calculated$prob_first_ai_success
 }
 
 
 #' @rdname is_ai_successed
 is_ai_successed <- function(n_cows, param_calculated) {
-  sample(c(T, F), size = n_cows, replace = T,
-         prob = param_calculated$probs_ai_success)
+  runif(n_cows) < param_calculated$prob_ai_success
 }
 
 
@@ -267,7 +258,8 @@ is_dried <- function(months_from_delivery, param_calculated) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
   (months_from_delivery > param_calculated$lower_lim_dried) |
   ((months_from_delivery == param_calculated$lower_lim_dried) &
-     (runif(length(months_from_delivery)) < param_calculated$prop_dried_shorter))
+     (runif(length(months_from_delivery)) < 
+        param_calculated$prop_dried_shorter))
 }
 
 
@@ -282,16 +274,14 @@ susceptibility <- function(n_newborns,
                            susceptibility_ial_to_ipl_dam,
                            susceptibility_ipl_to_ebl_dam,
                            param_calculated) {
-  inherit_from_dam <- sample(c(T, F), n_newborns, replace = T)
+  inherit_from_dam <- runif(n_newborns) < 0.5
   ial_to_ipl <- fifelse(inherit_from_dam,
                         susceptibility_ial_to_ipl_dam,
-                        sample(c(T, F), n_newborns, replace = T,
-                               prob = param_calculated$probs_develop_ipl))
+                        runif(n_newborns) < param_calculated$prob_develop_ipl)
   ipl_to_ebl <- fifelse(inherit_from_dam,
                         susceptibility_ipl_to_ebl_dam,
-                        sample(c(T, F), n_newborns, replace = T,
-                               prob = param_calculated$probs_develop_ebl) &
-                        ial_to_ipl)
+                        runif(n_newborns) < param_calculated$prob_develop_ebl &
+                          ial_to_ipl)
   susceptibility <- list(ial_to_ipl = ial_to_ipl, ipl_to_ebl = ipl_to_ebl)
   return(susceptibility)
 }
@@ -306,7 +296,7 @@ susceptibility <- function(n_newborns,
 #'
 #' @return A numeric vector consisted of 1 and 2.
 n_newborn_per_dam <- function(n_dams, param_calculated) {
-  sample(2:1, n_dams, replace = T, prob = param_calculated$probs_twin)
+  (runif(n_dams) < param_calculated$prob_twin) + 1
 }
 # Probability to be triplets or more is ignored.
 
@@ -323,8 +313,8 @@ n_newborn_per_dam <- function(n_dams, param_calculated) {
 #' @rdname sex_newborns
 #' @return A character vector consisted of "male", "female" and "freemartin".
 sex_newborns <- function(n_newborns, param_calculated) {
-  sample(c("female", "male"), size = n_newborns, replace = T,
-         prob = param_calculated$probs_female)
+  c("female", "male")[(runif(n_newborns) > param_calculated$prob_female) + 1]
+  # Equals to sample(c(...), n_newborns, replace = T, prob = c(prob, 1 - prob))
 }
 
 

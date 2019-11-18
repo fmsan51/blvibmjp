@@ -104,7 +104,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                   infection_status = rep(cows_started_ai$infection_status,
                                          n_ai_vec),
                   day_rp = unlist(detected_heat_list),
-                  type = sample(c("ai_am", "ai_pm"), n_ai_done, replace = T))]
+                  type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- n_ai_done
     }
   }
@@ -162,7 +162,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
              `:=`(cow_id = rep(open_cows$cow_id, n_ai_vec),
                   infection_status = rep(open_cows$infection_status, n_ai_vec),
                   day_rp = unlist(detected_heat_list),
-                  type = sample(c("ai_am", "ai_pm"), n_ai_done, replace = T))]
+                  type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- day_rp_last_row + n_ai_done
     }
     # No conception, however pregnancy cheking is done 
