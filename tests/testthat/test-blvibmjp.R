@@ -7,10 +7,11 @@
   # param_simulation$output_dir <-
   #   file.path(dirname(dirname(param_simulation$input_csv)), "output")
   param_simulation$input_csv <- "D:\\R-codes\\03 BLV\\data\\input\\yamada.csv"
-  param_simulation$output_dir <- "D:\\R-codes\\03 BLV\\data\\output\\test"
+  param_simulation$output_dir <- "D:\\R-codes\\03 BLV\\data\\test"
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
   param_farm$change_gloves <- F
+  param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
   area_table[, `:=`(area_id = 1:5,
@@ -36,24 +37,17 @@
   #     names(param_modification[[i]]) <- name_param
   #   }
   # }
-  # tic()
-  expect_warning(
+  tic()
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
                         communal_pasture_table = NULL,
                         list_param_modification = NULL,
                         save_cows = T, save_param = T,
-                        i_simulation_start = 1),
-    NA)
-  # toc()
-windowsFonts(Meiryo = windowsFont("Meiryo"))
+                        i_simulation_start = 1)
+  toc()
   simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
   plot_infection_route(simulation_csv, use_color = T,
-                       max_ylim = 80, scale_fill = gray.colors(5, 1, 0, gamma = 1.2),
-                       ylab = "頭数", xlab = "シミュレーション月数", legend_title = "感染経路",
-                       levels_route = c("uninfected", "initial", "insects", "rp", "vertical"),
-                       labels_route = c("非感染", "初期感染", "経吸血昆虫", "経直検", "垂直感染")) + 
-    ggpubr::theme_pubr(base_family = "Meiryo", legend = "top")
+                     max_ylim = 80, language = "Japanese")
 # })
