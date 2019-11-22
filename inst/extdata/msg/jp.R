@@ -1,3 +1,5 @@
+Sys.setlocale("LC_CTYPE", "Japanese")
+
 Japanese_plot_prevalences <- list(
   title = "陽性率の推移",
   xlab = "シミュレーション開始後月数",
@@ -18,6 +20,7 @@ Japanese_redefine_route_levels <- list(
     needles = "注射針",
     rp = "直腸検査",
     vertical = "垂直感染",
+    colostrum = "初乳",
     introduced = "感染牛の導入",
     comranch = "公共牧場",
     other = "その他")
@@ -33,4 +36,3 @@ Japanese_redefine_route_levels <- lapply(Japanese_redefine_route_levels,
 usethis::use_data(Japanese_plot_prevalences, Japanese_plot_infection_route,
                   Japanese_redefine_route_levels,
                   internal = T, overwrite = T)
-
