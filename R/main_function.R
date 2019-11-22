@@ -299,51 +299,32 @@ change_stage <- function(cows, i, param_calculated) {
 #' @return A [cow_table].
 #' @export
 change_infection_status <- function(cows, i, month, param_calculated) {
+  n_cows <- nrow(cows)
 
-  rows_s <- which(cows$infection_status == "s")
+  cows[is_infected_insects(n_cows, month, param_calculated) &
+         infection_status == "s",
+       ':='(infection_status = "ial",
+            date_ial = i,
+            cause_infection = "insects"
+            )]
+  cows[is_infected_needles(n_cows, cows, param_calculated) &
+         infection_status == "s",
+       ':='(infection_status = "ial",
+            date_ial = i,
+            cause_infection = "needles")]
 
-  is_inf_insects <- is_infected_insects(rows_s, month, param_calculated)
-  rows_inf_insects <-
-    rows_s[is_infected_insects(rows_s, month, param_calculated)]
-  rows_inf_needles <-
-    rows_s[!(is_inf_insects) & is_infected_needles(cows, param_calculated)]
-  if (length(rows_inf_insects) != 0) {
-    cows[rows_inf_insects,
-         ':='(infection_status = "ial",
-              date_ial = i,
-              cause_infection = "insects"
-              )]
-    cows[rows_inf_insects,
-         c("date_ipl_expected", "date_ebl_expected") :=
-           n_month_to_progress(susceptibility_ial_to_ipl,
-                               susceptibility_ipl_to_ebl,
-                               i, param_calculated)]
-  }
-  if (length(rows_inf_needles) != 0) {
-    cows[rows_inf_needles,
-         ':='(infection_status = "ial",
-              date_ial = i,
-              cause_infection = "needles")]
-    cows[rows_inf_needles,
-         c("date_ipl_expected", "date_ebl_expected") :=
-           n_month_to_progress(susceptibility_ial_to_ipl,
-                               susceptibility_ipl_to_ebl,
-                               i, param_calculated)]
-  }
-
-  rows_new_ipl <- which(cows$date_ipl_expected == i)
-  if (length(rows_new_ipl) != 0) {
-    cows[rows_new_ipl,
-         ":="(infection_status = "ipl",
-              date_ipl = i)]
-  }
-
-  rows_new_ebl <- which(cows$date_ebl_expected == i)
-  if (length(rows_new_ebl) != 0) {
-    cows[rows_new_ebl,
-         ":="(infection_status = "ebl",
-              date_ebl = i)]
-  }
+  cows[date_ial == i,
+       c("date_ipl_expected", "date_ebl_expected") :=
+         n_month_to_progress(susceptibility_ial_to_ipl,
+                             susceptibility_ipl_to_ebl,
+                             i, param_calculated)]
+  
+  cows[date_ipl_expected == i,
+       ":="(infection_status = "ipl",
+            date_ipl = i)]
+  cows[date_ebl_expected == i,
+       ":="(infection_status = "ebl",
+            date_ebl = i)]
 
   return(cows)
 }
