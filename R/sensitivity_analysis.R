@@ -8,7 +8,7 @@
 sensitivity_analysis <- function(param_simulation, param_farm, param_group,
                                  i_simulation_start = 1) {
   if (!(file.exists(param_simulation$output_dir))) {
-    dir.create(param_simulation$output_dir)
+    dir.create(param_simulation$output_dir, recursive = T)
   }
 
   setup_cows_res <- setup_cows(param_simulation, param_group, save_cows = F)
