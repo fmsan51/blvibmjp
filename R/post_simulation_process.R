@@ -208,6 +208,7 @@ plot_infection_route <- function(path_to_csv, language = NULL,
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
+  n_cause <- length(unique(infection_route$cause_infection))
   if (gray) {
     color_specification <- c("area_color", "border_color")
     is_color_specified <-
@@ -217,10 +218,12 @@ plot_infection_route <- function(path_to_csv, language = NULL,
       warning(glue("Argument(s) {paste(specified_color, collapse = ' and ')} \\
                     is ignored because argument gray_scale is TRUE."))
     }
-    n_cause <- length(unique(infection_route$cause_infection))
     area_color <- gray.colors(n_cause, 1, 0, gamma = 1)
     border <- T
     border_color <- rep("#000000", n_cause)
+  }
+  if (is.null(area_color)) {
+    area_color <- c(gray(0.85), colorblind_pal()(n_cause)[-1])
   }
 
   if (border) {
@@ -242,7 +245,8 @@ plot_infection_route <- function(path_to_csv, language = NULL,
                          seq(0, max(infection_route$i_month, na.rm = T), 6),
                        minor_breaks = 
                          seq(0, max(infection_route$i_month, na.rm = T), 3)) +
-    ylim(0, max_ylim)
+    ylim(0, max_ylim) + 
+    scale_fill_manual(values = area_color, drop = F)
 
   if (!is.null(title)) {
     gp <- gp + labs(title = title)
@@ -255,9 +259,6 @@ plot_infection_route <- function(path_to_csv, language = NULL,
   }
   if (!is.null(ylab)) {
     gp <- gp + ylab(ylab)
-  }
-  if (!is.null(area_color)) {
-    gp <- gp + scale_fill_manual(values = area_color, drop = F)
   }
   if (!is.null(border_color)) {
     if (border) {
