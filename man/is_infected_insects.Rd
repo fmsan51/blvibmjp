@@ -4,10 +4,10 @@
 \alias{is_infected_insects}
 \title{Wheter cows are infected by insects}
 \usage{
-is_infected_insects(id_cow_s, month, param_calculated)
+is_infected_insects(n_cows, month, param_calculated)
 }
 \arguments{
-\item{id_cow_s}{ID of infected cows.}
+\item{n_cows}{The number of cows.}
 
 \item{month}{The current month (1, 2, ..., 12).}
 
