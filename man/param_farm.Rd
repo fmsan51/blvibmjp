@@ -30,6 +30,7 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{control_insects} (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., \code{control_insects = 0.8} means that the number of insects becomes 80%). When \code{TRUE}, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
+\item \code{feed_raw_colostrum} (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
 }
 }

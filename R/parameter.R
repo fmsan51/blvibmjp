@@ -41,6 +41,7 @@ param_simulation <- list(
 #' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
+#' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
 #' @seealso [param_simulation] [param_area] [calc_param]
@@ -75,9 +76,9 @@ param_farm <- list(
 
   control_insects = F,
   change_needles = T,
-  # TODO: Make it to prop
   change_gloves = T,
-  # TODO: ditto
+  # TODO: Make it to prop
+  feed_raw_colostrum = F,
 
   days_milking = NA
 )
@@ -228,6 +229,15 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # TODO: check
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
+  
+  ## infection_by_colostrum ----
+
+  # Probability of infection by feeding raw colostrum milk of BLV-infected dams
+  # Frequency of infection by colostrum may be smaller than that by contact https://www.ncbi.nlm.nih.gov/pubmed/6272983
+  # Probability of BLV infection after freeze-thaw can be considered as 0 https://doi.org/10.1292/jvms.13-0253
+  # 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months
+  feed_raw_colostrum <- param_farm$feed_raw_colostrum
+  param$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
 
 
   ## infection_introduced ----

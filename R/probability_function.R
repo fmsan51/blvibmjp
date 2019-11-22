@@ -169,6 +169,18 @@ is_infected_vertical <- function(status_mother, param_calculated) {
 }
 
 
+#' Wheter newborns are infected by colostrum milk
+#'
+#' @param status_mother The `infection_status` of dams.
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A logical vector.
+is_infected_by_colostrum <- function(status_mother, param_calculated) {
+  runif(length(status_mother)) < 
+    param_calculated$prob_inf_colostrum * (status_mother != "s")
+}
+
+
 #' Whether introduced cows are infected
 #'
 #' @return A logical vector

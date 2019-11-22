@@ -408,14 +408,17 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
                     susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
 
     # Calculation of vertical infection
-    rows_infected_vertical <-
-      is_infected_vertical(newborns$status_mother, param_calculated)
-    newborns[rows_infected_vertical,
+    newborns[is_infected_vertical(newborns$status_mother, param_calculated),
              ':='(infection_status = "ial",
                   date_ial = i,
                   cause_infection = "vertical"
                   )]
-    newborns[rows_infected_vertical,
+    newborns[is_infected_by_colostrum(status_mother, param_calculated) & 
+               infection_status != "s",
+             `:=`(infection_status = "ial",
+                  date_ial = i,
+                  cause_infection = "colostrum")]
+    newborns[infection_status != "s",
              c("date_ipl_expected", "date_ebl_expected") :=
                n_month_to_progress(susceptibility_ial_to_ipl,
                                    susceptibility_ipl_to_ebl,
