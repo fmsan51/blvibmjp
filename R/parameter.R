@@ -209,14 +209,12 @@ calc_param <- function(param_farm, modification = NULL) {
   # The probability is 0.034 in [Lack of evidence of transmission of bovine leukemia virus by rectal palpation of dairy cows. - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/2557314)
 
   # 直検1回ごとの感染確率
-  change_gloves <- set_param(param_farm$change_gloves, T)
   param$prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
   ## infection_vertical ----
 
   # Vertical infection
-  ## Probability of vertical infection for calves born from BLV-infected dams ----
   # Vet Microbiol. 2002 Jan 23;84(3):275-82.  Vertical transmission of bovine leukemia virus and bovine immunodeficiency virus in dairy cattle herds.  Prorobability of vertical infection is 0
   # https://www.jstage.jst.go.jp/article/jvma1951/34/9/34_9_423/_article/-char/ja  0, too
   # http://veterinaryrecord.bmj.com/content/176/10/254.long  1/22
