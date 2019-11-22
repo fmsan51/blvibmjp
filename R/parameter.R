@@ -209,7 +209,8 @@ calc_param <- function(param_farm, modification = NULL) {
   # The probability is 0.034 in [Lack of evidence of transmission of bovine leukemia virus by rectal palpation of dairy cows. - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/2557314)
 
   # 直検1回ごとの感染確率
-  param$prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
+  param$prob_inf_rp <- fifelse(param_farm$change_gloves,
+                               0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
   ## infection_vertical ----
