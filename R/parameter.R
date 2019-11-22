@@ -48,7 +48,6 @@ param_simulation <- list(
 param_farm <- list(
   # TODO: Unify "farm" and "herd"
   # TODO: The function to confirm the necessary parameters are set or not
-  csv = NA,  # TODO: It this really should be set here?
   prop_female = NA,
   prop_replacement = NA,
   prop_died = NA,
