@@ -306,7 +306,7 @@ change_infection_status <- function(cows, i, month, param_calculated) {
   rows_inf_insects <-
     rows_s[is_infected_insects(rows_s, month, param_calculated)]
   rows_inf_needles <-
-    rows_s[!(is_inf_insects) & is_infected_needles(rows_s, param_calculated)]
+    rows_s[!(is_inf_insects) & is_infected_needles(cows, param_calculated)]
   if (length(rows_inf_insects) != 0) {
     cows[rows_inf_insects,
          ':='(infection_status = "ial",
