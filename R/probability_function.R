@@ -146,10 +146,10 @@ is_infected_rp <- function(n_cows_palpated, param_calculated) {
 is_infected_vertical <- function(status_mother, param_calculated) {
   n_calf <- length(status_mother)
   is_vert_inf_ial <-
-    runif(n_calf) < param_calculated$prob_vert_inf_ial &
+    runif(n_calf) < param_calculated$prob_vert_inf_ial *
     (status_mother == "ial")
   is_vert_inf_ipl <-
-    runif(n_calf) < param_calculated$prob_vert_inf_ipl &
+    runif(n_calf) < param_calculated$prob_vert_inf_ipl *
     (status_mother == "ipl" | status_mother == "ebl")
   is_vert_inf <- (is_vert_inf_ial | is_vert_inf_ipl)
   return(is_vert_inf)
