@@ -75,7 +75,7 @@ param_farm <- list(
   use_communal_pasture = F,
 
   control_insects = F,
-  change_needles = NA,
+  change_needles = T,
   # TODO: Make it to prop
   change_gloves = T,
   # TODO: ditto
@@ -201,8 +201,7 @@ calc_param <- function(param_farm, modification = NULL) {
   # Infection by using same needles among infected and non-infected cattle
   # Infection probability per day
   # TODO: temporary, just by inspiration
-  change_needles <- set_param(param_farm$change_needles, T)
-  param$prob_inf_needles <- fifelse(change_needles, 0, 0.005)
+  param$prob_inf_needles <- fifelse(param_farm$change_needles, 0, 0.001)
 
   ## infection_rp ----
   # Infection by rectal palpation
