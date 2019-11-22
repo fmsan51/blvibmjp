@@ -215,7 +215,6 @@ calc_param <- function(param_farm, modification = NULL) {
   ## infection_vertical ----
 
   # Vertical infection
-  ## Probability of vertical infection for calves born from BLV-infected dams ----
   # Vet Microbiol. 2002 Jan 23;84(3):275-82.  Vertical transmission of bovine leukemia virus and bovine immunodeficiency virus in dairy cattle herds.  Prorobability of vertical infection is 0
   # https://www.jstage.jst.go.jp/article/jvma1951/34/9/34_9_423/_article/-char/ja  0, too
   # http://veterinaryrecord.bmj.com/content/176/10/254.long  1/22
