@@ -6,6 +6,7 @@
 #' @importFrom forcats fct_other
 #' @importFrom glue glue
 #' @importFrom ggplot2 aes element_blank element_line geom_area geom_point ggplot labs scale_fill_manual scale_color_manual scale_x_continuous theme theme_bw xlab xlim ylab ylim
+#' @importFrom ggthemes colorblind_pal
 #' @importFrom lubridate day dmy dym interval mdy myd today tz ydm ymd
 #' @importFrom purrr flatten_dbl
 #' @importFrom rlang ensyms eval_tidy expr enquos quos_auto_name !!!

@@ -12,8 +12,6 @@ sensitivity_analysis(param_simulation, param_farm, param_group,
 
 \item{param_farm}{See \link{param_farm}.}
 
-\item{param_group}{See \link{param_group}.}
-
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
 }
 \description{
