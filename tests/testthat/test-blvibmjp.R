@@ -2,13 +2,17 @@
 
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
-  param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
-                                            package = "blvibmjp")
-  param_simulation$output_dir <-
-    file.path(dirname(dirname(param_simulation$input_csv)), "output")
+  # param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
+  #                                           package = "blvibmjp")
+  # param_simulation$output_dir <-
+  #   file.path(dirname(dirname(param_simulation$input_csv)), "output")
+  param_simulation$input_csv <- "D:\\R-codes\\03 BLV\\data\\input\\yamada.csv"
+  param_simulation$output_dir <- "D:\\R-codes\\03 BLV\\data\\prev50nocontrol"
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
-  param_farm$change_gloves <- T
+  param_farm$change_needles <- F
+  param_farm$feed_raw_colostrum <- T
+  param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
   area_table[, `:=`(area_id = 1:5,
@@ -42,6 +46,7 @@ set.seed(1)
                         communal_pasture_table = NULL,
                         list_param_modification = NULL,
                         save_cows = T, save_param = T,
+<<<<<<< Updated upstream
                         i_simulation_start = 1),
     NA)
 toc()
@@ -50,4 +55,13 @@ toc()
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
   # plot_infection_route(simulation_csv)
+=======
+                        i_simulation_start = 1)
+  toc()
+  simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
+  calculate_prevalences(path_to_csv = simulation_csv)
+  # plot_prevalences(param_simulation$simulation_length, simulation_csv)
+  plot_infection_route(simulation_csv, route_levels = c("uninfected", "colostrum", "insects", "initial"),
+                     max_ylim = 80, language = "Japanese")
+>>>>>>> Stashed changes
 # })
