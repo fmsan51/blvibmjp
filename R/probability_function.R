@@ -98,6 +98,16 @@ is_infected_insects <- function(n_cows, month, param_calculated) {
 }
 
 
+#' Whether cows are infected in a communal pasture
+#'
+#' @param n_cows The number of cows.
+#' @param param_farm See [param_farm].
+#'
+#' @return A logical vector.
+is_infected_compas <- function(n_cows, param_farm) {
+  runif(n_cows) < param_farm$prob_seroconv_compas
+}
+
 #' Whether cows are infected by direct contact
 #'
 #' @return A logical vector.

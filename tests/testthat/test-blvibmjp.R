@@ -1,3 +1,4 @@
+library(tictoc)
 # test_that("simulation runs", {
 
   param_simulation$n_simulation <- 1
@@ -10,7 +11,10 @@
   param_simulation$output_dir <- "D:\\R-codes\\03 BLV\\data\\test"
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
-  param_farm$change_gloves <- F
+  param_farm$change_needles <- F
+  param_farm$use_communal_pasture <- T
+  # TODO: use_communal_pastureの制御がこれとcommunal_pasture_tableの2つに分かれているのを修正する
+  param_farm$feed_raw_colostrum <- T
   param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
@@ -23,6 +27,12 @@
                         condition = c("age > 3", "age > 12", "delivery", "dry", "delivery | dry"),
                         next_area = list(2L, 3L, 4L, 5L, c(4L, 5L)),
                         priority = list(NA, NA, NA, NA, c(2, 1)))]
+
+  communal_pasture_table <- a_communal_pasture_use[1, ]
+  communal_pasture_table[, `:=`(area_out = 2L,
+                                area_back = 3L,
+                                condition_out = "age == 14",
+                                condition_back = "months_from_pregnancy == 8")]
 
   # if (is_sensitivity_analysis) {
   #   param_sensitivity <- fread(system.file("testdata", "input",
@@ -40,7 +50,7 @@
   tic()
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
-                        communal_pasture_table = NULL,
+                        communal_pasture_table,
                         list_param_modification = NULL,
                         save_cows = T, save_param = T,
                         i_simulation_start = 1)
@@ -48,6 +58,5 @@
   simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  plot_infection_route(simulation_csv, use_color = T,
-                     max_ylim = 80, language = "Japanese")
+  plot_infection_route(simulation_csv, max_ylim = 80, language = "Japanese", route_levels = c("comranch", "insects"))
 # })

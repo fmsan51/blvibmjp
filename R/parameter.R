@@ -36,6 +36,7 @@ param_simulation <- list(
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
 #' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
+#' - `prob_seroconversion_in_communal_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
@@ -73,6 +74,17 @@ param_farm <- list(
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
   use_communal_pasture = F,
+  prob_seroconversion_in_communal_pasture = 0.5,
+  # Probability of seroconversion in communal pastures
+  # Reports about seroconversion in communal pastures
+  # Niigata: 60%, 47%, 50%, 51% (H25-28) -> 5.6% (H29) https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf
+  # Tohoku: 0-11.5% (2006-2008) http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/DATA/062/062-087.pdf
+  # Yamagata: 0% (with measure) p2 in http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
+  # Yamagata: 0% (with measure) p3 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
+  # Yamagata: 51.8 (H20?) -> 22.3% (H27), 49.4 (H20) -> 1.5% (H27) p3 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
+  # Ibaraki: 97.4% (H26?) -> 33.3 (H27) p1 https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf
+  # Nagano: 7.9% (2014), 4.5% (2015) (with measure) p58 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
+  # Iwate: 0% (2011) (with measure) http://jvpa.jp/jvpa/img/information/2011/52syoroku.pdf
 
   control_insects = F,
   change_needles = T,
@@ -229,7 +241,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # TODO: check
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
-  
+
   ## infection_by_colostrum ----
 
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
@@ -244,6 +256,10 @@ calc_param <- function(param_farm, modification = NULL) {
 
 
   ## infection_comranch ----
+  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_compasが使われるタイミングないな
+  param$prob_seroconv_compas <-
+    fifelse(param_farm$use_communal_pasture,
+            param_farm$prob_seroconversion_in_communal_pasture, 0)
 
 
   ## artificial_insemination ----
@@ -457,4 +473,5 @@ process_param <- function(setup_cows_res, param_simulation, param_farm) {
   )
 }
 # TODO: Is this function really necessary?
+# TODO: process_paramとcalc_paramくっつけた方がよさそう
 

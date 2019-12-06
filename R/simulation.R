@@ -37,11 +37,11 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
   param_processed <- process_param(setup_cows_res, param_simulation, param_farm)
 
-  result <- result_area <- 
+  result <- result_area <-
     vector("list", param_simulation$simulation_length + 1)
   result[[1]] <- copy(setup_cows_res$init_cows)
   # result_aras is made to make debugging easy.
-  result_area[[1]] <- area_list 
+  result_area[[1]] <- area_list
 
   if (save_param) {
     save_param_txt(
@@ -119,7 +119,8 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     cows <- res$cows
     last_cow_id <- res$last_cow_id
 
-    res <- change_area(cows, movement_table, area_table, area_list)
+    res <- change_area(cows, i, movement_table, area_table, area_list,
+                       param_calculated)
     cows <- res$cows
     areas <- res$area_list
 
