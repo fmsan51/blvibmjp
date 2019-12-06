@@ -38,30 +38,17 @@
   #     names(param_modification[[i]]) <- name_param
   #   }
   # }
-tic()
-set.seed(1)
-  expect_warning(
+  tic()
     simulate_blv_spread(param_simulation, param_farm, param_area,
                         area_table, movement_table,
                         communal_pasture_table = NULL,
                         list_param_modification = NULL,
                         save_cows = T, save_param = T,
-<<<<<<< Updated upstream
-                        i_simulation_start = 1),
-    NA)
-toc()
-  # simulation_csv <- system.file("testdata", "output", "simulation01.csv",
-  #                               package = "blvibmjp")
-  # calculate_prevalences(path_to_csv = simulation_csv)
-  # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  # plot_infection_route(simulation_csv)
-=======
                         i_simulation_start = 1)
   toc()
   simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
-  calculate_prevalences(path_to_csv = simulation_csv)
+  # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  plot_infection_route(simulation_csv, route_levels = c("uninfected", "colostrum", "insects", "initial"),
+  plot_infection_route(simulation_csv, use_color = T,
                      max_ylim = 80, language = "Japanese")
->>>>>>> Stashed changes
 # })

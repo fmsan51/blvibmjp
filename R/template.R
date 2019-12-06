@@ -36,9 +36,8 @@
 #' - `date_dried`: NA means that the cow is milking.
 #' - `n_ai`: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 #' - `day_heat`: Day in month of the NEXT heat.
-#' - `day_last_heat`: Day in month of the LAST heat.
-#' - `day_last_heat_detected`: Day in month of the last DETECTED heat.
-#' - `n_heat_from_ai`: The number of heat from the last AI.
+#' - `day_last_detected_heat`: Dey in month of the LAST heat.
+#' - `is_to_test_pregnancy`: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 #' - `infection_status`: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
 #' - `date_ial`: The month when `infection_status` changes from "s" to "ial".
 #' - `date_ipl`: The month when `infection_status` changes from "ial" to "ipl".
@@ -92,15 +91,16 @@ a_new_calf <- data.table(
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
   date_dried = NA_real_,  # TODO: make function to set this
+  # n_ai is currently used nowhere,
+  # but recorded for when to consider repeat breeder.
   n_ai = NA_real_,
   day_heat = NA_real_,
-  day_last_heat = NA_real_,
-  day_last_heat_detected = NA_real_,
+  day_last_detected_heat = NA_real_,
+  # day_last_detected_heat is used to calculate day of pregnancy test.
   # TODO: day_heat, 妊娠したらNAにすることにしよ。発情中のみセットされてる方がわかりやすい。
-  # TODO: ここなんのためにday_heatとday_last_heatセットしたんだっけ？　もっとシンプルにできない？
   # TODO: day_heat_シリーズ、発情のない牛にもセットすることにしてるけど、発情が来てからセットしたほうがわかりやすいな
 
-  n_heat_from_ai = NA_real_,
+  is_to_test_pregnancy = NA,
 
   # Infection status
   infection_status = NA_character_,
@@ -188,7 +188,7 @@ a_chamber <- data.table(
 #' Users must specify one `area_table` consisted of following items before starting a simulation.
 #'
 #' - `area_id` (integer): Area ID.
-#' - `area_type` (`"free"`/`"tie"`/`"outside"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall) or `"outside"` (paddock or rangeland, etc.).
+#' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.) or `"hatch"`.
 #' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
 #'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
 #'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
@@ -213,6 +213,8 @@ a_chamber <- data.table(
 a_area <- data.table(area_id = NA_integer_,
                      area_type = NA_character_,
                      capacity = list(NA))
+# TODO: How to hundle when multiple cows are set to one hatch
+
 
 # ---- movement_template ----
 
@@ -284,13 +286,14 @@ a_communal_pasture_use <- data.table(area_out = NA_integer_,
 #' A data.table to manage cow status related with rectal palpation
 #'
 #' `rp_table` is a [data.table][data.table::data.table] to manage cow status related with rectal palpation.
-#' The table is automatically made and used within a simulation. You don't have to make it manually.
+#' The table is automatically made and used within a simulation, therefore not intended to be touched by a user.
 #' The rows are consists of `day_rp`, which indicates one chance of rectal palpation for one cow.
 #'
 #' - `cow_id`, `infection_status`: See [cow_table].
 #' - `day_rp`: Day in month when rectal palpation is conducted.
-#' - `i_rp`: When more than two cows are rectally palpated in the same day due to the same reason (see `type` below), each cow is palpaded on `i_rp` th turn.
-#' - `is_after_inf`: Whether a cow palpated on `i_rp` - 1 th turn is infected or not.
+#' - `i_rp`: When more than two cows are rectally palpated in the same day due to the same reason (see `type` below), each cow is palpaded on `i_rp`th turn.
+#' - `type`: character. Type of pregnancy diagnosis specified by one of c("ai_am", "ai_pm", "pregnancy_test", "health_check" (health checking after a delivery).
+#' - `is_after_inf`: Whether a cow palpated on `i_rp - 1`th turn is infected or not.
 #' - `is_infected`: Whether a cow is infected due to the rectal palpation.
 #'
 #' @format [data.table] [data.table::data.table]
@@ -305,3 +308,4 @@ one_day_rp <- data.table(cow_id = NA_integer_,
                          is_after_inf = NA,
                          is_infected = NA)
 # TODO: 名前は検討
+

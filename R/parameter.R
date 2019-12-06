@@ -39,8 +39,10 @@ param_simulation <- list(
 #' - `prob_seroconversion_in_communal_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
+#' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
+#' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
 #' @seealso [param_simulation] [param_area] [calc_param]
@@ -48,7 +50,6 @@ param_simulation <- list(
 param_farm <- list(
   # TODO: Unify "farm" and "herd"
   # TODO: The function to confirm the necessary parameters are set or not
-  csv = NA,  # TODO: It this really should be set here?
   prop_female = NA,
   prop_replacement = NA,
   prop_died = NA,
@@ -85,10 +86,11 @@ param_farm <- list(
   # Nagano: 7.9% (2014), 4.5% (2015) (with measure) p58 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
   # Iwate: 0% (2011) (with measure) http://jvpa.jp/jvpa/img/information/2011/52syoroku.pdf
 
-  change_needles = NA,
-  # TODO: Make it to prop
+  control_insects = F,
+  change_needles = T,
   change_gloves = T,
-  # TODO: ditto
+  # TODO: Make it to prop
+  feed_raw_colostrum = F,
 
   days_milking = NA
 )
@@ -103,7 +105,7 @@ param_farm <- list(
 #' @export
 param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
-  calf_area_id = NA_real_,
+  calf_area_id = NA_real_,  # TODO: Make multiple area settable
   calf_area_priority = NA_real_
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?
@@ -167,19 +169,16 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## Probabilities of disease progress ----
   # Proportion of ial cattle which develops ipl
-  prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
-  param$probs_develop_ipl <- c(prob_develop_ipl, 1 - prob_develop_ipl)
+  param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
-  prob_develop_ebl <- 0.014 / prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
-  param$probs_develop_ebl <- c(prob_develop_ebl, 1 - prob_develop_ebl)
+  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
 
   # Probability that an BLV-infected cow is detected
   # 39.7% of infected cows are detected (Tsutui et al, 2015)
   # This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
   # (Because Tsutsui et al. assumed as the same and there is no data about the length of period from clinical onset to detection.)
-  prob_ebl_detected <- rnorm(1, mean = 0.397,
-                             sd = (0.397 - 0.358) / qnorm(0.975))
-  param$probs_ebl_detected <- c(prob_ebl_detected, 1 - prob_ebl_detected)
+  param$prob_ebl_detected <- rnorm(1, mean = 0.397,
+                                   sd = (0.397 - 0.358) / qnorm(0.975))
 
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
@@ -188,17 +187,23 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## Probability of infection by bloodsucking insects per month per cattle ----
   # Read preps/Parameters_num_insects.Rmd
-  param$probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
-                                     0.0028,  # May
-                                     0.0107,  # Jun
-                                     0.0146,  # Jul
-                                     0.0063,  # Aug
-                                     0.0406,  # Sep
-                                     0.0140,  # Oct
-                                     0.0001,  # Nov
-                                     0        # Dec
-                                     )
-  param$insects_pressure <- 1
+  probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
+                               0.0028,  # May
+                               0.0107,  # Jun
+                               0.0146,  # Jul
+                               0.0063,  # Aug
+                               0.0406,  # Sep
+                               0.0140,  # Oct
+                               0.0001,  # Nov
+                               0        # Dec
+                               )
+  control_insects <- param_farm$control_insects
+  if (is.logical(control_insects)) {
+    insects_pressure <- fifelse(control_insects, 0.5, 1)
+  } else {
+    insects_pressure <- control_insects
+  }
+  param$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
 
   ## infection_contact ----
 
@@ -208,9 +213,7 @@ calc_param <- function(param_farm, modification = NULL) {
   # Infection by using same needles among infected and non-infected cattle
   # Infection probability per day
   # TODO: temporary, just by inspiration
-  change_needles <- set_param(param_farm$change_needles, T)
-  prob_inf_needles <- fifelse(change_needles, 0, 0.005)
-  param$probs_inf_needles <- c(prob_inf_needles, 1 - prob_inf_needles)
+  param$prob_inf_needles <- fifelse(param_farm$change_needles, 0, 0.001)
 
   ## infection_rp ----
   # Infection by rectal palpation
@@ -219,15 +222,13 @@ calc_param <- function(param_farm, modification = NULL) {
   # The probability is 0.034 in [Lack of evidence of transmission of bovine leukemia virus by rectal palpation of dairy cows. - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/2557314)
 
   # 直検1回ごとの感染確率
-  change_gloves <- set_param(param_farm$change_gloves, T)
-  prob_inf_rp <- fifelse(change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
-  param$probs_inf_rp <- c(prob_inf_rp, 1 - prob_inf_rp)
+  param$prob_inf_rp <- fifelse(param_farm$change_gloves,
+                               0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
   ## infection_vertical ----
 
   # Vertical infection
-  ## Probability of vertical infection for calves born from BLV-infected dams ----
   # Vet Microbiol. 2002 Jan 23;84(3):275-82.  Vertical transmission of bovine leukemia virus and bovine immunodeficiency virus in dairy cattle herds.  Prorobability of vertical infection is 0
   # https://www.jstage.jst.go.jp/article/jvma1951/34/9/34_9_423/_article/-char/ja  0, too
   # http://veterinaryrecord.bmj.com/content/176/10/254.long  1/22
@@ -235,13 +236,20 @@ calc_param <- function(param_farm, modification = NULL) {
   # 0-1% or 10+%
   # http://veterinaryrecord.bmj.com/content/176/10/254.long 10% in ial, 50% in ipl (Used in this simulation)
 
-  prob_vert_inf_ial <- (4 + 5) / 95
-  param$probs_vert_inf_ial <- c(prob_vert_inf_ial, 1 - prob_vert_inf_ial)
-  prob_vert_inf_ipl <- (10 + 4) / 29
-  param$probs_vert_inf_ipl <- c(prob_vert_inf_ipl, 1 - prob_vert_inf_ipl)
+  param$prob_vert_inf_ial <- (4 + 5) / 95
+  param$prob_vert_inf_ipl <- (10 + 4) / 29
 
   # TODO: check
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
+  
+  ## infection_by_colostrum ----
+
+  # Probability of infection by feeding raw colostrum milk of BLV-infected dams
+  # Frequency of infection by colostrum may be smaller than that by contact https://www.ncbi.nlm.nih.gov/pubmed/6272983
+  # Probability of BLV infection after freeze-thaw can be considered as 0 https://doi.org/10.1292/jvms.13-0253
+  # 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months
+  feed_raw_colostrum <- param_farm$feed_raw_colostrum
+  param$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
 
 
   ## infection_introduced ----
@@ -285,21 +293,18 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # Detection of heats
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # Probability of detection of heat from Nenkan Kentei Seiseki from HRK (H23-28)
-  prob_heat_detected <- set_param(param_farm$prop_heat_detected,
-                                  runif(1, min = min(prop_heat_detected),
-                                        max = max(prop_heat_detected)))
-  param$probs_heat_detected <- c(prob_heat_detected, 1 - prob_heat_detected)
+  param$prob_heat_detected <- set_param(param_farm$prop_heat_detected,
+                                        runif(1, min = min(prop_heat_detected),
+                                              max = max(prop_heat_detected)))
 
 
   # Proportion of success of the first AI
   # From Gyugun Kentei Seisekihyo by HRK
   # (because the data of the current year is only known from Feb to Dec)
   prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  prob_first_ai_success <- runif(1,
-                                 min(prop_first_ai_success),
-                                 max(prop_first_ai_success))
-  param$probs_first_ai_success <- c(prob_first_ai_success,
-                                    1 - prob_first_ai_success)
+  param$prob_first_ai_success <- runif(1,
+                                       min(prop_first_ai_success),
+                                       max(prop_first_ai_success))
 
 
   # Proportion of success of AI after the first
@@ -308,10 +313,9 @@ calc_param <- function(param_farm, modification = NULL) {
   # (p1: the prob in which the first AI successes; p2: the prop in which AI after the first successes)
   # The probability in which the AI after the first successes
   mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
-  prop_ai_success <- (1 - prob_first_ai_success) / (mean_ai - 1)
+  prop_ai_success <- (1 - param$prob_first_ai_success) / (mean_ai - 1)
   lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
-  prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
-  param$probs_ai_success <- c(prob_ai_success, 1 - prob_ai_success)
+  param$prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
 
 
   # Heat cycle
@@ -343,15 +347,13 @@ calc_param <- function(param_farm, modification = NULL) {
   ## Probability to be twins ----
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
-  prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
-  param$probs_twin <- c(prob_twin, 1 - prob_twin)
+  param$prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
 
   ## Sex ratio ----
   sex_ratio_f <- prop_f / (prop_m + prop_f)
   lims_female <- set_param(param_farm$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
-  prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
-  param$probs_female <- c(prob_female, 1 - prob_female)
+  param$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
 
   ## Sex ratio for twins ----
   sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)

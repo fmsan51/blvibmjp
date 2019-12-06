@@ -96,7 +96,7 @@ setup_tie_stall_table <- function(init_cows, area_table) {
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 #' @export
-setup_area_table <- function(area_table, cows, param_farm) {
+setup_area_table <- function(area_table, cows, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
   if (param_farm$use_communal_pasture) {
     area_table <- rbindlist(list(area_table,
@@ -111,6 +111,8 @@ setup_area_table <- function(area_table, cows, param_farm) {
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
   attr(area_table, "tie_stall") <- 
     area_table$area_id[area_table$area_type == "tie"]
+  attr(area_table, "is_calf_isolated") <- 
+    area_table[area_id == param_area$calf_area_id, area_type == "hatch"]
 
   return(area_table)
 }

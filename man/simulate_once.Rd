@@ -5,8 +5,8 @@
 \title{Body of the simulation}
 \usage{
 simulate_once(setup_cows_res, area_list, area_table, movement_table,
-  day_rp, i_simulation, result, result_area, param_simulation, param_area,
-  param_processed, param_modification, save_cows, save_param)
+  day_rp, i_simulation, result, result_area, param_simulation, param_farm,
+  param_area, param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
 \item{setup_cows_res}{A result of \code{\link[=setup_cows]{setup_cows()}}.}
@@ -24,6 +24,8 @@ simulate_once(setup_cows_res, area_list, area_table, movement_table,
 \item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
+
+\item{param_farm}{See \link{param_farm}.}
 
 \item{param_area}{See \link{param_area}.}
 
