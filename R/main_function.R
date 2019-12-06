@@ -601,13 +601,16 @@ extract_owned_cows <- function(cows) {
 #' Check and move cows between areas
 #'
 #' @param cows See [cow_table].
+#' @param i The number of months from the start of the simulation.
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
-change_area <- function(cows, movement_table, area_table, area_list) {
+change_area <- function(cows, i, movement_table, area_table, area_list,
+                        param_calculated) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
@@ -736,6 +739,23 @@ change_area <- function(cows, movement_table, area_table, area_list) {
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
   area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
+
+  # Calculate seroconversion of cows have returned from a communal pasture
+  return_from_compas <- attr(movement_table, "return_from_compas")
+  if (!is.null(return_from_compas)) {
+    cow_id_returned_from_compas <- 
+      cows[eval(parse(text = movement_table$condition[[return_from_compas]])),
+           cow_id]
+    cow_id_infected_in_compas <- cow_id_returned_from_compas[
+      is_infected_compas(length(cow_id_returned_from_compas), param_calculated)
+      ]
+    cows[cow_id %in% cow_id_infected_in_compas, 
+         `:=`(infection_status = "ial",
+              date_ial = i,
+              cause_infection = "comranch")]
+    # TODO: comranchとcompas統一
+  }
+
   return(list(cows = cows, area_list = area_list))
 }
 # TODO: Make a function to setup tie_stall_table.

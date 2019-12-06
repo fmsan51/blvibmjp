@@ -191,6 +191,8 @@ setup_movement_table <- function(area_table, movement_table,
     factor(movement_table$current_area, levels = area_table$area_id)
   attr(movement_table, "is_priority_specified_by_integer") <-
     vapply(movement_table$priority, is.wholenumber, T)
+  attr(movement_table, "return_from_compas") <- 
+    fifelse(is.null(communal_pasture_table), NULL, nrow(movement_table))
 
   return(movement_table)
 }
