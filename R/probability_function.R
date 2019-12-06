@@ -84,7 +84,7 @@ n_month_until_ebl_die <- function(rows_cow_overlooked, param_calculated) {
 }
 
 
-#' Wheter cows are infected by insects
+#' Whether cows are infected by insects
 #'
 #' @param n_cows The number of cows.
 #' @param month The current month (1, 2, ..., 12).
