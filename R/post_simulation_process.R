@@ -106,7 +106,7 @@ plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
     geom_point() +
     ylim(0, 1) +
     scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12)) +
-    theme_bw(base_family = font) + 
+    theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
   if (!is.null(title)) {
     gp <- gp + labs(title = title)
@@ -179,7 +179,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
-#' @param gray When `TRUE`, a plot will be a grayscale image. 
+#' @param gray When `TRUE`, a plot will be a grayscale image.
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
 #' @param border_color Specify a color palette for the border.
@@ -191,7 +191,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 plot_infection_route <- function(path_to_csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = T,
-                                 legend_title = T, xlab = T, ylab = T, 
+                                 legend_title = T, xlab = T, ylab = T,
                                  gray = F, area_color = NULL,
                                  border = F, border_color = NULL, font = NULL) {
   cows <- fread(path_to_csv)
@@ -224,6 +224,7 @@ plot_infection_route <- function(path_to_csv, language = NULL,
   }
   if (is.null(area_color)) {
     area_color <- c(gray(0.85), colorblind_pal()(n_cause)[-1])
+    # TODO: Max #colors can be hundled by colorblind_pal is 8, but there is 10 categories.
   }
 
   if (border) {
@@ -243,9 +244,9 @@ plot_infection_route <- function(path_to_csv, language = NULL,
     geom_area(aes(fill = cause_infection, color = !!color)) +
     scale_x_continuous(breaks =
                          seq(0, max(infection_route$i_month, na.rm = T), 6),
-                       minor_breaks = 
+                       minor_breaks =
                          seq(0, max(infection_route$i_month, na.rm = T), 3)) +
-    ylim(0, max_ylim) + 
+    ylim(0, max_ylim) +
     scale_fill_manual(values = area_color, drop = F)
 
   if (!is.null(title)) {
@@ -268,7 +269,7 @@ plot_infection_route <- function(path_to_csv, language = NULL,
         "Argument border_color is ignored because argument border is FALSE.")
     }
   }
-  gp <- gp + theme_bw(base_family = font) + 
+  gp <- gp + theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }
@@ -317,7 +318,7 @@ summary_route <- function(cows) {
 #' @seealso [table_route]
 #' @name table_infection_status
 #' @export
-table_infection_status <- function(output_filename, output_dir, 
+table_infection_status <- function(output_filename, output_dir,
                                    n_simulation, simulation_length) {
     cows <- read_final_cows(output_filename, output_dir, n_simulation,
                             simulation_length)
@@ -347,7 +348,7 @@ summary_infection_status <- function(cows) {
 
 #' Translate plot title and labels
 #'
-#' Translate plot title and labels to other languages than English.  
+#' Translate plot title and labels to other languages than English.
 #' At present, translation only for Japanese is implemented.
 #'
 #' @param type Type of massages.
@@ -360,7 +361,7 @@ translate_msg <- function(type, to) {
   msg_defined_in_parent <- mget(names(msg), parent.frame(),
                                 ifnotfound = list(".notfound"))
   msg[msg_defined_in_parent == ".notfound"] <- NULL
-  mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)), 
+  mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)),
          names(msg), msg)
   return(msg)
 }
