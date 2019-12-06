@@ -21,7 +21,7 @@ setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
   init_cows[1:init_last_cow_id, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
-  
+
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   init_cows <- assign_chambers(init_cows, area_list, area_assignment)
 
@@ -78,7 +78,7 @@ setup_tie_stall_table <- function(init_cows, area_table) {
 
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   area_list <- assign_cows(init_cows, area_list, area_assignment)
-  
+
   # NOTE: currently, initial area_id must be set by users.
   # Want to make a function to calculate initial area_id.
   return(area_list)
@@ -99,19 +99,21 @@ setup_tie_stall_table <- function(init_cows, area_table) {
 setup_area_table <- function(area_table, cows, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
   if (param_farm$use_communal_pasture) {
+    compas_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,
-                                 list(area_id = max(area_table$area_id) + 1L,
+                                 list(area_id = compas_area_id,
                                       area_type = "communal pasture",
                                       capacity = list(Inf))
                                  )
                             )
+    attr(area_table, "compas_area_id") <- compas_area_id
   }
 
-  attr(area_table, "capacity") <- 
+  attr(area_table, "capacity") <-
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
-  attr(area_table, "tie_stall") <- 
+  attr(area_table, "tie_stall") <-
     area_table$area_id[area_table$area_type == "tie"]
-  attr(area_table, "is_calf_isolated") <- 
+  attr(area_table, "is_calf_isolated") <-
     area_table[area_id == param_area$calf_area_id, area_type == "hatch"]
 
   return(area_table)
@@ -131,9 +133,28 @@ setup_area_table <- function(area_table, cows, param_farm, param_area) {
 setup_movement_table <- function(area_table, movement_table,
                                  communal_pasture_table) {
   # Sort next_area along with priority
-  movement_table$next_area <- 
+  movement_table$next_area <-
     mapply(function(next_area, priority) {next_area[order(priority)]},
            movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
+
+  # Add movement from/to a communal pasture to movement_table
+  if (!is.null(communal_pasture_table)) {
+    # Set movement to a communal pasture with the highest priority
+    # (= in the top rows)
+    move_to_compas <- data.table(
+      current_area = communal_pasture_table$area_out,
+      condition = communal_pasture_table$condition_out,
+      next_area = attr(area_table, "compas_area_id"),
+      priority = 1)
+    move_from_compas <- data.table(
+      current_area = attr(area_table, "compas_area_id"),
+      condition = communal_pasture_table$condition_back,
+      next_area = communal_pasture_table$area_back,
+      priority = 1)
+    movement_table <- rbindlist(list(move_to_compas, move_from_compas,
+                                     movement_table))
+  }
+  # TODO: warn when capacity > cows at the start of a simulation.
 
   # translate condition from a form that users can easily understand
   # to a form that functions can easily understand
@@ -148,41 +169,23 @@ setup_movement_table <- function(area_table, movement_table,
   # max range is 20 because it seems enough
   cond <- str_replace_all(cond, "(?<!parity[^|&]{1,20}?)(\\d*\\.\\d+)",
                           "integerize(\\1)")
-  
+
   # fixed = T because it's about 2-3x faster
   cond <- gsub("months_from_delivery", "i_month - date_last_delivery",
                cond, fixed = T)
   cond <- gsub("months_from_pregnancy", "i_month - date_got_pregnant",
                cond, fixed = T)
   cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
-  
+
   # (?^|[^_]) is about 3x faster than (?<!_)
   cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
   cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
   cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)
   cond <- gsub("dim", "i_month - date_last_delivery", cond, fixed = T)
   cond <- gsub("stay", "months_in_area", cond, fixed = T)
-  movement_table$condition <- cond
- 
-  # Add movement from/to a communal pasture to movement_table
-  if (!is.null(communal_pasture_table)) {
-    compas_area_id <- 
-      area_table$area_id[area_table$area_type == "communal pasture"]
 
-    # Set movement to a communal pasture with the highest priority
-    # (= in the top rows)
-    move_to_compas <- data.table(current_area = communal_pasture_table$area_out,
-                                 condition = communal_pasture_table$cond_out,
-                                 next_area = compas_area_id,
-                                 priority = 1)
-    move_from_compas <- data.table(current_area = compas_area_id,
-                                   condition = communal_pasture_table$cond_back,
-                                   next_area = communal_pasture_table$area_back,
-                                   priority = 1)
-    movement_table <- rbindlist(list(move_to_compas, move_from_compas,
-                                     movement_table))
-  }
-  # TODO: warn when capacity > cows at the start of a simulation.
+  cond <- paste0(cond, "& area_id == ", movement_table$current_area)
+  movement_table$condition <- cond
 
   movement_table$priority <- lapply(movement_table$priority,
                                     function(x) ifelse(is.na(x), 1, x))
@@ -193,8 +196,6 @@ setup_movement_table <- function(area_table, movement_table,
     factor(movement_table$current_area, levels = area_table$area_id)
   attr(movement_table, "is_priority_specified_by_integer") <-
     vapply(movement_table$priority, is.wholenumber, T)
-  attr(movement_table, "return_from_compas") <- 
-    fifelse(is.null(communal_pasture_table), NULL, nrow(movement_table))
 
   return(movement_table)
 }

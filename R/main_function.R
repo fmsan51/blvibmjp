@@ -56,9 +56,9 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
       possible_heat_detection_list[index_ai_not_done] <-
         lapply(possible_heat_list[index_ai_not_done],
                function(x) is_heat_detected(length(x), param_calculated))
-      possible_detected_heat_list[index_ai_not_done] <- 
+      possible_detected_heat_list[index_ai_not_done] <-
         mapply(function(x, y) x[y],
-          possible_heat_list[index_ai_not_done], 
+          possible_heat_list[index_ai_not_done],
           possible_heat_detection_list[index_ai_not_done],
           SIMPLIFY = F)
       possible_ai_success_list[index_ai_not_done] <- lapply(
@@ -66,7 +66,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
         function(x) is_first_ai_successed(length(x), param_calculated))
       n_ai_vec[index_ai_not_done] <- vapply(
         possible_ai_success_list[index_ai_not_done],
-        function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))), 
+        function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))),
         0)
       # Here ifelse is used instead of fifelse,
       # because min(which(x)) may cause warning when the condition is not met.
@@ -81,7 +81,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     detected_heat_list <- mapply(function(x, y) x[1:y],
                                    possible_detected_heat_list, n_heat_vec)
 
-    day_heat_of_next_month <- 
+    day_heat_of_next_month <-
       apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
     day_last_detected_heat_vec <- vapply(detected_heat_list,
       function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
@@ -94,7 +94,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     cows_started_ai[(pregnancy), `:=`(date_got_pregnant = i,
                                       n_ai = 0)]
 
-    cows[match(cows_started_ai$cow_id, cow_id), 
+    cows[match(cows_started_ai$cow_id, cow_id),
          colnames(cows) := cows_started_ai]
 
     n_ai_done <- sum(n_ai_vec)
@@ -141,7 +141,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     detected_heat_list <- mapply(function(x, y) x[seq_len(y)],
                                    possible_detected_heat_list, n_heat_vec)
 
-    day_heat_of_next_month <- 
+    day_heat_of_next_month <-
       apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
     day_last_detected_heat_vec <- vapply(detected_heat_list,
       function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
@@ -165,7 +165,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                   type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- day_rp_last_row + n_ai_done
     }
-    # No conception, however pregnancy cheking is done 
+    # No conception, however pregnancy cheking is done
     # because the heat right after the AI is overlooked.
     cows_heat_overlooked <- open_cows[
       is_to_test_pregnancy & date_got_pregnant != i, ]
@@ -176,18 +176,18 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
       possible_day_rp[,
         `:=`(cow_id = cows_heat_overlooked$cow_id,
              infection_status = cows_heat_overlooked$infection_status,
-             day_rp = 
+             day_rp =
                15 * (cows_heat_overlooked$day_last_detected_heat <= 15) +
                30 * (cows_heat_overlooked$day_last_detected_heat > 15),
              type = "overlooked_heat")]
       heat_date <- day_rp[cow_id %in% cows_heat_overlooked$cow_id, ][
                           order(day_rp), head(.SD, 1), by = "cow_id"]
       nonpregnant_cows_ai_done <- heat_date[possible_day_rp, on = "cow_id"][
-                                            i.day_rp < day_rp, 
+                                            i.day_rp < day_rp,
                                             type := "pregnancy_test"]
       n_nonpregnant_cows_ai_done <- nrow(nonpregnant_cows_ai_done)
       day_rp[day_rp_last_row + (1:n_nonpregnant_cows_ai_done),
-             c("cow_id", "infection_status", "day_rp", "type") := 
+             c("cow_id", "infection_status", "day_rp", "type") :=
                nonpregnant_cows_ai_done[,
                  c("cow_id", "infection_status", "i.day_rp", "type")]]
       day_rp_last_row <- day_rp_last_row + n_nonpregnant_cows_ai_done
@@ -198,7 +198,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
   }
 
   # Pregnancy test
-  pregnant_cows <- cows[date_got_pregnant == i - 1 | 
+  pregnant_cows <- cows[date_got_pregnant == i - 1 |
                         date_got_pregnant == i - 2, ]
   n_pregnant_cows <- nrow(pregnant_cows)
   if (n_pregnant_cows != 0) {
@@ -318,7 +318,7 @@ change_infection_status <- function(cows, i, month, param_calculated) {
          n_month_to_progress(susceptibility_ial_to_ipl,
                              susceptibility_ipl_to_ebl,
                              i, param_calculated)]
-  
+
   cows[date_ipl_expected == i,
        ":="(infection_status = "ipl",
             date_ipl = i)]
@@ -413,7 +413,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
                   date_ial = i,
                   cause_infection = "vertical"
                   )]
-    newborns[is_infected_by_colostrum(status_mother, param_calculated) & 
+    newborns[is_infected_by_colostrum(status_mother, param_calculated) &
                infection_status != "s",
              `:=`(infection_status = "ial",
                   date_ial = i,
@@ -556,6 +556,13 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
                            cow_id_met_condition, duplicated_cow_id,
                            SIMPLIFY = FALSE)
 
+  compas_area_id <- attr(area_table, "compas_area_id")
+  if (!is.null(compas_area_id)) {
+    cow_id_returned_from_compas <-
+      cows[cow_id %in% unlist(cow_id_to_move) & area_id == compas_area_id,
+           cow_id]
+  }
+
   # Remove cows to move from n_cows
   n_cows_in_each_area <-
     table(factor(cows[(is_owned), area_id], levels = area_table$area_id))
@@ -597,9 +604,15 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
         capacity_of_next_areas <- attr(area_table, "capacity")[chr_i_next_area]
         is_na_allocated_areas <- is.na(allocated_areas)
         n_na_allocated_areas <- sum(is_na_allocated_areas)
-        allocated_areas[which(is_na_allocated_areas)] <-
-          sample(i_next_area, n_na_allocated_areas, replace = T,
-                 prob = capacity_of_next_areas)
+        if (any(capacity_of_next_areas == Inf)) {
+          allocated_areas[which(is_na_allocated_areas)] <-
+            sample(i_next_area[capacity_of_next_areas == Inf],
+                   n_na_allocated_areas, replace = T)
+        } else {
+          allocated_areas[which(is_na_allocated_areas)] <-
+            sample(i_next_area, n_na_allocated_areas, replace = T,
+                   prob = capacity_of_next_areas)
+        }
         cow_id_allocated_to_full_areas[
           cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
           ] <- i_cow_id[is_na_allocated_areas]
@@ -670,15 +683,11 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
   area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
 
   # Calculate seroconversion of cows have returned from a communal pasture
-  return_from_compas <- attr(movement_table, "return_from_compas")
-  if (!is.null(return_from_compas)) {
-    cow_id_returned_from_compas <- 
-      cows[eval(parse(text = movement_table$condition[[return_from_compas]])),
-           cow_id]
+  if (!is.null(compas_area_id)) {
     cow_id_infected_in_compas <- cow_id_returned_from_compas[
       is_infected_compas(length(cow_id_returned_from_compas), param_calculated)
       ]
-    cows[cow_id %in% cow_id_infected_in_compas, 
+    cows[cow_id %in% cow_id_infected_in_compas,
          `:=`(infection_status = "ial",
               date_ial = i,
               cause_infection = "comranch")]

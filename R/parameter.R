@@ -241,7 +241,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # TODO: check
   # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
-  
+
   ## infection_by_colostrum ----
 
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
@@ -257,7 +257,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## infection_comranch ----
   # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_compasが使われるタイミングないな
-  param$prob_seroconv_compas <- 
+  param$prob_seroconv_compas <-
     fifelse(param_farm$use_communal_pasture,
             param_farm$prob_seroconversion_in_communal_pasture, 0)
 
@@ -473,4 +473,5 @@ process_param <- function(setup_cows_res, param_simulation, param_farm) {
   )
 }
 # TODO: Is this function really necessary?
+# TODO: process_paramとcalc_paramくっつけた方がよさそう
 
