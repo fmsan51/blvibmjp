@@ -84,19 +84,29 @@ n_month_until_ebl_die <- function(rows_cow_overlooked, param_calculated) {
 }
 
 
-#' Wheter cows are infected by insects
+#' Whether cows are infected by insects
 #'
-#' @param id_cow_s ID of infected cows.
+#' @param n_cows The number of cows.
 #' @param month The current month (1, 2, ..., 12).
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_insects <- function(id_cow_s, month, param_calculated) {
+is_infected_insects <- function(n_cows, month, param_calculated) {
   prob_inf_insects <- param_calculated$probs_inf_insects_month[1:12 == month]
-  is_infected <- runif(length(id_cow_s)) < prob_inf_insects
+  is_infected <- runif(n_cows) < prob_inf_insects
   return(is_infected)
 }
 
+
+#' Whether cows are infected in a communal pasture
+#'
+#' @param n_cows The number of cows.
+#' @param param_farm See [param_farm].
+#'
+#' @return A logical vector.
+is_infected_compas <- function(n_cows, param_farm) {
+  runif(n_cows) < param_farm$prob_seroconv_compas
+}
 
 #' Whether cows are infected by direct contact
 #'
@@ -116,13 +126,26 @@ is_infected_contact <- function() {
 
 #' Whether cows are infected by contaminated needles
 #'
-#' @param id_cow_s `cow_id` of infected cows.
+#' @param n_cows The number of cows.
+#' @param cows See [cow_table].
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_needles <- function(id_cow_s, param_calculated) {
-  runif(length(id_cow_s)) < param_calculated$prob_inf_needles
+is_infected_needles <- function(n_cows, cows, param_calculated) {
+  # Studies successed to prove infection by contaminated needles
+  # (in Japan) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2835688/?tool=pmcentrez&report=abstract
+  # Several studies failed to prove infection by contaminated needles
+  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
+  # https://academic.oup.com/aje/article/117/5/621/102629
+  # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
+  #   By same authors with a "successed" paper in Japan, probably with more samples
+  n_infected <- cows[is_owned & infection_status != "s", .N]
+  is_infected_needles <- runif(n_cows) < 
+    param_calculated$prob_inf_needles * (n_infected / n_cows)
+  return(is_infected_needles)
 }
+# TODO: Gauge dehorning https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1236184/pdf/compmed00003-0104.pdf
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf 
 
 
 #' Whether cows are infected by rectal palpation
@@ -153,6 +176,18 @@ is_infected_vertical <- function(status_mother, param_calculated) {
     (status_mother == "ipl" | status_mother == "ebl")
   is_vert_inf <- (is_vert_inf_ial | is_vert_inf_ipl)
   return(is_vert_inf)
+}
+
+
+#' Wheter newborns are infected by colostrum milk
+#'
+#' @param status_mother The `infection_status` of dams.
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A logical vector.
+is_infected_by_colostrum <- function(status_mother, param_calculated) {
+  runif(length(status_mother)) < 
+    param_calculated$prob_inf_colostrum * (status_mother != "s")
 }
 
 

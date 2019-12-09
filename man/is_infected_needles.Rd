@@ -4,10 +4,12 @@
 \alias{is_infected_needles}
 \title{Whether cows are infected by contaminated needles}
 \usage{
-is_infected_needles(id_cow_s, param_calculated)
+is_infected_needles(n_cows, cows, param_calculated)
 }
 \arguments{
-\item{id_cow_s}{\code{cow_id} of infected cows.}
+\item{n_cows}{The number of cows.}
+
+\item{cows}{See \link{cow_table}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }
