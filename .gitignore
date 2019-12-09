@@ -1,6 +1,4 @@
 .Rproj.user
 .Rhistory
-*.Rproj
 inst/testdata/output/*
 .Rdata
-
