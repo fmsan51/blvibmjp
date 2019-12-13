@@ -121,7 +121,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     cows <- res$cows
     areas <- res$area_list
 
-    res <- change_area(cows, i, movement_table, area_table, area_list,
+    res <- change_area(cows, i, movement_table, area_table, areas,
                        param_calculated)
     cows <- res$cows
     areas <- res$area_list
