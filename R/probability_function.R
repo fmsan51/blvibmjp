@@ -126,6 +126,17 @@ is_infected_in_exposed_chamber <- function(n_cows, param_farm) {
 }
 
 
+#' Whether cows are infected in chambers not next to infected cows in tie-stall barns
+#'
+#' @param n_cows The number of cows.
+#' @param param_farm See [param_farm].
+#'
+#' @return A logical vector.
+is_infected_in_non_exposed_chamber <- function(n_cows, param_farm) {
+  runif(n_cows) < param_farm$prob_inf_tiestall_baseline
+}
+
+
 #' Whether cows are infected by direct contact
 #'
 #' @return A logical vector.
