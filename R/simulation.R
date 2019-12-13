@@ -148,4 +148,5 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
 }
 # TODO: simulationが強制終了したとき用の備え
 # TODO: Make functions to load area_table, area_list, ... from csv files
+# TODO: ここcowsとareasと何度も分配するくらいなら最初からlist(cows, areas)ベースでやったほうが楽では?
 
