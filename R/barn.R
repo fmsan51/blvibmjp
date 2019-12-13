@@ -79,13 +79,14 @@ calc_infection_in_barns <- function(cows, area_table, area_list) {
         is_exposed_to_infected_cow_in_next_chamber |
         is_exposed_to_infected_cow_in_previous_chamber
       expose_result <-
-        is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow))
+        is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
+                                       param_calculated)
       cows[is_s_in_chamber & is_exposed_to_infected_cow,
            `:=`(infection_status =
                   c("ial", NA_character_)[is.na(expose_result) + 1],
                 cause_infection = expose_result)]
       cows[is_s_in_chamber & !is_exposed_to_infected_cow &
-             is_infected_in_non_exposed_chamber(.N),
+             is_infected_in_non_exposed_chamber(.N, param_calculated),
            `:=`(infection_status = "ial",
                 cause_infection = "insect")]
     } else {

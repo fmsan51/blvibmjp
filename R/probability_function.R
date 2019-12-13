@@ -112,10 +112,10 @@ is_infected_compas <- function(n_cows, param_farm) {
 #' Whether cows are infected in chambers next to infected cows in tie-stall barns
 #'
 #' @param n_cows The number of cows.
-#' @param param_farm See [param_farm].
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_in_exposed_chamber <- function(n_cows, param_farm) {
+is_infected_in_exposed_chamber <- function(n_cows, param_calculated) {
   inf_status <- rep(NA_character_, n_cows)
   hr <- param_farm$hr_having_infected_neighbor
   is_infected <- runif(n_cows) < param_farm$prob_inf_tiestall_baseline * hr
@@ -132,7 +132,7 @@ is_infected_in_exposed_chamber <- function(n_cows, param_farm) {
 #' @param param_farm See [param_farm].
 #'
 #' @return A logical vector.
-is_infected_in_non_exposed_chamber <- function(n_cows, param_farm) {
+is_infected_in_non_exposed_chamber <- function(n_cows, param_calculated) {
   runif(n_cows) < param_farm$prob_inf_tiestall_baseline
 }
 

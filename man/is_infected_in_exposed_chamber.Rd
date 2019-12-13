@@ -4,12 +4,12 @@
 \alias{is_infected_in_exposed_chamber}
 \title{Whether cows are infected in chambers next to infected cows in tie-stall barns}
 \usage{
-is_infected_in_exposed_chamber(n_cows, param_farm)
+is_infected_in_exposed_chamber(n_cows, param_calculated)
 }
 \arguments{
 \item{n_cows}{The number of cows.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

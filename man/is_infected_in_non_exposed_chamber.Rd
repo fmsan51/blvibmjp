@@ -4,7 +4,7 @@
 \alias{is_infected_in_non_exposed_chamber}
 \title{Whether cows are infected in chambers not next to infected cows in tie-stall barns}
 \usage{
-is_infected_in_non_exposed_chamber(n_cows, param_farm)
+is_infected_in_non_exposed_chamber(n_cows, param_calculated)
 }
 \arguments{
 \item{n_cows}{The number of cows.}
