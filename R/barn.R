@@ -192,6 +192,23 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 # TODO: Think a way to combine assign_chambers and assign_cows
 
 
+#' Assign cows roaming in a tie-stall to empty chambers
+#'
+#' Assign `chamber_id` to cows roaming in a tie-stall barn.
+#'
+#' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#'
+#' @return A list consisted of [area_list] and [cow_table].
+tether_roaming_cows <- function(cows, area_list) {
+  roaming_cows <- cows[chamber_id == 0 & is_owned, ]
+  roaming_cow_assign_list <- split(roaming_cows$cow_id, roaming_cows$area_id)
+  cows <- assign_chambers(cows, area_list, roaming_cow_assign_list)
+  area_list <- assign_cows(cows, area_list, roaming_cow_assign_list)
+  return(list(cows = cows, area_list = area_list))
+}
+
+
 #' Assign cows to area_list according to cow_table.
 #'
 #' Assign `chamber_id` to cows allocated to tie-stall barns.

@@ -118,6 +118,9 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
                         param_calculated, param_processed)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
+    res <- tether_roaming_cows(cows, areas)
+    cows <- res$cows
+    areas <- res$area_list
 
     res <- change_area(cows, i, movement_table, area_table, area_list,
                        param_calculated)

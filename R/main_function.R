@@ -681,6 +681,8 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
   area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
+  cows[cow_id %in% cow_id_allocated_to_full_areas &
+         area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
 
   # Calculate seroconversion of cows have returned from a communal pasture
   if (!is.null(compas_area_id)) {
