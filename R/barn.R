@@ -62,7 +62,8 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 #' @param area_list See [setup_areas] and [tie_stall_table].
 #' 
 #' @return A [cow_table].
-calc_infection_in_barns <- function(cows, area_table, area_list) {
+calc_infection_in_barns <- function(cows, area_table, area_list,
+                                    param_calculated) {
   for (i_area in names(area_list)) {
     area <- area_list[[i_area]]
     if (i_area %in% attr(area_table, "tie_stall")) {
