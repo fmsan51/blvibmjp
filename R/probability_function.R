@@ -108,6 +108,24 @@ is_infected_compas <- function(n_cows, param_farm) {
   runif(n_cows) < param_farm$prob_seroconv_compas
 }
 
+
+#' Whether cows are infected in chambers next to infected cows in tie-stall barns
+#'
+#' @param n_cows The number of cows.
+#' @param param_farm See [param_farm].
+#'
+#' @return A logical vector.
+is_infected_in_exposed_chamber <- function(n_cows, param_farm) {
+  inf_status <- rep(NA_character_, n_cows)
+  hr <- param_farm$hr_having_infected_neighbor
+  is_infected <- runif(n_cows) < param_farm$prob_inf_tiestall_baseline * hr
+  inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected), 
+                      replace = T, prob = c(hr - 1, 1))
+  inf_status[is_infected] <- inf_cause
+  return(inf_status)
+}
+
+
 #' Whether cows are infected by direct contact
 #'
 #' @return A logical vector.
