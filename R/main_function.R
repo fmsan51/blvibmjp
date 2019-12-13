@@ -677,6 +677,8 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
   # a[!a %in% b] is 5x faster than setdiff()
   cow_id_to_allocate_chambers <-
     vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
+  # Assignment of a chamber_id for a cow allocated to a full but free area will not occur
+  # because calculate_area_assignment() calculates only about tie-stall areas.
   cows_to_allocate_chambers <-
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
