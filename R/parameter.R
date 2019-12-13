@@ -205,9 +205,15 @@ calc_param <- function(param_farm, modification = NULL) {
   }
   param$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
 
-  ## infection_contact ----
+  ## infection_tiestall ----
+  ## infection_neighbor ----
 
-
+  param$prob_inf_tiestall_baseline <- param$probs_inf_insects_month
+  param_farm$hr_having_infected_neighbor <-
+    exp(rnorm(1, mean = 2.52, sd = 0.73))
+  # The role of neighboring infected cattle in bovine leukemia virus transmission risk.
+  # https://doi.org/10.1292/jvms.15-0007
+  
   ## infection_needles ----
 
   # Infection by using same needles among infected and non-infected cattle
