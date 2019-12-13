@@ -246,8 +246,8 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   } else {
     cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
   }
-  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
-                                   split(.SD[["cow_id"]], area_id)]
+  tied_cows <- cows_assigned[area_id %in% attr(area_table, "tie_stall"), ]
+  area_assignment <- split(tied_cows$cow_id, tied_cows$area_id)
   return(area_assignment)
 }
 
