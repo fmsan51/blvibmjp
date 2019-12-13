@@ -214,6 +214,15 @@ calc_param <- function(param_farm, modification = NULL) {
   # The role of neighboring infected cattle in bovine leukemia virus transmission risk.
   # https://doi.org/10.1292/jvms.15-0007
   
+  
+  ## infection_free ----
+  free_pressure <-
+    rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
+  # Analysis of risk factors associated with bovine leukemia virus seropositivity within dairy and beef breeding farms in Japan: a nationwide survey.
+  # https://doi.org/10.1016/j.rvsc.2013.11.014
+  param$prob_inf_free <- param$probs_inf_insects_month * free_pressure
+
+  
   ## infection_needles ----
 
   # Infection by using same needles among infected and non-infected cattle
