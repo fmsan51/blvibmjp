@@ -167,7 +167,6 @@ remove_from_areas <- function(cows, removed_cow_id) {
 }
 
 
-
 #' Assign chamber_id to cows allocated to tie-stall barns
 #'
 #' Assign `chamber_id` to cows allocated to tie-stall barns.
