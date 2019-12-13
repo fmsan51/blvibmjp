@@ -11,7 +11,7 @@ calculate_area_assignment(cows, area_table, assigned_cow_id)
 
 \item{area_table}{See \link{area_table}.}
 
-\item{assigned_cow_id}{integer vector. An \code{area_assignment} list will be made only about cows specified by this parameter. When \code{NA} is set, all the cows are used.}
+\item{assigned_cow_id}{integer vector. An \code{area_assignment} list will be made only about cows specified by this parameter. When \code{NULL} is set, all the cows are used.}
 }
 \value{
 A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).

@@ -4,12 +4,10 @@
 \alias{setup_area_table}
 \title{Setup of \code{area_table}}
 \usage{
-setup_area_table(area_table, cows, param_farm, param_area)
+setup_area_table(area_table, param_farm, param_area)
 }
 \arguments{
 \item{area_table}{See \link{area_table}.}
-
-\item{cows}{See \link{cow_table}.}
 
 \item{param_farm}{See \link{param_farm}.}
 }

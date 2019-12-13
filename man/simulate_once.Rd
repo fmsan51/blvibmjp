@@ -4,14 +4,14 @@
 \alias{simulate_once}
 \title{Body of the simulation}
 \usage{
-simulate_once(setup_cows_res, area_list, area_table, movement_table,
-  day_rp, i_simulation, result, result_area, param_simulation, param_farm,
+simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
+  i_simulation, result, result_area, param_simulation, param_farm,
   param_area, param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
-\item{setup_cows_res}{A result of \code{\link[=setup_cows]{setup_cows()}}.}
+\item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
 
-\item{area_list}{A result of \code{\link[=setup_areas]{setup_areas()}}.}
+\item{last_cow_id}{\code{init_last_cow_id} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
 
 \item{area_table}{A result of \code{\link[=setup_area_table]{setup_area_table()}}.}
 
