@@ -117,7 +117,7 @@ is_infected_compas <- function(n_cows, param_farm) {
 #' @return A logical vector.
 is_infected_in_exposed_chamber <- function(n_cows, param_calculated) {
   inf_status <- rep(NA_character_, n_cows)
-  hr <- param_farm$hr_having_infected_neighbor
+  hr <- param_calculated$hr_having_infected_neighbor
   is_infected <- runif(n_cows) < param_farm$prob_inf_tiestall_baseline * hr
   inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected), 
                       replace = T, prob = c(hr - 1, 1))
@@ -133,7 +133,7 @@ is_infected_in_exposed_chamber <- function(n_cows, param_calculated) {
 #'
 #' @return A logical vector.
 is_infected_in_non_exposed_chamber <- function(n_cows, param_calculated) {
-  runif(n_cows) < param_farm$prob_inf_tiestall_baseline
+  runif(n_cows) < param_calculated$prob_inf_tiestall_baseline
 }
 
 
