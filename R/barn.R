@@ -191,6 +191,16 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 # TODO: Think a way to combine assign_chambers and assign_cows
 
 
+#' Calculate infection in barns
+#' 
+#' Calculate infection in barns depending on barn type (tied or freed)
+#' 
+#' @return A [cow_table].
+calc_infection_in_barns <- function(cows, area_table, area_list) {
+  return(cows)
+}
+
+
 #' Assign cows roaming in a tie-stall to empty chambers
 #'
 #' Assign `chamber_id` to cows roaming in a tie-stall barn.
