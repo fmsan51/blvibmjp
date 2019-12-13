@@ -195,6 +195,10 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 #' 
 #' Calculate infection in barns depending on barn type (tied or freed)
 #' 
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#' 
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, area_table, area_list) {
   return(cows)
