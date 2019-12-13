@@ -9,7 +9,7 @@ is_infected_in_non_exposed_chamber(n_cows, param_calculated)
 \arguments{
 \item{n_cows}{The number of cows.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param_calculated}{See \link{calc_param}.}
 }
 \value{
 A logical vector.
