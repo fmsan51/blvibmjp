@@ -239,9 +239,9 @@ assign_cows <- function(cows, area_list, area_assignment) {
     assigned_cow_id <- area_assignment[[i_area]]
     assigned_chambers <- cows$chamber_id[match(assigned_cow_id, cows$cow_id)]
     assigned_cows <- cows[cow_id %in% assigned_cow_id,
-                          list(cow_id, infection_status)]
+                          list(cow_id, infection_status, is_isolated)]
     assigned_area[chamber_id %in% assigned_chambers,
-                  c("cow_id", "cow_status") := assigned_cows]
+                  c("cow_id", "cow_status", "is_isolated") := assigned_cows]
     area_list[[i_area]] <- assigned_area
   }
   return(area_list)
