@@ -448,14 +448,14 @@ calc_param <- function(param_farm, modification = NULL) {
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
-#' @param setup_cows_res A result of [setup_cows()].
+#' @param cows_areas A result of [set_chamber_id()].
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
 #'
 #' @return A list of calculated parameters.
 #' @export
-process_param <- function(setup_cows_res, param_simulation, param_farm) {
-  herd_size <- sum(setup_cows_res$init_cows$is_owned, na.rm = T)
+process_param <- function(cows_areas, param_simulation, param_farm) {
+  herd_size <- sum(cows_areas$cows$is_owned, na.rm = T)
 
   list(
     param_output_filename = paste0("param_", param_simulation$output_filename),
@@ -467,7 +467,7 @@ process_param <- function(setup_cows_res, param_simulation, param_farm) {
         herd_size * c(0.9, 1.1)
       },
     prob_rep = set_prob_rep(
-      setup_cows_res$init_cows[stage %in% c("milking", "dry"), .N],
+      cows_areas$cows[stage %in% c("milking", "dry"), .N],
       param_farm),
     graze_cows = anyNA(param_farm$hours_grazing)
   )

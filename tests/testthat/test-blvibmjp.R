@@ -1,6 +1,6 @@
 library(tictoc)
 # test_that("simulation runs", {
-
+set.seed(1)
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
   # param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
