@@ -76,18 +76,23 @@ calc_infection_in_barns <- function(cows, area_table, area_list,
         area$adjoint_next_chamber &
         shift(is_infectious, type = "lag", fill = F)
       is_s_in_chamber <- area[, !is.na(area$cow_status) & cow_status == "s"]
-      is_exposed_to_infected_cow <-
-        is_exposed_to_infected_cow_in_next_chamber |
-        is_exposed_to_infected_cow_in_previous_chamber
+      is_exposed_to_infected_cow <- is_s_in_chamber &
+        (is_exposed_to_infected_cow_in_next_chamber |
+         is_exposed_to_infected_cow_in_previous_chamber)
       expose_result <-
         is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
                                        param_calculated)
-      cows[is_s_in_chamber & is_exposed_to_infected_cow,
+      exposed_cow <- area$cow_id[is_s_in_chamber & is_exposed_to_infected_cow]
+      cows[cow_id %in% exposed_cow,
            `:=`(infection_status =
                   c("ial", NA_character_)[is.na(expose_result) + 1],
                 cause_infection = expose_result)]
-      cows[is_s_in_chamber & !is_exposed_to_infected_cow &
-             is_infected_in_non_exposed_chamber(.N, param_calculated),
+      non_exposed_cow <-
+        area$cow_id[is_s_in_chamber & !is_exposed_to_infected_cow]
+      infected_non_exposed <- non_exposed_cow[
+        is_infected_in_non_exposed_chamber(length(non_exposed_cow),
+                                           param_calculated)]
+      cows[cow_id %in% infected_non_exposed,
            `:=`(infection_status = "ial",
                 cause_infection = "insect")]
     } else {
