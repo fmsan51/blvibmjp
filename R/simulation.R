@@ -25,23 +25,22 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   }
 
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
-
-  setup_cows_res <- setup_cows(param_simulation, param_area, save_cows,
-                               area_table)
-  area_list <- setup_tie_stall_table(setup_cows_res$init_cows, area_table)
-  area_table <- setup_area_table(area_table, setup_cows_res$init_cows,
-                                 param_farm, param_area)
+  setup_cows_res <- setup_cows(param_simulation, save_cows)
+  area_table <- setup_area_table(area_table, param_farm, param_area)
+  area_list <- setup_tie_stall_table(area_table)
+  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows,
+                                    area_table, area_list)
 
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
   day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
-  param_processed <- process_param(setup_cows_res, param_simulation, param_farm)
+  param_processed <- process_param(cows_areas, param_simulation, param_farm)
 
   result <- result_area <-
     vector("list", param_simulation$simulation_length + 1)
-  result[[1]] <- copy(setup_cows_res$init_cows)
+  result[[1]] <- copy(cows_areas$cows)
   # result_aras is made to make debugging easy.
-  result_area[[1]] <- area_list
+  result_area[[1]] <- cows_areas$area_list
 
   if (save_param) {
     save_param_txt(
@@ -55,7 +54,8 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   max_simulation <- param_simulation$n_simulation + i_simulation_start - 1
   for (i_simulation in (i_simulation_start:max_simulation)) {
     cat("Simulation ", i_simulation, " / ", max_simulation, "\n")
-    res <- simulate_once(setup_cows_res, area_list, area_table, movement_table,
+    res <- simulate_once(cows_areas, setup_cows_res$init_last_cow_id,
+             area_table, movement_table,
              day_rp, i_simulation, result, result_area,
              param_simulation, param_farm, param_area, param_processed,
              param_modification = list_param_modification[[i_simulation]],
@@ -73,8 +73,8 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #'
 #' @note This function does not output the result to a csv file.
 #'
-#' @param setup_cows_res A result of [setup_cows()].
-#' @param area_list A result of [setup_areas()].
+#' @param cows_areas A result of [set_init_chamber_id()].
+#' @param last_cow_id `init_last_cow_id` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param movement_table A result of [setup_movement_table()].
 #' @param day_rp A result of [setup_rp_table()].
@@ -89,15 +89,14 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
 #' @export
-simulate_once <- function(setup_cows_res, area_list, area_table,
+simulate_once <- function(cows_areas, last_cow_id, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
                           param_simulation, param_farm, param_area,
                           param_processed, param_modification,
                           save_cows, save_param) {
-  cows <- copy(setup_cows_res$init_cows)
-  areas <- copy(area_list)
-  last_cow_id <- setup_cows_res$init_last_cow_id
+  cows <- cows_areas$cows
+  areas <- cows_areas$area_list
   param_calculated <- calc_param(param_farm, param_modification)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
@@ -118,8 +117,11 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
                         param_calculated, param_processed)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
+    res <- tether_roaming_cows(cows, areas)
+    cows <- res$cows
+    areas <- res$area_list
 
-    res <- change_area(cows, i, movement_table, area_table, area_list,
+    res <- change_area(cows, i, movement_table, area_table, areas,
                        param_calculated)
     cows <- res$cows
     areas <- res$area_list
@@ -146,4 +148,5 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
 }
 # TODO: simulationが強制終了したとき用の備え
 # TODO: Make functions to load area_table, area_list, ... from csv files
+# TODO: ここcowsとareasと何度も分配するくらいなら最初からlist(cows, areas)ベースでやったほうが楽では?
 
