@@ -89,22 +89,9 @@ depreciate_is_md_separated_in_ts <- function(param_calculated) {
 remove_from_area <- function(area, cow_id_removed) {
   # Remove chambers for isolation
   removed_chamber <- area[cow_id %in% cow_id_removed, chamber_id]
-
-  contact1 <- removed_chamber + 1
-  contact2 <- removed_chamber - 1
-  area[contact1[contact1 != (.N + 1)], ':='(previous_neighbor_status = NA,
-                                             previous_neighbor_isolated = NA,
-                                             previous_neighbor_infectivity = F)]
-  area[contact2[contact2 != 0], ':='(next_neighbor_status = NA,
-                                      next_neighbor_isolated = NA,
-                                      next_neighbor_infectivity = F)]
-
   area[removed_chamber, ':='(cow_id = NA,
                               cow_status = NA,
-                              is_isolated = NA,
-                              hazard_ratio = NA,
-                              is_exposed = NA)]
-
+                              is_isolated = NA)]
   return(area)
 }
 
