@@ -310,7 +310,8 @@ change_infection_status <- function(cows, i, month, area_table, area_list,
   #           date_ial = i,
   #           cause_infection = "insects"
   #           )]
-  cows <- calc_infection_in_barns(cows, area_table, area_list, param_calculated)
+  cows <- calc_infection_in_barns(cows, month, area_table, area_list,
+                                  param_calculated)
   cows[is_infected_needles(n_cows, cows, param_calculated) &
          infection_status == "s",
        ':='(infection_status = "ial",

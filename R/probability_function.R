@@ -112,13 +112,15 @@ is_infected_compas <- function(n_cows, param_farm) {
 #' Whether cows are infected in chambers next to infected cows in tie-stall barns
 #'
 #' @param n_cows The number of cows.
+#' @param month The current month (1, 2, ..., 12).
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_in_exposed_chamber <- function(n_cows, param_calculated) {
+is_infected_in_exposed_chamber <- function(n_cows, month, param_calculated) {
   inf_status <- rep(NA_character_, n_cows)
   hr <- param_calculated$hr_having_infected_neighbor
-  is_infected <- runif(n_cows) < param_farm$prob_inf_tiestall_baseline * hr
+  is_infected <-
+    runif(n_cows) < param_farm$prob_inf_tiestall_baseline[month] * hr
   inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected), 
                       replace = T, prob = c(hr - 1, 1))
   inf_status[is_infected] <- inf_cause
@@ -129,11 +131,12 @@ is_infected_in_exposed_chamber <- function(n_cows, param_calculated) {
 #' Whether cows are infected in chambers not next to infected cows in tie-stall barns
 #'
 #' @param n_cows The number of cows.
+#' @param month The current month (1, 2, ..., 12).
 #' @param param_calculated See [calc_param].
 #'
 #' @return A logical vector.
-is_infected_in_non_exposed_chamber <- function(n_cows, param_calculated) {
-  runif(n_cows) < param_calculated$prob_inf_tiestall_baseline
+is_infected_in_non_exposed_chamber <- function(n_cows, month, param_calculated) {
+  runif(n_cows) < param_calculated$prob_inf_tiestall_baseline[month]
 }
 
 

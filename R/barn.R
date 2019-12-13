@@ -58,11 +58,12 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 #' Calculate infection in barns depending on barn type (tied or freed)
 #' 
 #' @param cows See [cow_table].
+#' @param month The current month (1, 2, ..., 12).
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
 #' 
 #' @return A [cow_table].
-calc_infection_in_barns <- function(cows, area_table, area_list,
+calc_infection_in_barns <- function(cows, month, area_table, area_list,
                                     param_calculated) {
   for (i_area in names(area_list)) {
     area <- area_list[[i_area]]
@@ -81,7 +82,7 @@ calc_infection_in_barns <- function(cows, area_table, area_list,
          is_exposed_to_infected_cow_in_previous_chamber)
       expose_result <-
         is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
-                                       param_calculated)
+                                       month, param_calculated)
       exposed_cow <- area$cow_id[is_s_in_chamber & is_exposed_to_infected_cow]
       cows[cow_id %in% exposed_cow,
            `:=`(infection_status =
@@ -91,7 +92,7 @@ calc_infection_in_barns <- function(cows, area_table, area_list,
         area$cow_id[is_s_in_chamber & !is_exposed_to_infected_cow]
       infected_non_exposed <- non_exposed_cow[
         is_infected_in_non_exposed_chamber(length(non_exposed_cow),
-                                           param_calculated)]
+                                           month, param_calculated)]
       cows[cow_id %in% infected_non_exposed,
            `:=`(infection_status = "ial",
                 cause_infection = "insect")]
