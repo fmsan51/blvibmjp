@@ -23,17 +23,7 @@ Other variables are flexible. Values will may be changed while a simulation.
 \item \code{adjoin_next_chamber}: Whether the chamber adjoins the \code{chamber_id + 1}th chamber.
 \item \code{cow_id}: Cow ID in a lane.
 \item \code{cow_status}: Infection status of the cow.
-\item \code{is_exposed}:
-TRUE = The cow is not isolated AND one or both of the neighbor cows is infected and not isolated.
-FALSE = Both of the neibors are either uninfected or isolated.
-NA = No cow in the chamber.
 \item \code{is_isolated}: Whether the cow is isolated or not.
-\item \code{hazard_ratio}: Hazard ratio of infection to the cow calculated based on neighbors' infection status.
-\item \code{previous_neighbor_status}: Infection status of the neighbor in the right chamber.
-\item \code{previous_neighbor_isolated}: Whether the cow in the right chamber is isolated or not.
-\item \code{previous_neighbor_infectivity}:
-TRUE when the neighbor in the right chamber is not isolated and is infectious. Otherwise, FALSE. NA is not allowed to this variable.
-\item \code{next_neighbor_status}, \code{next_neighbor_isolated}, \code{next_neighbor_infectivity}: Variables about the neighbor in the left chamber.
 }
 }
 \seealso{

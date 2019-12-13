@@ -4,7 +4,8 @@
 \alias{change_infection_status}
 \title{Check change of infection status of cows}
 \usage{
-change_infection_status(cows, i, month, param_calculated)
+change_infection_status(cows, i, month, area_table, area_list,
+  param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -12,6 +13,10 @@ change_infection_status(cows, i, month, param_calculated)
 \item{i}{The number of months from the start of the simulation.}
 
 \item{month}{The month (1, 2, ..., 12) of month \code{i}.}
+
+\item{area_table}{See \link{area_table}.}
+
+\item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }

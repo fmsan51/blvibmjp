@@ -5,11 +5,9 @@
 \alias{setup_tie_stall_table}
 \title{Setup of \code{tie_stall_table}}
 \usage{
-setup_tie_stall_table(init_cows, area_table)
+setup_tie_stall_table(area_table)
 }
 \arguments{
-\item{init_cows}{The element \code{init_cows} of a result of \code{\link[=setup_cows]{setup_cows()}}.}
-
 \item{area_table}{See \link{area_table}.}
 }
 \value{

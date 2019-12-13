@@ -294,19 +294,24 @@ change_stage <- function(cows, i, param_calculated) {
 #' @param cows See [cow_table].
 #' @param i The number of months from the start of the simulation.
 #' @param month The month (1, 2, ..., 12) of month `i`.
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A [cow_table].
 #' @export
-change_infection_status <- function(cows, i, month, param_calculated) {
+change_infection_status <- function(cows, i, month, area_table, area_list,
+                                    param_calculated) {
   n_cows <- nrow(cows)
 
-  cows[is_infected_insects(n_cows, month, param_calculated) &
-         infection_status == "s",
-       ':='(infection_status = "ial",
-            date_ial = i,
-            cause_infection = "insects"
-            )]
+  # cows[is_infected_insects(n_cows, month, param_calculated) &
+  #        infection_status == "s",
+  #      ':='(infection_status = "ial",
+  #           date_ial = i,
+  #           cause_infection = "insects"
+  #           )]
+  cows <- calc_infection_in_barns(cows, month, area_table, area_list,
+                                  param_calculated)
   cows[is_infected_needles(n_cows, cows, param_calculated) &
          infection_status == "s",
        ':='(infection_status = "ial",
@@ -336,7 +341,7 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
-#' @param param_area_id See [param_area].
+#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'

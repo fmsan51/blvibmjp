@@ -2,7 +2,7 @@
 % Please edit documentation in R/probability_function.R
 \name{is_infected_insects}
 \alias{is_infected_insects}
-\title{Wheter cows are infected by insects}
+\title{Whether cows are infected by insects}
 \usage{
 is_infected_insects(n_cows, month, param_calculated)
 }
@@ -17,5 +17,5 @@ is_infected_insects(n_cows, month, param_calculated)
 A logical vector.
 }
 \description{
-Wheter cows are infected by insects
+Whether cows are infected by insects
 }
