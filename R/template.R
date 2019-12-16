@@ -82,8 +82,8 @@ a_new_calf <- data.table(
   cause_removal = NA_character_,
   # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
-  is_introduced = NA,
-  is_in_common_ranch = NA,
+  is_introduced = NA,  # TODO: currently used nowhere
+  is_in_common_ranch = NA,  # TODO: used nowhere
   is_grazed = NA,
 
   # Delivery and milking
