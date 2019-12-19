@@ -4,7 +4,7 @@
 \name{param_farm}
 \alias{param_farm}
 \title{Parameters about farms which should be set by users}
-\format{An object of class \code{list} of length 22.}
+\format{An object of class \code{list} of length 23.}
 \usage{
 param_farm
 }
@@ -31,6 +31,7 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{feed_raw_colostrum} (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
+\item \code{test_method}: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
 }
 }

@@ -42,6 +42,7 @@ param_simulation <- list(
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
+#' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
 #' @seealso [param_simulation] [param_area] [calc_param]
@@ -79,6 +80,8 @@ param_farm <- list(
   change_gloves = T,
   # TODO: Make it to prop
   feed_raw_colostrum = F,
+
+  test_method = NA,
 
   days_milking = NA
 )
@@ -171,6 +174,80 @@ calc_param <- function(param_farm, modification = NULL) {
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
   # TODO: temporary, just by inspiration
+  
+
+  ## blv_test ----
+  # A list of BLV test methods available in Japan was obtained from here:
+  # https://doi.org/10.4190/jjlac.6.221
+  if (param_farm$test_method == "immunodiffusion") {
+    param$test_sensitivity <- 0.981
+    param$test_specificity <- 0.967
+    # https://doi.org/10.1016/0166-0934(90)90086-U
+  } else if (param_farm$test_method == "ELISA") {
+    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
+                            se_lwr = c(0.982, 0.980, 0.951, 0.857),
+                            se_upr = c(1.000, 0.999, 0.993, 0.927),
+                            sp_est = c(0.985, 0.987, 0.970, 0.849),
+                            sp_lwr = c(0.962, 0.958, 0.927, 0.784),
+                            sp_upr = c(1.000, 0.998, 0.996, 0.913))
+    q975 <- qnorm(0.975)
+    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
+                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param_farm$test_method == "PHA") {
+    estimates <- data.table(sensitivity = numeric(2),
+                            specificity = numeric(2))
+    # Calculate treating a result of nested PCR as gold standard
+    # http://210.164.7.60/g68/documents/4abe.pdf
+    estimates[1, `:=`(sensitivity = 1,
+                      specificity = 10 / (10 + 16))]
+    # https://www.city.kyoto.lg.jp/hokenfukushi/cmsfiles/contents/0000118/118365/O6.pdf
+    estimates[2, `:=`(sensitivity = 0.909,
+                      specificity = 0.984)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- estimate$sensitivity
+    param$test_specificity <- estimate$specificity
+  } else if (param_farm$test_method == "nested PCR") {
+    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
+                            se_lwr = c(0.901, 0.895, 0.878),
+                            se_upr = c(0.956, 0.955, 0.945),
+                            sp_est = c(0.767, 0.770, 0.755),
+                            sp_lwr = c(0.696, 0.694, 0.674),
+                            sp_upr = c(0.828, 0.836, 0.828))
+    q975 <- qnorm(0.975)
+    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
+                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param_farm$test_method == "real-time PCR") {
+    # Calculate treating a result of nested PCR as gold standard
+    estimates <- data.table(sensitivity = numeric(3),
+                            specificity = numeric(3))
+    # https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/files/27gyohatu_BLV.pdf
+    estimates[1, `:=`(sensitivity = 4 / 5,
+                      specificity = 1)]
+    # http://www.pref.tochigi.lg.jp/g68/documents/28-08.pdf
+    estimates[2, `:=`(sensitivity = (27 + 1) / (27 + 1 + 1 + 1),
+                      specificity = 1)]
+    # https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/documents/h26_09.pdf
+    estimates[3, `:=`(sensitivity = 1,
+                      specificity = 1)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- estimate$sensitivity
+    param$test_specificity <- estimate$specificity
+  } else {
+    param$test_sensitivity <- param_farm$test_method[1]
+    param$test_specificity <- param_farm$test_method[2]
+  }
+
+
+
+
 
   ## infection_insects ----
 
