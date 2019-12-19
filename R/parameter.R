@@ -183,7 +183,11 @@ calc_param <- function(param_farm, modification = NULL) {
   ## blv_test ----
   # A list of BLV test methods available in Japan was obtained from here:
   # https://doi.org/10.4190/jjlac.6.221
-  if (param_farm$test_method == "immunodiffusion") {
+  if (anyNA(param_farm$test_method)) {
+    # Not is.na() because length of test_method can be two
+    param$test_sensitivity <- 0
+    param$test_specificity <- 0
+  } else if (param_farm$test_method == "immunodiffusion") {
     param$test_sensitivity <- 0.981
     param$test_specificity <- 0.967
     # https://doi.org/10.1016/0166-0934(90)90086-U
