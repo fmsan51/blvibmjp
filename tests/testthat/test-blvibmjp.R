@@ -1,5 +1,5 @@
 # test_that("simulation runs", {
-
+library(tictoc)
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
   # param_simulation$input_csv <- system.file("testdata", "input", "test_cow.csv",
@@ -48,6 +48,5 @@
   simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  plot_infection_route(simulation_csv, use_color = T,
-                     max_ylim = 80, language = "Japanese")
+  plot_infection_route(simulation_csv, max_ylim = 80, language = "Japanese")
 # })
