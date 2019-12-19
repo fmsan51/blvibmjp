@@ -29,8 +29,9 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{is_owned}: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 \item \code{cause_removal}:
 \itemize{
-\item "died": culled or slaughtered.
-\item "ebl": culled due to onset of the disease.
+\item "died": died.
+\item "slaughtered": slaughtered not due to the disease.
+\item "culled": culled due to the disease.
 \item "sold": send to a market or another farm.
 \item "will_die": (still alive and) will die.
 \item "will_be_slaughtered": (still alive and) will be slaughtered.

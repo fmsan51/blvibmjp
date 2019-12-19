@@ -19,8 +19,9 @@
 #' - `date_death_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 #' - `is_owned`: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 #' - `cause_removal`:
-#'     - "died": culled or slaughtered.
-#'     - "ebl": culled due to onset of the disease.
+#'     - "died": died.
+#'     - "slaughtered": slaughtered not due to the disease.
+#'     - "culled": culled due to the disease.
 #'     - "sold": send to a market or another farm.
 #'     - "will_die": (still alive and) will die.
 #'     - "will_be_slaughtered": (still alive and) will be slaughtered.

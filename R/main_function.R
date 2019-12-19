@@ -463,7 +463,7 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
                                 date_death = i,
                                 cause_removal =
                                   fifelse(cause_removal == "will_die",
-                                          "dead", "slaughtered"))]
+                                          "died", "slaughtered"))]
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
@@ -478,7 +478,7 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
     rows_new_ebl[is_ebl_detected(rows_new_ebl, param_calculated)]
   if (length(rows_removed_ebl) != 0) {
     cows[rows_removed_ebl,  ':='(is_owned = F,
-                                 cause_removal = "ebl")]
+                                 cause_removal = "culled")]
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
