@@ -84,7 +84,7 @@ param_farm <- list(
   feed_raw_colostrum = F,
 
   cull_infected_cows = "no",
-  test_frequency = NA,
+  test_frequency = 0,
   test_method = NA,
 
   days_milking = NA
