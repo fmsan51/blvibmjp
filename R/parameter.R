@@ -170,6 +170,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
+  # TODO: temporary, just by inspiration
 
   ## infection_insects ----
 
