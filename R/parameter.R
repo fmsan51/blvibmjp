@@ -42,7 +42,7 @@ param_simulation <- list(
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
-#' - `cull_infected_cows` ("no"/"infected"/"highrisk"): Whether cull infected cows. "infected" means cull all infected cows and "highrisk" means cull PL or EBL cows only. If this value is set to "infected" or "highrisk", an infected cow is culled when a new calf is born.
+#' - `cull_infected_cows` ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull all infected cows and "highrisk" means cull PL or EBL cows only. If this value is set to "all" or "highrisk", an infected cow is culled when a new calf is born.
 #' - `test_frequency` (1-12): Frequency of BLV tests in a year. Only integers can be set.
 #' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
