@@ -125,7 +125,8 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     cows <- res$cows
     areas <- res$area_list
 
-    res <- check_removal(cows, areas, i, param_calculated, param_processed)
+    res <- check_removal(cows, areas, i, param_farm, param_calculated,
+                         param_processed)
     cows <- res$cows
     areas <- res$areas
 

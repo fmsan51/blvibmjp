@@ -471,12 +471,14 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
+#' @param param_farm See [param_farm].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
-check_removal <- function(cows, areas, i, param_calculated, param_processed) {
+check_removal <- function(cows, areas, i, param_farm, param_calculated,
+                          param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -484,6 +486,9 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
                                 cause_removal =
                                   fifelse(cause_removal == "will_die",
                                           "died", "slaughtered"))]
+
+  # Removal by culling
+  cows <- cull_infected_cows(cows, i, param_farm, param_calculated)
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
@@ -519,6 +524,63 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   }
 
   return(list(cows = cows, areas = areas))
+}
+
+
+#' Cull infected cows
+#'
+#' @param cows See [cow_table].
+#' @param i The number of months from the start of the simulation.
+#' @param param_farm See [param_farm].
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A [cow_table].
+#' @export
+cull_infected_cows <- function(cows, i, param_farm, param_calculated) {
+  if (param_farm$cull_infected_cows != "no") {
+    id_detected_highrisk <-
+      cows[(infection_status == "pl" | infection_status == "ebl") &
+           is_detected & is_owned,
+           cow_id]
+    cows <- replace_selected_cows(cows, id_detected_highrisk, i)
+  }
+  if (param_farm$cull_infected_cows == "all") {
+    id_detected <- cows[is_detected & is_owned, cow_id]
+    cows <- replace_selected_cows(cows, id_detected, i)
+  }
+  return(cows)
+}
+
+
+#' Replace selected cows
+#'
+#' @param cows See [cow_table].
+#' @param cow_id_to_cull `cow_id` to remove from `cows`.
+#' @param i The number of months from the start of the simulation.
+#' 
+#' @return A [cow_table].
+#' @export
+replace_selected_cows <- function(cows, cow_id_to_cull, i) {
+  id_non_replacement_newborns <-
+    cows[age == 0 & is_owned & !is_replacement & sex == "female",
+         cow_id]
+  n_non_replacement <- length(id_non_replacement_newborns)
+  n_to_cull <- length(cow_id_to_cull)
+  if (n_non_replacement != 0 & n_to_cull != 0) {
+    if (n_non_replacement > n_to_cull) {
+      id_culled <- cow_id_to_cull
+      id_replaced <- sample(id_non_replacement_newborns, n_to_cull)
+    } else {
+      id_culled <- sample(cow_id_to_cull, n_non_replacement)
+      id_replaced <- id_non_replacement_newborns
+    }
+    cows[cow_id %in% id_culled,
+         `:=`(is_owned = F,
+              date_death = i,
+              cause_removal = "culled")]
+    cows$is_replacement[cows$cow_id %in% id_replaced] <- T
+  }
+  return(cows)
 }
 
 

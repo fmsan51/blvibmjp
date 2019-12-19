@@ -13,6 +13,7 @@ library(tictoc)
   param_farm$change_gloves <- F
   param_farm$test_frequency <- 2
   param_farm$test_method <- "ELISA"
+  param_farm$cull_infected_cows <- "all"
   param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
