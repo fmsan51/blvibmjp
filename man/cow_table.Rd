@@ -51,7 +51,7 @@ FALSE: The cow Will be sold to beef operations.
 \item \code{day_last_detected_heat}: Dey in month of the LAST heat.
 \item \code{is_to_test_pregnancy}: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 \item \code{infection_status}: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
-\item \code{is_detected}: Whether BLV infection is detected. \code{NA} for non-infected cows.
+\item \code{is_detected}: Whether BLV infection is detected. Sometimes even a non-infected cow can be \code{TRUE} when false-positive in BLV test occurs.
 \item \code{date_ial}: The month when \code{infection_status} changes from "s" to "ial".
 \item \code{date_ipl}: The month when \code{infection_status} changes from "ial" to "ipl".
 \item \code{date_ipl_expected}: The expected month when \code{infection_status} changes from "ial" to "ipl". It is calculated when \code{infection_status} becomes "ial".
