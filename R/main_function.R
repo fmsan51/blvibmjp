@@ -507,12 +507,15 @@ check_removal <- function(cows, areas, i, param_farm, param_calculated,
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
-    n_month_until_ebl_die <-
-      n_month_until_ebl_die(rows_overlooked, param_calculated)
-    cows[seq_len(nrow(cows)) %in% rows_overlooked &
-         date_death_expected >= i + n_month_until_ebl_die,
-         ':='(date_death_expected = i + n_month_until_ebl_die,
-              cause_removal = "will_die")]
+    month_ebl_die <-
+      n_month_until_ebl_die(rows_overlooked, param_calculated) + i
+    cows[seq_len(nrow(cows)) %in% rows_overlooked,
+         ':='(date_death_expected =
+                fifelse(date_death_expected >= month_ebl_die,
+                        month_ebl_die, date_death_expected),
+              cause_removal =
+                fifelse(date_death_expected >= month_ebl_die,
+                        "will_die", cause_removal))]
   }  # TODO: ここテスト
 
   rows_removed <- c(rows_removed_death, rows_removed_sold, rows_removed_ebl)
