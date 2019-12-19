@@ -113,6 +113,7 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     cows <- add_1_to_age(cows)
     cows <- do_ai(cows, i, day_rp, param_calculated)
     cows <- change_stage(cows, i, param_calculated)
+    cows <- do_test(cows, month, param_calculated)
 
     cows <- change_infection_status(cows, i, month, param_calculated)
     res <- add_newborns(cows, area_table, i, last_cow_id, param_area,

@@ -330,6 +330,26 @@ change_infection_status <- function(cows, i, month, param_calculated) {
 }
 
 
+#' Conduct BLV test
+#'
+#' @param cows See [cow_table].
+#' @param month The month (1, 2, ..., 12).
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A [cow_table].
+#' @export
+do_test <- function(cows, month, param_calculated) {
+  if (sum(month == param_calculated$test_months) > 0) {
+    n_cow <- nrow(cows)
+    is_detected <- cows$infection_status != "s" &
+      runif(n_cow) < param_calculated$test_sensitivity
+    is_false_positive <- cows$infection_status == "s" &
+      runif(n_cow) > param_calculated$test_specificity
+    cows$is_detected <- is_detected | is_false_positive
+  }
+  return(cows)
+}
+
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].

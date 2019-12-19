@@ -11,6 +11,8 @@ library(tictoc)
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
   param_farm$change_gloves <- F
+  param_farm$test_frequency <- 2
+  param_farm$test_method <- "ELISA"
   param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
