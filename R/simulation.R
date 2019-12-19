@@ -98,7 +98,8 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
   cows <- copy(setup_cows_res$init_cows)
   areas <- copy(area_list)
   last_cow_id <- setup_cows_res$init_last_cow_id
-  param_calculated <- calc_param(param_farm, param_modification)
+  param_calculated <- calc_param(param_farm, param_simulation,
+                                 param_modification)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
                    i_simulation, subdir = param_simulation$output_dir)

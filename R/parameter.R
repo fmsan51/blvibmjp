@@ -146,7 +146,7 @@ set_param <- function(parameter, default) {
 #'
 #' @return A parameter list.
 #' @export
-calc_param <- function(param_farm, modification = NULL) {
+calc_param <- function(param_farm, param_simulation, modification = NULL) {
   param <- list()
 
   ## infection_status_change ----
@@ -181,6 +181,19 @@ calc_param <- function(param_farm, modification = NULL) {
   
 
   ## blv_test ----
+  # Test frequency
+  if (param_farm$test_frequency == 0) {
+    param$test_months <- numeric(0)
+  } else {
+    test_months <-
+      floor(12 / param_farm$test_frequency * seq(param_farm$test_frequency))
+    test_months <-
+      (test_months + param_simulation$simulation_start + 6) %% 12 + 1
+    # Add 6 to avoid the first test occurs at i_month = 1 when test_frequency = 1
+    # Add 1 because n %% 12 contains 0
+    param$test_months <- test_months
+  }
+
   # A list of BLV test methods available in Japan was obtained from here:
   # https://doi.org/10.4190/jjlac.6.221
   if (anyNA(param_farm$test_method)) {
