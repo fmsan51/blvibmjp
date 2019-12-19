@@ -39,6 +39,7 @@
 #' - `day_last_detected_heat`: Dey in month of the LAST heat.
 #' - `is_to_test_pregnancy`: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 #' - `infection_status`: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
+#' - `is_detected`: Whether BLV infection is detected. `NA` for non-infected cows.
 #' - `date_ial`: The month when `infection_status` changes from "s" to "ial".
 #' - `date_ipl`: The month when `infection_status` changes from "ial" to "ipl".
 #' - `date_ipl_expected`: The expected month when `infection_status` changes from "ial" to "ipl". It is calculated when `infection_status` becomes "ial".
@@ -104,6 +105,7 @@ a_new_calf <- data.table(
 
   # Infection status
   infection_status = NA_character_,
+  is_detected = NA,
   date_ial = NA_real_,
   date_ipl = NA_real_,
   date_ipl_expected = NA_real_,
