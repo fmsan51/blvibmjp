@@ -342,7 +342,7 @@ do_test <- function(cows, month, param_calculated) {
   if (sum(month == param_calculated$test_months) > 0) {
     n_cow <- nrow(cows)
     is_detected <- cows$infection_status != "s" &
-      runif(n_cow) < param_calculated$test_sensitivity
+      (cows$is_detected | runif(n_cow) < param_calculated$test_sensitivity)
     is_false_positive <- cows$infection_status == "s" &
       runif(n_cow) > param_calculated$test_specificity
     cows$is_detected <- is_detected | is_false_positive
