@@ -38,7 +38,6 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{is_replacement}:
 TRUE: The cow will be kept in the farm as replacement.
 FALSE: The cow Will be sold to beef operations.
-\item \code{is_introduced}
 \item \code{is_in_common_ranch}: Whether the cow is in a common ranch at \code{i_month} (see below).
 \item \code{is_grazed}
 \item \code{parity}

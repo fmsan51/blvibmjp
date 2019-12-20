@@ -27,7 +27,6 @@
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
-#' - `is_introduced`
 #' - `is_in_common_ranch`: Whether the cow is in a common ranch at `i_month` (see below).
 #' - `is_grazed`
 #' - `parity`
@@ -81,7 +80,6 @@ a_new_calf <- data.table(
   cause_removal = NA_character_,
   # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
-  is_introduced = NA,
   is_in_common_ranch = NA,
   is_grazed = NA,
 
