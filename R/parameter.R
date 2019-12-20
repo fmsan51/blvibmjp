@@ -25,7 +25,7 @@ param_simulation <- list(
 #' The following parameters are passed to [calc_param()] and the parameter will be calculated.
 #'
 #' - `prop_female` (0-1): Proportion of female of newborns. (default: average in Hokkaido)
-#' - `prop_replacement` (0-1): Proportion of calvest to be replacements in female newborns. (default: average in Hokkaido)
+#' - `prop_replacement` (0-1): Proportion of calves to be replacements in female newborns. (default: average in Hokkaido)
 #' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 #' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 #' - `calving_interval`: Calving interval in day. (default: average in Hokkaido)
