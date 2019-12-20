@@ -38,15 +38,13 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{is_replacement}:
 TRUE: The cow will be kept in the farm as replacement.
 FALSE: The cow Will be sold to beef operations.
-\item \code{is_in_common_ranch}: Whether the cow is in a common ranch at \code{i_month} (see below).
-\item \code{is_grazed}
 \item \code{parity}
 \item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths.
 \item \code{date_got_pregnant}: NA means that the cow is open.
 \item \code{date_dried}: NA means that the cow is milking.
 \item \code{n_ai}: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 \item \code{day_heat}: Day in month of the NEXT heat.
-\item \code{day_last_detected_heat}: Dey in month of the LAST heat.
+\item \code{day_last_detected_heat}: Day in month of the LAST heat.
 \item \code{is_to_test_pregnancy}: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 \item \code{infection_status}: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
 \item \code{is_detected}: Whether BLV infection is detected. Sometimes even a non-infected cow can be \code{TRUE} when false-positive in BLV test occurs.

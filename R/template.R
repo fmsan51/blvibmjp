@@ -33,7 +33,7 @@
 #' - `date_dried`: NA means that the cow is milking.
 #' - `n_ai`: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 #' - `day_heat`: Day in month of the NEXT heat.
-#' - `day_last_detected_heat`: Dey in month of the LAST heat.
+#' - `day_last_detected_heat`: Day in month of the LAST heat.
 #' - `is_to_test_pregnancy`: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 #' - `infection_status`: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
 #' - `is_detected`: Whether BLV infection is detected. Sometimes even a non-infected cow can be `TRUE` when false-positive in BLV test occurs.
