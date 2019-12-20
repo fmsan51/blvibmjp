@@ -18,7 +18,6 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \code{date_xxx} variables are expressed as month. The month when the simulation starts is 0. eg. The \code{date_birth} of a cow which is 20 months old at the simulation start is -20.
 \code{day_xxx} variables are days in the month.
 \itemize{
-\item \code{row_id}: Fixed.
 \item \code{cow_id}
 \item \code{age}: Age in month.
 \item \code{stage}: One of "calf", "heifer", "milking" or "dry".

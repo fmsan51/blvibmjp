@@ -9,7 +9,6 @@
 #' `date_xxx` variables are expressed as month. The month when the simulation starts is 0. eg. The `date_birth` of a cow which is 20 months old at the simulation start is -20.
 #' `day_xxx` variables are days in the month.
 #'
-#' - `row_id`: Fixed.
 #' - `cow_id`
 #' - `age`: Age in month.
 #' - `stage`: One of "calf", "heifer", "milking" or "dry".
@@ -70,8 +69,6 @@
 #' @export
 a_new_calf <- data.table(
   # TODO: Add notes indicating which parameter is necessary and which is not.
-  row_id = NA_integer_,
-  # TODO:これもう使わないから削除。
   cow_id = NA_integer_,
   age = NA_real_,
   stage = NA_character_,
