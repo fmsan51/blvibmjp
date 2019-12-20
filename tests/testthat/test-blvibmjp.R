@@ -1,4 +1,5 @@
 # test_that("simulation runs", {
+set.seed(1)
 library(tictoc)
   param_simulation$n_simulation <- 1
   param_simulation$simulation_length <- 60
