@@ -27,7 +27,6 @@
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
-#' - `is_grazed`
 #' - `parity`
 #' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths.
 #' - `date_got_pregnant`: NA means that the cow is open.
@@ -79,7 +78,6 @@ a_new_calf <- data.table(
   cause_removal = NA_character_,
   # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
-  is_grazed = NA,
 
   # Delivery and milking
   parity = NA_real_,
