@@ -28,7 +28,7 @@
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
 #' - `parity`
-#' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths.
+#' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths. `NA` means that the cow is heifer (pairty = 0).
 #' - `date_got_pregnant`: NA means that the cow is open.
 #' - `date_dried`: NA means that the cow is milking.
 #' - `n_ai`: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.

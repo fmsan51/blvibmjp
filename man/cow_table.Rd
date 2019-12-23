@@ -39,7 +39,7 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 TRUE: The cow will be kept in the farm as replacement.
 FALSE: The cow Will be sold to beef operations.
 \item \code{parity}
-\item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths.
+\item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths. \code{NA} means that the cow is heifer (pairty = 0).
 \item \code{date_got_pregnant}: NA means that the cow is open.
 \item \code{date_dried}: NA means that the cow is milking.
 \item \code{n_ai}: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
