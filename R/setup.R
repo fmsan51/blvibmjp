@@ -98,7 +98,7 @@ setup_tie_stall_table <- function(init_cows, area_table) {
 #' @export
 setup_area_table <- function(area_table, cows, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture) {
+  if (param_farm$use_communal_pasture & all(area_type != "communal pasture")) {
     area_table <- rbindlist(list(area_table,
                                  list(area_id = max(area_table$area_id) + 1L,
                                       area_type = "communal pasture",
