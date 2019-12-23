@@ -186,14 +186,16 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                                             i.day_rp < day_rp, 
                                             type := "pregnancy_test"]
       n_nonpregnant_cows_ai_done <- nrow(nonpregnant_cows_ai_done)
-      day_rp[day_rp_last_row + (1:n_nonpregnant_cows_ai_done),
-             c("cow_id", "infection_status", "day_rp", "type") := 
-               nonpregnant_cows_ai_done[,
-                 c("cow_id", "infection_status", "i.day_rp", "type")]]
-      day_rp_last_row <- day_rp_last_row + n_nonpregnant_cows_ai_done
-      open_cows[cow_id %in% nonpregnant_cows_ai_done$cow_id,
-                is_to_test_pregnenancy := F]
-      # TODO: Set is_to_test_pregnancy of cows which heat comes to F.
+      if (n_nonpregnant_cows_ai_done > 0) {
+        day_rp[day_rp_last_row + (1:n_nonpregnant_cows_ai_done),
+               c("cow_id", "infection_status", "day_rp", "type") :=
+                 nonpregnant_cows_ai_done[,
+                   c("cow_id", "infection_status", "i.day_rp", "type")]]
+        day_rp_last_row <- day_rp_last_row + n_nonpregnant_cows_ai_done
+        open_cows[cow_id %in% nonpregnant_cows_ai_done$cow_id,
+                  is_to_test_pregnenancy := F]
+        # TODO: Set is_to_test_pregnancy of cows which heat comes to F.
+      }
     }
   }
 
