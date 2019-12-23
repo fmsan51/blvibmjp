@@ -4,10 +4,10 @@
 \alias{setup_rp_table}
 \title{Setup of \code{rp_table}}
 \usage{
-setup_rp_table(init_last_cow_id, param_simulation)
+setup_rp_table(init_n_cows, param_simulation)
 }
 \arguments{
-\item{init_last_cow_id}{The element \code{init_last_cow_id} from the return of \code{\link[=setup_cows]{setup_cows()}}.}
+\item{init_n_cows}{The element \code{init_n_cows} from the return of \code{\link[=setup_cows]{setup_cows()}}.}
 
 \item{param_simulation}{See \link{param_simulation}.}
 }

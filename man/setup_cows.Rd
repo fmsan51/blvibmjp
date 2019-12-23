@@ -16,7 +16,7 @@ setup_cows(param_simulation, param_area, save_cows, area_table)
 \item{area_table}{See \link{area_table}.}
 }
 \value{
-A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_last_cow_id} (the number of rows of \code{cows}) as return of the function and \code{month0000.csv} in the directionry specified as \code{param_simulation$output_dir}.
+A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_n_cows} (the number of rows of \code{cows}) as return of the function and \code{month0000.csv} in the directionry specified as \code{param_simulation$output_dir}.
 }
 \description{
 Load initial cow status from a csv file, transform it to a \link{cow_table}, and output the \code{cow_table} to a csv file \code{month0000.csv}.

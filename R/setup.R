@@ -7,7 +7,7 @@
 #' @param save_cows logical. Whether to save initial `cows` to a file.
 #' @param area_table See [area_table].
 #'
-#' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
+#' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
@@ -16,10 +16,10 @@ setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
                 colClasses = sapply(a_new_calf, class))
 
   # Prepare cow_table with many rows to reserve enough memory while simulation
-  init_last_cow_id <- nrow(cows)
-  max_herd_size <- init_last_cow_id * param_simulation$simulation_length * 2
+  init_n_cows <- nrow(cows)
+  max_herd_size <- init_n_cows * param_simulation$simulation_length * 2
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
-  init_cows[1:init_last_cow_id, ] <- cows
+  init_cows[1:init_n_cows, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
   
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
@@ -29,7 +29,7 @@ setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
 
-  return(list(init_cows = init_cows, init_last_cow_id = init_last_cow_id))
+  return(list(init_cows = init_cows, init_n_cows = init_n_cows))
 }
 
 
@@ -37,15 +37,15 @@ setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
 #'
 #' Make initial `rp_table`.
 #'
-#' @param init_last_cow_id The element `init_last_cow_id` from the return of [setup_cows()].
+#' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 #' @export
-setup_rp_table <- function(init_last_cow_id, param_simulation) {
+setup_rp_table <- function(init_n_cows, param_simulation) {
   # TODO: do_aiをimproveするときに再検討
   # Prepare rp_table with many rows to reserve enough memory while simulation
-  one_day_rp[1:init_last_cow_id, ]
+  one_day_rp[1:init_n_cows, ]
   # Used 1:n instead of seq_len(n) because it is faster
 }
 

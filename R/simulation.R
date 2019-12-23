@@ -34,7 +34,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
-  day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
+  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
   param_processed <- process_param(setup_cows_res, param_simulation, param_farm)
 
   result <- result_area <- 
@@ -97,7 +97,7 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
                           save_cows, save_param) {
   cows <- copy(setup_cows_res$init_cows)
   areas <- copy(area_list)
-  last_cow_id <- setup_cows_res$init_last_cow_id
+  last_cow_id <- max(cows$cow_id)
   param_calculated <- calc_param(param_farm, param_simulation,
                                  param_modification)
   if (save_param) {
