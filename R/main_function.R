@@ -448,8 +448,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
       rows_newborns <- n_cows + seq_len(n_newborns_born)
-      newborns[, `:=`(row_id = rows_newborns,
-                      cow_id = last_cow_id + seq_len(n_newborns_born))]
+      newborns$cow_id <- last_cow_id + seq_len(n_newborns_born)
       last_cow_id <- last_cow_id + n_newborns_born
       # Here, last_cow_id instead of max(cows$cow_id, na.rm = T) is used,
       # because these two values are different when the last newborn died already and no calve was born since then.
