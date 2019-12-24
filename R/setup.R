@@ -11,7 +11,7 @@
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
+setup_cows <- function(param_simulation, save_cows) {
   cows <- fread(file = param_simulation$input_csv,
                 colClasses = sapply(a_new_calf, class))
 
@@ -22,9 +22,6 @@ setup_cows <- function(param_simulation, param_area, save_cows, area_table) {
   init_cows[1:init_n_cows, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
   
-  area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
-  init_cows <- assign_chambers(init_cows, area_list, area_assignment)
-
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
