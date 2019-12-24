@@ -4,7 +4,7 @@
 \name{param_farm}
 \alias{param_farm}
 \title{Parameters about farms which should be set by users}
-\format{An object of class \code{list} of length 25.}
+\format{An object of class \code{list} of length 28.}
 \usage{
 param_farm
 }

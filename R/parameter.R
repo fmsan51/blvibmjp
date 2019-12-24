@@ -58,7 +58,10 @@ param_farm <- list(
 
   # Reproductivity parameters
   prop_heat_detected = NA,
-  calving_interval = NA,  # TODO: currently used nowhere
+  calving_interval = NA,
+  age_first_delivery = NA,
+  days_open = NA,
+  days_milking = NA,
   n_mean_ai = NA,  # TODO: currently used nowhere
   mean_age_first_ai = NA,
   sd_age_first_ai = NA,
@@ -347,6 +350,21 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   ## artificial_insemination ----
 
+  param$prop_replacement <- param_farm$prop_replacement
+  # This is passed from param_farm only to use in process_raw_csv()
+
+  # Nyuken (H23-27)
+  day_per_month <- 365 / 12
+  param$calving_interval <-
+    set_param(param_farm$calving_interval / day_per_month,
+              mean(432, 430, 432, 429, 427) / day_per_month)
+  param$age_first_delivery <- set_param(param_farm$age_first_delivery,
+                                        mean(25.2, 25.1, 25.0, 25.0, 24.8))
+  param$months_open <- set_param(param_farm$days_open / day_per_month,
+                                 mean(160, 159, 159, 155, 154) / day_per_month)
+  param$months_milking <-
+    set_param(param_farm$days_milking / day_per_month,
+              mean(366, 363, 365, 364, 363) / day_per_month)
 
   # First AI after delivery
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
@@ -364,7 +382,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
 
   # First AI for heifer
-  mean_age_first_ai <- c(427, 427, 435, 432) / 365 * 12  # NOTE: From Gyugun Kentei Seisekihyo by HRK
+  mean_age_first_ai <- c(427, 427, 435, 432) / day_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
   lims_age_first_ai <- set_param(param_farm$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month
