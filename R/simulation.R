@@ -96,7 +96,7 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
                           save_cows, save_param) {
   cows <- copy(setup_cows_res$init_cows)
   areas <- copy(area_list)
-  last_cow_id <- max(cows$cow_id)
+  last_cow_id <- max(cows$cow_id, na.rm = T)
   param_calculated <- calc_param(param_farm, param_simulation,
                                  param_modification)
   if (save_param) {
