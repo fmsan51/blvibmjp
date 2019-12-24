@@ -27,8 +27,10 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
 
   setup_cows_res <- setup_cows(param_simulation, save_cows)
-  area_list <- setup_tie_stall_table(setup_cows_res$init_cows, area_table)
   area_table <- setup_area_table(area_table, param_farm, param_area)
+  area_list <- setup_tie_stall_table(setup_cows_res$init_cows, area_table)
+  # setup_tie_stall_table() must come after setup_area_table()
+  # because it uses an attributes which setup_area_table() calculates
 
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
