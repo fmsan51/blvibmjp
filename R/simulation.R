@@ -21,7 +21,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1) {
   if ((save_param | save_cows) & !(file.exists(param_simulation$output_dir))) {
-    dir.create(param_simulation$output_dir, replace = T)
+    dir.create(param_simulation$output_dir, recursive = T)
   }
 
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
