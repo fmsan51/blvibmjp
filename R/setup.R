@@ -63,14 +63,18 @@ setup_tie_stall_table <- function(init_cows, area_table) {
   area_list <- vector("list", nrow(area_table))
   names(area_list) <- area_table$area_id
   for (i_area in attr(area_table, "tie_stall")) {
-    area_capacity <- area_table$capacity[i_area == area_table$area_id]
-    a_tie_stall <- a_chamber[rep(1, sum(area_capacity)), ]
-    a_tie_stall[, `:=`(chamber_id = seq_along(area_capacity),
+    area_capacity <- area_table$capacity[[which(i_area == area_table$area_id)]]
+    n_chambers <- sum(area_capacity)
+    a_tie_stall <- a_chamber[rep(1, n_chambers), ]
+    a_tie_stall[, `:=`(chamber_id = 1:n_chambers,
                        adjoint_previous_chamber = T,
                        adjoint_next_chamber = T)]
-    a_tie_stall[area_capacity, adjoint_previous_chamber = F]
+    lane_edges <- cumsum(area_capacity)
+    a_tie_stall[lane_edges, adjoint_next_chamber := F]
+    a_tie_stall[c(1, lane_edges[-length(lane_edges)]),
+                adjoint_previous_chamber := F]
 
-    area_list[[area_table]] <- a_tie_stall
+    area_list[[i_area]] <- a_tie_stall
   }
 
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
@@ -95,7 +99,7 @@ setup_tie_stall_table <- function(init_cows, area_table) {
 #' @export
 setup_area_table <- function(area_table, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture & all(area_type != "communal pasture")) {
+  if (param_farm$use_communal_pasture & all(area_table$area_type != "communal pasture")) {
     area_table <- rbindlist(list(area_table,
                                  list(area_id = max(area_table$area_id) + 1L,
                                       area_type = "communal pasture",
