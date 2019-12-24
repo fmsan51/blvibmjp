@@ -28,8 +28,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 
   setup_cows_res <- setup_cows(param_simulation, save_cows)
   area_list <- setup_tie_stall_table(setup_cows_res$init_cows, area_table)
-  area_table <- setup_area_table(area_table, setup_cows_res$init_cows,
-                                 param_farm, param_area)
+  area_table <- setup_area_table(area_table, param_farm, param_area)
 
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
