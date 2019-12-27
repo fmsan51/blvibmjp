@@ -6,7 +6,8 @@
 \usage{
 process_raw_csv(csv, data = NULL, today = Sys.Date(),
   create_calf_data = F, modify_prevalence = NULL,
-  param_calculated = calc_param(param_farm, param_simulation))
+  param_calculated = calc_param(param_farm, param_simulation),
+  n_chambers = NULL)
 }
 \arguments{
 \item{csv}{File path of input csv file. See the Detail section to know about form of input csv.}
@@ -20,6 +21,8 @@ process_raw_csv(csv, data = NULL, today = Sys.Date(),
 \item{modify_prevalence}{double (0-1). If not \code{NULL}, modify \code{infection_status} column to make prevalence to the specified value.}
 
 \item{param_calculated}{The result from \link{calc_param}.}
+
+\item{n_chambers}{Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like \code{c(area_id = the_number_of_chambers_in_the_area, ...)}.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
@@ -36,6 +39,7 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{sex}: One of "female", "male" or "freemartin". If not set, all cows are assumed to be "female".
 \item \code{is_replacement}: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, \code{age} = 0 female cows are assumed to be a replacement according to \code{prop_replacement} parameter in \code{param_farm} and all male cows are assumed to be a non-replacement.
 \item \code{stage}, \code{parity}, \code{date_last_delivery}, \code{date_got_pregnant}, \code{date_dried}: If not set, they will be calculated in according to parameters related with reproduction in \link{param_farm}.
+\item \code{is_to_test_pregnancy}: If not set, \code{FALSE} is set.
 \item \code{n_ai}: If not set, it is assumed to be 0.
 \item \code{infection_status}: At least one of this variable or \code{modify_prevalence} argument must be set. If \code{NA} is included, that cow is assumed to be a non-infected cow. When \code{modify_prevalence} is set, prevalence is modified to make prevalence equal to the value of \code{modify_prevalence}.
 \item \code{date_ial}, \code{date_ipl}, \code{date_ebl}: Specify the date when infection status was confirmed. If \code{NULL}, \code{0} is set.
