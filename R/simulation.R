@@ -121,14 +121,19 @@ simulate_once <- function(setup_cows_res, area_list, area_table,
     cows <- res$cows
     last_cow_id <- res$last_cow_id
 
-    res <- change_area(cows, movement_table, area_table, area_list, param_area, i)
-    cows <- res$cows
-    areas <- res$area_list
-
+    # check_removal() must come after add_newborns(), because check_removal()
+    # replaces infected old cows with non-replacement newborns
     res <- check_removal(cows, areas, i, param_farm, param_calculated,
                          param_processed)
     cows <- res$cows
     areas <- res$areas
+
+    # change_area() must be come after check_removal(), because change_area() 
+    # assigns newborns to areas and removes dead cows from areas.
+    res <-
+      change_area(cows, movement_table, area_table, area_list, param_area, i)
+    cows <- res$cows
+    areas <- res$area_list
 
     result[[i + 1]] <- copy(cows)
     # result_area[[i + 1]] <- copy(areas)
