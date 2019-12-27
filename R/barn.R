@@ -93,17 +93,17 @@ remove_from_area <- function(area, cow_id_removed) {
   contact1 <- removed_chamber + 1
   contact2 <- removed_chamber - 1
   area[contact1[contact1 != (.N + 1)], ':='(previous_neighbor_status = NA,
-                                             previous_neighbor_isolated = NA,
-                                             previous_neighbor_infectivity = F)]
+                                            previous_neighbor_isolated = NA,
+                                            previous_neighbor_infectivity = F)]
   area[contact2[contact2 != 0], ':='(next_neighbor_status = NA,
-                                      next_neighbor_isolated = NA,
-                                      next_neighbor_infectivity = F)]
+                                     next_neighbor_isolated = NA,
+                                     next_neighbor_infectivity = F)]
 
   area[removed_chamber, ':='(cow_id = NA,
-                              cow_status = NA,
-                              is_isolated = NA,
-                              hazard_ratio = NA,
-                              is_exposed = NA)]
+                             cow_status = NA,
+                             is_isolated = NA,
+                             hazard_ratio = NA,
+                             is_exposed = NA)]
 
   return(area)
 }
@@ -124,27 +124,27 @@ depreciated_find_empty_chamber <- function(area, added_cows) {
   added_chamber <- resample(empty_chamber, nrow(added_cows))
 
   area[added_chamber, ':='(cow_id = added_cows$cow_id,
-                            cow_status = added_cows$infection_status,
-                            is_isolated = added_cows$is_isolated)]
+                           cow_status = added_cows$infection_status,
+                           is_isolated = added_cows$is_isolated)]
 
   next_neighbor <- added_chamber[which(added_chamber != nrow(area))] + 1
   previous_neighbor <- added_chamber[which(added_chamber != 1)] - 1
   area[next_neighbor, ':='(previous_neighbor_status = area[next_neighbor - 1, cow_status],
-                        previous_neighbor_isolated = area[next_neighbor - 1, is_isolated])]
+                           previous_neighbor_isolated = area[next_neighbor - 1, is_isolated])]
   area[previous_neighbor, ':='(next_neighbor_status = area[previous_neighbor + 1, cow_status],
-                        next_neighbor_isolated = area[previous_neighbor + 1, is_isolated])]
+                               next_neighbor_isolated = area[previous_neighbor + 1, is_isolated])]
 
   # TODO: ここ、infectivityがNAになる場合の対処はできているか？　そもそもNAにならないのか？
   area[c(added_chamber, next_neighbor, previous_neighbor),
-        ':='(previous_neighbor_infectivity = ifelse(adjoint_previous_chamber == F &
-                                             previous_neighbor_isolated == F &
-                                             previous_neighbor_status != "s", T, F),
-             next_neighbor_infectivity = ifelse(adjoint_next_chamber == F &
-                                             next_neighbor_isolated == F &
-                                             next_neighbor_status != "s", T, F))]
+       ':='(previous_neighbor_infectivity = ifelse(adjoint_previous_chamber == F &
+                                                   previous_neighbor_isolated == F &
+                                                   previous_neighbor_status != "s", T, F),
+         next_neighbor_infectivity = ifelse(adjoint_next_chamber == F &
+                                            next_neighbor_isolated == F &
+                                            next_neighbor_status != "s", T, F))]
   area[, is_exposed := (is_isolated == F &
-                         (previous_neighbor_infectivity == T |
-                          next_neighbor_infectivity == T))]
+                        (previous_neighbor_infectivity == T |
+                         next_neighbor_infectivity == T))]
   area[is.na(cow_id), is_exposed := NA]
 
   return(area)
