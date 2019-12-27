@@ -184,7 +184,7 @@ assign_chambers <- function(cows, area_list, area_assignment) {
     assigned_area <- area_list[[i_area]]
     assigned_cows <- area_assignment[[i_area]]
     empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
-    assigned_chambers <- sample(empty_chambers, length(assigned_cows))
+    assigned_chambers <- resample(empty_chambers, length(assigned_cows))
     cows$chamber_id[cows$cow_id %in% assigned_cows] <- assigned_chambers
   }
   return(cows)
