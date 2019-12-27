@@ -784,7 +784,7 @@ change_area <- function(cows, movement_table, area_table, area_list,
         cow_id_allocated_to_full_areas[
           seq_len(n_cows_allocated_to_full_areas) +
             cow_id_allocated_to_full_areas_index
-          ] <- cow_id[seq_len(n_cows_allocated_to_full_areas)]
+          ] <- i_cow_id[seq_len(n_cows_allocated_to_full_areas)]
         cow_id_allocated_to_full_areas_index <-
           cow_id_allocated_to_full_areas_index + n_cows_allocated_to_full_areas
 
