@@ -43,6 +43,7 @@ param_simulation <- list(
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 #' - `cull_infected_cows` ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by `cull_frequency` described next.
+#' - `culling_frequency` (numeric): This parameter can be set to specify the frequency of culling to cull an infected cow to every $n$ (= `culling_frequency`) female calves.
 #' - `test_frequency` (1-12): Frequency of BLV tests in a year. Only integers can be set.
 #' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
@@ -87,6 +88,7 @@ param_farm <- list(
   feed_raw_colostrum = F,
 
   cull_infected_cows = "no",
+  culling_frequency = 1,
   test_frequency = 0,
   test_method = NA,
 
