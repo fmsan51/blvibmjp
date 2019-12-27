@@ -653,7 +653,7 @@ change_area <- function(cows, movement_table, area_table, area_list) {
 
   # Decide to which next_area cows will move
   for (i_movement in seq_len(nrow(movement_table))) {
-    i_cow_id <- sample(cow_id_to_move[[i_movement]])
+    i_cow_id <- resample(cow_id_to_move[[i_movement]])
     # sample() here must not be replaced with sample.int() because the latter
     # causes error when the length of x is 0.
     # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
