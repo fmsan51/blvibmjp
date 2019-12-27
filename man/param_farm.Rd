@@ -31,7 +31,7 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{feed_raw_colostrum} (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
-\item \code{cull_infected_cows} ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull all infected cows and "highrisk" means cull PL or EBL cows only. If this value is set to "all" or "highrisk", an infected cow is culled when a new calf is born.
+\item \code{cull_infected_cows} ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by \code{cull_frequency} described next.
 \item \code{test_frequency} (1-12): Frequency of BLV tests in a year. Only integers can be set.
 \item \code{test_method}: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
