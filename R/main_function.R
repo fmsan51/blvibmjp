@@ -701,6 +701,7 @@ change_area <- function(cows, movement_table, area_table, area_list,
     sum)
   empty_spaces <- attr(area_table, "capacity") - n_cows_in_each_area +
     n_cows_to_move_in_each_area
+  empty_spaces[empty_spaces < 0] <- 0
 
   # Remove cows from areas
   vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
@@ -726,7 +727,7 @@ change_area <- function(cows, movement_table, area_table, area_list,
         findInterval(seq_along(i_cow_id),
                      c(0, cumsum(empty_spaces_in_next_areas)), left.open = T)
       allocated_areas <- i_next_area[allocated_area_index]
-      empty_spaces[chr_i_next_area] <-
+      empty_spaces[chr_i_next_area] <- empty_spaces[chr_i_next_area] -
         table(factor(allocated_areas, levels = chr_i_next_area))
 
       # When length(i_cow_id) is larger than sum(empty_spaces_in_next_area),
