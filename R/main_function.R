@@ -717,7 +717,7 @@ change_area <- function(cows, movement_table, area_table, area_list,
     # causes error when the length of x is 0.
     # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
-      # For conditions with priorities specified by integers
+      # A. For conditions with priorities specified by integers
 
       i_next_area <- movement_table$next_area[[i_movement]]
       chr_i_next_area <- as.character(i_next_area)
