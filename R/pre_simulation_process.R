@@ -110,7 +110,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
     n_old_cows <- sum(age_make_calf * 2 < cows$age &
                       cows$age <= age_make_calf * 3) 
     n_cows_add <- n_mid_cows * (n_mid_cows / n_old_cows)
-    cows_add_age <- sample(age_make_calf, n_cows_add, replace = T)
+    cows_add_age <- resample(age_make_calf, n_cows_add, replace = T)
     cows_add <- a_new_calf[rep(1, n_cows_add), ]
     cows_add[, `:=`(cow_id = max(cows$cow_id) + 1:n_cows_add,
                     age = cows_add_age,
@@ -182,17 +182,17 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
     max_n_inf <- inf_count["TRUE"] + inf_count["<NA>"]
     is_na <- is.na(cows$infection_status)
     if (appropreate_n_inf < inf_count["TRUE"]) {
-      cows[sample(which(infection_status != "s"),
-                  inf_count["TRUE"] - appropreate_n_inf),
+      cows[resample(which(infection_status != "s"),
+                    inf_count["TRUE"] - appropreate_n_inf),
            infection_status := "s"]
       cows$infection_status[is_na] <- "s"
     } else if (appropreate_n_inf <= max_n_inf) {
-      cows[sample(which(is_na), max_n_inf - appropreate_n_inf),
+      cows[resample(which(is_na), max_n_inf - appropreate_n_inf),
            infection_status := "ial"]
       cows$infection_status[is.na(cows$infection_status)] <- "s"
     } else {
-      cows[sample(which(infection_status == "s"),
-                  appropreate_n_inf - max_n_inf),
+      cows[resample(which(infection_status == "s"),
+                    appropreate_n_inf - max_n_inf),
            infection_status := "ial"]
       cows$infection_status[is_na] <- "ial"
     }
@@ -270,7 +270,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
       empty_chambers <- setdiff(seq_len(n_chambers[i_area]),
                                 cows$chamber_id[cows$area_id == i_area])
       cows[area_id == i_area & is.na(chamber_id),
-           chamber_id := sample(empty_chambers, .N)]
+           chamber_id := resample(empty_chambers, .N)]
     }
   }
 

@@ -121,7 +121,7 @@ depreciated_find_empty_chamber <- function(area, added_cows) {
   area <- copy(area)
 
   empty_chamber <- area[is.na(cow_id), chamber_id]
-  added_chamber <- sample(empty_chamber, nrow(added_cows))
+  added_chamber <- resample(empty_chamber, nrow(added_cows))
 
   area[added_chamber, ':='(cow_id = added_cows$cow_id,
                             cow_status = added_cows$infection_status,

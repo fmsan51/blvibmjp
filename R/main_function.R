@@ -568,9 +568,9 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
   if (n_non_replacement != 0 & n_to_cull != 0) {
     if (n_non_replacement > n_to_cull) {
       id_culled <- cow_id_to_cull
-      id_replaced <- sample(id_non_replacement_newborns, n_to_cull)
+      id_replaced <- resample(id_non_replacement_newborns, n_to_cull)
     } else {
-      id_culled <- sample(cow_id_to_cull, n_non_replacement)
+      id_culled <- resample(cow_id_to_cull, n_non_replacement)
       id_replaced <- id_non_replacement_newborns
     }
     cows[cow_id %in% id_culled,
@@ -676,8 +676,8 @@ change_area <- function(cows, movement_table, area_table, area_list) {
         is_na_allocated_areas <- is.na(allocated_areas)
         n_na_allocated_areas <- sum(is_na_allocated_areas)
         allocated_areas[which(is_na_allocated_areas)] <-
-          sample(i_next_area, n_na_allocated_areas, replace = T,
-                 prob = capacity_of_next_areas)
+            resample(i_next_area, n_na_allocated_areas, replace = T,
+                   prob = capacity_of_next_areas)
         cow_id_allocated_to_full_areas[
           cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
           ] <- i_cow_id[is_na_allocated_areas]
@@ -704,9 +704,9 @@ change_area <- function(cows, movement_table, area_table, area_list) {
           # according to capacity.
           is_overcrowded <- vacancy < 0
           is_not_full <- vacancy > 0
-          allocated_areas <- sample(i_next_area[is_not_full],
-                                    n_cows_to_reallocate,
-                                    replace = T, prob = i_priority[is_not_full])
+          allocated_areas <- resample(i_next_area[is_not_full],
+                                      n_cows_to_reallocate,
+                                      replace = T, prob = i_priority[is_not_full])
           n_cows_reallocated_in_each_area <-
             table(factor(allocated_areas, levels = chr_i_next_area))
           vacancy <- vacancy - n_cows_reallocated_in_each_area
@@ -731,7 +731,7 @@ change_area <- function(cows, movement_table, area_table, area_list) {
         capacity_of_areas <- attr(area_table, "capacity")[i_next_area]
         allocated_areas <-
           c(rep(i_next_area, vacancy),
-            sample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
+            resample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
                    prob = capacity_of_areas))
       }
     }
