@@ -1,7 +1,10 @@
 Package: blvibmjp
 Title: Individual Based Model of Bovine Leukemia Virus Spread in a Dairy Herd in Japan
 Version: 0.0.0.9000
-Authors@R: person("Yuri", "Fujimoto", email = "fmsan51@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+  person("Yuri", "Fujimoto", email = "fmsan51@gmail.com", role = c("aut", "cre")),
+  person("R Core Team", role = "ctb", comment = "resample() code adopted from base")
+  )
 Description: Simulates spread of Bovine leukemia virus (BLV) on individual base within a typical dairy herd in Japan. 
 Depends: R (>= 3.5)
 License: MIT + file LICENSE

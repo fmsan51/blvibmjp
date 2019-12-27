@@ -11,4 +11,9 @@ This package provides functions to construct a individual based model of simulat
 \author{
 \strong{Maintainer}: Yuri Fujimoto \email{fmsan51@gmail.com}
 
+Other contributors:
+\itemize{
+  \item R Core Team (resample() code adopted from base) [contributor]
+}
+
 }

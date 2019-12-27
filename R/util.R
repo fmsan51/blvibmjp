@@ -84,3 +84,17 @@ is.wholenumber <- function(number) {
   all(number %% 1 == 0)
 }
 
+
+#' sample() from x rather than 1:x
+#'
+#' Modified version of [sample()] to sample from `x` rather than `1:x` when `x` has length 1 and is numeric.
+#' 
+#' See "sample()'s surprise" and "safer version" section in the example section in the help of [sample()] to understand why this function is necessary.
+#'
+#' @examples
+#' sample()  # length 9
+#' blvibmjp:::resample(9)  # length 1
+resample <- function(x, ...) {
+  x[sample.int(length(x), ...)]
+}
+
