@@ -157,13 +157,18 @@ depreciated_find_empty_chamber <- function(area, added_cows) {
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
 #'
 #' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#' @param area_table See [area_table].
 #' @param removed_cow_id `cow_id` of cows to be removed from current areas.
 #'
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
-remove_from_areas <- function(cows, removed_cow_id) {
+remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
   cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
                                         chamber_id = NA_integer_)]
-  return(cows)
+  for (i_area in as.character(attr(area_table, "tie_stall"))) {
+    area_list[[i_area]][cow_id %in% removed_cow_id, cow_id := NA_integer_]
+  }
+  return(list(cows = cows, area_list = area_list))
 }
 
 

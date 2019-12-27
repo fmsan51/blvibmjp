@@ -647,7 +647,9 @@ change_area <- function(cows, movement_table, area_table, area_list) {
 
   # Remove cows from areas
   vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
-  cows <- remove_from_areas(cows, vec_cows_to_move)
+  res <- remove_from_areas(cows, area_list, area_table, vec_cows_to_move)
+  cows <- res$cows
+  area_list <- res$area_list
   cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned, na.rm = T))
   cow_id_allocated_to_full_areas_index <- 0
 
