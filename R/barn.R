@@ -207,8 +207,9 @@ assign_cows <- function(cows, area_list, area_assignment) {
   for (i_area in names(area_assignment)) {
     assigned_area <- area_list[[i_area]]
     assigned_cows <- area_assignment[[i_area]]
-    assigned_chambers <- assigned_cows$chamber_id[match(assigned_cows, cow_id)]
-    assigned_area$cow_id[assigned_chambers] <- assigned_cows
+    assigned_chambers <- cows[match(assigned_cows, cow_id), chamber_id]
+    is_na <- is.na(assigned_chambers)
+    assigned_area$cow_id[assigned_chambers[!is_na]] <- assigned_cows[!is_na]
     area_list[[i_area]] <- assigned_area
   }
   return(area_list)
