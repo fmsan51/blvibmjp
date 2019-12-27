@@ -678,7 +678,7 @@ change_area <- function(cows, movement_table, area_table, area_list) {
         is_na_allocated_areas <- is.na(allocated_areas)
         n_na_allocated_areas <- sum(is_na_allocated_areas)
         allocated_areas[which(is_na_allocated_areas)] <-
-            resample(i_next_area, n_na_allocated_areas, replace = T,
+          resample(i_next_area, n_na_allocated_areas, replace = T,
                    prob = capacity_of_next_areas)
         cow_id_allocated_to_full_areas[
           cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
@@ -702,13 +702,11 @@ change_area <- function(cows, movement_table, area_table, area_list) {
         while (n_cows_to_reallocate > 0) {
           # When some cows are allocated to full areas, assign cows
           # to non-full areas.
-          # When every area is full, allocate such cows to full areas
-          # according to capacity.
           is_overcrowded <- vacancy < 0
           is_not_full <- vacancy > 0
           allocated_areas <- resample(i_next_area[is_not_full],
-                                      n_cows_to_reallocate,
-                                      replace = T, prob = i_priority[is_not_full])
+                                      n_cows_to_reallocate, replace = T,
+                                      prob = i_priority[is_not_full])
           n_cows_reallocated_in_each_area <-
             table(factor(allocated_areas, levels = chr_i_next_area))
           vacancy <- vacancy - n_cows_reallocated_in_each_area
@@ -731,9 +729,8 @@ change_area <- function(cows, movement_table, area_table, area_list) {
           cow_id_allocated_to_full_areas_index + n_cows_allocated_to_full_areas
 
         capacity_of_areas <- attr(area_table, "capacity")[i_next_area]
-        allocated_areas <-
-          c(rep(i_next_area, vacancy),
-            resample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
+        allocated_areas <- c(rep(i_next_area, vacancy),
+          resample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
                    prob = capacity_of_areas))
       }
     }
