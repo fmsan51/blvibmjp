@@ -110,7 +110,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
     n_old_cows <- sum(age_make_calf * 2 < cows$age &
                       cows$age <= age_make_calf * 3) 
     n_cows_add <- n_mid_cows * (n_mid_cows / n_old_cows)
-    cows_add_age <- resample(age_make_calf, n_cows_add, replace = T)
+    cows_add_age <- sample.int(age_make_calf, n_cows_add, replace = T)
     cows_add <- a_new_calf[rep(1, n_cows_add), ]
     cows_add[, `:=`(cow_id = max(cows$cow_id) + 1:n_cows_add,
                     age = cows_add_age,
