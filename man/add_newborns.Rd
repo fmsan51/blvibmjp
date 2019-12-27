@@ -16,11 +16,11 @@ add_newborns(cows, area_table, i, last_cow_id, param_area,
 
 \item{last_cow_id}{The ID of a cow at the last non-empty row of \code{cows}.}
 
+\item{param_area}{See \link{param_area}.}
+
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 
 \item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
-
-\item{param_area_id}{See \link{param_area}.}
 }
 \value{
 A list consisted of two elements: \code{cows} and \code{last_cow_id}.

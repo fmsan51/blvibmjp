@@ -358,7 +358,7 @@ do_test <- function(cows, month, param_calculated) {
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
-#' @param param_area_id See [param_area].
+#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
