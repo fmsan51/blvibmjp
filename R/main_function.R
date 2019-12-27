@@ -526,6 +526,55 @@ check_removal <- function(cows, areas, i, param_farm, param_calculated,
 }
 
 
+#' Remove dead/culled/sold cows from `area_list`
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param i The number of months from the start of the simulation.
+unassign_removed_cows <- function(cows, area_table, area_list, i) {
+  removed_cow_id <- cows$cow_id[cows$date_death == i]
+  for (i_area in attr(area_table, "tie_stall")) {
+    area_list[[i_area]] <-
+      area_list[[i_area]][cow_id %in% removed_cow_id, area_id := NA_integer_]
+  }
+  return(cows)
+}
+
+
+#' Assign `chamber_id` to newborns
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param param_area See [param_area].
+assign_newborns <- function(cows, area_table, area_list, param_area) {
+  newborn_cow_id <- cows$cow_id[cows$age == 0]
+  n_newborn <- length(newborn_cow_id)
+  if (all(attr(area_table, "tie_stall") != param_area$calf_area_id) |
+      n_newborn == 0) {
+    return(list(cows = cows, area_list = area_list))
+  }
+
+  calf_area <- area_list[[as.character(param_area$calf_area_id)]]
+  is_empty_chambers <- is.na(calf_area$cow_id)
+  n_empty_chambers <- sum(is_empty_chambers)
+  if (n_empty_chambers < n_newborn) {
+    newborn_can_be_assigned <- sample.int(newborn_cow_id, n_empty_chambers)
+  } else {
+    newborn_can_be_assigned <- newborn_cow_id
+  }
+
+  assigned_chambers <- resample(calf_area$chamber_id[is_empty_chambers],
+                                length(newborn_can_be_assigned))
+  cows[match(newborn_can_be_assigned, cow_id), chamber_id := assigned_chambers]
+  area_list[[as.character(param_area$calf_area_id)]][
+    assigned_chambers, cow_id := newborn_can_be_assigned]
+
+  return(list(cows = cows, area_list = area_list))
+}
+
+
 #' Cull infected cows
 #'
 #' @param cows See [cow_table].
@@ -614,12 +663,20 @@ extract_owned_cows <- function(cows) {
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param param_area See [param_area].
+#' @param i The number of months from the start of the simulation.
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
-change_area <- function(cows, movement_table, area_table, area_list) {
+change_area <- function(cows, movement_table, area_table, area_list,
+                        param_area, i) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
+
+  cows <- unassign_removed_cows(cows, area_table, area_list, i)
+  res <- assign_newborns(cows, area_table, area_list, param_area)
+  cows <- res$cows
+  area_list <- res$area_list
 
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
