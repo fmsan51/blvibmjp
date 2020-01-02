@@ -20,11 +20,6 @@ validate_cow_table <- function(cows,
     }
   }
 
-  # Parameters shouldn't be set
-  # if (any(row_id != seq_len(nrow(cows)), na.rm = T)) {
-  #   stop("row_idは指定しないでください", call. = F)
-  # }
-  # TODO: Remove row_id from codes.
   for (i in c("date_death", "date_death_expected", "is_owned", "cause_removal",
               "day_heat", "day_last_heat", "n_heat_from_ai",
               "date_ipl_expected", "date_ebl_expected", "cause_infection",

@@ -25,7 +25,7 @@ param_simulation <- list(
 #' The following parameters are passed to [calc_param()] and the parameter will be calculated.
 #'
 #' - `prop_female` (0-1): Proportion of female of newborns. (default: average in Hokkaido)
-#' - `prop_replacement` (0-1): Proportion of calvest to be replacements in female newborns. (default: average in Hokkaido)
+#' - `prop_replacement` (0-1): Proportion of calves to be replacements in female newborns. (default: average in Hokkaido)
 #' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 #' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 #' - `calving_interval`: Calving interval in day. (default: average in Hokkaido)
@@ -43,6 +43,10 @@ param_simulation <- list(
 #' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
+#' - `cull_infected_cows` ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by `cull_frequency` described next.
+#' - `culling_frequency` (numeric): This parameter can be set to specify the frequency of culling to cull an infected cow to every $n$ (= `culling_frequency`) female calves.
+#' - `test_frequency` (1-12): Frequency of BLV tests in a year. Only integers can be set.
+#' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
 #' @seealso [param_simulation] [param_area] [calc_param]
@@ -56,7 +60,10 @@ param_farm <- list(
 
   # Reproductivity parameters
   prop_heat_detected = NA,
-  calving_interval = NA,  # TODO: currently used nowhere
+  calving_interval = NA,
+  age_first_delivery = NA,
+  days_open = NA,
+  days_milking = NA,
   n_mean_ai = NA,  # TODO: currently used nowhere
   mean_age_first_ai = NA,
   sd_age_first_ai = NA,
@@ -91,6 +98,11 @@ param_farm <- list(
   change_gloves = T,
   # TODO: Make it to prop
   feed_raw_colostrum = F,
+
+  cull_infected_cows = "no",
+  culling_frequency = 1,
+  test_frequency = 0,
+  test_method = NA,
 
   days_milking = NA
 )
@@ -151,7 +163,7 @@ set_param <- function(parameter, default) {
 #'
 #' @return A parameter list.
 #' @export
-calc_param <- function(param_farm, modification = NULL) {
+calc_param <- function(param_farm, param_simulation, modification = NULL) {
   param <- list()
 
   ## infection_status_change ----
@@ -182,6 +194,95 @@ calc_param <- function(param_farm, modification = NULL) {
 
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
+  # TODO: temporary, just by inspiration
+  
+
+  ## blv_test ----
+  # Test frequency
+  if (param_farm$test_frequency == 0) {
+    param$test_months <- numeric(0)
+  } else {
+    test_months <-
+      floor(12 / param_farm$test_frequency * seq(param_farm$test_frequency))
+    test_months <-
+      (test_months + param_simulation$simulation_start + 6) %% 12 + 1
+    # Add 6 to avoid the first test occurs at i_month = 1 when test_frequency = 1
+    # Add 1 because n %% 12 contains 0
+    param$test_months <- test_months
+  }
+
+  # A list of BLV test methods available in Japan was obtained from here:
+  # https://doi.org/10.4190/jjlac.6.221
+  if (anyNA(param_farm$test_method)) {
+    # Not is.na() because length of test_method can be two
+    param$test_sensitivity <- 0
+    param$test_specificity <- 0
+  } else if (param_farm$test_method == "immunodiffusion") {
+    param$test_sensitivity <- 0.981
+    param$test_specificity <- 0.967
+    # https://doi.org/10.1016/0166-0934(90)90086-U
+  } else if (param_farm$test_method == "ELISA") {
+    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
+                            se_lwr = c(0.982, 0.980, 0.951, 0.857),
+                            se_upr = c(1.000, 0.999, 0.993, 0.927),
+                            sp_est = c(0.985, 0.987, 0.970, 0.849),
+                            sp_lwr = c(0.962, 0.958, 0.927, 0.784),
+                            sp_upr = c(1.000, 0.998, 0.996, 0.913))
+    q975 <- qnorm(0.975)
+    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
+                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param_farm$test_method == "PHA") {
+    estimates <- data.table(sensitivity = numeric(2),
+                            specificity = numeric(2))
+    # Calculate treating a result of nested PCR as gold standard
+    # http://210.164.7.60/g68/documents/4abe.pdf
+    estimates[1, `:=`(sensitivity = 1,
+                      specificity = 10 / (10 + 16))]
+    # https://www.city.kyoto.lg.jp/hokenfukushi/cmsfiles/contents/0000118/118365/O6.pdf
+    estimates[2, `:=`(sensitivity = 0.909,
+                      specificity = 0.984)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- estimate$sensitivity
+    param$test_specificity <- estimate$specificity
+  } else if (param_farm$test_method == "nested PCR") {
+    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
+                            se_lwr = c(0.901, 0.895, 0.878),
+                            se_upr = c(0.956, 0.955, 0.945),
+                            sp_est = c(0.767, 0.770, 0.755),
+                            sp_lwr = c(0.696, 0.694, 0.674),
+                            sp_upr = c(0.828, 0.836, 0.828))
+    q975 <- qnorm(0.975)
+    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
+                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param_farm$test_method == "real-time PCR") {
+    # Calculate treating a result of nested PCR as gold standard
+    estimates <- data.table(sensitivity = numeric(3),
+                            specificity = numeric(3))
+    # https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/files/27gyohatu_BLV.pdf
+    estimates[1, `:=`(sensitivity = 4 / 5,
+                      specificity = 1)]
+    # http://www.pref.tochigi.lg.jp/g68/documents/28-08.pdf
+    estimates[2, `:=`(sensitivity = (27 + 1) / (27 + 1 + 1 + 1),
+                      specificity = 1)]
+    # https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/documents/h26_09.pdf
+    estimates[3, `:=`(sensitivity = 1,
+                      specificity = 1)]
+    estimate <- estimates[sample.int(.N, 1), ]
+    param$test_sensitivity <- estimate$sensitivity
+    param$test_specificity <- estimate$specificity
+  } else {
+    param$test_sensitivity <- param_farm$test_method[1]
+    param$test_specificity <- param_farm$test_method[2]
+  }
+
 
   ## infection_insects ----
 
@@ -205,9 +306,24 @@ calc_param <- function(param_farm, modification = NULL) {
   }
   param$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
 
-  ## infection_contact ----
+  ## infection_tiestall ----
+  ## infection_neighbor ----
 
+  param$prob_inf_tiestall_baseline <- param$probs_inf_insects_month
+  param$hr_having_infected_neighbor <-
+    exp(rnorm(1, mean = 2.52, sd = 0.73))
+  # The role of neighboring infected cattle in bovine leukemia virus transmission risk.
+  # https://doi.org/10.1292/jvms.15-0007
+  
+  
+  ## infection_free ----
+  free_pressure <-
+    rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
+  # Analysis of risk factors associated with bovine leukemia virus seropositivity within dairy and beef breeding farms in Japan: a nationwide survey.
+  # https://doi.org/10.1016/j.rvsc.2013.11.014
+  param$prob_inf_free <- param$probs_inf_insects_month * free_pressure
 
+  
   ## infection_needles ----
 
   # Infection by using same needles among infected and non-infected cattle
@@ -264,6 +380,21 @@ calc_param <- function(param_farm, modification = NULL) {
 
   ## artificial_insemination ----
 
+  param$prop_replacement <- param_farm$prop_replacement
+  # This is passed from param_farm only to use in process_raw_csv()
+
+  # Nyuken (H23-27)
+  day_per_month <- 365 / 12
+  param$calving_interval <-
+    set_param(param_farm$calving_interval / day_per_month,
+              mean(432, 430, 432, 429, 427) / day_per_month)
+  param$age_first_delivery <- set_param(param_farm$age_first_delivery,
+                                        mean(25.2, 25.1, 25.0, 25.0, 24.8))
+  param$months_open <- set_param(param_farm$days_open / day_per_month,
+                                 mean(160, 159, 159, 155, 154) / day_per_month)
+  param$months_milking <-
+    set_param(param_farm$days_milking / day_per_month,
+              mean(366, 363, 365, 364, 363) / day_per_month)
 
   # First AI after delivery
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
@@ -281,7 +412,7 @@ calc_param <- function(param_farm, modification = NULL) {
 
 
   # First AI for heifer
-  mean_age_first_ai <- c(427, 427, 435, 432) / 365 * 12  # NOTE: From Gyugun Kentei Seisekihyo by HRK
+  mean_age_first_ai <- c(427, 427, 435, 432) / day_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
   lims_age_first_ai <- set_param(param_farm$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month

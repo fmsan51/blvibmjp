@@ -4,16 +4,23 @@
 \alias{change_area}
 \title{Check and move cows between areas}
 \usage{
-change_area(cows, movement_table, area_table, area_list)
+change_area(cows, i, movement_table, area_table, area_list, param_area,
+  param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{i}{The number of months from the start of the simulation.}
 
 \item{movement_table}{See \link{movement_table}.}
 
 \item{area_table}{See \link{area_table}.}
 
 \item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
+
+\item{param_area}{See \link{param_area}.}
+
+\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A list composed of \link{cow_table} and \link{area_list}.

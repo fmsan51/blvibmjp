@@ -4,7 +4,7 @@
 \name{param_farm}
 \alias{param_farm}
 \title{Parameters about farms which should be set by users}
-\format{An object of class \code{list} of length 22.}
+\format{An object of class \code{list} of length 30.}
 \usage{
 param_farm
 }
@@ -14,7 +14,7 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \details{
 \itemize{
 \item \code{prop_female} (0-1): Proportion of female of newborns. (default: average in Hokkaido)
-\item \code{prop_replacement} (0-1): Proportion of calvest to be replacements in female newborns. (default: average in Hokkaido)
+\item \code{prop_replacement} (0-1): Proportion of calves to be replacements in female newborns. (default: average in Hokkaido)
 \item \code{prop_died} (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 \item \code{prop_heat_detected} (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 \item \code{calving_interval}: Calving interval in day. (default: average in Hokkaido)
@@ -25,12 +25,17 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 \item \code{capacity_in_head} c(lower, upper): Lower/upper limit of the herd size. Set either this or \code{capacity_as_ratio} below.
 \item \code{capacity_as_ratio} c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = \code{lower * initial_herd_size}, upper limit = \code{upper * initial_herd_size}). Set either this or \code{capacity_in_head} above. When both of \code{capacity_in_head} and \code{capacity_as_ratio} is NA, \code{capacity_as_ratio} is set to \code{c(0.9, 1.1)}.
 \item \code{use_communal_pasture} (logical): whether use a communal pasture. (default: FALSE)
+\item \code{prob_seroconversion_in_communal_pasture} (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
 \item \code{n_introduced} c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 \item \code{days_qualantine}: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 \item \code{control_insects} (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., \code{control_insects = 0.8} means that the number of insects becomes 80%). When \code{TRUE}, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
 \item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{feed_raw_colostrum} (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
+\item \code{cull_infected_cows} ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by \code{cull_frequency} described next.
+\item \code{culling_frequency} (numeric): This parameter can be set to specify the frequency of culling to cull an infected cow to every $n$ (= \code{culling_frequency}) female calves.
+\item \code{test_frequency} (1-12): Frequency of BLV tests in a year. Only integers can be set.
+\item \code{test_method}: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 \item \code{days_milking}: Length of milking period (in days). (default: average in Hokkaido)
 }
 }

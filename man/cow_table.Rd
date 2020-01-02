@@ -18,7 +18,6 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \code{date_xxx} variables are expressed as month. The month when the simulation starts is 0. eg. The \code{date_birth} of a cow which is 20 months old at the simulation start is -20.
 \code{day_xxx} variables are days in the month.
 \itemize{
-\item \code{row_id}: Fixed.
 \item \code{cow_id}
 \item \code{age}: Age in month.
 \item \code{stage}: One of "calf", "heifer", "milking" or "dry".
@@ -29,8 +28,9 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{is_owned}: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 \item \code{cause_removal}:
 \itemize{
-\item "died": culled or slaughtered.
-\item "ebl": culled due to onset of the disease.
+\item "died": died.
+\item "slaughtered": slaughtered not due to the disease.
+\item "culled": culled due to the disease.
 \item "sold": send to a market or another farm.
 \item "will_die": (still alive and) will die.
 \item "will_be_slaughtered": (still alive and) will be slaughtered.
@@ -38,18 +38,16 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{is_replacement}:
 TRUE: The cow will be kept in the farm as replacement.
 FALSE: The cow Will be sold to beef operations.
-\item \code{is_introduced}
-\item \code{is_in_common_ranch}: Whether the cow is in a common ranch at \code{i_month} (see below).
-\item \code{is_grazed}
 \item \code{parity}
-\item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths.
+\item \code{date_last_delivery}: 'Delivery' here includes abortions and stillbirths. \code{NA} means that the cow is heifer (pairty = 0).
 \item \code{date_got_pregnant}: NA means that the cow is open.
 \item \code{date_dried}: NA means that the cow is milking.
 \item \code{n_ai}: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 \item \code{day_heat}: Day in month of the NEXT heat.
-\item \code{day_last_detected_heat}: Dey in month of the LAST heat.
+\item \code{day_last_detected_heat}: Day in month of the LAST heat.
 \item \code{is_to_test_pregnancy}: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 \item \code{infection_status}: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
+\item \code{is_detected}: Whether BLV infection is detected. Sometimes even a non-infected cow can be \code{TRUE} when false-positive in BLV test occurs.
 \item \code{date_ial}: The month when \code{infection_status} changes from "s" to "ial".
 \item \code{date_ipl}: The month when \code{infection_status} changes from "ial" to "ipl".
 \item \code{date_ipl_expected}: The expected month when \code{infection_status} changes from "ial" to "ipl". It is calculated when \code{infection_status} becomes "ial".
@@ -70,7 +68,7 @@ FALSE: The cow Will be sold to beef operations.
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).
 \item \code{area_id}: Area ID.
 \item \code{months_in_area}: The number of month a cow stayed in the current area.
-\item \code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
+\item \code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn. \code{0} for a cow in a tie-stall barn but to it a chamber is not assigned (a free-roaming cow).
 \item \code{is_isolated}: Whether the cow is isolated for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.
 \item \code{i_month}: The number of months past from the start of a simulation.
 }

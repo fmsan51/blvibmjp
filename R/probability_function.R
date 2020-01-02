@@ -108,6 +108,38 @@ is_infected_compas <- function(n_cows, param_farm) {
   runif(n_cows) < param_farm$prob_seroconv_compas
 }
 
+
+#' Whether cows are infected in chambers next to infected cows in tie-stall barns
+#'
+#' @param n_cows The number of cows.
+#' @param month The current month (1, 2, ..., 12).
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A logical vector.
+is_infected_in_exposed_chamber <- function(n_cows, month, param_calculated) {
+  inf_status <- rep(NA_character_, n_cows)
+  hr <- param_calculated$hr_having_infected_neighbor
+  is_infected <-
+    runif(n_cows) < param_calculated$prob_inf_tiestall_baseline[month] * hr
+  inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected), 
+                      replace = T, prob = c(hr - 1, 1))
+  inf_status[is_infected] <- inf_cause
+  return(inf_status)
+}
+
+
+#' Whether cows are infected in chambers not next to infected cows in tie-stall barns
+#'
+#' @param n_cows The number of cows.
+#' @param month The current month (1, 2, ..., 12).
+#' @param param_calculated See [calc_param].
+#'
+#' @return A logical vector.
+is_infected_in_non_exposed_chamber <- function(n_cows, month, param_calculated) {
+  runif(n_cows) < param_calculated$prob_inf_tiestall_baseline[month]
+}
+
+
 #' Whether cows are infected by direct contact
 #'
 #' @return A logical vector.
@@ -357,7 +389,7 @@ sex_newborns <- function(n_newborns, param_calculated) {
 sex_twins <- function(n_calves, param_calculated) {
   # TODO: なんでここn_newbornsじゃなくてn_calvesなんだ？
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
-                      size = (n_calves / 2),
+                      size = (n_calves / 2), replace = T,
                       prob = param_calculated$probs_sex_pairs)
   sex_calves <- strsplit(paste(sex_pairs, collapse = "-"), split = "-")[[1]]
   return(sex_calves)
