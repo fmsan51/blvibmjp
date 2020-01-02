@@ -9,7 +9,6 @@
 #' `date_xxx` variables are expressed as month. The month when the simulation starts is 0. eg. The `date_birth` of a cow which is 20 months old at the simulation start is -20.
 #' `day_xxx` variables are days in the month.
 #'
-#' - `row_id`: Fixed.
 #' - `cow_id`
 #' - `age`: Age in month.
 #' - `stage`: One of "calf", "heifer", "milking" or "dry".
@@ -19,26 +18,25 @@
 #' - `date_death_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 #' - `is_owned`: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 #' - `cause_removal`:
-#'     - "died": culled or slaughtered.
-#'     - "ebl": culled due to onset of the disease.
+#'     - "died": died.
+#'     - "slaughtered": slaughtered not due to the disease.
+#'     - "culled": culled due to the disease.
 #'     - "sold": send to a market or another farm.
 #'     - "will_die": (still alive and) will die.
 #'     - "will_be_slaughtered": (still alive and) will be slaughtered.
 #' - `is_replacement`:
 #'     TRUE: The cow will be kept in the farm as replacement.
 #'     FALSE: The cow Will be sold to beef operations.
-#' - `is_introduced`
-#' - `is_in_common_ranch`: Whether the cow is in a common ranch at `i_month` (see below).
-#' - `is_grazed`
 #' - `parity`
-#' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths.
+#' - `date_last_delivery`: 'Delivery' here includes abortions and stillbirths. `NA` means that the cow is heifer (pairty = 0).
 #' - `date_got_pregnant`: NA means that the cow is open.
 #' - `date_dried`: NA means that the cow is milking.
 #' - `n_ai`: The number of AI from last delivery. The value is set as 0 when the cow got pregnant.
 #' - `day_heat`: Day in month of the NEXT heat.
-#' - `day_last_detected_heat`: Dey in month of the LAST heat.
+#' - `day_last_detected_heat`: Day in month of the LAST heat.
 #' - `is_to_test_pregnancy`: Whether to be served for a pregnancy test (= AI was conducted to the cow and heats were not observed from then).
 #' - `infection_status`: One of "s" (susceptible = non-infected), "ial" (aleukemia), "ipl" (PL) and "ebl".
+#' - `is_detected`: Whether BLV infection is detected. Sometimes even a non-infected cow can be `TRUE` when false-positive in BLV test occurs.
 #' - `date_ial`: The month when `infection_status` changes from "s" to "ial".
 #' - `date_ipl`: The month when `infection_status` changes from "ial" to "ipl".
 #' - `date_ipl_expected`: The expected month when `infection_status` changes from "ial" to "ipl". It is calculated when `infection_status` becomes "ial".
@@ -68,8 +66,6 @@
 #' @export
 a_new_calf <- data.table(
   # TODO: Add notes indicating which parameter is necessary and which is not.
-  row_id = NA_integer_,
-  # TODO:これもう使わないから削除。
   cow_id = NA_integer_,
   age = NA_real_,
   stage = NA_character_,
@@ -82,9 +78,6 @@ a_new_calf <- data.table(
   cause_removal = NA_character_,
   # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
-  is_introduced = NA,
-  is_in_common_ranch = NA,
-  is_grazed = NA,
 
   # Delivery and milking
   parity = NA_real_,
@@ -104,6 +97,7 @@ a_new_calf <- data.table(
 
   # Infection status
   infection_status = NA_character_,
+  is_detected = NA,
   date_ial = NA_real_,
   date_ipl = NA_real_,
   date_ipl_expected = NA_real_,
@@ -167,7 +161,7 @@ a_chamber <- data.table(
 #' Users must specify one `area_table` consisted of following items before starting a simulation.
 #'
 #' - `area_id` (integer): Area ID.
-#' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.) or `"hatch"`.
+#' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`/`"communal pasture"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.), `"hatch"` or `"communal pasture"` (yotaku).
 #' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
 #'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
 #'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.

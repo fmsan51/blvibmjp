@@ -8,8 +8,8 @@ remove_from_area <- function(area, cow_id_removed) {
   # Remove chambers for isolation
   removed_chamber <- area[cow_id %in% cow_id_removed, chamber_id]
   area[removed_chamber, ':='(cow_id = NA,
-                              cow_status = NA,
-                              is_isolated = NA)]
+                             cow_status = NA,
+                             is_isolated = NA)]
   return(area)
 }
 
@@ -19,13 +19,18 @@ remove_from_area <- function(area, cow_id_removed) {
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
 #'
 #' @param cows See [cow_table].
+#' @param area_list See [setup_areas].
+#' @param area_table See [area_table].
 #' @param removed_cow_id `cow_id` of cows to be removed from current areas.
 #'
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
-remove_from_areas <- function(cows, removed_cow_id) {
+remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
   cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
                                         chamber_id = NA_integer_)]
-  return(cows)
+  for (i_area in as.character(attr(area_table, "tie_stall"))) {
+    area_list[[i_area]][cow_id %in% removed_cow_id, cow_id := NA_integer_]
+  }
+  return(list(cows = cows, area_list = area_list))
 }
 
 
@@ -45,7 +50,7 @@ assign_chambers <- function(cows, area_list, area_assignment) {
     assigned_area <- area_list[[i_area]]
     assigned_cows <- area_assignment[[i_area]]
     empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
-    assigned_chambers <- sample(empty_chambers, length(assigned_cows))
+    assigned_chambers <- resample(empty_chambers, length(assigned_cows))
     cows$chamber_id[cows$cow_id %in% assigned_cows] <- assigned_chambers
   }
   return(cows)
@@ -136,9 +141,10 @@ assign_cows <- function(cows, area_list, area_assignment) {
     assigned_area <- area_list[[i_area]]
     assigned_cow_id <- area_assignment[[i_area]]
     assigned_chambers <- cows$chamber_id[match(assigned_cow_id, cows$cow_id)]
-    assigned_cows <- cows[cow_id %in% assigned_cow_id,
+    is_na <- is.na(assigned_chambers)
+    assigned_cows <- cows[cow_id %in% assigned_cow_id[!is_na],
                           list(cow_id, infection_status, is_isolated)]
-    assigned_area[chamber_id %in% assigned_chambers,
+    assigned_area[chamber_id %in% assigned_chambers[!is_na],
                   c("cow_id", "cow_status", "is_isolated") := assigned_cows]
     area_list[[i_area]] <- assigned_area
   }
@@ -161,8 +167,8 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   } else {
     cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
   }
-  tied_cows <- cows_assigned[area_id %in% attr(area_table, "tie_stall"), ]
-  area_assignment <- split(tied_cows$cow_id, tied_cows$area_id)
+  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
+                                   split(cow_id, area_id)]
   return(area_assignment)
 }
 

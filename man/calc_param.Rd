@@ -4,7 +4,7 @@
 \alias{calc_param}
 \title{Calculate parameters necessary to the simulation.}
 \usage{
-calc_param(param_farm, modification = NULL)
+calc_param(param_farm, param_simulation, modification = NULL)
 }
 \arguments{
 \item{param_farm}{See \link{param_farm}.}

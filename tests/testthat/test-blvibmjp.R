@@ -12,9 +12,13 @@ set.seed(1)
   param_farm$months_grazing <-  6:10
   param_farm$hours_grazing <- 0:23
   param_farm$change_needles <- F
+  param_farm$change_gloves <- F
   param_farm$use_communal_pasture <- T
   # TODO: use_communal_pastureの制御がこれとcommunal_pasture_tableの2つに分かれているのを修正する
   param_farm$feed_raw_colostrum <- T
+  param_farm$test_frequency <- 2
+  param_farm$test_method <- "ELISA"
+  param_farm$cull_infected_cows <- "all"
   param_area$calf_area_id <- 1
 
   area_table <- a_area[rep(1, 5), ]
@@ -58,5 +62,5 @@ set.seed(1)
   simulation_csv <- file.path(param_simulation$output_dir, "simulation01.csv")
   # calculate_prevalences(path_to_csv = simulation_csv)
   # plot_prevalences(param_simulation$simulation_length, simulation_csv)
-  plot_infection_route(simulation_csv, max_ylim = 80, language = "Japanese", route_levels = c("comranch", "insects"))
+  plot_infection_route(simulation_csv, max_ylim = 80, language = "Japanese")
 # })

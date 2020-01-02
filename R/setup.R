@@ -5,7 +5,7 @@
 #' @param param_simulation See [param_simulation].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
 #'
-#' @return A list consisted of `init_cows` ([cow_table]) and `init_last_cow_id` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
+#' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
@@ -14,17 +14,17 @@ setup_cows <- function(param_simulation, save_cows) {
                 colClasses = sapply(a_new_calf, class))
 
   # Prepare cow_table with many rows to reserve enough memory while simulation
-  init_last_cow_id <- nrow(cows)
-  max_herd_size <- init_last_cow_id * param_simulation$simulation_length * 2
+  init_n_cows <- nrow(cows)
+  max_herd_size <- init_n_cows * param_simulation$simulation_length * 2
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
-  init_cows[1:init_last_cow_id, ] <- cows
+  init_cows[1:init_n_cows, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
-
+  
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
 
-  return(list(init_cows = init_cows, init_last_cow_id = init_last_cow_id))
+  return(list(init_cows = init_cows, init_n_cows = init_n_cows))
 }
 
 
@@ -32,15 +32,15 @@ setup_cows <- function(param_simulation, save_cows) {
 #'
 #' Make initial `rp_table`.
 #'
-#' @param init_last_cow_id The element `init_last_cow_id` from the return of [setup_cows()].
+#' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
 #' @param param_simulation See [param_simulation].
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 #' @export
-setup_rp_table <- function(init_last_cow_id, param_simulation) {
+setup_rp_table <- function(init_n_cows, param_simulation) {
   # TODO: do_aiをimproveするときに再検討
   # Prepare rp_table with many rows to reserve enough memory while simulation
-  one_day_rp[1:init_last_cow_id, ]
+  one_day_rp[1:init_n_cows, ]
   # Used 1:n instead of seq_len(n) because it is faster
 }
 
@@ -62,14 +62,15 @@ setup_tie_stall_table <- function(area_table) {
   for (i_area in attr(area_table, "tie_stall")) {
     # [[1]] is faster than using which()
     area_capacity <- area_table$capacity[i_area == area_table$area_id][[1]]
-    a_tie_stall <- a_chamber[rep(1, sum(area_capacity)), ]
-    a_tie_stall[, `:=`(chamber_id = seq_len(.N),
+    n_chambers <- sum(area_capacity)
+    a_tie_stall <- a_chamber[rep(1, n_chambers), ]
+    a_tie_stall[, `:=`(chamber_id = seq_len(n_chambers),
                        adjoint_previous_chamber = T,
                        adjoint_next_chamber = T)]
-    edge_chambers <- cumsum(area_capacity)
-    a_tie_stall[edge_chambers[-length(edge_chambers)] + 1, 
+    lane_edges <- cumsum(area_capacity)
+    a_tie_stall[lane_edges, adjoint_next_chamber := F]
+    a_tie_stall[c(1, lane_edges[-length(lane_edges)] + 1),
                 adjoint_previous_chamber := F]
-    a_tie_stall[edge_chambers, adjoint_next_chamber := F]
 
     area_list[[as.character(i_area)]] <- a_tie_stall
   }
@@ -94,8 +95,6 @@ set_init_chamber_id <- function(init_cows, area_table, area_list) {
   area_list <- assign_cows(cows, area_list, area_assignment)
   return(list(cows = cows, area_list = area_list))
 }
-# NOTE: currently, initial area_id must be set by users.
-# Want to make a function to calculate initial area_id.
 
 
 #' Setup of `area_table`
@@ -109,7 +108,7 @@ set_init_chamber_id <- function(init_cows, area_table, area_list) {
 #' @export
 setup_area_table <- function(area_table, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture) {
+  if (param_farm$use_communal_pasture & all(area_table$area_type != "communal pasture")) {
     compas_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,
                                  list(area_id = compas_area_id,

@@ -27,13 +27,16 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
   setup_cows_res <- setup_cows(param_simulation, save_cows)
   area_table <- setup_area_table(area_table, param_farm, param_area)
+
   area_list <- setup_tie_stall_table(area_table)
+  # setup_tie_stall_table() must come after setup_area_table()
+  # because it uses an attributes which setup_area_table() calculates
+
   cows_areas <- set_init_chamber_id(setup_cows_res$init_cows,
                                     area_table, area_list)
-
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
-  day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
+  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
   param_processed <- process_param(cows_areas, param_simulation, param_farm)
 
   result <- result_area <-
@@ -54,7 +57,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   max_simulation <- param_simulation$n_simulation + i_simulation_start - 1
   for (i_simulation in (i_simulation_start:max_simulation)) {
     cat("Simulation ", i_simulation, " / ", max_simulation, "\n")
-    res <- simulate_once(cows_areas, setup_cows_res$init_last_cow_id,
+    res <- simulate_once(cows_areas, setup_cows_res$init_n_cows,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
              param_simulation, param_farm, param_area, param_processed,
@@ -97,7 +100,8 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
                           save_cows, save_param) {
   cows <- cows_areas$cows
   areas <- cows_areas$area_list
-  param_calculated <- calc_param(param_farm, param_modification)
+  param_calculated <- calc_param(param_farm, param_simulation,
+                                 param_modification)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
                    i_simulation, subdir = param_simulation$output_dir)
@@ -111,6 +115,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     cows <- add_1_to_age(cows)
     cows <- do_ai(cows, i, day_rp, param_calculated)
     cows <- change_stage(cows, i, param_calculated)
+    cows <- do_test(cows, month, param_calculated)
 
     cows <- change_infection_status(cows, i, month, area_table, areas,
                                     param_calculated)
@@ -122,14 +127,19 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     cows <- res$cows
     areas <- res$area_list
 
-    res <- change_area(cows, i, movement_table, area_table, areas,
-                       param_calculated)
-    cows <- res$cows
-    areas <- res$area_list
-
-    res <- check_removal(cows, areas, i, param_calculated, param_processed)
+    # check_removal() must come after add_newborns(), because check_removal()
+    # replaces infected old cows with non-replacement newborns
+    res <- check_removal(cows, areas, i, param_farm, param_calculated,
+                         param_processed)
     cows <- res$cows
     areas <- res$areas
+
+    # change_area() must be come after check_removal(), because change_area() 
+    # assigns newborns to areas and removes dead cows from areas.
+    res <- change_area(cows, i, movement_table, area_table, areas,
+                       param_area, param_calculated)
+    cows <- res$cows
+    areas <- res$area_list
 
     result[[i + 1]] <- copy(cows)
     # result_area[[i + 1]] <- copy(areas)

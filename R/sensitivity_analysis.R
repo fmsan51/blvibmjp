@@ -11,9 +11,9 @@ sensitivity_analysis <- function(param_simulation, param_farm, param_group,
     dir.create(param_simulation$output_dir, recursive = T)
   }
 
-  setup_cows_res <- setup_cows(param_simulation, param_group, save_cows = F)
+  setup_cows_res <- setup_cows(param_simulation, save_cows = F)
   init_groups <- setup_groups(setup_cows_res$init_cows, param_group)
-  day_rp <- setup_rp_table(setup_cows_res$init_last_cow_id, param_simulation)
+  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
   param_processed <- process_param(setup_cows_res, param_simulation, param_farm,
                                    param_group)
 

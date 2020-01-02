@@ -389,7 +389,7 @@ sex_newborns <- function(n_newborns, param_calculated) {
 sex_twins <- function(n_calves, param_calculated) {
   # TODO: なんでここn_newbornsじゃなくてn_calvesなんだ？
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
-                      size = (n_calves / 2),
+                      size = (n_calves / 2), replace = T,
                       prob = param_calculated$probs_sex_pairs)
   sex_calves <- strsplit(paste(sex_pairs, collapse = "-"), split = "-")[[1]]
   return(sex_calves)

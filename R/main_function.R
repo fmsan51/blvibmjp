@@ -186,14 +186,16 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                                             i.day_rp < day_rp,
                                             type := "pregnancy_test"]
       n_nonpregnant_cows_ai_done <- nrow(nonpregnant_cows_ai_done)
-      day_rp[day_rp_last_row + (1:n_nonpregnant_cows_ai_done),
-             c("cow_id", "infection_status", "day_rp", "type") :=
-               nonpregnant_cows_ai_done[,
-                 c("cow_id", "infection_status", "i.day_rp", "type")]]
-      day_rp_last_row <- day_rp_last_row + n_nonpregnant_cows_ai_done
-      open_cows[cow_id %in% nonpregnant_cows_ai_done$cow_id,
-                is_to_test_pregnenancy := F]
-      # TODO: Set is_to_test_pregnancy of cows which heat comes to F.
+      if (n_nonpregnant_cows_ai_done > 0) {
+        day_rp[day_rp_last_row + (1:n_nonpregnant_cows_ai_done),
+               c("cow_id", "infection_status", "day_rp", "type") :=
+                 nonpregnant_cows_ai_done[,
+                   c("cow_id", "infection_status", "i.day_rp", "type")]]
+        day_rp_last_row <- day_rp_last_row + n_nonpregnant_cows_ai_done
+        open_cows[cow_id %in% nonpregnant_cows_ai_done$cow_id,
+                  is_to_test_pregnenancy := F]
+        # TODO: Set is_to_test_pregnancy of cows which heat comes to F.
+      }
     }
   }
 
@@ -335,6 +337,26 @@ change_infection_status <- function(cows, i, month, area_table, area_list,
 }
 
 
+#' Conduct BLV test
+#'
+#' @param cows See [cow_table].
+#' @param month The month (1, 2, ..., 12).
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A [cow_table].
+#' @export
+do_test <- function(cows, month, param_calculated) {
+  if (sum(month == param_calculated$test_months) > 0) {
+    n_cow <- nrow(cows)
+    is_detected <- cows$infection_status != "s" &
+      (cows$is_detected | runif(n_cow) < param_calculated$test_sensitivity)
+    is_false_positive <- cows$infection_status == "s" &
+      runif(n_cow) > param_calculated$test_specificity
+    cows$is_detected <- is_detected | is_false_positive
+  }
+  return(cows)
+}
+
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].
@@ -373,9 +395,6 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
                     is_freemartin = F,
                     date_birth = i,
                     is_owned = T,
-                    is_introduced = F,
-                    is_in_common_ranch = F,
-                    is_grazed = param_processed$graze_cows,
                     parity = 0,
                     n_ai = 0,
                     day_heat = sample.int(30, n_newborns, replace = T) * 1,
@@ -436,11 +455,8 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
       rows_newborns <- n_cows + seq_len(n_newborns_born)
-      newborns[, `:=`(row_id = rows_newborns,
-                      cow_id = last_cow_id + seq_len(n_newborns_born))]
+      newborns$cow_id <- last_cow_id + seq_len(n_newborns_born)
       last_cow_id <- last_cow_id + n_newborns_born
-      # Here, last_cow_id instead of max(cows$cow_id, na.rm = T) is used,
-      # because these two values are different when the last newborn died already and no calve was born since then.
       cows[rows_newborns, ] <-
         newborns[, c("id_mother", "id_calf", "n_newborns_per_cow",
                      "status_mother", "is_freemartin") := NULL]
@@ -456,19 +472,24 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
+#' @param param_farm See [param_farm].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
-check_removal <- function(cows, areas, i, param_calculated, param_processed) {
+check_removal <- function(cows, areas, i, param_farm, param_calculated,
+                          param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
                                 date_death = i,
                                 cause_removal =
                                   fifelse(cause_removal == "will_die",
-                                          "dead", "slaughtered"))]
+                                          "died", "slaughtered"))]
+
+  # Removal by culling
+  cows <- cull_infected_cows(cows, i, param_farm, param_calculated)
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
@@ -483,16 +504,19 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
     rows_new_ebl[is_ebl_detected(rows_new_ebl, param_calculated)]
   if (length(rows_removed_ebl) != 0) {
     cows[rows_removed_ebl,  ':='(is_owned = F,
-                                 cause_removal = "ebl")]
+                                 cause_removal = "culled")]
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
-    n_month_until_ebl_die <-
-      n_month_until_ebl_die(rows_overlooked, param_calculated)
-    cows[seq_len(nrow(cows)) %in% rows_overlooked &
-         date_death_expected >= i + n_month_until_ebl_die,
-         ':='(date_death_expected = i + n_month_until_ebl_die,
-              cause_removal = "will_die")]
+    month_ebl_die <-
+      n_month_until_ebl_die(rows_overlooked, param_calculated) + i
+    cows[seq_len(nrow(cows)) %in% rows_overlooked,
+         ':='(date_death_expected =
+                fifelse(date_death_expected >= month_ebl_die,
+                        month_ebl_die, date_death_expected),
+              cause_removal =
+                fifelse(date_death_expected >= month_ebl_die,
+                        "will_die", cause_removal))]
   }  # TODO: ここテスト
 
   rows_removed <- c(rows_removed_death, rows_removed_sold, rows_removed_ebl)
@@ -504,6 +528,112 @@ check_removal <- function(cows, areas, i, param_calculated, param_processed) {
   }
 
   return(list(cows = cows, areas = areas))
+}
+
+
+#' Remove dead/culled/sold cows from `area_list`
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param i The number of months from the start of the simulation.
+unassign_removed_cows <- function(cows, area_table, area_list, i) {
+  removed_cow_id <- cows$cow_id[cows$date_death == i]
+  for (i_area in attr(area_table, "tie_stall")) {
+    area_list[[i_area]] <-
+      area_list[[i_area]][cow_id %in% removed_cow_id, area_id := NA_integer_]
+  }
+  return(cows)
+}
+
+
+#' Assign `chamber_id` to newborns
+#'
+#' @param cows See [cow_table].
+#' @param area_table See [area_table].
+#' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param param_area See [param_area].
+assign_newborns <- function(cows, area_table, area_list, param_area) {
+  newborn_cow_id <- cows$cow_id[cows$age == 0]
+  n_newborn <- length(newborn_cow_id)
+  if (all(attr(area_table, "tie_stall") != param_area$calf_area_id) |
+      n_newborn == 0) {
+    return(list(cows = cows, area_list = area_list))
+  }
+
+  calf_area <- area_list[[as.character(param_area$calf_area_id)]]
+  is_empty_chambers <- is.na(calf_area$cow_id)
+  n_empty_chambers <- sum(is_empty_chambers)
+  if (n_empty_chambers < n_newborn) {
+    newborn_can_be_assigned <- sample.int(newborn_cow_id, n_empty_chambers)
+  } else {
+    newborn_can_be_assigned <- newborn_cow_id
+  }
+
+  assigned_chambers <- resample(calf_area$chamber_id[is_empty_chambers],
+                                length(newborn_can_be_assigned))
+  cows[match(newborn_can_be_assigned, cow_id), chamber_id := assigned_chambers]
+  area_list[[as.character(param_area$calf_area_id)]][
+    assigned_chambers, cow_id := newborn_can_be_assigned]
+
+  return(list(cows = cows, area_list = area_list))
+}
+
+
+#' Cull infected cows
+#'
+#' @param cows See [cow_table].
+#' @param i The number of months from the start of the simulation.
+#' @param param_farm See [param_farm].
+#' @param param_calculated Return from [calc_param()].
+#'
+#' @return A [cow_table].
+#' @export
+cull_infected_cows <- function(cows, i, param_farm, param_calculated) {
+  if (param_farm$cull_infected_cows != "no") {
+    id_detected_highrisk <-
+      cows[(infection_status == "pl" | infection_status == "ebl") &
+           is_detected & is_owned,
+           cow_id]
+    cows <- replace_selected_cows(cows, id_detected_highrisk, i)
+  }
+  if (param_farm$cull_infected_cows == "all") {
+    id_detected <- cows[is_detected & is_owned, cow_id]
+    cows <- replace_selected_cows(cows, id_detected, i)
+  }
+  return(cows)
+}
+
+
+#' Replace selected cows
+#'
+#' @param cows See [cow_table].
+#' @param cow_id_to_cull `cow_id` to remove from `cows`.
+#' @param i The number of months from the start of the simulation.
+#' 
+#' @return A [cow_table].
+#' @export
+replace_selected_cows <- function(cows, cow_id_to_cull, i) {
+  id_non_replacement_newborns <-
+    cows[age == 0 & is_owned & !is_replacement & sex == "female",
+         cow_id]
+  n_non_replacement <- length(id_non_replacement_newborns)
+  n_to_cull <- length(cow_id_to_cull)
+  if (n_non_replacement != 0 & n_to_cull != 0) {
+    if (n_non_replacement > n_to_cull) {
+      id_culled <- cow_id_to_cull
+      id_replaced <- resample(id_non_replacement_newborns, n_to_cull)
+    } else {
+      id_culled <- resample(cow_id_to_cull, n_non_replacement)
+      id_replaced <- id_non_replacement_newborns
+    }
+    cows[cow_id %in% id_culled,
+         `:=`(is_owned = F,
+              date_death = i,
+              cause_removal = "culled")]
+    cows$is_replacement[cows$cow_id %in% id_replaced] <- T
+  }
+  return(cows)
 }
 
 
@@ -539,14 +669,20 @@ extract_owned_cows <- function(cows) {
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
+#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
 change_area <- function(cows, i, movement_table, area_table, area_list,
-                        param_calculated) {
+                        param_area, param_calculated) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
+
+  cows <- unassign_removed_cows(cows, area_table, area_list, i)
+  res <- assign_newborns(cows, area_table, area_list, param_area)
+  cows <- res$cows
+  area_list <- res$area_list
 
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
@@ -578,19 +714,24 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
     sum)
   empty_spaces <- attr(area_table, "capacity") - n_cows_in_each_area +
     n_cows_to_move_in_each_area
+  empty_spaces[empty_spaces < 0] <- 0
 
   # Remove cows from areas
   vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
-  cows <- remove_from_areas(cows, vec_cows_to_move)
+  res <- remove_from_areas(cows, area_list, area_table, vec_cows_to_move)
+  cows <- res$cows
+  area_list <- res$area_list
   cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned, na.rm = T))
   cow_id_allocated_to_full_areas_index <- 0
 
   # Decide to which next_area cows will move
   for (i_movement in seq_len(nrow(movement_table))) {
-    i_cow_id <- sample(cow_id_to_move[[i_movement]])
+    i_cow_id <- resample(cow_id_to_move[[i_movement]])
+    # sample() here must not be replaced with sample.int() because the latter
+    # causes error when the length of x is 0.
     # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
-      # For conditions with priorities specified by integers
+      # A. For conditions with priorities specified by integers
 
       i_next_area <- movement_table$next_area[[i_movement]]
       chr_i_next_area <- as.character(i_next_area)
@@ -599,7 +740,7 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
         findInterval(seq_along(i_cow_id),
                      c(0, cumsum(empty_spaces_in_next_areas)), left.open = T)
       allocated_areas <- i_next_area[allocated_area_index]
-      empty_spaces[chr_i_next_area] <-
+      empty_spaces[chr_i_next_area] <- empty_spaces[chr_i_next_area] -
         table(factor(allocated_areas, levels = chr_i_next_area))
 
       # When length(i_cow_id) is larger than sum(empty_spaces_in_next_area),
@@ -640,13 +781,11 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
         while (n_cows_to_reallocate > 0) {
           # When some cows are allocated to full areas, assign cows
           # to non-full areas.
-          # When every area is full, allocate such cows to full areas
-          # according to capacity.
           is_overcrowded <- vacancy < 0
           is_not_full <- vacancy > 0
-          allocated_areas <- sample(i_next_area[is_not_full],
-                                    n_cows_to_reallocate,
-                                    replace = T, prob = i_priority[is_not_full])
+          allocated_areas <- resample(i_next_area[is_not_full],
+                                      n_cows_to_reallocate, replace = T,
+                                      prob = i_priority[is_not_full])
           n_cows_reallocated_in_each_area <-
             table(factor(allocated_areas, levels = chr_i_next_area))
           vacancy <- vacancy - n_cows_reallocated_in_each_area
@@ -664,14 +803,13 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
         cow_id_allocated_to_full_areas[
           seq_len(n_cows_allocated_to_full_areas) +
             cow_id_allocated_to_full_areas_index
-          ] <- cow_id[seq_len(n_cows_allocated_to_full_areas)]
+          ] <- i_cow_id[seq_len(n_cows_allocated_to_full_areas)]
         cow_id_allocated_to_full_areas_index <-
           cow_id_allocated_to_full_areas_index + n_cows_allocated_to_full_areas
 
         capacity_of_areas <- attr(area_table, "capacity")[i_next_area]
-        allocated_areas <-
-          c(rep(i_next_area, vacancy),
-            sample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
+        allocated_areas <- c(rep(i_next_area, vacancy),
+          resample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
                    prob = capacity_of_areas))
       }
     }
