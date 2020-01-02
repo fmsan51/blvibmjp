@@ -28,7 +28,10 @@ remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
   cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
                                         chamber_id = NA_integer_)]
   for (i_area in as.character(attr(area_table, "tie_stall"))) {
-    area_list[[i_area]][cow_id %in% removed_cow_id, cow_id := NA_integer_]
+    area_list[[i_area]][cow_id %in% removed_cow_id,
+                        `:=`(cow_id = NA_integer_,
+                             cow_status = NA_character_,
+                             is_isolated = NA)]
   }
   return(list(cows = cows, area_list = area_list))
 }
