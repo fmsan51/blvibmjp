@@ -284,9 +284,6 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   }
 
 
-
-
-
   ## infection_insects ----
 
   ## Probability of infection by bloodsucking insects per month per cattle ----
