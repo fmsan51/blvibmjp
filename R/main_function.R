@@ -504,6 +504,7 @@ check_removal <- function(cows, areas, i, param_farm, param_calculated,
     rows_new_ebl[is_ebl_detected(rows_new_ebl, param_calculated)]
   if (length(rows_removed_ebl) != 0) {
     cows[rows_removed_ebl,  ':='(is_owned = F,
+                                 date_death = i,
                                  cause_removal = "culled")]
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
@@ -519,7 +520,7 @@ check_removal <- function(cows, areas, i, param_farm, param_calculated,
                         "will_die", cause_removal))]
   }  # TODO: ここテスト
 
-  rows_removed <- c(rows_removed_death, rows_removed_sold, rows_removed_ebl)
+  rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
   areas_removed <- cows[rows_removed, area_id]
   for (area in param_processed$ts_area) {
     rows_removed_this_area <- rows_removed[areas_removed == area]
