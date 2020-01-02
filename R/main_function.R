@@ -518,7 +518,7 @@ check_removal <- function(cows, areas, i, area_table,
               cause_removal =
                 fifelse(date_death_expected >= month_ebl_die,
                         "will_die", cause_removal))]
-  }  # TODO: ここテスト
+  }
 
   rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
   areas_removed <- cows[rows_removed, area_id]
