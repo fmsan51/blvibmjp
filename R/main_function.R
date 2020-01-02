@@ -478,8 +478,8 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
-check_removal <- function(cows, areas, i, param_farm, param_calculated,
-                          param_processed) {
+check_removal <- function(cows, areas, i, area_table,
+                          param_farm, param_calculated, param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -522,10 +522,11 @@ check_removal <- function(cows, areas, i, param_farm, param_calculated,
 
   rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
   areas_removed <- cows[rows_removed, area_id]
-  for (area in param_processed$ts_area) {
-    rows_removed_this_area <- rows_removed[areas_removed == area]
-    areas[[area]] <-
-      remove_from_area(areas[[area]], cows[rows_removed_this_area, cow_id])
+
+  for (i_area in as.character(attr(area_table, "tie_stall"))) {
+    rows_removed_this_area <- rows_removed[areas_removed == i_area]
+    areas[[i_area]] <-
+      remove_from_area(areas[[i_area]], cows[rows_removed_this_area, cow_id])
   }
 
   return(list(cows = cows, areas = areas))

@@ -129,8 +129,8 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
 
     # check_removal() must come after add_newborns(), because check_removal()
     # replaces infected old cows with non-replacement newborns
-    res <- check_removal(cows, areas, i, param_farm, param_calculated,
-                         param_processed)
+    res <- check_removal(cows, areas, i, area_table,
+                         param_farm, param_calculated, param_processed)
     cows <- res$cows
     areas <- res$areas
 
