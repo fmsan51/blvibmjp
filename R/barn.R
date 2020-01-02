@@ -81,14 +81,14 @@ calc_infection_in_barns <- function(cows, month, area_table, area_list,
       is_exposed_to_infected_cow_in_previous_chamber <-
         area$adjoint_next_chamber &
         shift(is_infectious, type = "lag", fill = F)
-      is_s_in_chamber <- area[, !is.na(area$cow_status) & cow_status == "s"]
+      is_s_in_chamber <- !is.na(area$cow_status) & area$cow_status == "s"
       is_exposed_to_infected_cow <- is_s_in_chamber &
         (is_exposed_to_infected_cow_in_next_chamber |
          is_exposed_to_infected_cow_in_previous_chamber)
       expose_result <-
         is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
                                        month, param_calculated)
-      exposed_cow <- area$cow_id[is_s_in_chamber & is_exposed_to_infected_cow]
+      exposed_cow <- area$cow_id[is_exposed_to_infected_cow]
       cows[cow_id %in% exposed_cow,
            `:=`(infection_status =
                   c("ial", NA_character_)[is.na(expose_result) + 1],
