@@ -183,7 +183,6 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
 #'
 #' @return Numeric vector of length 2: `c(lower_limit_of_herd_size, upper_limit_of_herd_size)`.
 set_capacity <- function(herd_size, param_farm) {
-  # TODO: rename function to explicity
   if (!is.na(param_farm$capacity_in_head[1])) {
     capacity <- param_farm$capacity_in_head
   } else if (!is.na(param_farm$capacity_as_ratio[1])) {
