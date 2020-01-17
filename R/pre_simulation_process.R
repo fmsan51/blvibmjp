@@ -321,3 +321,68 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
   return(cows)
 }
 
+
+#' Process raw cow data to suitable form
+#'
+#' Transform an input csv into a suitable form, which is in a form of [area_table].
+#'
+#' An input csv file can have following columns. The csv file must contain `area_type` column.
+#'
+#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`.
+#' - `area_type`
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#'
+#' For further detail of each variable, see [area_table].
+#'
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
+#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
+#' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#'
+#' @export
+#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+process_raw_area <- function(csv, data = NULL, output_file = NULL,
+                             sep = "[,\t |;:]") {
+  if (!missing(csv)) {
+    input <- fread(csv)
+  } else {
+    input <- as.data.table(data)
+  }
+
+  cols_in_input <- intersect(colnames(a_area), colnames(input))
+  n_rows <- nrow(input)
+  area_table <- a_area[rep(1, n_rows), ]
+  area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  if (is.null(input$area_id)) {
+    area_table$area_id <- seq_len(n_rows)
+  } else if (!is.numeric(input$area_id)) {  # Here, input, not area_id, is correct.
+    area_table$area_id <- as.integer(factor(area_table$area_id))
+  }
+  if (anyNA(area_table$area_id)) {
+    stop("Missing value in `area_id` column in raw area data.")
+  }
+
+  if (anyNA(area_table$area_type)) {
+    stop("Missing value in `area_type` column in raw area data.")
+  }
+
+  is_na <- is.na(area_table$capacity)
+  if (any(is_na)) {
+    area_table$capacity[is_na] <- Inf
+  }
+  area_table$capacity <- strsplit(area_table$capacity, paste0(sep, "+"))
+
+  if (any(duplicated(area_table$area_id))) {
+    area_table <- area_table[,
+                             list(area_type = unique(na.omit(area_type))[1],
+                                  capacity = list(unlist(capacity))),
+                             by = area_id]
+  }
+
+  if (!is.null(output_file)) {
+    fwrite(area_table, output_file)
+  }
+
+  return(area_table)
+}

@@ -14,5 +14,6 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom tidyr complete
 #' @importFrom utils menu str
+#' @importFrom zoo na.locf
 "_PACKAGE"
 
