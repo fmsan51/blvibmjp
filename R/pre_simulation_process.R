@@ -22,7 +22,8 @@
 #' For further detail of each variables, see [cow_table].
 #'
 #' @param cow_csv,area_csv File path of input csv files. See the Detail section to know about form of input csv files.
-#' @param cow_data,area_data data.frame as a input instead of `cow_csv` or `area_csv`. See the Detail section to know about form of input data.
+#' @param cow_data,area_data data.frame as input instead of `cow_csv` or `area_csv`. See the Detail section to know about form of input data.
+#' @param cow_output_path,area_output_path If folder paths are supplied to the argument, the result of the function (processed `cow_csv` and `area_table`) is expoted to csv files. If `NULL` (default), output files are not created.
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
@@ -31,7 +32,9 @@
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_csv <- function(cow_csv, area_csv, cow_data = NULL, area_data,
+process_raw_csv <- function(cow_csv, area_csv,
+                            cow_data = NULL, area_data = NULL,
+                            cow_output_path = NULL, area_output_path = NULL,
                             today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
                             param_calculated = calc_param(param_farm,
@@ -40,7 +43,7 @@ process_raw_csv <- function(cow_csv, area_csv, cow_data = NULL, area_data,
   if (!missing(cow_csv)) {
     input <- fread(cow_csv)
   } else {
-    input <- as.data.table(data)
+    input <- as.data.table(cow_data)
   }
 
   cols_in_input <- intersect(colnames(a_new_calf), colnames(input))
