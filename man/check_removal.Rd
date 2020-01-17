@@ -4,7 +4,7 @@
 \alias{check_removal}
 \title{Check death and sale of current cows}
 \usage{
-check_removal(cows, areas, i, param_farm, param_calculated,
+check_removal(cows, areas, i, area_table, param_farm, param_calculated,
   param_processed)
 }
 \arguments{

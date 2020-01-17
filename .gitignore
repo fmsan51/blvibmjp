@@ -2,3 +2,4 @@
 .Rhistory
 inst/testdata/output/*
 .Rdata
+.Rproj

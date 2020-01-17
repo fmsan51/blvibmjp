@@ -91,9 +91,8 @@ setup_tie_stall_table <- function(area_table) {
 #' @export
 set_init_chamber_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
-  cows <- assign_chambers(init_cows, area_list, area_assignment)
-  area_list <- assign_cows(cows, area_list, area_assignment)
-  return(list(cows = cows, area_list = area_list))
+  res <- assign_chambers(init_cows, area_list, area_assignment)
+  return(res)
 }
 
 
