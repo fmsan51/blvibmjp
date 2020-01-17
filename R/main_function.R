@@ -824,6 +824,7 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
     vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
   # Assignment of a chamber_id for a cow allocated to a full but free area will not occur
   # because calculate_area_assignment() calculates only about tie-stall areas.
+  # TODO: Do not have to compare vacancy and #cows
   cows_to_allocate_chambers <-
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   res <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
