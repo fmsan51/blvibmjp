@@ -45,7 +45,7 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{n_ai}: If not set, it is assumed to be 0.
 \item \code{infection_status}: At least one of this variable or \code{modify_prevalence} argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or \code{NA} will be coerced to "s" (= non-infected). When \code{modify_prevalence} is set, prevalence is modified to make prevalence equal to the value of \code{modify_prevalence}.
 \item \code{date_ial}, \code{date_ipl}, \code{date_ebl}: Specify the date when infection status was confirmed. If \code{NULL}, \code{0} is set.
-\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage}. If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
+\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage} ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
 \item \code{month_in_area}: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use \code{month_in_area} as a criteria for area movement. See \link{area_table} for detail of area movement.
 \item \code{chamber_id}: If not set, it is randomly allocated later in \code{\link[=setup_cows]{setup_cows()}}.
 \item \code{is_isolated}: If not set, \code{FALSE} is set.

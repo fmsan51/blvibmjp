@@ -14,7 +14,7 @@
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
-#' - `area_id`: If not set, cows are divided to four areas based on `stage`. If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
+#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
@@ -238,25 +238,28 @@ process_raw_csv <- function(csv, data = NULL, output_file = NULL,
   if (anyNA(cows$area_id)) {
     cow_stage <- c("calf", "heifer", "milking", "dry")
     join_on <- c("stage", "parity")
-    area_by_stage_and_parity <-
-      cows[, list(freq_area = names(sort(table(area_id), decreasing = T))[1]),
-           by = join_on]
+    area_by_stage_and_parity <- cows[,
+      list(freq_area =
+             as.integer(names(sort(table(area_id), decreasing = T))[1])),
+      by = join_on]
     area_by_stage_and_parity <-
       area_by_stage_and_parity[CJ(stage = cow_stage,
                                   parity = parity, unique = T),
                                on = join_on]
     cows <- area_by_stage_and_parity[cows, on = join_on]
-    cows[, `:=`(area_id = fcoalesce(area_id, as.numeric(freq_area)),
+    cows[, `:=`(area_id = fcoalesce(as.integer(area_id), freq_area),
                 freq_area = NULL)]
     area_id_in_input <- unique(na.omit(cows$area_id))
     empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4),
                              area_id_in_input)[1:4]
-    area_by_stage <-
-      cows[, list(freq_area = names(sort(table(area_id), decreasing = T))[1]),
+    area_by_stage <- cows[,
+      list(freq_area =
+             as.integer(names(sort(table(area_id), decreasing = T))[1])),
            by = "stage"]
-    area_by_stage <- area_by_stage[CJ(stage = cow_stage), on = "stage"]
+    area_by_stage <-
+      area_by_stage[CJ(stage = cow_stage, sorted = F), on = "stage"]
     area_by_stage[,
-      freq_area := fcoalesce(as.numeric(freq_area), as.numeric(empty_area_id))]
+      freq_area := fcoalesce(freq_area, as.integer(empty_area_id))]
     cows <- area_by_stage[cows, on = "stage"]
     cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
