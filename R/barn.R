@@ -114,6 +114,15 @@ calc_infection_in_barns <- function(cows, month, area_table, area_list,
                 cause_infection = "insect")]
       # TODO: Where is the cow_status in area_list changed?
     } else {
+      s_cow_id <- area$cow_id[area$cow_status == "s"]
+      new_infected_cow_id <- s_cow_id[
+        is_infected_in_free_stall(length(s_cow_id),
+                                  sum(area$cow_status != "s", na.rm = T),
+                                  month, param_calculated)
+        ]
+      cows[cow_id %in% new_infected_cow_id,
+           `:=`(infection_status = "ial",
+                cause_infection = "insect")]
     }
   }
   return(cows)

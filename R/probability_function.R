@@ -156,6 +156,20 @@ is_infected_contact <- function() {
 # TODO: そういや全国平均感染率は感染農場も非感染農場も一緒にしてるんだった。あとで感染農場のみにしぼって計算し直す。
 
 
+#' Whether cows are infected in free pastures
+#'
+#' @param n_cows The number of cows in a barn.
+#' @param n_inf The number of infected cows in the barn.
+#' @param param_calculated Return from [calc_param()].
+#' @param month The current month (1, 2, ..., 12).
+#'
+#' @return A logical vector.
+is_infected_in_free_stall <- function(n_cows, n_inf, month, param_calculated) {
+  runif(n_cows) < param_calculated$prob_inf_free[month] *
+    ((n_inf / n_cows) / param_calculated$average_prop_in_free)
+}
+
+
 #' Whether cows are infected by contaminated needles
 #'
 #' @param n_cows The number of cows.
