@@ -826,8 +826,9 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
   # because calculate_area_assignment() calculates only about tie-stall areas.
   cows_to_allocate_chambers <-
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
-  cows <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
-  area_list <- assign_cows(cows, area_list, cows_to_allocate_chambers)
+  res <- assign_chambers(cows, area_list, cows_to_allocate_chambers)
+  cows <- res$cows
+  area_list <- res$area_list
   cows[cow_id %in% cow_id_allocated_to_full_areas &
          area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
 

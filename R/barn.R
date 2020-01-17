@@ -51,12 +51,20 @@ remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
 assign_chambers <- function(cows, area_list, area_assignment) {
   for (i_area in names(area_assignment)) {
     assigned_area <- area_list[[i_area]]
-    assigned_cows <- area_assignment[[i_area]]
+    candidate_cow_id <- area_assignment[[i_area]]
     empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
-    assigned_chambers <- resample(empty_chambers, length(assigned_cows))
-    cows$chamber_id[cows$cow_id %in% assigned_cows] <- assigned_chambers
+    n_assigned_cows <- min(length(candidate_cow_id), length(empty_chambers))
+    assigned_chambers <- resample(empty_chambers, n_assigned_cows)
+    assigned_cow_id <- candidate_cow_id[seq_len(n_assigned_cows)]
+    cows$chamber_id[na.omit(match(cows$cow_id, assigned_cow_id))] <-
+      assigned_chambers
+    assigned_cows <- cows[match(cow_id, assigned_cow_id),
+                          list(cow_id, infection_status, is_isolated)]
+    assigned_area[match(chamber_id, assigned_cows$chamber_id),
+                  c("cow_id", "cow_status", "is_isolated") := assigned_cows]
+    area_list[[i_area]] <- assigned_area
   }
-  return(cows)
+  return(list(cows = cows, area_list = area_list))
 }
 # TODO: Think a way to combine assign_chambers and assign_cows
 
@@ -122,36 +130,8 @@ calc_infection_in_barns <- function(cows, month, area_table, area_list,
 tether_roaming_cows <- function(cows, area_list) {
   roaming_cows <- cows[chamber_id == 0 & is_owned, ]
   roaming_cow_assign_list <- split(roaming_cows$cow_id, roaming_cows$area_id)
-  cows <- assign_chambers(cows, area_list, roaming_cow_assign_list)
-  area_list <- assign_cows(cows, area_list, roaming_cow_assign_list)
-  return(list(cows = cows, area_list = area_list))
-}
-
-
-#' Assign cows to area_list according to cow_table.
-#'
-#' Assign `chamber_id` to cows allocated to tie-stall barns.
-#'
-#' @param cows See [cow_table].
-#' @param area_list See [setup_areas].
-#' @param area_assignment See [calculate_area_assignment()].
-#'
-#' @note This function assign `cow_id` just for `area_list`. Assignment of `chamber_id` in `cows` must be done by [assign_chambers] before using this function.
-#'
-#' @return A [area_list].
-assign_cows <- function(cows, area_list, area_assignment) {
-  for (i_area in names(area_assignment)) {
-    assigned_area <- area_list[[i_area]]
-    assigned_cow_id <- area_assignment[[i_area]]
-    assigned_chambers <- cows$chamber_id[match(assigned_cow_id, cows$cow_id)]
-    is_na <- is.na(assigned_chambers)
-    assigned_cows <- cows[cow_id %in% assigned_cow_id[!is_na],
-                          list(cow_id, infection_status, is_isolated)]
-    assigned_area[chamber_id %in% assigned_chambers[!is_na],
-                  c("cow_id", "cow_status", "is_isolated") := assigned_cows]
-    area_list[[i_area]] <- assigned_area
-  }
-  return(area_list)
+  res <- assign_chambers(cows, area_list, roaming_cow_assign_list)
+  return(res)
 }
 
 
