@@ -10,7 +10,7 @@ process_raw_csv(csv, data = NULL, today = Sys.Date(),
   n_chambers = NULL)
 }
 \arguments{
-\item{csv}{File path of input csv file. See the Detail section to know about form of input csv.}
+\item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
 
 \item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
 

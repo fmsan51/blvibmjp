@@ -21,7 +21,7 @@
 #'
 #' For further detail of each variables, see [cow_table].
 #'
-#' @param csv File path of input csv file. See the Detail section to know about form of input csv.
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
