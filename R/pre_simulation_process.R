@@ -12,7 +12,7 @@
 #' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param_farm].
 #' - `is_to_test_pregnancy`: If not set, `FALSE` is set.
 #' - `n_ai`: If not set, it is assumed to be 0.
-#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. If `NA` is included, that cow is assumed to be a non-infected cow. When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
+#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
 #' - `area_id`: If not set, cows are divided to four areas based on `stage`. If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
@@ -176,6 +176,32 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
   cows$n_ai[is.na(cows$n_ai)] <- 0
 
+  is_ial <- cows[,
+    grepl("^i?al$", infection_status, ignore.case = T) |
+    (!is.na(date_ial) & is.na(date_ipl) & is.na(date_ebl))
+    ]
+  is_ipl <- cows[,
+    grepl("^i?pl$", infection_status, ignore.case = T) |
+    (!is.na(date_ipl) & is.na(date_ebl))
+    ]
+  is_ebl <- cows[,
+    grepl("^e?bl$", infection_status, ignore.case = T) |
+    !is.na(date_ebl)
+    ]
+  is_s <- !(is.na(cows$infection_status) | is_ial | is_ipl | is_ebl)
+  items_coerced_to_s <- unique(cows$infection_status[is_s])
+  cows$infection_status[is_ial] <- "ial"
+  cows$infection_status[is_ipl] <- "ipl"
+  cows$infection_status[is_ebl] <- "ebl"
+  if (any(is_s)) {
+    cows$infection_status[is_s] <- "s"
+    items_coerced_to_s <- unique(cows$infection_status[is_s])
+    message(glue(
+      "Following item(s) in the `infection_status` column is treated as \\
+       non-infected:
+       {paste(items_coerced_to_s, collapse = ',')}"
+          ))
+  }
   if (!is.null(modify_prevalence)) {
     appropreate_n_inf <- round(n_cows * modify_prevalence)
     inf_count <- table(cows$infection_status != "s", useNA = "always")
