@@ -53,5 +53,5 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{is_isolated}: If not set, \code{FALSE} is set.
 }
 
-For further detail of each variables, see \link{cow_table}.
+For further detail of each variable, see \link{cow_table}.
 }

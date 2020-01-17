@@ -19,7 +19,7 @@
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
 #'
-#' For further detail of each variables, see [cow_table].
+#' For further detail of each variable, see [cow_table].
 #'
 #' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
