@@ -34,7 +34,7 @@
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 process_raw_cow <- function(csv, data = NULL, output_file = NULL,
-                            today = Sys.Date(), 
+                            today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
                             param_calculated = calc_param(param_farm,
                                                           param_simulation),
@@ -111,7 +111,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
     }
     n_mid_cows <- sum(age_make_calf < cows$age & cows$age <= age_make_calf * 2)
     n_old_cows <- sum(age_make_calf * 2 < cows$age &
-                      cows$age <= age_make_calf * 3) 
+                      cows$age <= age_make_calf * 3)
     n_cows_add <- n_mid_cows * (n_mid_cows / n_old_cows)
     cows_add_age <- sample.int(age_make_calf, n_cows_add, replace = T)
     cows_add <- a_new_calf[rep(1, n_cows_add), ]
@@ -126,7 +126,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 
   # TODO: Improve this to be calcuated stochastic
   delivery_age_table <-
-    integerize(param_calculated$age_first_delivery + 
+    integerize(param_calculated$age_first_delivery +
                param_calculated$calving_interval * 0:9)
   if (anyNA(cows$parity)) {
     cows[is.na(parity) & (stage == "heifer" | stage == "calf"), parity := 0]
@@ -160,7 +160,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
        ((date_got_pregnant == -10 | date_got_pregnant == -9) &
          stage == "milking"),
        date_got_pregnant := NA_real_]
-  is_na_date_dried <- is.na(cows$date_dried) & 
+  is_na_date_dried <- is.na(cows$date_dried) &
                         (is.na(cows$stage) | cows$stage != "milking")
   months_milking <- integerize(param_calculated$months_milking)
   if (any(is_na_date_dried)) {
