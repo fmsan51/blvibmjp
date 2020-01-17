@@ -4,15 +4,15 @@
 \alias{process_raw_csv}
 \title{Process raw cow data to suitable form}
 \usage{
-process_raw_csv(csv, data = NULL, today = Sys.Date(),
-  create_calf_data = F, modify_prevalence = NULL,
+process_raw_csv(cow_csv, area_csv, cow_data = NULL, area_data,
+  today = Sys.Date(), create_calf_data = F, modify_prevalence = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
   n_chambers = NULL)
 }
 \arguments{
-\item{csv}{File path of input csv file. See the Detail section to know about form of input csv.}
+\item{cow_csv, area_csv}{File path of input csv files. See the Detail section to know about form of input csv files.}
 
-\item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
+\item{cow_data, area_data}{data.frame as a input instead of \code{cow_csv} or \code{area_csv}. See the Detail section to know about form of input data.}
 
 \item{today}{A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate \code{age} from \code{date_birth} when \code{age} is not set. \code{today} is automatically calculated when both of \code{age} and \code{date_birth} are filled and \code{date_birth} is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.}
 
@@ -28,10 +28,10 @@ process_raw_csv(csv, data = NULL, today = Sys.Date(),
 A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
 }
 \description{
-Transform an input csv into a suitable form, which is in a form of \link{cow_table}.
+Transform input csv files into suitable forms, which is in a form of \link{cow_table} and \link{area_table}.
 }
 \details{
-An input csv file can have following columns. The csv file must contain \code{age} column.
+An input csv file to supply to \code{cow_csv} can have following columns. The csv file must contain \code{age} column.
 \itemize{
 \item \code{cow_id}: It can be use-defined cow ID (not have to be a 9- or 10-digits code). If not set, \code{cow_id} is allocated sequencially (From 1 to the number of input cows).
 \item \code{age}: Age in month. Either one of \code{age} or \code{date_birth} must be set.
