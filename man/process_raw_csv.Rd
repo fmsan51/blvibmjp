@@ -7,7 +7,7 @@
 process_raw_csv(csv, data = NULL, output_file = NULL,
   today = Sys.Date(), create_calf_data = F, modify_prevalence = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
-  n_chambers = NULL)
+  area_name = NULL, n_chambers = NULL)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
@@ -24,7 +24,9 @@ process_raw_csv(csv, data = NULL, output_file = NULL,
 
 \item{param_calculated}{The result from \link{calc_param}.}
 
-\item{n_chambers}{Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like \code{c(area_id = the_number_of_chambers_in_the_area, ...)}.}
+\item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
+
+\item{n_chambers}{Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like \code{c(area_id = the_number_of_chambers_in_the_area, ...)}. Note if both of \code{area_name} and \code{n_chambers} are set, \code{area_id} in \code{n_chambers} option must be integer.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
@@ -45,7 +47,7 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{n_ai}: If not set, it is assumed to be 0.
 \item \code{infection_status}: At least one of this variable or \code{modify_prevalence} argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or \code{NA} will be coerced to "s" (= non-infected). When \code{modify_prevalence} is set, prevalence is modified to make prevalence equal to the value of \code{modify_prevalence}.
 \item \code{date_ial}, \code{date_ipl}, \code{date_ebl}: Specify the date when infection status was confirmed. If \code{NULL}, \code{0} is set.
-\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage} ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
+\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage} ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If \code{area_id} is written in character, argument \code{area_name} must be set.
 \item \code{month_in_area}: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use \code{month_in_area} as a criteria for area movement. See \link{area_table} for detail of area movement.
 \item \code{chamber_id}: If not set, it is randomly allocated later in \code{\link[=setup_cows]{setup_cows()}}.
 \item \code{is_isolated}: If not set, \code{FALSE} is set.

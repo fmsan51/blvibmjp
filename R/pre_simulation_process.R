@@ -14,7 +14,7 @@
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
-#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
+#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
@@ -28,7 +28,8 @@
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
 #' @param param_calculated The result from [calc_param].
-#' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`.
+#' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
+#' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`. Note if both of `area_name` and `n_chambers` are set, `area_id` in `n_chambers` option must be integer.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
@@ -37,7 +38,7 @@ process_raw_csv <- function(csv, data = NULL, output_file = NULL,
                             create_calf_data = F, modify_prevalence = NULL,
                             param_calculated = calc_param(param_farm,
                                                           param_simulation),
-                            n_chambers = NULL) {
+                            area_name = NULL, n_chambers = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -235,6 +236,11 @@ process_raw_csv <- function(csv, data = NULL, output_file = NULL,
   cows[infection_status == "ebl" & is.na(date_ebl), date_ebl := 0]
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
+  if (!is.null(area_name)) {
+    cows$area_id <-
+      factor(cows$area_id, levels = names(area_name), labels = area_name)
+  }
+  cows$area_id <- as.integer(cows$area_id)
   if (anyNA(cows$area_id)) {
     cow_stage <- c("calf", "heifer", "milking", "dry")
     join_on <- c("stage", "parity")
@@ -247,10 +253,10 @@ process_raw_csv <- function(csv, data = NULL, output_file = NULL,
                                   parity = parity, unique = T),
                                on = join_on]
     cows <- area_by_stage_and_parity[cows, on = join_on]
-    cows[, `:=`(area_id = fcoalesce(as.integer(area_id), freq_area),
+    cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
     area_id_in_input <- unique(na.omit(cows$area_id))
-    empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4),
+    empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4L),
                              area_id_in_input)[1:4]
     area_by_stage <- cows[,
       list(freq_area =
@@ -258,8 +264,7 @@ process_raw_csv <- function(csv, data = NULL, output_file = NULL,
            by = "stage"]
     area_by_stage <-
       area_by_stage[CJ(stage = cow_stage, sorted = F), on = "stage"]
-    area_by_stage[,
-      freq_area := fcoalesce(freq_area, as.integer(empty_area_id))]
+    area_by_stage[, freq_area := fcoalesce(freq_area, empty_area_id)]
     cows <- area_by_stage[cows, on = "stage"]
     cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
