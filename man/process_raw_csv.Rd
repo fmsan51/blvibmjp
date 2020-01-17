@@ -4,8 +4,8 @@
 \alias{process_raw_csv}
 \title{Process raw cow data to suitable form}
 \usage{
-process_raw_csv(csv, data = NULL, today = Sys.Date(),
-  create_calf_data = F, modify_prevalence = NULL,
+process_raw_csv(csv, data = NULL, output_file = NULL,
+  today = Sys.Date(), create_calf_data = F, modify_prevalence = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
   n_chambers = NULL)
 }
@@ -13,6 +13,8 @@ process_raw_csv(csv, data = NULL, today = Sys.Date(),
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
 
 \item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
+
+\item{output_file}{The name of an output file (must be a csv file). If \code{NULL}, no output file is created.}
 
 \item{today}{A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate \code{age} from \code{date_birth} when \code{age} is not set. \code{today} is automatically calculated when both of \code{age} and \code{date_birth} are filled and \code{date_birth} is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.}
 

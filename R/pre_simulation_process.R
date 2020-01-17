@@ -23,6 +23,7 @@
 #'
 #' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
@@ -31,7 +32,8 @@
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_csv <- function(csv, data = NULL, today = Sys.Date(), 
+process_raw_csv <- function(csv, data = NULL, output_file = NULL,
+                            today = Sys.Date(), 
                             create_calf_data = F, modify_prevalence = NULL,
                             param_calculated = calc_param(param_farm,
                                                           param_simulation),
@@ -303,6 +305,11 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
   cows$i_month <- 0
 
   cows <- cows[, .SD, .SDcols = colnames(a_new_calf)]
+
+  if (!is.null(output_file)) {
+    fwrite(cows, output_file)
+  }
+
   return(cows)
 }
 
