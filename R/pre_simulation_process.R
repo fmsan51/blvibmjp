@@ -1,8 +1,8 @@
 #' Process raw cow data to suitable form
 #'
-#' Transform input csv files into suitable forms, which is in a form of [cow_table] and [area_table].
+#' Transform an input csv into a suitable form, which is in a form of [cow_table].
 #'
-#' An input csv file to supply to `cow_csv` can have following columns. The csv file must contain `age` column.
+#' An input csv file can have following columns. The csv file must contain `age` column.
 #'
 #' - `cow_id`: It can be use-defined cow ID (not have to be a 9- or 10-digits code). If not set, `cow_id` is allocated sequencially (From 1 to the number of input cows).
 #' - `age`: Age in month. Either one of `age` or `date_birth` must be set.
@@ -322,13 +322,13 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 }
 
 
-#' Process raw cow data to suitable form
+#' Process raw area data to suitable form
 #'
 #' Transform an input csv into a suitable form, which is in a form of [area_table].
 #'
 #' An input csv file can have following columns. The csv file must contain `area_type` column.
 #'
-#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`.
+#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
 #' - `area_type`
 #' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
 #'
@@ -342,7 +342,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 process_raw_area <- function(csv, data = NULL, output_file = NULL,
-                             sep = "[,\t |;:]") {
+                             sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -354,24 +354,32 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
   area_table <- a_area[rep(1, n_rows), ]
   area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
-  if (is.null(input$area_id)) {
+  if (all(is.na(area_table$area_id))) {
     area_table$area_id <- seq_len(n_rows)
-  } else if (!is.numeric(input$area_id)) {  # Here, input, not area_id, is correct.
-    area_table$area_id <- as.integer(factor(area_table$area_id))
+  } else if (!is.numeric(input$area_id)) {  # Here, input, not area_table, is correct.
+    area_table$area_id <-
+      factor(area_table$area_id, levels = unique(area_table$area_id))
   }
-  if (anyNA(area_table$area_id)) {
-    stop("Missing value in `area_id` column in raw area data.")
+  area_table$area_id <- as.integer(area_table$area_id)
+  if (is.na(area_table$area_id[1])) {
+    stop(glue("If any value is set to `area_id` column in area data, \\
+               the first value in `area_id` column must be set."))
   }
+  area_table$area_id <- na.locf(area_table$area_id)
 
   if (anyNA(area_table$area_type)) {
-    stop("Missing value in `area_type` column in raw area data.")
+    stop("`area_type` column in area data must not contain missing value.")
   }
 
   is_na <- is.na(area_table$capacity)
   if (any(is_na)) {
+    if (any(area_table$area_type[is_na] == "tie")) {
+      stop("`capacity` column in area data must be set for tie areas.")
+    }
     area_table$capacity[is_na] <- Inf
   }
   area_table$capacity <- strsplit(area_table$capacity, paste0(sep, "+"))
+  area_table$capacity <- lapply(area_table$capacity, as.numeric)
 
   if (any(duplicated(area_table$area_id))) {
     area_table <- area_table[,
@@ -386,3 +394,80 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 
   return(area_table)
 }
+
+
+#' Process raw movement data to suitable form
+#'
+#' Transform an input csv into a suitable form, which is in a form of [area_table].
+#'
+#' An input csv file can have following columns. The csv file must contain `area_type` column.
+#'
+#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
+#' - `area_type`
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#'
+#' For further detail of each variable, see [area_table].
+#'
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
+#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
+#' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#'
+#' @export
+#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+process_raw_movement <- function(csv, data = NULL, output_file = NULL,
+                                 sep = "[,\t\r\n |;:]") {
+}
+
+
+#' Process raw data to suitable forms
+#'
+#' Process csv files to suitable forms to use in simulation.
+#'
+#' @param cow_csv,cow_data Set one of these arguments. See [process_raw_cow()] for detail.
+#' @param area_csv,area_data Set one of these arguments. See [area_table] about detail of input.
+#' @param output When `TRUE`, create output csv files with names of "cow.csv" and "area.csv" into a working directory. Shorthand form of setting "cow.csv" to `cow_output_file` and "area.csv" to `area_output_file`.
+#' @param cow_output_file,area_output_file If not `NULL`, created data is exported to the file (must be csv file).
+#' @param param_calculated The result from [calc_param].
+#' @param sep Separatator used in `capacity` column of area data. See [process_raw_area()] for detail.
+#'
+#' @export
+#' @return csv files which can be used as an input for [simulate_BLV_spread()].
+process_raw_data <- function(cow_csv, area_csv,
+                             cow_data = NULL, area_data = NULL, output = F,
+                             cow_output_file = NULL, area_output_file = NULL,
+                             param_calculated =
+                               calc_param(param_farm, param_simulation),
+                             sep = "[,\t |;:]") {
+  if (!missing(cow_csv)) {
+    cow_input <- fread(cow_csv)
+  } else {
+    cow_input <- as.data.table(cow_data, output_file = cow_output_file)
+  }
+  if (!missing(area_csv)) {
+    area_input <- fread(area_csv)
+  } else {
+    area_input <- as.data.table(area_data, output_file = data_output_file)
+  }
+
+  if (is.numeric(area_input$area_id)) {
+    area_name <- NULL
+  } else {
+    unique_areas <- unique(area_input$area_id)
+    area_name <- seq_along(unique_areas)
+    names(area_name) <- unique_areas
+  }
+
+  if (output) {
+    cow_output_file <- "cow.csv"
+    area_output_file <- "area.csv"
+  }
+
+  cows <- process_raw_cow(data = cow_input, param_calculated = param_calculated,
+                          area_name = area_name, output_file = cow_output_file)
+  area_table <- process_raw_area(data = area_input, sep = sep,
+                                 output_file = area_output_file)
+
+  return(list(cows = cows, area_table = area_table))
+}
+
