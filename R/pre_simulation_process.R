@@ -438,7 +438,7 @@ process_raw_data <- function(cow_csv, area_csv,
                              cow_output_file = NULL, area_output_file = NULL,
                              param_calculated =
                                calc_param(param_farm, param_simulation),
-                             sep = "[,\t |;:]") {
+                             sep = "[,\t\r\n |;:]") {
   if (!missing(cow_csv)) {
     cow_input <- fread(cow_csv)
   } else {

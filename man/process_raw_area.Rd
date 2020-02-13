@@ -5,7 +5,7 @@
 \title{Process raw cow data to suitable form}
 \usage{
 process_raw_area(csv, data = NULL, output_file = NULL,
-  sep = "[,\\t |;:]")
+  sep = "[,\\t\\r\\n |;:]")
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
