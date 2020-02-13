@@ -412,11 +412,12 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
 #' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#' @param area_name If `current_area` and `next_area` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 process_raw_movement <- function(csv, data = NULL, output_file = NULL,
-                                 sep = "[,\t\r\n |;:]") {
+                                 area_name = NULL, sep = "[,\t\r\n |;:]") {
 }
 
 

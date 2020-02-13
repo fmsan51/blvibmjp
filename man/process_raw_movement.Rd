@@ -5,7 +5,7 @@
 \title{Process raw movement data to suitable form}
 \usage{
 process_raw_movement(csv, data = NULL, output_file = NULL,
-  sep = "[,\\t\\r\\n |;:]")
+  area_name = NULL, sep = "[,\\t\\r\\n |;:]")
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
@@ -13,6 +13,8 @@ process_raw_movement(csv, data = NULL, output_file = NULL,
 \item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
 
 \item{output_file}{The name of an output file (must be a csv file). If \code{NULL}, no output file is created.}
+
+\item{area_name}{If \code{current_area} and \code{next_area} are specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
 
 \item{sep}{Separatator used in \code{capacity} column. See explanation of \code{capacity} in Detail section.}
 }
