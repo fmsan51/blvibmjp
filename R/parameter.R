@@ -173,6 +173,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   #   TODO: Some farmers don't change gloves. consider again.
 
   param$mean_prop_ial_period <-  0.3
+  # TODO: Reconsider this parameter
   param$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
   # Length of periods from PL to EBL is not well known. (several months to years)
   param$ebl_progress_shape <- 3.3
