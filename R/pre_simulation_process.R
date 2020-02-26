@@ -12,30 +12,33 @@
 #' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param_farm].
 #' - `is_to_test_pregnancy`: If not set, `FALSE` is set.
 #' - `n_ai`: If not set, it is assumed to be 0.
-#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. If `NA` is included, that cow is assumed to be a non-infected cow. When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
+#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
-#' - `area_id`: If not set, cows are divided to four areas based on `stage`. If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept.
+#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
 #'
-#' For further detail of each variables, see [cow_table].
+#' For further detail of each variable, see [cow_table].
 #'
-#' @param csv File path of input csv file. See the Detail section to know about form of input csv.
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
 #' @param param_calculated The result from [calc_param].
-#' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`.
+#' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
+#' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`. Note if both of `area_name` and `n_chambers` are set, `area_id` in `n_chambers` option must be integer.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_csv <- function(csv, data = NULL, today = Sys.Date(), 
+process_raw_cow <- function(csv, data = NULL, output_file = NULL,
+                            today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
                             param_calculated = calc_param(param_farm,
                                                           param_simulation),
-                            n_chambers = NULL) {
+                            area_name = NULL, n_chambers = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -108,7 +111,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
     }
     n_mid_cows <- sum(age_make_calf < cows$age & cows$age <= age_make_calf * 2)
     n_old_cows <- sum(age_make_calf * 2 < cows$age &
-                      cows$age <= age_make_calf * 3) 
+                      cows$age <= age_make_calf * 3)
     n_cows_add <- n_mid_cows * (n_mid_cows / n_old_cows)
     cows_add_age <- sample.int(age_make_calf, n_cows_add, replace = T)
     cows_add <- a_new_calf[rep(1, n_cows_add), ]
@@ -123,7 +126,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
 
   # TODO: Improve this to be calcuated stochastic
   delivery_age_table <-
-    integerize(param_calculated$age_first_delivery + 
+    integerize(param_calculated$age_first_delivery +
                param_calculated$calving_interval * 0:9)
   if (anyNA(cows$parity)) {
     cows[is.na(parity) & (stage == "heifer" | stage == "calf"), parity := 0]
@@ -157,7 +160,7 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
        ((date_got_pregnant == -10 | date_got_pregnant == -9) &
          stage == "milking"),
        date_got_pregnant := NA_real_]
-  is_na_date_dried <- is.na(cows$date_dried) & 
+  is_na_date_dried <- is.na(cows$date_dried) &
                         (is.na(cows$stage) | cows$stage != "milking")
   months_milking <- integerize(param_calculated$months_milking)
   if (any(is_na_date_dried)) {
@@ -176,6 +179,32 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
   cows$n_ai[is.na(cows$n_ai)] <- 0
 
+  is_ial <- cows[,
+    grepl("^i?al$", infection_status, ignore.case = T) |
+    (!is.na(date_ial) & is.na(date_ipl) & is.na(date_ebl))
+    ]
+  is_ipl <- cows[,
+    grepl("^i?pl$", infection_status, ignore.case = T) |
+    (!is.na(date_ipl) & is.na(date_ebl))
+    ]
+  is_ebl <- cows[,
+    grepl("^e?bl$", infection_status, ignore.case = T) |
+    !is.na(date_ebl)
+    ]
+  is_s <- !(is.na(cows$infection_status) | is_ial | is_ipl | is_ebl)
+  items_coerced_to_s <- unique(cows$infection_status[is_s])
+  cows$infection_status[is_ial] <- "ial"
+  cows$infection_status[is_ipl] <- "ipl"
+  cows$infection_status[is_ebl] <- "ebl"
+  if (any(is_s)) {
+    cows$infection_status[is_s] <- "s"
+    items_coerced_to_s <- unique(cows$infection_status[is_s])
+    message(glue(
+      "Following item(s) in the `infection_status` column is treated as \\
+       non-infected:
+       {paste(items_coerced_to_s, collapse = ',')}"
+          ))
+  }
   if (!is.null(modify_prevalence)) {
     appropreate_n_inf <- round(n_cows * modify_prevalence)
     inf_count <- table(cows$infection_status != "s", useNA = "always")
@@ -207,28 +236,35 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
   cows[infection_status == "ebl" & is.na(date_ebl), date_ebl := 0]
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
+  if (!is.null(area_name)) {
+    cows$area_id <-
+      factor(cows$area_id, levels = names(area_name), labels = area_name)
+  }
+  cows$area_id <- as.integer(cows$area_id)
   if (anyNA(cows$area_id)) {
     cow_stage <- c("calf", "heifer", "milking", "dry")
     join_on <- c("stage", "parity")
-    area_by_stage_and_parity <-
-      cows[, list(freq_area = names(sort(table(area_id), decreasing = T))[1]),
-           by = join_on]
+    area_by_stage_and_parity <- cows[,
+      list(freq_area =
+             as.integer(names(sort(table(area_id), decreasing = T))[1])),
+      by = join_on]
     area_by_stage_and_parity <-
       area_by_stage_and_parity[CJ(stage = cow_stage,
                                   parity = parity, unique = T),
                                on = join_on]
     cows <- area_by_stage_and_parity[cows, on = join_on]
-    cows[, `:=`(area_id = fcoalesce(area_id, as.numeric(freq_area)),
+    cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
     area_id_in_input <- unique(na.omit(cows$area_id))
-    empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4),
+    empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4L),
                              area_id_in_input)[1:4]
-    area_by_stage <-
-      cows[, list(freq_area = names(sort(table(area_id), decreasing = T))[1]),
+    area_by_stage <- cows[,
+      list(freq_area =
+             as.integer(names(sort(table(area_id), decreasing = T))[1])),
            by = "stage"]
-    area_by_stage <- area_by_stage[CJ(stage = cow_stage), on = "stage"]
-    area_by_stage[,
-      freq_area := fcoalesce(as.numeric(freq_area), as.numeric(empty_area_id))]
+    area_by_stage <-
+      area_by_stage[CJ(stage = cow_stage, sorted = F), on = "stage"]
+    area_by_stage[, freq_area := fcoalesce(freq_area, empty_area_id)]
     cows <- area_by_stage[cows, on = "stage"]
     cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
@@ -277,6 +313,162 @@ process_raw_csv <- function(csv, data = NULL, today = Sys.Date(),
   cows$i_month <- 0
 
   cows <- cows[, .SD, .SDcols = colnames(a_new_calf)]
+
+  if (!is.null(output_file)) {
+    fwrite(cows, output_file)
+  }
+
   return(cows)
+}
+
+
+#' Process raw area data to suitable form
+#'
+#' Transform an input csv into a suitable form, which is in a form of [area_table].
+#'
+#' An input csv file can have following columns. The csv file must contain `area_type` column.
+#'
+#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
+#' - `area_type`
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#'
+#' For further detail of each variable, see [area_table].
+#'
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
+#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
+#' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#'
+#' @export
+#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+process_raw_area <- function(csv, data = NULL, output_file = NULL,
+                             sep = "[,\t\r\n |;:]") {
+  if (!missing(csv)) {
+    input <- fread(csv)
+  } else {
+    input <- as.data.table(data)
+  }
+
+  cols_in_input <- intersect(colnames(a_area), colnames(input))
+  n_rows <- nrow(input)
+  area_table <- a_area[rep(1, n_rows), ]
+  area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  if (all(is.na(area_table$area_id))) {
+    area_table$area_id <- seq_len(n_rows)
+  } else if (!is.numeric(input$area_id)) {  # Here, input, not area_table, is correct.
+    area_table$area_id <-
+      factor(area_table$area_id, levels = unique(area_table$area_id))
+  }
+  area_table$area_id <- as.integer(area_table$area_id)
+  if (is.na(area_table$area_id[1])) {
+    stop(glue("If any value is set to `area_id` column in area data, \\
+               the first value in `area_id` column must be set."))
+  }
+  area_table$area_id <- na.locf(area_table$area_id)
+
+  if (anyNA(area_table$area_type)) {
+    stop("`area_type` column in area data must not contain missing value.")
+  }
+
+  is_na <- is.na(area_table$capacity)
+  if (any(is_na)) {
+    if (any(area_table$area_type[is_na] == "tie")) {
+      stop("`capacity` column in area data must be set for tie areas.")
+    }
+    area_table$capacity[is_na] <- Inf
+  }
+  area_table$capacity <- strsplit(area_table$capacity, paste0(sep, "+"))
+  area_table$capacity <- lapply(area_table$capacity, as.numeric)
+
+  if (any(duplicated(area_table$area_id))) {
+    area_table <- area_table[,
+                             list(area_type = unique(na.omit(area_type))[1],
+                                  capacity = list(unlist(capacity))),
+                             by = area_id]
+  }
+
+  if (!is.null(output_file)) {
+    fwrite(area_table, output_file)
+  }
+
+  return(area_table)
+}
+
+
+#' Process raw movement data to suitable form
+#'
+#' Transform an input csv into a suitable form, which is in a form of [area_table].
+#'
+#' An input csv file can have following columns. The csv file must contain `area_type` column.
+#'
+#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
+#' - `area_type`
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#'
+#' For further detail of each variable, see [area_table].
+#'
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
+#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
+#' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#' @param area_name If `current_area` and `next_area` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
+#'
+#' @export
+#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+process_raw_movement <- function(csv, data = NULL, output_file = NULL,
+                                 area_name = NULL, sep = "[,\t\r\n |;:]") {
+}
+
+
+#' Process raw data to suitable forms
+#'
+#' Process csv files to suitable forms to use in simulation.
+#'
+#' @param cow_csv,cow_data Set one of these arguments. See [process_raw_cow()] for detail.
+#' @param area_csv,area_data Set one of these arguments. See [area_table] about detail of input.
+#' @param output When `TRUE`, create output csv files with names of "cow.csv" and "area.csv" into a working directory. Shorthand form of setting "cow.csv" to `cow_output_file` and "area.csv" to `area_output_file`.
+#' @param cow_output_file,area_output_file If not `NULL`, created data is exported to the file (must be csv file).
+#' @param param_calculated The result from [calc_param].
+#' @param sep Separatator used in `capacity` column of area data. See [process_raw_area()] for detail.
+#'
+#' @export
+#' @return csv files which can be used as an input for [simulate_BLV_spread()].
+process_raw_data <- function(cow_csv, area_csv,
+                             cow_data = NULL, area_data = NULL, output = F,
+                             cow_output_file = NULL, area_output_file = NULL,
+                             param_calculated =
+                               calc_param(param_farm, param_simulation),
+                             sep = "[,\t\r\n |;:]") {
+  if (!missing(cow_csv)) {
+    cow_input <- fread(cow_csv)
+  } else {
+    cow_input <- as.data.table(cow_data, output_file = cow_output_file)
+  }
+  if (!missing(area_csv)) {
+    area_input <- fread(area_csv)
+  } else {
+    area_input <- as.data.table(area_data, output_file = data_output_file)
+  }
+
+  if (is.numeric(area_input$area_id)) {
+    area_name <- NULL
+  } else {
+    unique_areas <- unique(area_input$area_id)
+    area_name <- seq_along(unique_areas)
+    names(area_name) <- unique_areas
+  }
+
+  if (output) {
+    cow_output_file <- "cow.csv"
+    area_output_file <- "area.csv"
+  }
+
+  cows <- process_raw_cow(data = cow_input, param_calculated = param_calculated,
+                          area_name = area_name, output_file = cow_output_file)
+  area_table <- process_raw_area(data = area_input, sep = sep,
+                                 output_file = area_output_file)
+
+  return(list(cows = cows, area_table = area_table))
 }
 

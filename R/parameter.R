@@ -173,6 +173,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   #   TODO: Some farmers don't change gloves. consider again.
 
   param$mean_prop_ial_period <-  0.3
+  # TODO: Reconsider this parameter
   param$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
   # Length of periods from PL to EBL is not well known. (several months to years)
   param$ebl_progress_shape <- 3.3
@@ -322,6 +323,11 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Analysis of risk factors associated with bovine leukemia virus seropositivity within dairy and beef breeding farms in Japan: a nationwide survey.
   # https://doi.org/10.1016/j.rvsc.2013.11.014
   param$prob_inf_free <- param$probs_inf_insects_month * free_pressure
+
+  param$average_prop_inf_in_free <-
+    rnorm(1, mean = 0.409, sd = mean(c(0.404, 0.414)) / qnorm(0.975))
+  # Nationwide Survey of Bovine Leukemia Virus Infection among Dairy and Beef Breeding Cattle in Japan from 2010–2011
+  # https://doi.org/10.1292/jvms.12-0374
 
   
   ## infection_needles ----
