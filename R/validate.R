@@ -15,7 +15,7 @@ validate_cow_table <- function(cows,
   # Check missing parameters
   for (i in c("stage", "parity")) {
     # TODO: add a function to automatically set parameters which are not specified by user input with warning.
-    if (any(is.na(cows[[i]]))) {
+    if (anyNA(cows[[i]])) {
       stop(glue("there must not be missing value in column `{i}`."), call. = F)
     }
   }
