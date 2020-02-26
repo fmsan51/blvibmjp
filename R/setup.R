@@ -19,7 +19,7 @@ setup_cows <- function(param_simulation, save_cows) {
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
   init_cows[1:init_n_cows, ] <- cows
   # Used 1:n instead of seq_len(n) because it is faster
-  
+
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
@@ -79,15 +79,15 @@ setup_tie_stall_table <- function(area_table) {
 
 
 #' Initial assignment of `chamber_id`
-#' 
+#'
 #' Initial assignment of `chamber_id`.
-#' 
+#'
 #' @param init_cows `init_cows` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param area_list A result of [setup_tie_stall_table()].
-#' 
+#'
 #' @return A list consisted of `cows` and `areas`.
-#' 
+#'
 #' @export
 set_init_chamber_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)

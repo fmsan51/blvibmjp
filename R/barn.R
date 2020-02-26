@@ -44,7 +44,7 @@ remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
 #' @param cows See [cow_table].
 #' @param area_list See [setup_areas].
 #' @param area_assignment See [calculate_area_assignment()].
-#' 
+#'
 #' @note This function assign `chamber_id` just for `cows`. Assignment of `cow_id` in `area_list` must be done by [assign_cows] after using this function.
 #'
 #' @return A [cow_table].
@@ -70,14 +70,14 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 
 
 #' Calculate infection in barns
-#' 
+#'
 #' Calculate infection in barns depending on barn type (tied or freed)
-#' 
+#'
 #' @param cows See [cow_table].
 #' @param month The current month (1, 2, ..., 12).
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' 
+#'
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, month, area_table, area_list,
                                     param_calculated) {
@@ -152,7 +152,7 @@ tether_roaming_cows <- function(cows, area_list) {
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].
 #' @param assigned_cow_id integer vector. An `area_assignment` list will be made only about cows specified by this parameter. When `NULL` is set, all the cows are used.
-#' 
+#'
 #' @return A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
 calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   if (is.null(assigned_cow_id)) {

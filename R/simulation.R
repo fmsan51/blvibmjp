@@ -134,7 +134,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     cows <- res$cows
     areas <- res$areas
 
-    # change_area() must be come after check_removal(), because change_area() 
+    # change_area() must be come after check_removal(), because change_area()
     # assigns newborns to areas and removes dead cows from areas.
     res <- change_area(cows, i, movement_table, area_table, areas,
                        param_area, param_calculated)

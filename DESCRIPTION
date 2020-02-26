@@ -5,12 +5,12 @@ Authors@R: c(
   person("Yuri", "Fujimoto", email = "fmsan51@gmail.com", role = c("aut", "cre")),
   person("R Core Team", role = "ctb", comment = "resample() code adopted from base")
   )
-Description: Simulates spread of Bovine leukemia virus (BLV) on individual base within a typical dairy herd in Japan. 
+Description: Simulates spread of Bovine leukemia virus (BLV) on individual base within a typical dairy herd in Japan.
 Depends: R (>= 3.5)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     data.table,
     rlang,
     ggplot2,
@@ -22,6 +22,6 @@ Imports:
     purrr
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
-Suggests: 
+Suggests:
     testthat (>= 2.1.0),
     usethis

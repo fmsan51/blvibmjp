@@ -70,7 +70,7 @@ integerize <- function(number) {
 
 #' Test if a numeric vector is consisted of whole numbers or not
 #'
-#' Test if all the components of a numeric vector is whole number or not. 
+#' Test if all the components of a numeric vector is whole number or not.
 #'
 #' @param number numeric vector.
 #'
@@ -88,7 +88,7 @@ is.wholenumber <- function(number) {
 #' sample() from x rather than 1:x
 #'
 #' Modified version of [sample()] to sample from `x` rather than `1:x` when `x` has length 1 and is numeric.
-#' 
+#'
 #' See "sample()'s surprise" and "safer version" section in the example section in the help of [sample()] to understand why this function is necessary.
 #'
 #' @examples

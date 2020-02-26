@@ -196,7 +196,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
   # TODO: temporary, just by inspiration
-  
+
 
   ## blv_test ----
   # Test frequency
@@ -315,8 +315,8 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     exp(rnorm(1, mean = 2.52, sd = 0.73))
   # The role of neighboring infected cattle in bovine leukemia virus transmission risk.
   # https://doi.org/10.1292/jvms.15-0007
-  
-  
+
+
   ## infection_free ----
   free_pressure <-
     rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
@@ -329,7 +329,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Nationwide Survey of Bovine Leukemia Virus Infection among Dairy and Beef Breeding Cattle in Japan from 2010–2011
   # https://doi.org/10.1292/jvms.12-0374
 
-  
+
   ## infection_needles ----
 
   # Infection by using same needles among infected and non-infected cattle

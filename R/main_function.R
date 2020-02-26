@@ -612,7 +612,7 @@ cull_infected_cows <- function(cows, i, param_farm, param_calculated) {
 #' @param cows See [cow_table].
 #' @param cow_id_to_cull `cow_id` to remove from `cows`.
 #' @param i The number of months from the start of the simulation.
-#' 
+#'
 #' @return A [cow_table].
 #' @export
 replace_selected_cows <- function(cows, cow_id_to_cull, i) {
