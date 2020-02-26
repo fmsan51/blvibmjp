@@ -188,18 +188,18 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Length of periods from PL to EBL is not well known. (several months to years)
   param$ebl_progress_shape <- 3.3
   param$ebl_progress_scale <- 7.8
-  # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 (Tsutsui et al, 2016)
+  # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
   ## Probabilities of disease progress ----
   # Proportion of ial cattle which develops ipl
   param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
-  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
+  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
   # Probability that an BLV-infected cow is detected
-  # 39.7% of infected cows are detected (Tsutui et al, 2015)
-  # This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
-  # (Because Tsutsui et al. assumed as the same and there is no data about the length of period from clinical onset to detection.)
+  # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
+  # (Because they assumed as the same and there is no data about the length of period from clinical onset to detection.)
+  # - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
   param$prob_ebl_detected <- rnorm(1, mean = 0.397,
                                    sd = (0.397 - 0.358) / qnorm(0.975))
 
@@ -233,7 +233,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     param$test_specificity <- 0.967
     # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
   } else if (param_farm$test_method == "ELISA") {
-    # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
                             se_upr = c(1.000, 0.999, 0.993, 0.927),
@@ -351,7 +351,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # The probability is 0.034 in Lassauzet, Thurmond and Walton, 1989. https://www.ncbi.nlm.nih.gov/pubmed/2557314
 
   # 直検1回ごとの感染確率
-  # Kohara et al, 2016.
+  # Kohara, Konnai and Onuma, 2016.
   param$prob_inf_rp <- fifelse(param_farm$change_gloves,
                                0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
