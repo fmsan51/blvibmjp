@@ -395,6 +395,8 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
+  # TODO: Think way to remove these params
   param$calving_interval <-
     set_param(param_farm$calving_interval / day_per_month,
               mean(432, 430, 432, 429, 427) / day_per_month)
