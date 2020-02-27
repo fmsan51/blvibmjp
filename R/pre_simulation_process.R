@@ -367,8 +367,15 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
   }
   area_table$area_id <- na.locf(area_table$area_id)
 
-  if (anyNA(area_table$area_type)) {
-    stop("`area_type` column in area data must not contain missing value.")
+  area_type_list <- split(area_table$area_type, area_table$area_id)
+  n_type_in_each_area <-
+    vapply(area_type_list, function(x) n_distinct(x, na.rm = T))
+  has_invalid_area_type <- n_type_in_each_area != 0
+  if (any(has_invalid_area_type)) {
+    area_with_invalid_type <- names(area_type_list)[has_invalid_area_type]
+    stop(gule("`area_type` must contain exactly one value. \\
+               Check `area_type` of following `area_id` in area data:
+               {paste(area_with_invalid_type, collapse = ', ')}"))
   }
 
   is_na <- is.na(area_table$capacity)
