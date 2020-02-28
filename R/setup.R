@@ -159,7 +159,7 @@ setup_movement_table <- function(area_table, movement_table,
       current_area = attr(area_table, "compas_area_id"),
       condition = communal_pasture_table$condition_back,
       next_area = communal_pasture_table$area_back,
-      priority = 1)
+      priority = communal_pasture_table$priority)
     movement_table <- rbindlist(list(move_to_compas, move_from_compas,
                                      movement_table))
   }

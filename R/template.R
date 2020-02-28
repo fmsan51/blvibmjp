@@ -233,8 +233,9 @@ a_movement <- data.table(current_area = NA_integer_,
 #' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
 #' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
 #'
-#' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
+#' - `area_out` (integer), `area_back` (list consister of integer vectors): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
 #' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
+#' - `priority` (list consisted of numeric and/or integer vectors): Priority of `area_back`. See `priority` part in [movement_table] for the detail.
 #'
 #' @examples
 #' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
@@ -242,16 +243,18 @@ a_movement <- data.table(current_area = NA_integer_,
 #' communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
 #' communal_pasture_use[,
 #'  `:=`(area_out = c(2, 4),
-#'       area_back = c(3, 4),
+#'       area_back = list(3, c(4, 5)),
 #'       condition_out = c("age == 20", "month == 4"),
-#'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
+#'       condition_back = c("months_from_pregnancy == 8", "month == 10"),
+#'       priority = list(NA, c(1, 2)))]
 #' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table] [rp_table]
 #' @name communal_pasture_table
 #' @export
 a_communal_pasture_use <- data.table(area_out = NA_integer_,
-                                     area_back = NA_integer_,
+                                     area_back = list(NA),
                                      condition_out = NA_character_,
-                                     condition_back = NA_character_)
+                                     condition_back = NA_character_,
+                                     priority = list(NA))
 
 
 # ---- rectal_palpation_template ----
