@@ -425,6 +425,44 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 process_raw_movement <- function(csv, data = NULL, output_file = NULL,
                                  area_name = NULL, sep = "[,\t\r\n |;:]") {
+  if (!missing(csv)) {
+    input <- fread(csv)
+  } else {
+    input <- as.data.table(data)
+  }
+
+  cols_in_input <- intersect(colnames(a_movement), colnames(input))
+  n_rows <- nrow(input)
+  movement_table <- a_movement[rep(1, n_rows), ]
+  movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  area_id_cols <- c("current_area", "next_area")
+  if (!is.null(area_name)) {
+    movement_table[, (area_id_cols) :=
+        lapply(movement_table[, .SD, .SDcols = area_id_cols],
+          function(x) factor(x, levels = names(area_name), labels = area_name))
+      ]
+  }
+  movement_table[, (area_id_cols) :=
+    lapply(movement_table[, .SD, .SDcols = area_id_cols], as.integer)]
+
+  if (anyNA(movement_table$condition)) {
+    stop(glue("`condition` in movement data must not contain missing value."))
+  }
+
+  if (anyNA(movement_table$priority)) {
+    n_next_area <-
+      vapply(movement_table$next_area, function(x) length(na.omit(x)), 1)
+    list1 <- lapply(n_next_area, function(x) rep(1, x))
+    is_priority_missing <- is.na(movement_table$priority)
+    movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
+  }
+
+  if (!is.null(output_file)) {
+    fwrite(movement_table, output_file)
+  }
+
+  return(movement_table)
 }
 
 
