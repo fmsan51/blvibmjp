@@ -381,9 +381,9 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   ## infection_introduced ----
 
 
-  ## infection_comranch ----
-  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_compasが使われるタイミングないな
-  param$prob_seroconv_compas <-
+  ## infection_communal_pasture ----
+  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
+  param$prob_seroconv_communal_pasture <-
     fifelse(param_farm$use_communal_pasture,
             param_farm$prob_seroconversion_in_communal_pasture, 0)
 

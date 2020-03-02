@@ -28,10 +28,10 @@ Transform an input csv into a suitable form, which is in a form of \link{communa
 An input csv file can have following columns. The csv file must contain \code{area_out}, \code{area_back}, \code{condition_out} and \code{condition_back} column.
 \itemize{
 \item \code{area_out}
-\item \code{area_back}
+\item \code{area_back}: A character like \code{"1|2|3"} will be converted to a character vector \code{c(1, 2, 3)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 \item \code{condition_out}
 \item \code{condition_back}
-\item \code{priority}: If \code{NA}, \code{rep(1, length(area_back))} is set (which means all \code{area_back}s have the same priority and cows are randomly allocated among all \code{area_back}s). A character like \code{"1|2|3"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
+\item \code{priority}: If \code{NA}, \code{rep(1, length(area_back))} is set (which means all \code{area_back}s have the same priority and cows are randomly allocated among all \code{area_back}s). Values must be integer/numeric vectors of the same length with \code{area_back} or \code{NA}. Multiple values can be specified like \code{area_back}.
 }
 
 For further detail of each variable, see \link{communal_pasture_table}.

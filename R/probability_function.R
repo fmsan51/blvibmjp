@@ -104,8 +104,8 @@ is_infected_insects <- function(n_cows, month, param_calculated) {
 #' @param param_farm See [param_farm].
 #'
 #' @return A logical vector.
-is_infected_compas <- function(n_cows, param_farm) {
-  runif(n_cows) < param_farm$prob_seroconv_compas
+is_infected_communal_pasture <- function(n_cows, param_farm) {
+  runif(n_cows) < param_farm$prob_seroconv_communal_pasture
 }
 
 
@@ -241,17 +241,6 @@ is_infected_by_colostrum <- function(status_mother, param_calculated) {
 #'
 #' @return A logical vector
 is_infected_introduced <- function() {
-  # TODO: 中身はあとで考える
-  # これまだどこからも繋がってない
-}
-
-
-#' Whether cows are infected at a communal ranch
-#'
-#' When a cow is come back from a communal ranch, the probability of infection at communal ranch was calculated.
-#'
-#' @return A logical vector.
-is_infected_comranch <- function() {
   # TODO: 中身はあとで考える
   # これまだどこからも繋がってない
 }

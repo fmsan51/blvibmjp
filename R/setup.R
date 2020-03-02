@@ -107,15 +107,16 @@ set_init_chamber_id <- function(init_cows, area_table, area_list) {
 #' @export
 setup_area_table <- function(area_table, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture & all(area_table$area_type != "communal pasture")) {
-    compas_area_id <- max(area_table$area_id) + 1L
+  if (param_farm$use_communal_pasture &
+      all(area_table$area_type != "communal pasture")) {
+    communal_pasture_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,
-                                 list(area_id = compas_area_id,
+                                 list(area_id = communal_pasture_area_id,
                                       area_type = "communal pasture",
                                       capacity = list(Inf))
                                  )
                             )
-    attr(area_table, "compas_area_id") <- compas_area_id
+    attr(area_table, "communal_pasture_area_id") <- communal_pasture_area_id
   }
 
   attr(area_table, "capacity") <-
@@ -150,17 +151,18 @@ setup_movement_table <- function(area_table, movement_table,
   if (!is.null(communal_pasture_table)) {
     # Set movement to a communal pasture with the highest priority
     # (= in the top rows)
-    move_to_compas <- data.table(
+    move_to_communal_pasture <- data.table(
       current_area = communal_pasture_table$area_out,
       condition = communal_pasture_table$condition_out,
-      next_area = attr(area_table, "compas_area_id"),
+      next_area = attr(area_table, "communal_pasture_area_id"),
       priority = 1)
-    move_from_compas <- data.table(
-      current_area = attr(area_table, "compas_area_id"),
+    move_from_communal_pasture <- data.table(
+      current_area = attr(area_table, "communal_pasture_area_id"),
       condition = communal_pasture_table$condition_back,
       next_area = communal_pasture_table$area_back,
       priority = communal_pasture_table$priority)
-    movement_table <- rbindlist(list(move_to_compas, move_from_compas,
+    movement_table <- rbindlist(list(move_to_communal_pasture,
+                                     move_from_communal_pasture,
                                      movement_table))
   }
   # TODO: warn when capacity > cows at the start of a simulation.
