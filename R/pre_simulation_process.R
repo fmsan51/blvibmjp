@@ -465,6 +465,8 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
     movement_table$next_area <- lapply(movement_table$next_area,
       function(x) factor(x, levels = names(area_name), labels = area_name))
   }
+  movement_table$current_area <- as.integer(movement_table$current_area)
+  movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
   if (anyNA(movement_table$priority)) {
     n_next_area <-
@@ -546,6 +548,9 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
     communal_pasture_table$area_back <- lapply(communal_pasture_table$area_back,
       function(x) factor(x, levels = names(area_name), labels = area_name))
   }
+  communal_pasture_table$area_out <- as.integer(communal_pasture_table$area_out)
+  communal_pasture_table$area_back <-
+    lapply(communal_pasture_table$area_back, as.integer)
 
   if (anyNA(communal_pasture_table$priority)) {
     n_area_back <- vapply(communal_pasture_table$area_back,
