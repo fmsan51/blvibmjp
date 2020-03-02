@@ -450,18 +450,20 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
      ))
   }
 
-  area_id_cols <- c("current_area", "next_area")
-  for (col in area_id_cols) {
-    col_data <- movement_table[[col]]
-    if (!is.null(area_name)) {
-      if (any(!unique(unlist(col_data)) %in% names(area_name))) {
-        stop(glue("`{col}` in the communal pasture use data contains \\
-                   an area name which is not contained in the area data."))
-      }
-      col_data <- lapply(col_data,
-        function(x) factor(x, levels = names(area_name), labels = area_name))
+  if (!is.null(area_name)) {
+    if (any(!unique(movement_table$current_area) %in% names(area_name))) {
+      stop(glue("`current_area` in the communal pasture use data contains \\
+                 an area name which is not contained in the area data."))
     }
-    movement_table[[col]] <- lapply(col_data, as.integer)
+    if (any(!unique(unlist(movement_table$next_area)) %in% names(area_name))) {
+      stop(glue("`next_area` in the communal pasture use data contains \\
+                 an area name which is not contained in the area data."))
+    }
+
+    movement_table$current_area <- factor(movement_table$current_area,
+      levels = names(area_name), labels = area_name)
+    movement_table$next_area <- lapply(movement_table$next_area,
+      function(x) factor(x, levels = names(area_name), labels = area_name))
   }
 
   if (anyNA(movement_table$priority)) {
@@ -527,18 +529,22 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
      ))
   }
 
-  area_id_cols <- c("area_out", "area_back")
-  for (col in area_id_cols) {
-    col_data <- communal_pasture_table[[col]]
-    if (!is.null(area_name)) {
-      if (any(!unique(unlist(col_data)) %in% names(area_name))) {
-        stop(glue("`{col}` in the communal pasture use data contains \\
-                   an area name which is not contained in the area data."))
-      }
-      col_data <- lapply(col_data,
-        function(x) factor(x, levels = names(area_name), labels = area_name))
+  if (!is.null(area_name)) {
+    if (any(!unique(communal_pasture_table$area_out) %in% names(area_name))) {
+      stop(glue("`area_out` in the communal pasture use data contains \\
+                 an area name which is not contained in the area data."))
     }
-    communal_pasture_table[[col]] <- lapply(col_data, as.integer)
+    if (any(
+        !unique(unlist(communal_pasture_table$area_back)) %in% names(area_name))
+        ) {
+      stop(glue("`area_back` in the communal pasture use data contains \\
+                 an area name which is not contained in the area data."))
+    }
+
+    communal_pasture_table$area_out <- factor(communal_pasture_table$area_out,
+      levels = names(area_name), labels = area_name)
+    communal_pasture_table$area_back <- lapply(communal_pasture_table$area_back,
+      function(x) factor(x, levels = names(area_name), labels = area_name))
   }
 
   if (anyNA(communal_pasture_table$priority)) {
