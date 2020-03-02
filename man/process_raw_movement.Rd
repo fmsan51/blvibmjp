@@ -5,7 +5,7 @@
 \title{Process raw movement data to suitable form}
 \usage{
 process_raw_movement(csv, data = NULL, output_file = NULL,
-  area_name = NULL, sep = "[,\\t\\r\\n |;:]")
+  area_name = NULL)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
@@ -15,22 +15,21 @@ process_raw_movement(csv, data = NULL, output_file = NULL,
 \item{output_file}{The name of an output file (must be a csv file). If \code{NULL}, no output file is created.}
 
 \item{area_name}{If \code{current_area} and \code{next_area} are specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
-
-\item{sep}{Separatator used in \code{capacity} column. See explanation of \code{capacity} in Detail section.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
 }
 \description{
-Transform an input csv into a suitable form, which is in a form of \link{area_table}.
+Transform an input csv into a suitable form, which is in a form of \link{movement_table}.
 }
 \details{
-An input csv file can have following columns. The csv file must contain \code{area_type} column.
+An input csv file can have following columns. The csv file must contain \code{current_area}, \code{condition} and \code{next_area} column.
 \itemize{
-\item \code{area_id}: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same \code{area_id} only when these rows have \code{area_type}s as "tie". \emph{e.g.} \code{data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))} is identical to \code{data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))}. If \code{NA}, the previous non-\code{NA} value is set.
-\item \code{area_type}
-\item \code{capacity}: If \code{NA}, \code{Inf} is set. If \code{area_type} is "free", \code{capacity} must be set. A character like \code{"1|2|4"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+\item \code{current_area}
+\item \code{condition}
+\item \code{next_area}
+\item \code{priority}: If \code{NA}, \code{rep(1, length(next_area))} is set (which means all \code{next_area}s have the same priority and cows are randomly allocated among all \code{next_area}s).
 }
 
-For further detail of each variable, see \link{area_table}.
+For further detail of each variable, see \link{movement_table}.
 }

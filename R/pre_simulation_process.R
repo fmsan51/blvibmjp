@@ -409,26 +409,26 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 
 #' Process raw movement data to suitable form
 #'
-#' Transform an input csv into a suitable form, which is in a form of [area_table].
+#' Transform an input csv into a suitable form, which is in a form of [movement_table].
 #'
-#' An input csv file can have following columns. The csv file must contain `area_type` column.
+#' An input csv file can have following columns. The csv file must contain `current_area`, `condition` and `next_area` column.
 #'
-#' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
-#' - `area_type`
-#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#' - `current_area`
+#' - `condition`
+#' - `next_area`
+#' - `priority`: If `NA`, `rep(1, length(next_area))` is set (which means all `next_area`s have the same priority and cows are randomly allocated among all `next_area`s).
 #'
-#' For further detail of each variable, see [area_table].
+#' For further detail of each variable, see [movement_table].
 #'
 #' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
 #' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
-#' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
 #' @param area_name If `current_area` and `next_area` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 process_raw_movement <- function(csv, data = NULL, output_file = NULL,
-                                 area_name = NULL, sep = "[,\t\r\n |;:]") {
+                                 area_name = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
