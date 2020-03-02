@@ -27,7 +27,7 @@ An input csv file can have following columns. The csv file must contain \code{ar
 \itemize{
 \item \code{area_id}: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same \code{area_id} only when these rows have \code{area_type}s as "tie". \emph{e.g.} \code{data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))} is identical to \code{data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))}. If \code{NA}, the previous non-\code{NA} value is set.
 \item \code{area_type}
-\item \code{capacity}: If \code{NA}, \code{Inf} is set. If \code{area_type} is "free", \code{capacity} must be set. A character like \code{"1|2|4"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+\item \code{capacity}: If \code{NA}, \code{Inf} is set. If \code{area_type} is "free", \code{capacity} must be set. A character like \code{"1|2|3"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
 }
 
 For further detail of each variable, see \link{area_table}.

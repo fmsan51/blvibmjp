@@ -334,7 +334,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 #'
 #' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
 #' - `area_type`
-#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|4"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
 #'
 #' For further detail of each variable, see [area_table].
 #'
@@ -416,8 +416,7 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 #' - `current_area`
 #' - `condition`
 #' - `next_area`
-#' - `priority`: If `NA`, `rep(1, length(next_area))` is set (which means all `next_area`s have the same priority and cows are randomly allocated among all `next_area`s).
-#'
+#' - `priority`: If `NA`, `rep(1, length(next_area))` is set (which means all `next_area`s have the same priority and cows are randomly allocated among all `next_area`s). A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 #' For further detail of each variable, see [movement_table].
 #'
 #' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
@@ -502,7 +501,7 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
 #' - `area_back`
 #' - `condition_out`
 #' - `condition_back`
-#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s).
+#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s). A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 #'
 #' For further detail of each variable, see [communal_pasture_table].
 #'

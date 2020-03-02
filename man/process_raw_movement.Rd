@@ -30,8 +30,7 @@ An input csv file can have following columns. The csv file must contain \code{cu
 \item \code{current_area}
 \item \code{condition}
 \item \code{next_area}
-\item \code{priority}: If \code{NA}, \code{rep(1, length(next_area))} is set (which means all \code{next_area}s have the same priority and cows are randomly allocated among all \code{next_area}s).
-}
-
+\item \code{priority}: If \code{NA}, \code{rep(1, length(next_area))} is set (which means all \code{next_area}s have the same priority and cows are randomly allocated among all \code{next_area}s). A character like \code{"1|2|3"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 For further detail of each variable, see \link{movement_table}.
+}
 }

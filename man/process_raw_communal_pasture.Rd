@@ -31,7 +31,7 @@ An input csv file can have following columns. The csv file must contain \code{ar
 \item \code{area_back}
 \item \code{condition_out}
 \item \code{condition_back}
-\item \code{priority}: If \code{NA}, \code{rep(1, length(area_back))} is set (which means all \code{area_back}s have the same priority and cows are randomly allocated among all \code{area_back}s).
+\item \code{priority}: If \code{NA}, \code{rep(1, length(area_back))} is set (which means all \code{area_back}s have the same priority and cows are randomly allocated among all \code{area_back}s). A character like \code{"1|2|3"} will be converted to a numeric vector \code{c(1, 2, 4)}. Separator (\code{|}) can be specifed by \code{sep} argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 }
 
 For further detail of each variable, see \link{communal_pasture_table}.
