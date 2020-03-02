@@ -237,6 +237,10 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
   if (!is.null(area_name)) {
+    if (any(!cows$area_id %in% c(names(area_name), NA_character_))) {
+      stop(glue("`area_name` in the cow data contains area names \\
+                 which are not contained in the area data."))
+    }
     cows$area_id <-
       factor(cows$area_id, levels = names(area_name), labels = area_name)
   }
@@ -374,7 +378,7 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
   if (any(has_invalid_area_type)) {
     area_with_invalid_type <- names(area_type_list)[has_invalid_area_type]
     stop(gule("`area_type` must contain exactly one value. \\
-               Check `area_type` of following `area_id` in area data:
+               Check `area_type` of following `area_id` in the area data:
                {paste(area_with_invalid_type, collapse = ', ')}"))
   }
 
@@ -436,18 +440,28 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table <- a_movement[rep(1, n_rows), ]
   movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
-  area_id_cols <- c("current_area", "next_area")
-  if (!is.null(area_name)) {
-    movement_table[, (area_id_cols) :=
-        lapply(movement_table[, .SD, .SDcols = area_id_cols],
-          function(x) factor(x, levels = names(area_name), labels = area_name))
-      ]
+  necessary_cols <- c("current_area", "condition", "next_area")
+  necessary_data <- movement_table[, .SD, .SDcols = necessary_cols]
+  if (anyNA(necessary_data)) {
+    missing_cols <- necessary_cols[vapply(necessary_data, anyNA, F)]
+    stop(glue(
+      "Following column(s) in the movement data must not contain missing value:
+       {paste0('`', missing_cols, '`', collapse = ', ')}"
+     ))
   }
-  movement_table[, (area_id_cols) :=
-    lapply(movement_table[, .SD, .SDcols = area_id_cols], as.integer)]
 
-  if (anyNA(movement_table$condition)) {
-    stop(glue("`condition` in movement data must not contain missing value."))
+  area_id_cols <- c("current_area", "next_area")
+  for (col in area_id_cols) {
+    col_data <- movement_table[[col]]
+    if (!is.null(area_name)) {
+      if (any(!unique(unlist(col_data)) %in% names(area_name))) {
+        stop(glue("`{col}` in the communal pasture use data contains \\
+                   an area name which is not contained in the area data."))
+      }
+      col_data <- lapply(col_data,
+        function(x) factor(x, levels = names(area_name), labels = area_name))
+    }
+    movement_table[[col]] <- lapply(col_data, as.integer)
   }
 
   if (anyNA(movement_table$priority)) {
