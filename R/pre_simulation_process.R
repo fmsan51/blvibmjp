@@ -334,7 +334,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 #'
 #' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
 #' - `area_type`
-#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 3)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
 #'
 #' For further detail of each variable, see [area_table].
 #'
@@ -415,8 +415,8 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 #'
 #' - `current_area`
 #' - `condition`
-#' - `next_area`
-#' - `priority`: If `NA`, `rep(1, length(next_area))` is set (which means all `next_area`s have the same priority and cows are randomly allocated among all `next_area`s). A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
+#' - `next_area`: A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 3)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
+#' - `priority`: If `NA`, `rep(1, length(next_area))` is set (which means all `next_area`s have the same priority and cows are randomly allocated among all `next_area`s). Values must be integer/numeric vectors of the same length with `next_area` or `NA`. Multiple values can be specified like `next_area`.
 #' For further detail of each variable, see [movement_table].
 #'
 #' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
@@ -450,6 +450,8 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
      ))
   }
 
+  movement_table$next_area <-
+    strsplit(movement_table$next_area, paste0(sep, "+"))
   if (!is.null(area_name)) {
     if (any(!unique(movement_table$current_area) %in% names(area_name))) {
       stop(glue("`current_area` in the communal pasture use data contains \\
@@ -468,6 +470,8 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table$current_area <- as.integer(movement_table$current_area)
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
+  movement_table$priority <- strsplit(movement_table$priority, paste0(sep, "+"))
+  movement_table$priority <- lapply(movement_table$priority, as.numeric)
   if (anyNA(movement_table$priority)) {
     n_next_area <-
       vapply(movement_table$next_area, function(x) length(na.omit(x)), 1)
@@ -481,7 +485,6 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
                integer/numeric vectors of the same number of items with \\
                `next_area`."))
   }
-  movement_table$priority <- lapply(movement_table$priority, as.numeric)
 
   if (!is.null(output_file)) {
     fwrite(movement_table, output_file)
@@ -498,10 +501,10 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
 #' An input csv file can have following columns. The csv file must contain `area_out`, `area_back`, `condition_out` and `condition_back` column.
 #'
 #' - `area_out`
-#' - `area_back`
+#' - `area_back`: A character like `"1|2|3"` will be converted to a character vector `c(1, 2, 3)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
 #' - `condition_out`
 #' - `condition_back`
-#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s). A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 4)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
+#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s). Values must be integer/numeric vectors of the same length with `area_back` or `NA`. Multiple values can be specified like `area_back`.
 #'
 #' For further detail of each variable, see [communal_pasture_table].
 #'
@@ -539,6 +542,8 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
      ))
   }
 
+  communal_pasture_table$area_back <-
+    strsplit(communal_pasture_table$area_back, paste0(sep, "+"))
   if (!is.null(area_name)) {
     if (any(!unique(communal_pasture_table$area_out) %in% names(area_name))) {
       stop(glue("`area_out` in the communal pasture use data contains \\
@@ -560,6 +565,10 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
   communal_pasture_table$area_back <-
     lapply(communal_pasture_table$area_back, as.integer)
 
+  communal_pasture_table$priority <-
+    strsplit(communal_pasture_table$priority, paste0(sep, "+"))
+  communal_pasture_table$priority <-
+    lapply(communal_pasture_table$priority, as.numeric)
   if (anyNA(communal_pasture_table$priority)) {
     n_area_back <- vapply(communal_pasture_table$area_back,
                           function(x) length(na.omit(x)), 1)
@@ -574,8 +583,6 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
                consisted of NA or integer/numeric vectors of \\
                the same number of items with `area_back`."))
   }
-  communal_pasture_table$priority <-
-    lapply(communal_pasture_table$priority, as.numeric)
 
   if (!is.null(output_file)) {
     fwrite(communal_pasture_table, output_file)
