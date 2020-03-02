@@ -389,7 +389,9 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
     }
     area_table$capacity[is_na] <- Inf
   }
-  area_table$capacity <- strsplit(area_table$capacity, paste0(sep, "+"))
+  area_table$capacity <-
+    strsplit(as.character(area_table$capacity), paste0(sep, "+"))
+  # as.character() to when capacity is an integer/numeric vector.
   area_table$capacity <- lapply(area_table$capacity, as.numeric)
 
   if (any(duplicated(area_table$area_id))) {
@@ -451,7 +453,8 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   }
 
   movement_table$next_area <-
-    strsplit(movement_table$next_area, paste0(sep, "+"))
+    strsplit(as.character(movement_table$next_area), paste0(sep, "+"))
+  # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
     if (any(!unique(movement_table$current_area) %in% names(area_name))) {
       stop(glue("`current_area` in the communal pasture use data contains \\
@@ -470,7 +473,9 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table$current_area <- as.integer(movement_table$current_area)
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
-  movement_table$priority <- strsplit(movement_table$priority, paste0(sep, "+"))
+  movement_table$priority <-
+    strsplit(as.character(movement_table$priority), paste0(sep, "+"))
+  # as.character() to when capacity is an integer/numeric vector.
   movement_table$priority <- lapply(movement_table$priority, as.numeric)
   if (anyNA(movement_table$priority)) {
     n_next_area <-
@@ -543,7 +548,8 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
   }
 
   communal_pasture_table$area_back <-
-    strsplit(communal_pasture_table$area_back, paste0(sep, "+"))
+    strsplit(as.character(communal_pasture_table$area_back), paste0(sep, "+"))
+  # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
     if (any(!unique(communal_pasture_table$area_out) %in% names(area_name))) {
       stop(glue("`area_out` in the communal pasture use data contains \\
@@ -566,7 +572,8 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
     lapply(communal_pasture_table$area_back, as.integer)
 
   communal_pasture_table$priority <-
-    strsplit(communal_pasture_table$priority, paste0(sep, "+"))
+    strsplit(as.character(communal_pasture_table$priority), paste0(sep, "+"))
+  # as.character() to when capacity is an integer/numeric vector.
   communal_pasture_table$priority <-
     lapply(communal_pasture_table$priority, as.numeric)
   if (anyNA(communal_pasture_table$priority)) {
