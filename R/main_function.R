@@ -848,7 +848,6 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
 
   return(list(cows = cows, area_list = area_list))
 }
-# TODO: Make a function to setup tie_stall_table.
 
 # TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
 
