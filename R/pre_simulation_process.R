@@ -457,11 +457,11 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
     if (any(!unique(movement_table$current_area) %in% names(area_name))) {
-      stop(glue("`current_area` in the communal pasture use data contains \\
+      stop(glue("`current_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
     if (any(!unique(unlist(movement_table$next_area)) %in% names(area_name))) {
-      stop(glue("`next_area` in the communal pasture use data contains \\
+      stop(glue("`next_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
 
