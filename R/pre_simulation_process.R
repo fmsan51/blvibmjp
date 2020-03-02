@@ -466,6 +466,84 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
 }
 
 
+#' Process raw communal pasture use data to suitable form
+#'
+#' Transform an input csv into a suitable form, which is in a form of [communal_pasture_table].
+#'
+#' An input csv file can have following columns. The csv file must contain `area_out`, `area_back`, `condition_out` and `condition_back` column.
+#'
+#' - `area_out`
+#' - `area_back`
+#' - `condition_out`
+#' - `condition_back`
+#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s).
+#'
+#' For further detail of each variable, see [communal_pasture_table].
+#'
+#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
+#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
+#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
+#' @param area_name If `area_out` and `area_back` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
+#'
+#' @export
+#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
+                                 area_name = NULL) {
+  if (!missing(csv)) {
+    input <- fread(csv)
+  } else {
+    input <- as.data.table(data)
+  }
+
+  cols_in_input <- intersect(colnames(a_communal_pasture_use), colnames(input))
+  n_rows <- nrow(input)
+  communal_pasture_table <- a_communal_pasture_use[rep(1, n_rows), ]
+  communal_pasture_table[,
+    (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  necessary_cols <-
+    c("area_out", "area_back", "condition_out", "condition_back")
+  necessary_data <- communal_pasture_table[, .SD, .SDcols = necessary_cols]
+  if (anyNA(necessary_data)) {
+    missing_cols <- necessary_cols[vapply(necessary_data, anyNA, F)]
+    stop(glue(
+      "Following column(s) in communal pasture use data must not contain \\
+       missing value(s):
+       {paste0('`', missing_cols, '`', collapse = ', ')}"
+     ))
+  }
+
+  area_id_cols <- c("area_out", "area_back")
+  for (col in area_id_cols) {
+    col_data <- communal_pasture_table[[col]]
+    if (!is.null(area_name)) {
+      if (any(!unique(unlist(col_data)) %in% names(area_name))) {
+        stop(glue("`{col}` in the communal pasture use data contains \\
+                   an area name which is not contained in the area data."))
+      }
+      col_data <- lapply(col_data,
+        function(x) factor(x, levels = names(area_name), labels = area_name))
+    }
+    communal_pasture_table[[col]] <- lapply(col_data, as.integer)
+  }
+
+  if (anyNA(communal_pasture_table$priority)) {
+    n_area_back <- vapply(communal_pasture_table$area_back,
+                          function(x) length(na.omit(x)), 1)
+    list1 <- lapply(n_area_back, function(x) rep(1, x))
+    is_priority_missing <- is.na(communal_pasture_table$priority)
+    communal_pasture_table$priority[is_priority_missing] <-
+      list1[is_priority_missing]
+  }
+
+  if (!is.null(output_file)) {
+    fwrite(communal_pasture_table, output_file)
+  }
+
+  return(communal_pasture_table)
+}
+
+
 #' Process raw data to suitable forms
 #'
 #' Process csv files to suitable forms to use in simulation.
