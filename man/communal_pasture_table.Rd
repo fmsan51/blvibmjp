@@ -5,7 +5,7 @@
 \alias{communal_pasture_table}
 \alias{a_communal_pasture_use}
 \title{A data.table to manage use of a communal pasture}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.}
+\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 5 columns.}
 \usage{
 a_communal_pasture_use
 }
@@ -15,8 +15,9 @@ To simulate a farm using a communal pasture, users must specify one \code{commun
 }
 \details{
 \itemize{
-\item \code{area_out}, \code{area_back} (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by \code{area_id} in \link{area_table}.
+\item \code{area_out} (integer), \code{area_back} (list consister of integer vectors): Areas from where cows are send to a communal pasture and come back to the farm specified by \code{area_id} in \link{area_table}.
 \item \code{condition_out}, \code{condition_back} (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See \code{condition} part in \link{area_table} to know how to specify them.
+\item \code{priority} (list consisted of numeric and/or integer vectors): Priority of \code{area_back}. See \code{priority} part in \link{movement_table} for the detail.
 }
 }
 \examples{
@@ -25,9 +26,10 @@ To simulate a farm using a communal pasture, users must specify one \code{commun
 communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
 communal_pasture_use[,
  `:=`(area_out = c(2, 4),
-      area_back = c(3, 4),
+      area_back = list(3, c(4, 5)),
       condition_out = c("age == 20", "month == 4"),
-      condition_back = c("months_from_pregnancy == 8", "month == 10"))]
+      condition_back = c("months_from_pregnancy == 8", "month == 10"),
+      priority = list(NA, c(1, 2)))]
 }
 \seealso{
 \link{cow_table} \link{tie_stall_table} \link{area_table} \link{movement_table} \link{rp_table}
