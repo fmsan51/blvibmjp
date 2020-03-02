@@ -475,6 +475,13 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
     is_priority_missing <- is.na(movement_table$priority)
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
   }
+  if (any(vapply(movement_table$next_area, length, 1) !=
+          vapply(movement_table$priority, length, 1))) {
+    stop(glue("`priority` in the movement data must be consisted of NA or \\
+               integer/numeric vectors of the same number of items with \\
+               `next_area`."))
+  }
+  movement_table$priority <- lapply(movement_table$priority, as.numeric)
 
   if (!is.null(output_file)) {
     fwrite(movement_table, output_file)
@@ -560,6 +567,14 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
     communal_pasture_table$priority[is_priority_missing] <-
       list1[is_priority_missing]
   }
+  if (any(vapply(communal_pasture_table$area_back, length, 1) !=
+          vapply(communal_pasture_table$priority, length, 1))) {
+    stop(glue("`priority` in the communal pasture use data must be \\
+               consisted of NA or integer/numeric vectors of \\
+               the same number of items with `area_back`."))
+  }
+  communal_pasture_table$priority <-
+    lapply(communal_pasture_table$priority, as.numeric)
 
   if (!is.null(output_file)) {
     fwrite(communal_pasture_table, output_file)
