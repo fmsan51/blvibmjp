@@ -5,6 +5,7 @@
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
 #' @param param_area See [param_area].
+#' @param processed_data The result of [process_raw_data()]. Set this parameters or `area_table` and `movement_table`.
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
 #' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
@@ -15,6 +16,7 @@
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param_simulation$output_dir`.
 #' @export
 simulate_blv_spread <- function(param_simulation, param_farm, param_area,
+                                processed_data,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
                                 list_param_modification = NULL,
@@ -24,8 +26,16 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
     dir.create(param_simulation$output_dir, recursive = T)
   }
 
+  cow_table <- NULL
+  if (!missing(processed_data)) {
+    cow_table <- processed_data$cows
+    area_table <- processed_data$areas
+    movement_table <- processed_data$movement
+    communal_pasture_table <- processed_data$communal_pasture
+  }
+
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
-  setup_cows_res <- setup_cows(param_simulation, save_cows)
+  setup_cows_res <- setup_cows(param_simulation, save_cows, cow_table)
   area_table <- setup_area_table(area_table, param_farm, param_area)
 
   area_list <- setup_tie_stall_table(area_table)

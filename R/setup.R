@@ -4,20 +4,23 @@
 #'
 #' @param param_simulation See [param_simulation].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
+#' @param cow_table See [cow_table].
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, save_cows) {
-  cows <- fread(file = param_simulation$input_csv,
-                colClasses = sapply(a_new_calf, class))
+setup_cows <- function(param_simulation, save_cows, cow_table = NULL) {
+  if (is.null(cow_table)) {
+    cow_table <- fread(file = param_simulation$input_csv,
+                       colClasses = sapply(a_new_calf, class))
+  }
 
   # Prepare cow_table with many rows to reserve enough memory while simulation
-  init_n_cows <- nrow(cows)
+  init_n_cows <- nrow(cow_table)
   max_herd_size <- init_n_cows * param_simulation$simulation_length * 2
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
-  init_cows[1:init_n_cows, ] <- cows
+  init_cows[1:init_n_cows, ] <- cow_table
   # Used 1:n instead of seq_len(n) because it is faster
 
   if (save_cows) {

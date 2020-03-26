@@ -4,10 +4,10 @@
 \alias{simulate_blv_spread}
 \title{Simulate spread of BLV}
 \usage{
-simulate_blv_spread(param_simulation, param_farm, param_area, area_table,
-  movement_table, communal_pasture_table = NULL,
-  list_param_modification = NULL, save_cows = T, save_param = T,
-  i_simulation_start = 1)
+simulate_blv_spread(param_simulation, param_farm, param_area,
+  processed_data, area_table, movement_table,
+  communal_pasture_table = NULL, list_param_modification = NULL,
+  save_cows = T, save_param = T, i_simulation_start = 1)
 }
 \arguments{
 \item{param_simulation}{See \link{param_simulation}.}
@@ -15,6 +15,8 @@ simulate_blv_spread(param_simulation, param_farm, param_area, area_table,
 \item{param_farm}{See \link{param_farm}.}
 
 \item{param_area}{See \link{param_area}.}
+
+\item{processed_data}{The result of \code{\link[=process_raw_data]{process_raw_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
 
 \item{area_table}{See \link{area_table}.}
 
