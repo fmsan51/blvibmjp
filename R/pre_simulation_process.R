@@ -377,7 +377,7 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
   has_invalid_area_type <- n_type_in_each_area != 0
   if (any(has_invalid_area_type)) {
     area_with_invalid_type <- names(area_type_list)[has_invalid_area_type]
-    stop(gule("`area_type` must contain exactly one value. \\
+    stop(glue("`area_type` must contain exactly one value. \\
                Check `area_type` of following `area_id` in the area data:
                {paste(area_with_invalid_type, collapse = ', ')}"))
   }
