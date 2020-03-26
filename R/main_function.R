@@ -754,12 +754,12 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
         n_na_allocated_areas <- sum(is_na_allocated_areas)
         if (any(capacity_of_next_areas == Inf)) {
           allocated_areas[which(is_na_allocated_areas)] <-
-            sample(i_next_area[capacity_of_next_areas == Inf],
-                   n_na_allocated_areas, replace = T)
+            resample(i_next_area[capacity_of_next_areas == Inf],
+                     n_na_allocated_areas, replace = T)
         } else {
           allocated_areas[which(is_na_allocated_areas)] <-
-            sample(i_next_area, n_na_allocated_areas, replace = T,
-                   prob = capacity_of_next_areas)
+            resample(i_next_area, n_na_allocated_areas, replace = T,
+                     prob = capacity_of_next_areas)
         }
         cow_id_allocated_to_full_areas[
           cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
