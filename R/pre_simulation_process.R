@@ -647,7 +647,7 @@ process_raw_data <- function(cow_csv, area_csv, movement_csv,
     communal_pasture_output_file <- "communal_pasture.csv"
   }
 
-  cows <- process_raw_csv(csv = cow_csv, data = cow_data,
+  cows <- process_raw_cow(csv = cow_csv, data = cow_data,
                           output_file = cow_output_file,
                           param_calculated = param_calculated,
                           area_name = area_name, ...)
