@@ -477,15 +477,15 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
     strsplit(as.character(movement_table$priority), paste0(sep, "+"))
   # as.character() to when capacity is an integer/numeric vector.
   movement_table$priority <- lapply(movement_table$priority, as.numeric)
-  if (anyNA(movement_table$priority)) {
+  n_priority <- vapply(movement_table$priority, length, 1)
+  if (anyNA(movement_table$priority) | any(n_priority == 0) {
     n_next_area <-
       vapply(movement_table$next_area, function(x) length(na.omit(x)), 1)
     list1 <- lapply(n_next_area, function(x) rep(1, x))
     is_priority_missing <- is.na(movement_table$priority)
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
   }
-  if (any(vapply(movement_table$next_area, length, 1) !=
-          vapply(movement_table$priority, length, 1))) {
+  if (any(vapply(movement_table$next_area, length, 1) != n_priority)) {
     stop(glue("`priority` in the movement data must be consisted of NA or \\
                integer/numeric vectors of the same number of items with \\
                `next_area`."))
@@ -576,7 +576,8 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
   # as.character() to when capacity is an integer/numeric vector.
   communal_pasture_table$priority <-
     lapply(communal_pasture_table$priority, as.numeric)
-  if (anyNA(communal_pasture_table$priority)) {
+  n_priority <- vapply(communal_pasture_table$priority, length, 1)
+  if (anyNA(communal_pasture_table$priority) | any(n_priority == 0)) {
     n_area_back <- vapply(communal_pasture_table$area_back,
                           function(x) length(na.omit(x)), 1)
     list1 <- lapply(n_area_back, function(x) rep(1, x))
@@ -584,8 +585,7 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
     communal_pasture_table$priority[is_priority_missing] <-
       list1[is_priority_missing]
   }
-  if (any(vapply(communal_pasture_table$area_back, length, 1) !=
-          vapply(communal_pasture_table$priority, length, 1))) {
+  if (any(vapply(communal_pasture_table$area_back, length, 1) != n_priority)) {
     stop(glue("`priority` in the communal pasture use data must be \\
                consisted of NA or integer/numeric vectors of \\
                the same number of items with `area_back`."))
