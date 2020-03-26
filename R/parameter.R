@@ -381,9 +381,9 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   ## infection_introduced ----
 
 
-  ## infection_comranch ----
-  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_compasが使われるタイミングないな
-  param$prob_seroconv_compas <-
+  ## infection_communal_pasture ----
+  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
+  param$prob_seroconv_communal_pasture <-
     fifelse(param_farm$use_communal_pasture,
             param_farm$prob_seroconversion_in_communal_pasture, 0)
 
@@ -395,6 +395,8 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
+  # TODO: Think way to remove these params
   param$calving_interval <-
     set_param(param_farm$calving_interval / day_per_month,
               mean(432, 430, 432, 429, 427) / day_per_month)

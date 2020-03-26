@@ -141,7 +141,8 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 
   if (is.null(route_levels)) {
     route_levels <- c("uninfected", "initial", "insects", "contact", "needles",
-                      "rp", "vertical", "colostrum", "introduced", "comranch")
+                      "rp", "vertical", "colostrum", "introduced",
+                      "communal_pasture")
   }
   uninf_and_route <- unique(c("uninfected", route_levels))
 
@@ -208,7 +209,7 @@ plot_infection_route <- function(path_to_csv, language = NULL,
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
-  n_cause <- length(unique(infection_route$cause_infection))
+  n_cause <- n_distinct(infection_route$cause_infection)
   if (gray) {
     color_specification <- c("area_color", "border_color")
     is_color_specified <-

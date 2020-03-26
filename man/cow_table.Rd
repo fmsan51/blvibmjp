@@ -62,7 +62,7 @@ FALSE: The cow Will be sold to beef operations.
 \item "rp": by rectal palpation.
 \item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-\item "comranch": infected at a communal ranch.
+\item "communal_pasture": infected at a communal pasture.
 }
 \item \code{susceptibility_ial_to_ipl}: Genetic susceptibility to disease progress (Ial -> Ipl).
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).

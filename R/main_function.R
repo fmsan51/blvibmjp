@@ -699,10 +699,11 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
                            cow_id_met_condition, duplicated_cow_id,
                            SIMPLIFY = FALSE)
 
-  compas_area_id <- attr(area_table, "compas_area_id")
-  if (!is.null(compas_area_id)) {
-    cow_id_returned_from_compas <-
-      cows[cow_id %in% unlist(cow_id_to_move) & area_id == compas_area_id,
+  communal_pasture_area_id <- attr(area_table, "communal_pasture_area_id")
+  if (!is.null(communal_pasture_area_id)) {
+    cow_id_returned_from_communal_pasture <-
+      cows[cow_id %in% unlist(cow_id_to_move) &
+             area_id == communal_pasture_area_id,
            cow_id]
   }
 
@@ -834,20 +835,19 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
          area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
 
   # Calculate seroconversion of cows have returned from a communal pasture
-  if (!is.null(compas_area_id)) {
-    cow_id_infected_in_compas <- cow_id_returned_from_compas[
-      is_infected_compas(length(cow_id_returned_from_compas), param_calculated)
-      ]
-    cows[cow_id %in% cow_id_infected_in_compas,
+  if (!is.null(communal_pasture_area_id)) {
+    cow_id_infected_in_communal_pasture <-
+      cow_id_returned_from_communal_pasture[is_infected_communal_pasture(
+          length(cow_id_returned_from_communal_pasture), param_calculated
+        )]
+    cows[cow_id %in% cow_id_infected_in_communal_pasture,
          `:=`(infection_status = "ial",
               date_ial = i,
-              cause_infection = "comranch")]
-    # TODO: comranchとcompas統一
+              cause_infection = "communal_pasture")]
   }
 
   return(list(cows = cows, area_list = area_list))
 }
-# TODO: Make a function to setup tie_stall_table.
 
 # TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
 
