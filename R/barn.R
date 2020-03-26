@@ -56,11 +56,11 @@ assign_chambers <- function(cows, area_list, area_assignment) {
     n_assigned_cows <- min(length(candidate_cow_id), length(empty_chambers))
     assigned_chambers <- resample(empty_chambers, n_assigned_cows)
     assigned_cow_id <- candidate_cow_id[seq_len(n_assigned_cows)]
-    cows$chamber_id[na.omit(match(cows$cow_id, assigned_cow_id))] <-
+    cows$chamber_id[match(assigned_cow_id, cows$cow_id)] <-
       assigned_chambers
-    assigned_cows <- cows[match(cow_id, assigned_cow_id),
+    assigned_cows <- cows[match(assigned_cow_id, cow_id),
                           list(cow_id, infection_status, is_isolated)]
-    assigned_area[match(chamber_id, assigned_cows$chamber_id),
+    assigned_area[match(assigned_chambers, chamber_id),
                   c("cow_id", "cow_status", "is_isolated") := assigned_cows]
     area_list[[i_area]] <- assigned_area
   }
@@ -160,8 +160,10 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   } else {
     cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
   }
-  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
-                                   split(cow_id, area_id)]
+  cows_assigned_to_tie <-
+    cows_assigned[area_id %in% attr(area_table, "tie_stall"), ]
+  area_assignment <- split(cows_assigned_to_tie$cow_id,
+                           cows_assigned_to_tie$area_id)
   return(area_assignment)
 }
 

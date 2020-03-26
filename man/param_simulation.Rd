@@ -13,7 +13,7 @@ param_simulation
 \item \code{simulation_length}: Length of simulation (months). (default: 60)
 \item \code{n_simulation}: The number of simulation. (default: 1)
 \item \code{simulation_start}: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
-\item \code{input_csv}: Path to a csv file which contains cattle information.
+\item \code{input_csv}: Path to a csv file which contains cattle information. Can be \code{NA} if \code{processed_data} is supplied to \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
 \item \code{output_dir}: Directory to output files. (default: data/output)
 \item \code{output_filename}: The name of the output files. (default: "simulation")
 }

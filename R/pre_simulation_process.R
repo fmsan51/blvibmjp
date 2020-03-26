@@ -478,12 +478,13 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
   # as.character() to when capacity is an integer/numeric vector.
   movement_table$priority <- lapply(movement_table$priority, as.numeric)
   n_priority <- vapply(movement_table$priority, length, 1)
-  if (anyNA(movement_table$priority) | any(n_priority == 0) {
+  if (anyNA(movement_table$priority) | any(n_priority == 0)) {
     n_next_area <-
       vapply(movement_table$next_area, function(x) length(na.omit(x)), 1)
     list1 <- lapply(n_next_area, function(x) rep(1, x))
-    is_priority_missing <- is.na(movement_table$priority)
+    is_priority_missing <- is.na(movement_table$priority) | n_priority == 0
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
+    n_priority[is_priority_missing] <- n_next_area[is_priority_missing]
   }
   if (any(vapply(movement_table$next_area, length, 1) != n_priority)) {
     stop(glue("`priority` in the movement data must be consisted of NA or \\
@@ -581,9 +582,11 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
     n_area_back <- vapply(communal_pasture_table$area_back,
                           function(x) length(na.omit(x)), 1)
     list1 <- lapply(n_area_back, function(x) rep(1, x))
-    is_priority_missing <- is.na(communal_pasture_table$priority)
+    is_priority_missing <-
+      is.na(communal_pasture_table$priority) | n_priority == 0
     communal_pasture_table$priority[is_priority_missing] <-
       list1[is_priority_missing]
+    n_priority[is_priority_missing] <- n_area_back[is_priority_missing]
   }
   if (any(vapply(communal_pasture_table$area_back, length, 1) != n_priority)) {
     stop(glue("`priority` in the communal pasture use data must be \\
