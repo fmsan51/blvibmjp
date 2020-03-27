@@ -162,9 +162,10 @@ a_chamber <- data.table(
 #'
 #' - `area_id` (integer): Area ID.
 #' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`/`"communal pasture"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.), `"hatch"` or `"communal pasture"` (yotaku).
-#' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
-#'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
-#'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
+#' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`. `capacity` must be set if `area_type` is `"tie"`; otherwise optional.
+#'   - If `area_type` is `"free"` or `"outside"`: a numeric or `NA`.
+#'   - If `area_type` is `"tie"`: a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
+#'   - If `area_type` is `"hatch"`: only `NA` is allowed.
 #'
 #' @note
 #' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
