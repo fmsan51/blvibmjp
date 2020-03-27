@@ -10,6 +10,7 @@
 #' @importFrom ggthemes colorblind_pal
 #' @importFrom lubridate day dmy dym interval mdy myd today tz ydm ymd
 #' @importFrom purrr flatten_dbl
+#' @importFrom readxl read_excel
 #' @importFrom rlang ensyms eval_tidy expr enquos quos_auto_name !!!
 #' @importFrom stats pnorm qnorm rbinom rexp rgamma rnorm runif rweibull
 #' @importFrom stringr str_replace_all

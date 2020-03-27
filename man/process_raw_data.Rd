@@ -4,24 +4,26 @@
 \alias{process_raw_data}
 \title{Process raw data to suitable forms}
 \usage{
-process_raw_data(cow_csv, area_csv, movement_csv,
-  communal_pasture_csv = NULL, cow_data = NULL, area_data = NULL,
-  movement_data = NULL, communal_pasture_data = NULL, output = F,
-  cow_output_file = NULL, area_output_file = NULL,
-  movement_output_file = NULL, communal_pasture_output_file = NULL,
+process_raw_data(excel, output = F, cow_data = NULL,
+  area_data = NULL, movement_data = NULL,
+  communal_pasture_data = NULL, cow_output_file = NULL,
+  area_output_file = NULL, movement_output_file = NULL,
+  communal_pasture_output_file = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
   sep = "[,\\t\\r\\n |;:]", ...)
 }
 \arguments{
-\item{cow_csv, cow_data}{Set one of these arguments. See \code{\link[=process_raw_cow]{process_raw_cow()}} for detail.}
-
-\item{area_csv, area_data}{Set one of these arguments. See \code{\link[=process_raw_area]{process_raw_area()}} for detail.}
-
-\item{movement_csv, movement_data}{Set one of these arguments. See \code{\link[=process_raw_movement]{process_raw_movement()}} for detail.}
-
-\item{communal_pasture_csv, communal_pasture_data}{Set one of these arguments. See \code{\link[=process_raw_communal_pasture]{process_raw_communal_pasture()}} for detail.}
+\item{excel}{Set this or \code{cow_data}, \code{area_data} and \code{movement_data}.}
 
 \item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
+
+\item{cow_data}{See \code{\link[=process_raw_cow]{process_raw_cow()}} for detail.}
+
+\item{area_data}{See \code{\link[=process_raw_area]{process_raw_area()}} for detail.}
+
+\item{movement_data}{See \code{\link[=process_raw_movement]{process_raw_movement()}} for detail.}
+
+\item{communal_pasture_data}{See \code{\link[=process_raw_communal_pasture]{process_raw_communal_pasture()}} for detail.}
 
 \item{cow_output_file, area_output_file, movement_output_file, communal_pasture_output_file}{If not \code{NULL}, created data is exported to the files with these names (must be csv files).}
 
@@ -35,5 +37,5 @@ process_raw_data(cow_csv, area_csv, movement_csv,
 csv files which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
 }
 \description{
-Process csv files to suitable forms to use in simulation.
+Process raw data to suitable forms to use in simulation.
 }
