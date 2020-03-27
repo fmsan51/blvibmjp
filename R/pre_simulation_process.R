@@ -334,7 +334,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 #'
 #' - `area_id`: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same `area_id` only when these rows have `area_type`s as "tie". *e.g.* `data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))` is identical to `data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))`. If `NA`, the previous non-`NA` value is set.
 #' - `area_type`
-#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"1|2|3"` will be converted to a numeric vector `c(1, 2, 3)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
+#' - `capacity`: If `NA`, `Inf` is set. If `area_type` is "free", `capacity` must be set. A character like `"10,20,30x2"` will be converted to a numeric vector `c(10, 20, 30, 30)`. Separator (`,`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data of a farm having a tie-stall barn from a csv file.)
 #'
 #' For further detail of each variable, see [area_table].
 #'
@@ -389,9 +389,15 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
     }
     area_table$capacity[is_na] <- Inf
   }
-  area_table$capacity <-
-    strsplit(as.character(area_table$capacity), paste0(sep, "+"))
+  area_table$capacity <- as.character(area_table$capacity)
   # as.character() to when capacity is an integer/numeric vector.
+  area_table$capacity <-
+    paste0("c(", gsub(paste0(sep, "+"), ", ", area_table$capacity), ")")
+  area_table$capacity <-
+    lapply(area_table$capacity,
+           function(x) gsub("(\\d+) ?x ?(\\d+)", "rep(\\1, \\2)", x, perl = T))
+  area_table$capacity <-
+    lapply(area_table$capacity, function(x) eval(parse(text = x)))
   area_table$capacity <- lapply(area_table$capacity, as.numeric)
 
   if (any(duplicated(area_table$area_id))) {
