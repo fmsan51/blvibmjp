@@ -42,10 +42,10 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
   # setup_tie_stall_table() must come after setup_area_table()
   # because it uses an attributes which setup_area_table() calculates
 
-  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows,
-                                    area_table, area_list)
   movement_table <- setup_movement_table(area_table, movement_table,
                                          communal_pasture_table)
+  cows_areas <- set_init_chamber_and_area_id(setup_cows_res$init_cows,
+                                    area_table, area_list)
   day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
   param_processed <- process_param(cows_areas, param_simulation, param_farm)
 
@@ -86,7 +86,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #'
 #' @note This function does not output the result to a csv file.
 #'
-#' @param cows_areas A result of [set_init_chamber_id()].
+#' @param cows_areas A result of [set_init_chamber_and_area_id()].
 #' @param last_cow_id `init_last_cow_id` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param movement_table A result of [setup_movement_table()].

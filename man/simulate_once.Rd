@@ -9,7 +9,7 @@ simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
   param_area, param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
-\item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
+\item{cows_areas}{A result of \code{\link[=set_init_chamber_and_area_id]{set_init_chamber_and_area_id()}}.}
 
 \item{last_cow_id}{\code{init_last_cow_id} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
 

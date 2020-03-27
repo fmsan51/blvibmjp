@@ -14,7 +14,7 @@
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
-#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set.
+#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set. If a cow is in a communal pasture, specify `0`.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
@@ -237,12 +237,13 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
   if (!is.null(area_name)) {
-    if (any(!cows$area_id %in% c(names(area_name), NA_character_))) {
+    if (any(!cows$area_id %in% c(names(area_name), "0", NA_character_))) {
       stop(glue("`area_name` in the cow data contains area names \\
                  which are not contained in the area data."))
     }
     cows$area_id <-
-      factor(cows$area_id, levels = names(area_name), labels = area_name)
+      factor(cows$area_id, levels = c(names(area_name), "0"),
+             labels = c(area_name, "0"))
   }
   cows$area_id <- as.integer(cows$area_id)
   if (anyNA(cows$area_id)) {
@@ -463,19 +464,23 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
     strsplit(as.character(movement_table$next_area), paste0(sep, "+"))
   # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
-    if (any(!unique(movement_table$current_area) %in% names(area_name))) {
+    if (any(!unique(movement_table$current_area) %in% c(names(area_name), "0"))) {
       stop(glue("`current_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
-    if (any(!unique(unlist(movement_table$next_area)) %in% names(area_name))) {
+    if (any(
+        !unique(unlist(movement_table$next_area)) %in% c(names(area_name), "0")
+        )) {
       stop(glue("`next_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
 
     movement_table$current_area <- factor(movement_table$current_area,
-      levels = names(area_name), labels = area_name)
+      levels = c(names(area_name), "0"), labels = c(area_name, "0"))
     movement_table$next_area <- lapply(movement_table$next_area,
-      function(x) factor(x, levels = names(area_name), labels = area_name))
+      function(x) factor(x, levels = c(names(area_name), "0"),
+                         labels = c(area_name, "0"))
+      )
   }
   movement_table$current_area <- as.integer(movement_table$current_area)
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)

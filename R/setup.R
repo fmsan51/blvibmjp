@@ -81,9 +81,9 @@ setup_tie_stall_table <- function(area_table) {
 }
 
 
-#' Initial assignment of `chamber_id`
+#' Initial assignment of `chamber_id` and `area_id`
 #'
-#' Initial assignment of `chamber_id`.
+#' Initial assignment of `chamber_id` and `area_id` of communal pasture.
 #'
 #' @param init_cows `init_cows` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
@@ -92,9 +92,11 @@ setup_tie_stall_table <- function(area_table) {
 #' @return A list consisted of `cows` and `areas`.
 #'
 #' @export
-set_init_chamber_id <- function(init_cows, area_table, area_list) {
+set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   res <- assign_chambers(init_cows, area_list, area_assignment)
+  res$cows[area_id == 0,
+           area_id := attr(area_table, "communal_pasture_area_id")]
   return(res)
 }
 
