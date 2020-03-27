@@ -120,14 +120,13 @@ param_farm <- list(
 
 #' Parameters about areas which should be set by users
 #'
-#' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves. For detail of `area_id`, see `[area_table]`.
 #' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. For detail of `priority`, see [area_table].
 #'
 #' @seealso [param_simulation] [param_farm]
 #' @export
 param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
-  calf_area_id = NA_real_,  # TODO: Make multiple area settable
+  calf_area_id = 1,  # TODO: Make multiple area settable
   calf_area_priority = NA_real_
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?

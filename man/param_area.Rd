@@ -10,7 +10,6 @@ param_area
 }
 \description{
 \itemize{
-\item \code{calf_area_id}: Numeric vector. Set the \code{area_id}(s) for newborn calves. For detail of \code{area_id}, see \code{[area_table]}.
 \item \code{calf_area_priority}: Specify priority for calf areas. \code{NA} is allowed. For detail of \code{priority}, see \link{area_table}.
 }
 }
