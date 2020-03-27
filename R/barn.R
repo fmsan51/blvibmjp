@@ -44,7 +44,7 @@ remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
 #' @param cows See [cow_table].
 #' @param area_list See [setup_areas].
 #' @param area_assignment See [calculate_area_assignment()].
-#' 
+#'
 #' @note This function assign `chamber_id` just for `cows`. Assignment of `cow_id` in `area_list` must be done by [assign_cows] after using this function.
 #'
 #' @return A [cow_table].
@@ -56,11 +56,11 @@ assign_chambers <- function(cows, area_list, area_assignment) {
     n_assigned_cows <- min(length(candidate_cow_id), length(empty_chambers))
     assigned_chambers <- resample(empty_chambers, n_assigned_cows)
     assigned_cow_id <- candidate_cow_id[seq_len(n_assigned_cows)]
-    cows$chamber_id[na.omit(match(cows$cow_id, assigned_cow_id))] <-
+    cows$chamber_id[match(assigned_cow_id, cows$cow_id)] <-
       assigned_chambers
-    assigned_cows <- cows[match(cow_id, assigned_cow_id),
+    assigned_cows <- cows[match(assigned_cow_id, cow_id),
                           list(cow_id, infection_status, is_isolated)]
-    assigned_area[match(chamber_id, assigned_cows$chamber_id),
+    assigned_area[match(assigned_chambers, chamber_id),
                   c("cow_id", "cow_status", "is_isolated") := assigned_cows]
     area_list[[i_area]] <- assigned_area
   }
@@ -70,14 +70,14 @@ assign_chambers <- function(cows, area_list, area_assignment) {
 
 
 #' Calculate infection in barns
-#' 
+#'
 #' Calculate infection in barns depending on barn type (tied or freed)
-#' 
+#'
 #' @param cows See [cow_table].
 #' @param month The current month (1, 2, ..., 12).
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' 
+#'
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, month, area_table, area_list,
                                     param_calculated) {
@@ -152,7 +152,7 @@ tether_roaming_cows <- function(cows, area_list) {
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].
 #' @param assigned_cow_id integer vector. An `area_assignment` list will be made only about cows specified by this parameter. When `NULL` is set, all the cows are used.
-#' 
+#'
 #' @return A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
 calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   if (is.null(assigned_cow_id)) {
@@ -160,8 +160,10 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
   } else {
     cows_assigned <- cows[cow_id %in% assigned_cow_id, ]
   }
-  area_assignment <- cows_assigned[area_id %in% attr(area_table, "tie_stall"),
-                                   split(cow_id, area_id)]
+  cows_assigned_to_tie <-
+    cows_assigned[area_id %in% attr(area_table, "tie_stall"), ]
+  area_assignment <- split(cows_assigned_to_tie$cow_id,
+                           cows_assigned_to_tie$area_id)
   return(area_assignment)
 }
 
@@ -173,9 +175,9 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
 #'
 #' @return Numeric vector of length 2: `c(lower_limit_of_herd_size, upper_limit_of_herd_size)`.
 set_capacity <- function(herd_size, param_farm) {
-  if (!is.na(param_farm$capacity_in_head[1])) {
+  if (!anyNA(param_farm$capacity_in_head)) {
     capacity <- param_farm$capacity_in_head
-  } else if (!is.na(param_farm$capacity_as_ratio[1])) {
+  } else if (!anyNA(param_farm$capacity_as_ratio)) {
     capacity <- round(c(herd_size * param_farm$capacity_as_ratio[1],
                         herd_size * param_farm$capacity_as_ratio[2]))
   } else {

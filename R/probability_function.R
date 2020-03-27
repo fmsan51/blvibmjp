@@ -104,8 +104,8 @@ is_infected_insects <- function(n_cows, month, param_calculated) {
 #' @param param_farm See [param_farm].
 #'
 #' @return A logical vector.
-is_infected_compas <- function(n_cows, param_farm) {
-  runif(n_cows) < param_farm$prob_seroconv_compas
+is_infected_communal_pasture <- function(n_cows, param_farm) {
+  runif(n_cows) < param_farm$prob_seroconv_communal_pasture
 }
 
 
@@ -121,7 +121,7 @@ is_infected_in_exposed_chamber <- function(n_cows, month, param_calculated) {
   hr <- param_calculated$hr_having_infected_neighbor
   is_infected <-
     runif(n_cows) < param_calculated$prob_inf_tiestall_baseline[month] * hr
-  inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected), 
+  inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected),
                       replace = T, prob = c(hr - 1, 1))
   inf_status[is_infected] <- inf_cause
   return(inf_status)
@@ -186,12 +186,12 @@ is_infected_needles <- function(n_cows, cows, param_calculated) {
   # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
   #   By same authors with a "successed" paper in Japan, probably with more samples
   n_infected <- cows[is_owned & infection_status != "s", .N]
-  is_infected_needles <- runif(n_cows) < 
+  is_infected_needles <- runif(n_cows) <
     param_calculated$prob_inf_needles * (n_infected / n_cows)
   return(is_infected_needles)
 }
 # TODO: Gauge dehorning https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1236184/pdf/compmed00003-0104.pdf
-# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf 
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
 
 
 #' Whether cows are infected by rectal palpation
@@ -232,7 +232,7 @@ is_infected_vertical <- function(status_mother, param_calculated) {
 #'
 #' @return A logical vector.
 is_infected_by_colostrum <- function(status_mother, param_calculated) {
-  runif(length(status_mother)) < 
+  runif(length(status_mother)) <
     param_calculated$prob_inf_colostrum * (status_mother != "s")
 }
 
@@ -241,17 +241,6 @@ is_infected_by_colostrum <- function(status_mother, param_calculated) {
 #'
 #' @return A logical vector
 is_infected_introduced <- function() {
-  # TODO: 中身はあとで考える
-  # これまだどこからも繋がってない
-}
-
-
-#' Whether cows are infected at a communal ranch
-#'
-#' When a cow is come back from a communal ranch, the probability of infection at communal ranch was calculated.
-#'
-#' @return A logical vector.
-is_infected_comranch <- function() {
   # TODO: 中身はあとで考える
   # これまだどこからも繋がってない
 }
@@ -339,7 +328,7 @@ is_dried <- function(months_from_delivery, param_calculated) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
   (months_from_delivery > param_calculated$lower_lim_dried) |
   ((months_from_delivery == param_calculated$lower_lim_dried) &
-     (runif(length(months_from_delivery)) < 
+     (runif(length(months_from_delivery)) <
         param_calculated$prop_dried_shorter))
 }
 
@@ -526,3 +515,4 @@ longevity <- function(n_cows, param_calculated) {
   longevity$cause[will_die] <- "will_die"
   return(longevity)
 }
+

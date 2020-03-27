@@ -62,11 +62,11 @@ FALSE: The cow Will be sold to beef operations.
 \item "rp": by rectal palpation.
 \item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-\item "comranch": infected at a communal ranch.
+\item "communal_pasture": infected at a communal pasture.
 }
 \item \code{susceptibility_ial_to_ipl}: Genetic susceptibility to disease progress (Ial -> Ipl).
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).
-\item \code{area_id}: Area ID.
+\item \code{area_id}: Area ID. \code{0} means that the cow is in a communal pasture.
 \item \code{months_in_area}: The number of month a cow stayed in the current area.
 \item \code{chamber_id}: ID of the chamber in which the cow kept for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn. \code{0} for a cow in a tie-stall barn but to it a chamber is not assigned (a free-roaming cow).
 \item \code{is_isolated}: Whether the cow is isolated for a cow in a tie-stall barn. \code{NA_real_} for a cow in a free-stall barn.

@@ -50,10 +50,10 @@
 #'     - "rp": by rectal palpation.
 #'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-#'     - "comranch": infected at a communal ranch.
+#'     - "communal_pasture": infected at a communal pasture.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' - `area_id`: Area ID.
+#' - `area_id`: Area ID. `0` means that the cow is in a communal pasture.
 #' - `months_in_area`: The number of month a cow stayed in the current area.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn. `0` for a cow in a tie-stall barn but to it a chamber is not assigned (a free-roaming cow).
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
@@ -162,9 +162,10 @@ a_chamber <- data.table(
 #'
 #' - `area_id` (integer): Area ID.
 #' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`/`"communal pasture"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.), `"hatch"` or `"communal pasture"` (yotaku).
-#' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`.
-#'   - For an area with `area_type` of "free" or "outside": specify by a numeric.
-#'   - For an area with `area_type` of "tie": specify by a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
+#' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`. `capacity` must be set if `area_type` is `"tie"`; otherwise optional.
+#'   - If `area_type` is `"free"` or `"outside"`: a numeric or `NA`.
+#'   - If `area_type` is `"tie"`: a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.
+#'   - If `area_type` is `"hatch"`: only `NA` is allowed.
 #'
 #' @note
 #' Several parameters are calculated by [setup_area_table] and added to a `area_table` as attribute variables. Such values are intenended to be touched only by simulation functions and not by users.
@@ -233,8 +234,9 @@ a_movement <- data.table(current_area = NA_integer_,
 #' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
 #' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
 #'
-#' - `area_out`, `area_back` (integer): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
+#' - `area_out` (integer), `area_back` (list consister of integer vectors): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
 #' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
+#' - `priority` (list consisted of numeric and/or integer vectors): Priority of `area_back`. See `priority` part in [movement_table] for the detail.
 #'
 #' @examples
 #' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
@@ -242,16 +244,18 @@ a_movement <- data.table(current_area = NA_integer_,
 #' communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
 #' communal_pasture_use[,
 #'  `:=`(area_out = c(2, 4),
-#'       area_back = c(3, 4),
+#'       area_back = list(3, c(4, 5)),
 #'       condition_out = c("age == 20", "month == 4"),
-#'       condition_back = c("months_from_pregnancy == 8", "month == 10"))]
+#'       condition_back = c("months_from_pregnancy == 8", "month == 10"),
+#'       priority = list(NA, c(1, 2)))]
 #' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table] [rp_table]
 #' @name communal_pasture_table
 #' @export
 a_communal_pasture_use <- data.table(area_out = NA_integer_,
-                                     area_back = NA_integer_,
+                                     area_back = list(NA),
                                      condition_out = NA_character_,
-                                     condition_back = NA_character_)
+                                     condition_back = NA_character_,
+                                     priority = list(NA))
 
 
 # ---- rectal_palpation_template ----

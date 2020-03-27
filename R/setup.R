@@ -4,22 +4,25 @@
 #'
 #' @param param_simulation See [param_simulation].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
+#' @param cow_table See [cow_table].
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, save_cows) {
-  cows <- fread(file = param_simulation$input_csv,
-                colClasses = sapply(a_new_calf, class))
+setup_cows <- function(param_simulation, save_cows, cow_table = NULL) {
+  if (is.null(cow_table)) {
+    cow_table <- fread(file = param_simulation$input_csv,
+                       colClasses = sapply(a_new_calf, class))
+  }
 
   # Prepare cow_table with many rows to reserve enough memory while simulation
-  init_n_cows <- nrow(cows)
+  init_n_cows <- nrow(cow_table)
   max_herd_size <- init_n_cows * param_simulation$simulation_length * 2
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
-  init_cows[1:init_n_cows, ] <- cows
+  init_cows[1:init_n_cows, ] <- cow_table
   # Used 1:n instead of seq_len(n) because it is faster
-  
+
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
   }
@@ -78,20 +81,22 @@ setup_tie_stall_table <- function(area_table) {
 }
 
 
-#' Initial assignment of `chamber_id`
-#' 
-#' Initial assignment of `chamber_id`.
-#' 
+#' Initial assignment of `chamber_id` and `area_id`
+#'
+#' Initial assignment of `chamber_id` and `area_id` of communal pasture.
+#'
 #' @param init_cows `init_cows` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param area_list A result of [setup_tie_stall_table()].
-#' 
+#'
 #' @return A list consisted of `cows` and `areas`.
-#' 
+#'
 #' @export
-set_init_chamber_id <- function(init_cows, area_table, area_list) {
+set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   res <- assign_chambers(init_cows, area_list, area_assignment)
+  res$cows[area_id == 0,
+           area_id := attr(area_table, "communal_pasture_area_id")]
   return(res)
 }
 
@@ -107,15 +112,16 @@ set_init_chamber_id <- function(init_cows, area_table, area_list) {
 #' @export
 setup_area_table <- function(area_table, param_farm, param_area) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture & all(area_table$area_type != "communal pasture")) {
-    compas_area_id <- max(area_table$area_id) + 1L
+  if (param_farm$use_communal_pasture &
+      all(area_table$area_type != "communal pasture")) {
+    communal_pasture_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,
-                                 list(area_id = compas_area_id,
+                                 list(area_id = communal_pasture_area_id,
                                       area_type = "communal pasture",
                                       capacity = list(Inf))
                                  )
                             )
-    attr(area_table, "compas_area_id") <- compas_area_id
+    attr(area_table, "communal_pasture_area_id") <- communal_pasture_area_id
   }
 
   attr(area_table, "capacity") <-
@@ -150,17 +156,18 @@ setup_movement_table <- function(area_table, movement_table,
   if (!is.null(communal_pasture_table)) {
     # Set movement to a communal pasture with the highest priority
     # (= in the top rows)
-    move_to_compas <- data.table(
+    move_to_communal_pasture <- data.table(
       current_area = communal_pasture_table$area_out,
       condition = communal_pasture_table$condition_out,
-      next_area = attr(area_table, "compas_area_id"),
+      next_area = attr(area_table, "communal_pasture_area_id"),
       priority = 1)
-    move_from_compas <- data.table(
-      current_area = attr(area_table, "compas_area_id"),
+    move_from_communal_pasture <- data.table(
+      current_area = attr(area_table, "communal_pasture_area_id"),
       condition = communal_pasture_table$condition_back,
       next_area = communal_pasture_table$area_back,
-      priority = 1)
-    movement_table <- rbindlist(list(move_to_compas, move_from_compas,
+      priority = communal_pasture_table$priority)
+    movement_table <- rbindlist(list(move_to_communal_pasture,
+                                     move_from_communal_pasture,
                                      movement_table))
   }
   # TODO: warn when capacity > cows at the start of a simulation.

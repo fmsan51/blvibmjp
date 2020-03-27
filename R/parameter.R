@@ -3,7 +3,7 @@
 #' - `simulation_length`: Length of simulation (months). (default: 60)
 #' - `n_simulation`: The number of simulation. (default: 1)
 #' - `simulation_start`: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
-#' - `input_csv`: Path to a csv file which contains cattle information.
+#' - `input_csv`: Path to a csv file which contains cattle information. Can be `NA` if `processed_data` is supplied to [simulate_BLV_spread()].
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
@@ -84,14 +84,24 @@ param_farm <- list(
   prob_seroconversion_in_communal_pasture = 0.5,
   # Probability of seroconversion in communal pastures
   # Reports about seroconversion in communal pastures
-  # Niigata: 60%, 47%, 50%, 51% (H25-28) -> 5.6% (H29) https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf
-  # Tohoku: 0-11.5% (2006-2008) http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/DATA/062/062-087.pdf
-  # Yamagata: 0% (with measure) p2 in http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
-  # Yamagata: 0% (with measure) p3 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
-  # Yamagata: 51.8 (H20?) -> 22.3% (H27), 49.4 (H20) -> 1.5% (H27) p3 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
-  # Ibaraki: 97.4% (H26?) -> 33.3 (H27) p1 https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf
-  # Nagano: 7.9% (2014), 4.5% (2015) (with measure) p58 http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf
-  # Iwate: 0% (2011) (with measure) http://jvpa.jp/jvpa/img/information/2011/52syoroku.pdf
+  # - Niigata: 60%, 47%, 50%, 51% (2013-2016) -> 5.6% (2017)
+  #   Ohkatsu et al, 2018. https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf (https://www.pref.niigata.lg.jp/sec/chikusan/1356889019293.html)
+  # - Tohoku: 0-11.5% (2006-2008)
+  #   Terada, 2009. Tohoku Nogyo Kenkyu, 62, 87-88. http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/DATA/062/062-087.pdf (http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/issue/no_062.html)
+  # - Yamagata: 0% (with countermeasures)
+  #   Watanabe and Kugota, 2016. p2 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
+  # - Yamagata: 0% (with countermeasures)
+  #   Tuchiya and Kiguchi, 2014. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H26-2.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  #   Kiguchi and Mori, 2015. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H27-1.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  # - Yamagata: 51.8% (2007) -> 22.3% (2015), 49.4% (2007) -> 1.5% (2015)
+  #   Ohkawara and Morita, 2016. p3 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  #   (Change of prevalence) https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019eiseidayori/2019No.9.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019kachikueiseidayori.html)
+  # - Ibaraki: 97.4% (Apr. 2014) -> 33.3 (2015)
+  #   Kodato et al, 2016. p1-7 of https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf (https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/h27gyouseki.html)
+  # - Nagano: 7.9% (2014), 4.5% (2015) (with countermeasures)
+  #   Yahikozawa, 2016. p58 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
+  # - Iwate: 0% (with countermeasures)
+  #   Kitagawa and Takeda, 2011. p56 of https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/pdf/syoroku_52.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
 
   control_insects = F,
   change_needles = T,
@@ -110,14 +120,13 @@ param_farm <- list(
 
 #' Parameters about areas which should be set by users
 #'
-#' - `calf_area_id`: Numeric vector. Set the `area_id`(s) for newborn calves. For detail of `area_id`, see `[area_table]`.
 #' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. For detail of `priority`, see [area_table].
 #'
 #' @seealso [param_simulation] [param_farm]
 #' @export
 param_area <- list(
   # TODO: The function to confirm the necessary parameters are set or not
-  calf_area_id = NA_real_,  # TODO: Make multiple area settable
+  calf_area_id = 1,  # TODO: Make multiple area settable
   calf_area_priority = NA_real_
 
   # Does a farm decide the chamber layout of milking cows based on lactation stage?
@@ -128,15 +137,15 @@ param_area <- list(
   # layout_on_parity = NA
 
   # FYI: areaing of dry cows and mixsing of breeding and dry cows
-  # https://www.snowseed.co.jp/wp/wp-content/uploads/grass/grass_200509_03.pdf
+  # Fujimoto and Iki, 2005. Bokusou to Engei 53(5) 9-12. https://www.snowseed.co.jp/wp/wp-content/uploads/grass/grass_200509_03.pdf
 )
 
 
 #' Overwrite default parameters with herd specific parameters
 #'
 #' It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
-#' When 'parameter' is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.
-#' When 'parameter' is NA (= when a farm specific parameter was not set), it returns dafault parameters.
+#' When `parameter` is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.
+#' When `parameter` is NA (= when a farm specific parameter was not set), it returns dafault parameters.
 #'
 #' @param parameter The farm specific parameter
 #' @param default The default parameter
@@ -173,29 +182,30 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   #   TODO: Some farmers don't change gloves. consider again.
 
   param$mean_prop_ial_period <-  0.3
+  # TODO: Reconsider this parameter
   param$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
   # Length of periods from PL to EBL is not well known. (several months to years)
   param$ebl_progress_shape <- 3.3
   param$ebl_progress_scale <- 7.8
-  # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 (Tsutsui et al, 2016)
+  # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
   ## Probabilities of disease progress ----
   # Proportion of ial cattle which develops ipl
   param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
-  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl (Tsutsui et al, 2016)
+  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
   # Probability that an BLV-infected cow is detected
-  # 39.7% of infected cows are detected (Tsutui et al, 2015)
-  # This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
-  # (Because Tsutsui et al. assumed as the same and there is no data about the length of period from clinical onset to detection.)
+  # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
+  # (Because they assumed as the same and there is no data about the length of period from clinical onset to detection.)
+  # - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
   param$prob_ebl_detected <- rnorm(1, mean = 0.397,
                                    sd = (0.397 - 0.358) / qnorm(0.975))
 
   # Months until EBL cattle die
   param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
   # TODO: temporary, just by inspiration
-  
+
 
   ## blv_test ----
   # Test frequency
@@ -212,7 +222,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   }
 
   # A list of BLV test methods available in Japan was obtained from here:
-  # https://doi.org/10.4190/jjlac.6.221
+  # Mekata, 2016. https://doi.org/10.4190/jjlac.6.221
   if (anyNA(param_farm$test_method)) {
     # Not is.na() because length of test_method can be two
     param$test_sensitivity <- 0
@@ -220,9 +230,9 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   } else if (param_farm$test_method == "immunodiffusion") {
     param$test_sensitivity <- 0.981
     param$test_specificity <- 0.967
-    # https://doi.org/10.1016/0166-0934(90)90086-U
+    # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
   } else if (param_farm$test_method == "ELISA") {
-    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
                             se_upr = c(1.000, 0.999, 0.993, 0.927),
@@ -239,17 +249,17 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     estimates <- data.table(sensitivity = numeric(2),
                             specificity = numeric(2))
     # Calculate treating a result of nested PCR as gold standard
-    # http://210.164.7.60/g68/documents/4abe.pdf
+    # Abe et al, 2012. http://www.pref.tochigi.lg.jp/g68/documents/4abe.pdf (http://www.pref.tochigi.lg.jp/g68/jigyougaiyou23.html)
     estimates[1, `:=`(sensitivity = 1,
                       specificity = 10 / (10 + 16))]
-    # https://www.city.kyoto.lg.jp/hokenfukushi/cmsfiles/contents/0000118/118365/O6.pdf
+    # Division of Pathology, Kyoto City Institute of Health and Environmental Sciences, 2006. Annual Report of Kyoto City Institute of Health and Environmental Sciences, 73. https://www.city.kyoto.lg.jp/hokenfukushi/cmsfiles/contents/0000118/118365/O6.pdf (https://www.city.kyoto.lg.jp/hokenfukushi/page/0000118365.html)
     estimates[2, `:=`(sensitivity = 0.909,
                       specificity = 0.984)]
     estimate <- estimates[sample.int(.N, 1), ]
     param$test_sensitivity <- estimate$sensitivity
     param$test_specificity <- estimate$specificity
   } else if (param_farm$test_method == "nested PCR") {
-    # https://doi.org/10.1177%2F104063870501700507 (oversea report)
+    # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
                             se_lwr = c(0.901, 0.895, 0.878),
                             se_upr = c(0.956, 0.955, 0.945),
@@ -266,13 +276,13 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     # Calculate treating a result of nested PCR as gold standard
     estimates <- data.table(sensitivity = numeric(3),
                             specificity = numeric(3))
-    # https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/files/27gyohatu_BLV.pdf
+    # Hayashi et al, 2016. https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/files/27gyohatu_BLV.pdf (https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/chosashiken.html)
     estimates[1, `:=`(sensitivity = 4 / 5,
                       specificity = 1)]
-    # http://www.pref.tochigi.lg.jp/g68/documents/28-08.pdf
+    # Miyoshi and Okazaki, 2017. http://www.pref.tochigi.lg.jp/g68/documents/28-08.pdf (http://www.pref.tochigi.lg.jp/g68/jigyougaiyou28.html)
     estimates[2, `:=`(sensitivity = (27 + 1) / (27 + 1 + 1 + 1),
                       specificity = 1)]
-    # https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/documents/h26_09.pdf
+    # Soda et al, 2015. Saitamaken Chosa Kenkyu Seiseki Houkokusho, 56. https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/documents/h26_09.pdf (https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/gyousekihappyou.html)
     estimates[3, `:=`(sensitivity = 1,
                       specificity = 1)]
     estimate <- estimates[sample.int(.N, 1), ]
@@ -312,23 +322,20 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   param$prob_inf_tiestall_baseline <- param$probs_inf_insects_month
   param$hr_having_infected_neighbor <-
     exp(rnorm(1, mean = 2.52, sd = 0.73))
-  # The role of neighboring infected cattle in bovine leukemia virus transmission risk.
-  # https://doi.org/10.1292/jvms.15-0007
-  
-  
+  # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
+
+
   ## infection_free ----
   free_pressure <-
     rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
-  # Analysis of risk factors associated with bovine leukemia virus seropositivity within dairy and beef breeding farms in Japan: a nationwide survey.
-  # https://doi.org/10.1016/j.rvsc.2013.11.014
+  # Kobayashi et al, 2014. https://doi.org/10.1016/j.rvsc.2013.11.014
   param$prob_inf_free <- param$probs_inf_insects_month * free_pressure
 
   param$average_prop_inf_in_free <-
     rnorm(1, mean = 0.409, sd = mean(c(0.404, 0.414)) / qnorm(0.975))
-  # Nationwide Survey of Bovine Leukemia Virus Infection among Dairy and Beef Breeding Cattle in Japan from 2010–2011
-  # https://doi.org/10.1292/jvms.12-0374
+  # Murakami et al, 2013. https://doi.org/10.1292/jvms.12-0374
 
-  
+
   ## infection_needles ----
 
   # Infection by using same needles among infected and non-infected cattle
@@ -338,11 +345,12 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   ## infection_rp ----
   # Infection by rectal palpation
-  # 3/4 cows get infected by 4 rectal palpations right after infected cows (Kohara et al, 2016)
+  # 3/4 cows get infected by 4 rectal palpations right after infected cows - Kohara, Konnai and Onuma, 2016. http://doi.org/10.14943/jjvr.54.1.25
   # The probability of infection per try is calculated.
-  # The probability is 0.034 in [Lack of evidence of transmission of bovine leukemia virus by rectal palpation of dairy cows. - PubMed - NCBI](https://www.ncbi.nlm.nih.gov/pubmed/2557314)
+  # The probability is 0.034 in Lassauzet, Thurmond and Walton, 1989. https://www.ncbi.nlm.nih.gov/pubmed/2557314
 
   # 直検1回ごとの感染確率
+  # Kohara, Konnai and Onuma, 2016.
   param$prob_inf_rp <- fifelse(param_farm$change_gloves,
                                0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
@@ -350,25 +358,21 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   ## infection_vertical ----
 
   # Vertical infection
-  # Vet Microbiol. 2002 Jan 23;84(3):275-82.  Vertical transmission of bovine leukemia virus and bovine immunodeficiency virus in dairy cattle herds.  Prorobability of vertical infection is 0
-  # https://www.jstage.jst.go.jp/article/jvma1951/34/9/34_9_423/_article/-char/ja  0, too
-  # http://veterinaryrecord.bmj.com/content/176/10/254.long  1/22
-  # https://www.bayer-chikusan.jp/research-pdf/douyaku-71.pdf 24 / 129. The viral load of the dam has significant association.
-  # 0-1% or 10+%
-  # http://veterinaryrecord.bmj.com/content/176/10/254.long 10% in ial, 50% in ipl (Used in this simulation)
+  # 0% - Meas et al, 2002. https://doi.org/10.1016/s0378-1135(01)00458-8
+  # 0% - Kajikawa et al, 1981. https://doi.org/10.12935/jvma1951.34.423
+  # 18.6% (24/129: 10.8% (14) - transplacental: 7.7% (10) - birth canal) The viral load of the dam has significant association. - Mekata et al, 2015. http://dx.doi.org/10.1136/vr.102464
 
   param$prob_vert_inf_ial <- (4 + 5) / 95
   param$prob_vert_inf_ipl <- (10 + 4) / 29
 
   # TODO: check
-  # Piper CE. et al. Postnatal and prenatal transmission of the bovine leukemia virus under natural conditions. Journal of the National Cancer Institute. 1979, 62, 165-168.
+  # Piper et al, 1979. https://pubmed.ncbi.nlm.nih.gov/214609
 
   ## infection_by_colostrum ----
 
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
-  # Frequency of infection by colostrum may be smaller than that by contact https://www.ncbi.nlm.nih.gov/pubmed/6272983
-  # Probability of BLV infection after freeze-thaw can be considered as 0 https://doi.org/10.1292/jvms.13-0253
-  # 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months
+  # Frequency of infection by colostrum may be smaller than that by contact. 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months. - Ferrer and Piper, 1981. https://www.ncbi.nlm.nih.gov/pubmed/6272983
+  # Probability of BLV infection after freeze-thaw can be considered as 0 - Kanno et al, 2014. https://doi.org/10.1292/jvms.13-0253
   feed_raw_colostrum <- param_farm$feed_raw_colostrum
   param$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
 
@@ -376,9 +380,9 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   ## infection_introduced ----
 
 
-  ## infection_comranch ----
-  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_compasが使われるタイミングないな
-  param$prob_seroconv_compas <-
+  ## infection_communal_pasture ----
+  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
+  param$prob_seroconv_communal_pasture <-
     fifelse(param_farm$use_communal_pasture,
             param_farm$prob_seroconversion_in_communal_pasture, 0)
 
@@ -390,6 +394,8 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
+  # TODO: Think way to remove these params
   param$calving_interval <-
     set_param(param_farm$calving_interval / day_per_month,
               mean(432, 430, 432, 429, 427) / day_per_month)
@@ -455,7 +461,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
 
   # Heat cycle
-  # https://doi.org/10.1017/S1751731118001830
+  # Martin et al, 2019. https://doi.org/10.1017/S1751731118001830
   param$sd_heat <- 1  # SD of length of heat cycle (days)
 
 
