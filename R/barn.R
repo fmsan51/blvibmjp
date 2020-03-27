@@ -111,7 +111,7 @@ calc_infection_in_barns <- function(cows, month, area_table, area_list,
                                            month, param_calculated)]
       cows[cow_id %in% infected_non_exposed,
            `:=`(infection_status = "ial",
-                cause_infection = "insect")]
+                cause_infection = "insects")]
       # TODO: Where is the cow_status in area_list changed?
     } else {
       s_cow_id <- area$cow_id[area$cow_status == "s"]
@@ -122,7 +122,7 @@ calc_infection_in_barns <- function(cows, month, area_table, area_list,
         ]
       cows[cow_id %in% new_infected_cow_id,
            `:=`(infection_status = "ial",
-                cause_infection = "insect")]
+                cause_infection = "insects")]
     }
   }
   return(cows)
