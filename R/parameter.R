@@ -362,7 +362,6 @@ calc_param <- function(param_simulation, modification = NULL) {
   ## artificial_insemination ----
 
   param$prop_replacement <- param_simulation$prop_replacement
-  # This is passed from param_simulation only to use in process_raw_csv()
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
