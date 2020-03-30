@@ -45,7 +45,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
       nrow = 4)
     heat_matrix <- rbind(cows_started_ai$day_heat, heat_matrix)
     heat_matrix <- apply(heat_matrix, 2, cumsum)
-    possible_heat_list <- apply(heat_matrix, 2, function(x) x[x <= 30])
+    possible_heat_list <-
+      lapply(data.frame(heat_matrix), function(x) x[x <= 30])
 
     possible_heat_detection_list <- possible_detected_heat_list <-
       possible_ai_success_list <- vector("list", n_cows_started_ai)
@@ -75,11 +76,14 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     n_heat_vec <- vapply(possible_ai_success_list,
       function(x) ifelse(!any(x), length(x), min(which(x))), 0)
     # Here ifelse is used, too.
-    heat_list <- mapply(function(x, y) x[1:y], possible_heat_list, n_heat_vec)
-    heat_detection_list <- mapply(function(x, y) x[1:y],
-                                  possible_heat_detection_list, n_heat_vec)
-    detected_heat_list <- mapply(function(x, y) x[1:y],
-                                   possible_detected_heat_list, n_heat_vec)
+    heat_list <- mapply(function(x, y) x[1:y], possible_heat_list, n_heat_vec,
+                        SIMPLIFY = F)
+    heat_detection_list <-
+      mapply(function(x, y) x[1:y], possible_heat_detection_list, n_heat_vec,
+             SIMPLIFY = F)
+    detected_heat_list <-
+      mapply(function(x, y) x[1:y], possible_detected_heat_list, n_heat_vec,
+             SIMPLIFY = F)
 
     day_heat_of_next_month <-
       apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
@@ -118,7 +122,8 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                           nrow = 4)
     heat_matrix <- rbind(open_cows$day_heat, heat_matrix)
     heat_matrix <- apply(heat_matrix, 2, cumsum)
-    possible_heat_list <- apply(heat_matrix, 2, function(x) x[x <= 30])
+    possible_heat_list <-
+      lapply(data.frame(heat_matrix), function(x) x[x <= 30])
     possible_heat_detection_list <- lapply(possible_heat_list,
       function(x) is_heat_detected(length(x), param_calculated))
     possible_detected_heat_list <- mapply(function(x, y) x[y],
@@ -135,11 +140,13 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
       function(x) ifelse(!any(x), length(x), min(which(x))), 0)
     # Here ifelse is used, too.
     heat_list <- mapply(function(x, y) x[seq_len(y)],
-                        possible_heat_list, n_heat_vec)
+                        possible_heat_list, n_heat_vec, SIMPLIFY = F)
     heat_detection_list <- mapply(function(x, y) x[seq_len(y)],
-                                  possible_heat_detection_list, n_heat_vec)
+                                  possible_heat_detection_list, n_heat_vec,
+                                  SIMPLIFY = F)
     detected_heat_list <- mapply(function(x, y) x[seq_len(y)],
-                                   possible_detected_heat_list, n_heat_vec)
+                                 possible_detected_heat_list, n_heat_vec,
+                                 SIMPLIFY = F)
 
     day_heat_of_next_month <-
       apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
