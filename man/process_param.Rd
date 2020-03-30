@@ -4,14 +4,12 @@
 \alias{process_param}
 \title{Calculate parameters based on other parameters}
 \usage{
-process_param(cows_areas, param_simulation, param_farm)
+process_param(cows_areas, param_simulation)
 }
 \arguments{
 \item{cows_areas}{A result of \code{\link[=set_chamber_id]{set_chamber_id()}}.}
 
 \item{param_simulation}{See \link{param_simulation}.}
-
-\item{param_farm}{See \link{param_farm}.}
 }
 \value{
 A list of calculated parameters.

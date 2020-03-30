@@ -15,7 +15,7 @@ process_raw_data(
   area_output_file = NULL,
   movement_output_file = NULL,
   communal_pasture_output_file = NULL,
-  param_calculated = calc_param(param_farm, param_simulation),
+  param_calculated = calc_param(param_simulation),
   sep = "[,\\t\\r\\n |;:]",
   ...
 )

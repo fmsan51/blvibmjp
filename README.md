@@ -66,13 +66,13 @@ param_simulation$simulation_length <- 60  # シミュレーション期間の長
 param_simulation$n_simulation <- 3  # シミュレーション回数
 
 # 対策の設定
-param_farm$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
-param_farm$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
-param_farm$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
-# 他、詳細は help("param_farm") 参照
+param_simulation$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
+param_simulation$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
+param_simulation$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
+# 他、詳細は help("param_simulation") 参照
 
 # シミュレーションの実行（1回ごとに十数秒～数分）
-simulate_blv_spread(param_simulation, param_farm, processed_data = data)
+simulate_blv_spread(param_simulation, processed_data = data)
 ```
 
 4.  以下のコードで表示されるフォルダ内に、シミュレーション結果（simulationXX.csv）が保存される。

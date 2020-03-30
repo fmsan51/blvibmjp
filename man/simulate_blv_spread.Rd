@@ -6,7 +6,6 @@
 \usage{
 simulate_blv_spread(
   param_simulation,
-  param_farm,
   processed_data,
   area_table,
   movement_table,
@@ -19,8 +18,6 @@ simulate_blv_spread(
 }
 \arguments{
 \item{param_simulation}{See \link{param_simulation}.}
-
-\item{param_farm}{See \link{param_farm}.}
 
 \item{processed_data}{The result of \code{\link[=process_raw_data]{process_raw_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
 

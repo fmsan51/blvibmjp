@@ -14,7 +14,6 @@ simulate_once(
   result,
   result_area,
   param_simulation,
-  param_farm,
   param_processed,
   param_modification,
   save_cows,
@@ -37,8 +36,6 @@ simulate_once(
 \item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
 
 \item{param_simulation}{See \link{param_simulation}.}
-
-\item{param_farm}{See \link{param_farm}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 

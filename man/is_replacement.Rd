@@ -6,14 +6,14 @@
 \alias{set_prob_rep}
 \title{Whether a newborn will be a replacement}
 \usage{
-set_prob_rep(n_delivered, param_farm)
+set_prob_rep(n_delivered, param_simulation)
 
 is_replacement(n_calves, herd_size, param_processed)
 }
 \arguments{
 \item{n_delivered}{The number of delivered cows in a herd.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param_simulation}{See \link{param_simulation}.}
 
 \item{n_calves}{The number of newborns.}
 

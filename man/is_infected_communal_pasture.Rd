@@ -4,12 +4,12 @@
 \alias{is_infected_communal_pasture}
 \title{Whether cows are infected in a communal pasture}
 \usage{
-is_infected_communal_pasture(n_cows, param_farm)
+is_infected_communal_pasture(n_cows, param_simulation)
 }
 \arguments{
 \item{n_cows}{The number of cows.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{aram_farm}{See \link{param_simulation}.}
 }
 \value{
 A logical vector.

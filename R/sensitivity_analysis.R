@@ -5,7 +5,7 @@
 #' @inheritParams simulate_blv_spread
 #'
 #' @export
-sensitivity_analysis <- function(param_simulation, param_farm, param_group,
+sensitivity_analysis <- function(param_simulation, param_group,
                                  i_simulation_start = 1) {
   if (!(file.exists(param_simulation$output_dir))) {
     dir.create(param_simulation$output_dir, recursive = T)
@@ -14,15 +14,14 @@ sensitivity_analysis <- function(param_simulation, param_farm, param_group,
   setup_cows_res <- setup_cows(param_simulation, save_cows = F)
   init_groups <- setup_groups(setup_cows_res$init_cows, param_group)
   day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
-  param_processed <- process_param(setup_cows_res, param_simulation, param_farm,
-                                   param_group)
+  param_processed <- process_param(setup_cows_res, param_simulation, param_group)
 
   result <- vector("list", param_simulation$simulation_length + 1)
   result[[1]] <- copy(setup_cows_res$init_cows)
   result_groups <- vector("list", param_simulation$simulation_length + 1)
 
   save_param_txt(
-    c(param_simulation, param_farm, param_group, param_processed),
+    c(param_simulation, param_group, param_processed),
     param_processed$param_output_filename, 0,
     subdir = param_simulation$output_dir)
 

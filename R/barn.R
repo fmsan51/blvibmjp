@@ -171,15 +171,15 @@ calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
 #' Calculate capacity of an area based on inputed parameters
 #'
 #' @param herd_size The herd size in a simulated herd.
-#' @param param_farm See [param_farm].
+#' @param param_simulation See [param_simulation].
 #'
 #' @return Numeric vector of length 2: `c(lower_limit_of_herd_size, upper_limit_of_herd_size)`.
-set_capacity <- function(herd_size, param_farm) {
-  if (!anyNA(param_farm$capacity_in_head)) {
-    capacity <- param_farm$capacity_in_head
-  } else if (!anyNA(param_farm$capacity_as_ratio)) {
-    capacity <- round(c(herd_size * param_farm$capacity_as_ratio[1],
-                        herd_size * param_farm$capacity_as_ratio[2]))
+set_capacity <- function(herd_size, param_simulation) {
+  if (!anyNA(param_simulation$capacity_in_head)) {
+    capacity <- param_simulation$capacity_in_head
+  } else if (!anyNA(param_simulation$capacity_as_ratio)) {
+    capacity <- round(c(herd_size * param_simulation$capacity_as_ratio[1],
+                        herd_size * param_simulation$capacity_as_ratio[2]))
   } else {
     capacity <- round(c(herd_size * 0.9, herd_size * 1.1))
   }

@@ -101,11 +101,11 @@ is_infected_insects <- function(n_cows, month, param_calculated) {
 #' Whether cows are infected in a communal pasture
 #'
 #' @param n_cows The number of cows.
-#' @param param_farm See [param_farm].
+#' @param aram_farm See [param_simulation].
 #'
 #' @return A logical vector.
-is_infected_communal_pasture <- function(n_cows, param_farm) {
-  runif(n_cows) < param_farm$prob_seroconv_communal_pasture
+is_infected_communal_pasture <- function(n_cows, param_simulation) {
+  runif(n_cows) < param_simulation$prob_seroconv_communal_pasture
 }
 
 
@@ -405,17 +405,17 @@ sex_twins <- function(n_calves, param_calculated) {
 #' @param n_calves The number of newborns.
 #' @param herd_size The current herd size.
 #' @param n_delivered The number of delivered cows in a herd.
-#' @param param_farm See [param_farm].
+#' @param param_simulation See [param_simulation].
 #' @param param_processed Return from [process_param()].
 #'
 #' @name is_replacement
 #' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」
 #' @encoding UTF-8
 #' @return A logical vector or a numeric value.
-set_prob_rep <- function(n_delivered, param_farm) {
+set_prob_rep <- function(n_delivered, param_simulation) {
   # TODO: これ他の場所に移動した方がいいか確認する
-  prob_rep <- if (!is.na(param_farm$prop_replacement)) {
-    param_farm$prop_replacement
+  prob_rep <- if (!is.na(param_simulation$prop_replacement)) {
+    param_simulation$prop_replacement
   } else if (n_delivered < 30) {
     4 / (0.2 + 4)
   } else if (n_delivered < 50) {

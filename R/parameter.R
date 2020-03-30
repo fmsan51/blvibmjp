@@ -1,5 +1,9 @@
 #' Parameters about a simulation which should be set by users
 #'
+#' Parameters about a simulation
+#'
+#' Parameters related with simulation:
+#'
 #' - `simulation_length`: Length of simulation (months). (default: 60)
 #' - `n_simulation`: The number of simulation. (default: 1)
 #' - `simulation_start`: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
@@ -7,22 +11,7 @@
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
-#' @seealso [param_farm]
-#' @export
-param_simulation <- list(
-  # TODO: The function to confirm the necessary parameters are set or not
-  simulation_length = 60,
-  n_simulation = 1,
-  simulation_start = 1,
-  input_csv = NA_character_,
-  output_dir = "data/output",
-  output_filename = "simulation"
-)
-
-
-#' Parameters about farms which should be set by users
-#'
-#' The following parameters are passed to [calc_param()] and the parameter will be calculated.
+#' Parameters depends on a farm:
 #'
 #' - `prop_female` (0-1): Proportion of female of newborns. (default: average in Hokkaido)
 #' - `prop_replacement` (0-1): Proportion of calves to be replacements in female newborns. (default: average in Hokkaido)
@@ -49,9 +38,16 @@ param_simulation <- list(
 #' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
-#' @seealso [param_simulation] [calc_param]
 #' @export
-param_farm <- list(
+param_simulation <- list(
+  # TODO: The function to confirm the necessary parameters are set or not
+  simulation_length = 60,
+  n_simulation = 1,
+  simulation_start = 1,
+  input_csv = NA_character_,
+  output_dir = "data/output",
+  output_filename = "simulation",
+
   # TODO: Unify "farm" and "herd"
   # TODO: The function to confirm the necessary parameters are set or not
   prop_female = NA,
@@ -144,12 +140,11 @@ set_param <- function(parameter, default) {
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
-#' @param param_farm See [param_farm].
 #' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
 #'
 #' @return A parameter list.
 #' @export
-calc_param <- function(param_farm, param_simulation, modification = NULL) {
+calc_param <- function(param_simulation, modification = NULL) {
   param <- list()
 
   ## infection_status_change ----
@@ -186,11 +181,11 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   ## blv_test ----
   # Test frequency
-  if (param_farm$test_frequency == 0) {
+  if (param_simulation$test_frequency == 0) {
     param$test_months <- numeric(0)
   } else {
-    test_months <-
-      floor(12 / param_farm$test_frequency * seq(param_farm$test_frequency))
+    test_months <- floor(12 / param_simulation$test_frequency *
+                         seq(param_simulation$test_frequency))
     test_months <-
       (test_months + param_simulation$simulation_start + 6) %% 12 + 1
     # Add 6 to avoid the first test occurs at i_month = 1 when test_frequency = 1
@@ -200,15 +195,15 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # A list of BLV test methods available in Japan was obtained from here:
   # Mekata, 2016. https://doi.org/10.4190/jjlac.6.221
-  if (anyNA(param_farm$test_method)) {
+  if (anyNA(param_simulation$test_method)) {
     # Not is.na() because length of test_method can be two
     param$test_sensitivity <- 0
     param$test_specificity <- 0
-  } else if (param_farm$test_method == "immunodiffusion") {
+  } else if (param_simulation$test_method == "immunodiffusion") {
     param$test_sensitivity <- 0.981
     param$test_specificity <- 0.967
     # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
-  } else if (param_farm$test_method == "ELISA") {
+  } else if (param_simulation$test_method == "ELISA") {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
@@ -222,7 +217,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param_farm$test_method == "PHA") {
+  } else if (param_simulation$test_method == "PHA") {
     estimates <- data.table(sensitivity = numeric(2),
                             specificity = numeric(2))
     # Calculate treating a result of nested PCR as gold standard
@@ -235,7 +230,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     param$test_sensitivity <- estimate$sensitivity
     param$test_specificity <- estimate$specificity
-  } else if (param_farm$test_method == "nested PCR") {
+  } else if (param_simulation$test_method == "nested PCR") {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
                             se_lwr = c(0.901, 0.895, 0.878),
@@ -249,7 +244,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param_farm$test_method == "real-time PCR") {
+  } else if (param_simulation$test_method == "real-time PCR") {
     # Calculate treating a result of nested PCR as gold standard
     estimates <- data.table(sensitivity = numeric(3),
                             specificity = numeric(3))
@@ -266,8 +261,8 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
     param$test_sensitivity <- estimate$sensitivity
     param$test_specificity <- estimate$specificity
   } else {
-    param$test_sensitivity <- param_farm$test_method[1]
-    param$test_specificity <- param_farm$test_method[2]
+    param$test_sensitivity <- param_simulation$test_method[1]
+    param$test_specificity <- param_simulation$test_method[2]
   }
 
 
@@ -285,7 +280,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
                                0.0001,  # Nov
                                0        # Dec
                                )
-  control_insects <- param_farm$control_insects
+  control_insects <- param_simulation$control_insects
   if (is.logical(control_insects)) {
     insects_pressure <- fifelse(control_insects, 0.5, 1)
   } else {
@@ -318,7 +313,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Infection by using same needles among infected and non-infected cattle
   # Infection probability per day
   # TODO: temporary, just by inspiration
-  param$prob_inf_needles <- fifelse(param_farm$change_needles, 0, 0.001)
+  param$prob_inf_needles <- fifelse(param_simulation$change_needles, 0, 0.001)
 
   ## infection_rp ----
   # Infection by rectal palpation
@@ -328,7 +323,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # 直検1回ごとの感染確率
   # Kohara, Konnai and Onuma, 2016.
-  param$prob_inf_rp <- fifelse(param_farm$change_gloves,
+  param$prob_inf_rp <- fifelse(param_simulation$change_gloves,
                                0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
@@ -350,7 +345,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
   # Frequency of infection by colostrum may be smaller than that by contact. 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months. - Ferrer and Piper, 1981. https://www.ncbi.nlm.nih.gov/pubmed/6272983
   # Probability of BLV infection after freeze-thaw can be considered as 0 - Kanno et al, 2014. https://doi.org/10.1292/jvms.13-0253
-  feed_raw_colostrum <- param_farm$feed_raw_colostrum
+  feed_raw_colostrum <- param_simulation$feed_raw_colostrum
   param$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
 
 
@@ -360,28 +355,28 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   ## infection_communal_pasture ----
   # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
   param$prob_seroconv_communal_pasture <-
-    fifelse(param_farm$use_communal_pasture,
-            param_farm$prob_seroconversion_in_communal_pasture, 0)
+    fifelse(param_simulation$use_communal_pasture,
+            param_simulation$prob_seroconversion_in_communal_pasture, 0)
 
 
   ## artificial_insemination ----
 
-  param$prop_replacement <- param_farm$prop_replacement
-  # This is passed from param_farm only to use in process_raw_csv()
+  param$prop_replacement <- param_simulation$prop_replacement
+  # This is passed from param_simulation only to use in process_raw_csv()
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
   # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
   # TODO: Think way to remove these params
   param$calving_interval <-
-    set_param(param_farm$calving_interval / day_per_month,
+    set_param(param_simulation$calving_interval / day_per_month,
               mean(432, 430, 432, 429, 427) / day_per_month)
-  param$age_first_delivery <- set_param(param_farm$age_first_delivery,
+  param$age_first_delivery <- set_param(param_simulation$age_first_delivery,
                                         mean(25.2, 25.1, 25.0, 25.0, 24.8))
-  param$months_open <- set_param(param_farm$days_open / day_per_month,
+  param$months_open <- set_param(param_simulation$days_open / day_per_month,
                                  mean(160, 159, 159, 155, 154) / day_per_month)
   param$months_milking <-
-    set_param(param_farm$days_milking / day_per_month,
+    set_param(param_simulation$days_milking / day_per_month,
               mean(366, 363, 365, 364, 363) / day_per_month)
 
   # First AI after delivery
@@ -389,11 +384,11 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
   mean_date_start_ai <- c(88, 88, 88, 88, 89) / 30
-  lims_date_start_ai <- set_param(param_farm$mean_day_start_ai,
+  lims_date_start_ai <- set_param(param_simulation$mean_day_start_ai,
                                   c(min(mean_date_start_ai),
                                     max(mean_date_start_ai)))
   # TODO: It's assumed that 95% of cows start AI within one month
-  param$sd_date_start_ai <- set_param(param_farm$sd_day_start_ai / 30,
+  param$sd_date_start_ai <- set_param(param_simulation$sd_day_start_ai / 30,
                                       1 / qnorm(0.975))
   param$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
                                     max = lims_date_start_ai[2])
@@ -401,10 +396,11 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # First AI for heifer
   mean_age_first_ai <- c(427, 427, 435, 432) / day_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
-  lims_age_first_ai <- set_param(param_farm$mean_age_first_ai,
+  lims_age_first_ai <- set_param(param_simulation$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month
-  param$sd_age_first_ai <- set_param(param_farm$sd_age_first_ai, 1 / qnorm(0.975))
+  param$sd_age_first_ai <-
+    set_param(param_simulation$sd_age_first_ai, 1 / qnorm(0.975))
   param$mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
                                    max = lims_age_first_ai[2])
   param$lower_lim_first_ai <- 12
@@ -412,7 +408,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # Detection of heats
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # Probability of detection of heat from Nenkan Kentei Seiseki from HRK (H23-28)
-  param$prob_heat_detected <- set_param(param_farm$prop_heat_detected,
+  param$prob_heat_detected <- set_param(param_simulation$prop_heat_detected,
                                         runif(1, min = min(prop_heat_detected),
                                               max = max(prop_heat_detected)))
 
@@ -447,7 +443,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   # Length of milking period
   # TODO: Use farm_parameter
-  length_milking <- set_param(param_farm$days_milking, 363) / 30
+  length_milking <- set_param(param_simulation$days_milking, 363) / 30
   param$lower_lim_dried <- length_milking %/% 1
   param$prop_dried_shorter <- 1 - length_milking %% 1
 
@@ -470,7 +466,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 
   ## Sex ratio ----
   sex_ratio_f <- prop_f / (prop_m + prop_f)
-  lims_female <- set_param(param_farm$prop_female,
+  lims_female <- set_param(param_simulation$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
   param$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
 
@@ -480,9 +476,10 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))
   lims_ff <- c(min(sex_ratio_ff), max(sex_ratio_ff))
 
-  if (!is.na(param_farm$prop_female)) {
-    if (length(param_farm$prop_female) == 1) {
-      prop_female <- c(param_farm$prop_female, param_farm$prop_female)
+  if (!is.na(param_simulation$prop_female)) {
+    if (length(param_simulation$prop_female) == 1) {
+      prop_female <-
+        c(param_simulation$prop_female, param_simulation$prop_female)
     }
     tend_mm <- sex_ratio_mm / (prop_m ^ 2)
     tend_ff <- sex_ratio_ff / (prop_f ^ 2)
@@ -519,7 +516,7 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
   # No. of died Holstein females in Hokkaido
   n_died <- c(63361, 62949, 65395, 66143, 63437)
   prop_died <- n_died / (n_slaughtered + n_died)
-  lims_died <- set_param(param_farm$prop_died,
+  lims_died <- set_param(param_simulation$prop_died,
                          c(min(prop_died), max(prop_died)))
   param$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
 
@@ -569,26 +566,24 @@ calc_param <- function(param_farm, param_simulation, modification = NULL) {
 #'
 #' @param cows_areas A result of [set_chamber_id()].
 #' @param param_simulation See [param_simulation].
-#' @param param_farm See [param_farm].
 #'
 #' @return A list of calculated parameters.
 #' @export
-process_param <- function(cows_areas, param_simulation, param_farm) {
+process_param <- function(cows_areas, param_simulation) {
   herd_size <- sum(cows_areas$cows$is_owned, na.rm = T)
 
   list(
     param_output_filename = paste0("param_", param_simulation$output_filename),
-    herd_size_limits = if (!anyNA(param_farm$capacity_in_head)) {
-        param_farm$capacity_in_head
-      } else if (!anyNA(param_farm$capacity_as_ratio)) {
+    herd_size_limits = if (!anyNA(param_simulation$capacity_in_head)) {
+        param_simulation$capacity_in_head
+      } else if (!anyNA(param_simulation$capacity_as_ratio)) {
         herd_size * capacity_as_ratio
       } else {
         herd_size * c(0.9, 1.1)
       },
     prob_rep = set_prob_rep(
-      cows_areas$cows[stage %in% c("milking", "dry"), .N],
-      param_farm),
-    graze_cows = anyNA(param_farm$hours_grazing)
+      cows_areas$cows[stage %in% c("milking", "dry"), .N], param_simulation),
+    graze_cows = anyNA(param_simulation$hours_grazing)
   )
 }
 # TODO: Is this function really necessary?

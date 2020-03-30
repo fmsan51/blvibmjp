@@ -106,13 +106,13 @@ set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
 #' Setup [area_table].
 #'
 #' @param area_table See [area_table].
-#' @param param_farm See [param_farm].
+#' @param param_simulation See [param_simulation].
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 #' @export
-setup_area_table <- function(area_table, param_farm) {
+setup_area_table <- function(area_table, param_simulation) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_farm$use_communal_pasture &
+  if (param_simulation$use_communal_pasture &
       all(area_table$area_type != "communal pasture")) {
     communal_pasture_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,

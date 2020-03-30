@@ -4,12 +4,12 @@
 \alias{setup_area_table}
 \title{Setup of \code{area_table}}
 \usage{
-setup_area_table(area_table, param_farm)
+setup_area_table(area_table, param_simulation)
 }
 \arguments{
 \item{area_table}{See \link{area_table}.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param_simulation}{See \link{param_simulation}.}
 }
 \description{
 Setup \link{area_table}.

@@ -4,11 +4,9 @@
 \alias{calc_param}
 \title{Calculate parameters necessary to the simulation.}
 \usage{
-calc_param(param_farm, param_simulation, modification = NULL)
+calc_param(param_simulation, modification = NULL)
 }
 \arguments{
-\item{param_farm}{See \link{param_farm}.}
-
 \item{modification}{A list used to overwrite the defaut parameter like \code{list(parameter_name = new_value, ...)}.}
 }
 \value{

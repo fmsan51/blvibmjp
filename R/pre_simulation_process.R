@@ -8,8 +8,8 @@
 #' - `age`: Age in month. Either one of `age` or `date_birth` must be set.
 #' - `date_birth`: Birth day. If `age` is not set, `age` is calculated from this and `today` argument in the function.
 #' - `sex`: One of "female", "male" or "freemartin". If not set, all cows are assumed to be "female".
-#' - `is_replacement`: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, `age` = 0 female cows are assumed to be a replacement according to `prop_replacement` parameter in `param_farm` and all male cows are assumed to be a non-replacement.
-#' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param_farm].
+#' - `is_replacement`: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, `age` = 0 female cows are assumed to be a replacement according to `prop_replacement` parameter in `param_simulation` and all male cows are assumed to be a non-replacement.
+#' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param_simulation].
 #' - `is_to_test_pregnancy`: If not set, `FALSE` is set.
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
@@ -36,8 +36,7 @@
 process_raw_cow <- function(csv, data = NULL, output_file = NULL,
                             today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
-                            param_calculated = calc_param(param_farm,
-                                                          param_simulation),
+                            param_calculated = calc_param(param_simulation),
                             area_name = NULL, n_chambers = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
@@ -646,8 +645,7 @@ process_raw_data <- function(excel, output = F,
                              cow_output_file = NULL, area_output_file = NULL,
                              movement_output_file = NULL,
                              communal_pasture_output_file = NULL,
-                             param_calculated =
-                               calc_param(param_farm, param_simulation),
+                             param_calculated = calc_param(param_simulation),
                              sep = "[,\t\r\n |;:]", ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
