@@ -399,7 +399,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
                     n_ai = 0,
                     day_heat = sample.int(30, n_newborns, replace = T) * 1,
                     infection_status = "s",
-                    area_id = param_area$calf_area_id,
+                    area_id = 1,
                     months_in_area = 0,
                     is_isolated = attr(area_table, "is_calf_isolated"),
                     i_month = i)]
@@ -558,12 +558,11 @@ unassign_removed_cows <- function(cows, area_table, area_list, i) {
 assign_newborns <- function(cows, area_table, area_list, param_area) {
   newborn_cow_id <- cows$cow_id[cows$age == 0]
   n_newborn <- length(newborn_cow_id)
-  if (all(attr(area_table, "tie_stall") != param_area$calf_area_id) |
-      n_newborn == 0) {
+  if (all(attr(area_table, "tie_stall") != 1) | n_newborn == 0) {
     return(list(cows = cows, area_list = area_list))
   }
 
-  calf_area <- area_list[[as.character(param_area$calf_area_id)]]
+  calf_area <- area_list[["1"]]
   is_empty_chambers <- is.na(calf_area$cow_id)
   n_empty_chambers <- sum(is_empty_chambers)
   if (n_empty_chambers < n_newborn) {
@@ -575,8 +574,7 @@ assign_newborns <- function(cows, area_table, area_list, param_area) {
   assigned_chambers <- resample(calf_area$chamber_id[is_empty_chambers],
                                 length(newborn_can_be_assigned))
   cows[match(newborn_can_be_assigned, cow_id), chamber_id := assigned_chambers]
-  area_list[[as.character(param_area$calf_area_id)]][
-    assigned_chambers, cow_id := newborn_can_be_assigned]
+  area_list[["1"]][assigned_chambers, cow_id := newborn_can_be_assigned]
 
   return(list(cows = cows, area_list = area_list))
 }

@@ -4,7 +4,7 @@
 \name{param_area}
 \alias{param_area}
 \title{Parameters about areas which should be set by users}
-\format{An object of class \code{list} of length 2.}
+\format{An object of class \code{list} of length 1.}
 \usage{
 param_area
 }

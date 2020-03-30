@@ -129,7 +129,7 @@ setup_area_table <- function(area_table, param_farm, param_area) {
   attr(area_table, "tie_stall") <-
     area_table$area_id[area_table$area_type == "tie"]
   attr(area_table, "is_calf_isolated") <-
-    area_table[area_id == param_area$calf_area_id, area_type == "hatch"]
+    area_table[area_id == 1, area_type == "hatch"]
 
   return(area_table)
 }
