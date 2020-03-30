@@ -151,7 +151,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
 
   if (anyNA(cows$is_replacement)) {
     is_na <- is.na(cows$is_replacement)
-    prob_rep <- set_prob_rep(sum(cows$parity != 0), param_calculated)
+    prob_rep <- set_prob_rep(sum(cows$parity != 0), param_simulation)
     cows[is_na,
          is_replacement := (sex == "female" & (age > 0 | runif(.N) < prob_rep))]
   }

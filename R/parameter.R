@@ -361,8 +361,6 @@ calc_param <- function(param_simulation, modification = NULL) {
 
   ## artificial_insemination ----
 
-  param$prop_replacement <- param_simulation$prop_replacement
-
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
   # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
