@@ -363,13 +363,12 @@ do_test <- function(cows, month, param_calculated) {
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
-#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of two elements: `cows` and `last_cow_id`.
 #' @export
-add_newborns <- function(cows, area_table, i, last_cow_id, param_area,
+add_newborns <- function(cows, area_table, i, last_cow_id,
                          param_calculated, param_processed) {
   rows_mothers <- which(cows$date_last_delivery == i)
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
@@ -554,8 +553,7 @@ unassign_removed_cows <- function(cows, area_table, area_list, i) {
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' @param param_area See [param_area].
-assign_newborns <- function(cows, area_table, area_list, param_area) {
+assign_newborns <- function(cows, area_table, area_list) {
   newborn_cow_id <- cows$cow_id[cows$age == 0]
   n_newborn <- length(newborn_cow_id)
   if (all(attr(area_table, "tie_stall") != 1) | n_newborn == 0) {
@@ -669,18 +667,17 @@ extract_owned_cows <- function(cows) {
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' @param param_area See [param_area].
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
 change_area <- function(cows, i, movement_table, area_table, area_list,
-                        param_area, param_calculated) {
+                        param_calculated) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
   cows <- unassign_removed_cows(cows, area_table, area_list, i)
-  res <- assign_newborns(cows, area_table, area_list, param_area)
+  res <- assign_newborns(cows, area_table, area_list)
   cows <- res$cows
   area_list <- res$area_list
 

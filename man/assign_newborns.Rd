@@ -4,7 +4,7 @@
 \alias{assign_newborns}
 \title{Assign \code{chamber_id} to newborns}
 \usage{
-assign_newborns(cows, area_table, area_list, param_area)
+assign_newborns(cows, area_table, area_list)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -12,8 +12,6 @@ assign_newborns(cows, area_table, area_list, param_area)
 \item{area_table}{See \link{area_table}.}
 
 \item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
-
-\item{param_area}{See \link{param_area}.}
 }
 \description{
 Assign \code{chamber_id} to newborns

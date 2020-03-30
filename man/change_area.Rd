@@ -4,7 +4,7 @@
 \alias{change_area}
 \title{Check and move cows between areas}
 \usage{
-change_area(cows, i, movement_table, area_table, area_list, param_area,
+change_area(cows, i, movement_table, area_table, area_list,
   param_calculated)
 }
 \arguments{
@@ -17,8 +17,6 @@ change_area(cows, i, movement_table, area_table, area_list, param_area,
 \item{area_table}{See \link{area_table}.}
 
 \item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
-
-\item{param_area}{See \link{param_area}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }

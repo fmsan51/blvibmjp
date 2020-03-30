@@ -4,8 +4,8 @@
 \alias{add_newborns}
 \title{Add newborns to a cow_table}
 \usage{
-add_newborns(cows, area_table, i, last_cow_id, param_area,
-  param_calculated, param_processed)
+add_newborns(cows, area_table, i, last_cow_id, param_calculated,
+  param_processed)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -15,8 +15,6 @@ add_newborns(cows, area_table, i, last_cow_id, param_area,
 \item{i}{The number of months from the start of the simulation.}
 
 \item{last_cow_id}{The ID of a cow at the last non-empty row of \code{cows}.}
-
-\item{param_area}{See \link{param_area}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 

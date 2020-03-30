@@ -79,8 +79,7 @@ param_farm$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない�
 # 他、詳細は help("param_farm") 参照
 
 # シミュレーションの実行（1回ごとに十数秒～数分）
-simulate_blv_spread(param_simulation, param_farm, param_area,
-                    processed_data = data)
+simulate_blv_spread(param_simulation, param_farm, processed_data = data)
 ```
 
 4. 以下のコードで表示されるフォルダ内に、シミュレーション結果（simulationXX.csv）が保存される。

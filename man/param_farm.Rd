@@ -40,6 +40,6 @@ The following parameters are passed to \code{\link[=calc_param]{calc_param()}} a
 }
 }
 \seealso{
-\link{param_simulation} \link{param_area} \link{calc_param}
+\link{param_simulation} \link{calc_param}
 }
 \keyword{datasets}

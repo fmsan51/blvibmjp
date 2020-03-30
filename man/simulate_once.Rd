@@ -6,7 +6,7 @@
 \usage{
 simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
   i_simulation, result, result_area, param_simulation, param_farm,
-  param_area, param_processed, param_modification, save_cows, save_param)
+  param_processed, param_modification, save_cows, save_param)
 }
 \arguments{
 \item{cows_areas}{A result of \code{\link[=set_init_chamber_and_area_id]{set_init_chamber_and_area_id()}}.}
@@ -26,8 +26,6 @@ simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
 \item{param_simulation}{See \link{param_simulation}.}
 
 \item{param_farm}{See \link{param_farm}.}
-
-\item{param_area}{See \link{param_area}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 

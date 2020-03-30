@@ -19,6 +19,6 @@ param_simulation
 }
 }
 \seealso{
-\link{param_farm} \link{param_area}
+\link{param_farm}
 }
 \keyword{datasets}

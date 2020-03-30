@@ -7,7 +7,7 @@
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
-#' @seealso [param_farm] [param_area]
+#' @seealso [param_farm]
 #' @export
 param_simulation <- list(
   # TODO: The function to confirm the necessary parameters are set or not
@@ -49,7 +49,7 @@ param_simulation <- list(
 #' - `test_method`: Method of BLV test. Character indicating test method (immunodiffusion/ELISA/PHA/nested PCR/real-time PCR) or a vector consisted of two numerics which mean sensitivity and specificity of the test.
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
-#' @seealso [param_simulation] [param_area] [calc_param]
+#' @seealso [param_simulation] [calc_param]
 #' @export
 param_farm <- list(
   # TODO: Unify "farm" and "herd"
@@ -115,28 +115,6 @@ param_farm <- list(
   test_method = NA,
 
   days_milking = NA
-)
-
-
-#' Parameters about areas which should be set by users
-#'
-#' - `calf_area_priority`: Specify priority for calf areas. `NA` is allowed. For detail of `priority`, see [area_table].
-#'
-#' @seealso [param_simulation] [param_farm]
-#' @export
-param_area <- list(
-  # TODO: The function to confirm the necessary parameters are set or not
-  calf_area_priority = NA_real_
-
-  # Does a farm decide the chamber layout of milking cows based on lactation stage?
-  # is_layout_on_stage = F,
-
-  # For a farm which decide the chamber layout based on parity, specify how cows are areaed.
-  # For example, c(1, 2, 4) means there are three areas (1, 2-3, >4).
-  # layout_on_parity = NA
-
-  # FYI: areaing of dry cows and mixsing of breeding and dry cows
-  # Fujimoto and Iki, 2005. Bokusou to Engei 53(5) 9-12. https://www.snowseed.co.jp/wp/wp-content/uploads/grass/grass_200509_03.pdf
 )
 
 

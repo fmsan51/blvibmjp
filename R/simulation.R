@@ -4,7 +4,6 @@
 #'
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
-#' @param param_area See [param_area].
 #' @param processed_data The result of [process_raw_data()]. Set this parameters or `area_table` and `movement_table`.
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
@@ -15,7 +14,7 @@
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param_simulation$output_dir`.
 #' @export
-simulate_blv_spread <- function(param_simulation, param_farm, param_area,
+simulate_blv_spread <- function(param_simulation, param_farm,
                                 processed_data,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
@@ -36,7 +35,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 
   # TODO: Varidate params (communal_pasture_table must not be NULL when param_farm$use_communal_pasture is T)
   setup_cows_res <- setup_cows(param_simulation, save_cows, cow_table)
-  area_table <- setup_area_table(area_table, param_farm, param_area)
+  area_table <- setup_area_table(area_table, param_farm)
 
   area_list <- setup_tie_stall_table(area_table)
   # setup_tie_stall_table() must come after setup_area_table()
@@ -57,7 +56,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 
   if (save_param) {
     save_param_txt(
-      c(param_simulation, param_farm, param_area, param_processed),
+      c(param_simulation, param_farm, param_processed),
       param_processed$param_output_filename, 0,
       subdir = param_simulation$output_dir)
   }
@@ -70,7 +69,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
     res <- simulate_once(cows_areas, setup_cows_res$init_n_cows,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
-             param_simulation, param_farm, param_area, param_processed,
+             param_simulation, param_farm, param_processed,
              param_modification = list_param_modification[[i_simulation]],
              save_cows, save_param)
   }
@@ -95,7 +94,6 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 #' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
 #' @param param_simulation See [param_simulation].
 #' @param param_farm See [param_farm].
-#' @param param_area See [param_area].
 #' @param param_processed A result of [process_param()].
 #' @param param_modification See [calc_param()].
 #' @param save_cows,save_param Whether to save `result_combined` and `param_calculated` (a result of [calc_param()]) to a file.
@@ -105,7 +103,7 @@ simulate_blv_spread <- function(param_simulation, param_farm, param_area,
 simulate_once <- function(cows_areas, last_cow_id, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
-                          param_simulation, param_farm, param_area,
+                          param_simulation, param_farm,
                           param_processed, param_modification,
                           save_cows, save_param) {
   cows <- cows_areas$cows
@@ -129,7 +127,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
 
     cows <- change_infection_status(cows, i, month, area_table, areas,
                                     param_calculated)
-    res <- add_newborns(cows, area_table, i, last_cow_id, param_area,
+    res <- add_newborns(cows, area_table, i, last_cow_id,
                         param_calculated, param_processed)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
@@ -147,7 +145,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     # change_area() must be come after check_removal(), because change_area()
     # assigns newborns to areas and removes dead cows from areas.
     res <- change_area(cows, i, movement_table, area_table, areas,
-                       param_area, param_calculated)
+                       param_calculated)
     cows <- res$cows
     areas <- res$area_list
 
