@@ -4,7 +4,9 @@
 \name{param_simulation}
 \alias{param_simulation}
 \title{Parameters about a simulation which should be set by users}
-\format{An object of class \code{list} of length 6.}
+\format{
+An object of class \code{list} of length 6.
+}
 \usage{
 param_simulation
 }

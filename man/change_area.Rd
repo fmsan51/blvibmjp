@@ -4,8 +4,7 @@
 \alias{change_area}
 \title{Check and move cows between areas}
 \usage{
-change_area(cows, i, movement_table, area_table, area_list,
-  param_calculated)
+change_area(cows, i, movement_table, area_table, area_list, param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}

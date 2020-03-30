@@ -4,8 +4,12 @@
 \alias{sensitivity_analysis}
 \title{Do sensitivity analysis}
 \usage{
-sensitivity_analysis(param_simulation, param_farm, param_group,
-  i_simulation_start = 1)
+sensitivity_analysis(
+  param_simulation,
+  param_farm,
+  param_group,
+  i_simulation_start = 1
+)
 }
 \arguments{
 \item{param_simulation}{See \link{param_simulation}.}

@@ -4,8 +4,11 @@
 \alias{validate_cow_table}
 \title{Validate cow_table}
 \usage{
-validate_cow_table(cows, date_format = "ymd",
-  today = lubridate::today(tzone = "Asia/Tokyo"))
+validate_cow_table(
+  cows,
+  date_format = "ymd",
+  today = lubridate::today(tzone = "Asia/Tokyo")
+)
 }
 \arguments{
 \item{cows}{A \link{cow_table}.}

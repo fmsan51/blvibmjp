@@ -4,8 +4,14 @@
 \alias{add_newborns}
 \title{Add newborns to a cow_table}
 \usage{
-add_newborns(cows, area_table, i, last_cow_id, param_calculated,
-  param_processed)
+add_newborns(
+  cows,
+  area_table,
+  i,
+  last_cow_id,
+  param_calculated,
+  param_processed
+)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}

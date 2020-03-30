@@ -4,13 +4,21 @@
 \alias{process_raw_data}
 \title{Process raw data to suitable forms}
 \usage{
-process_raw_data(excel, output = F, cow_data = NULL,
-  area_data = NULL, movement_data = NULL,
-  communal_pasture_data = NULL, cow_output_file = NULL,
-  area_output_file = NULL, movement_output_file = NULL,
+process_raw_data(
+  excel,
+  output = F,
+  cow_data = NULL,
+  area_data = NULL,
+  movement_data = NULL,
+  communal_pasture_data = NULL,
+  cow_output_file = NULL,
+  area_output_file = NULL,
+  movement_output_file = NULL,
   communal_pasture_output_file = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
-  sep = "[,\\t\\r\\n |;:]", ...)
+  sep = "[,\\t\\r\\n |;:]",
+  ...
+)
 }
 \arguments{
 \item{excel}{Set this or \code{cow_data}, \code{area_data} and \code{movement_data}.}

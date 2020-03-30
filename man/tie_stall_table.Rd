@@ -5,7 +5,9 @@
 \alias{tie_stall_table}
 \alias{a_chamber}
 \title{A data.table to store status of a tie-stall barn}
-\format{\link[data.table:data.table]{data.table}}
+\format{
+\link[data.table:data.table]{data.table}
+}
 \usage{
 a_chamber
 }

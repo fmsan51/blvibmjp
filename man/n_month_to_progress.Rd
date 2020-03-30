@@ -4,8 +4,12 @@
 \alias{n_month_to_progress}
 \title{Calculate months to progress the disease}
 \usage{
-n_month_to_progress(susceptibility_ial_to_ipl, susceptibility_ipl_to_ebl,
-  i, param_calculated)
+n_month_to_progress(
+  susceptibility_ial_to_ipl,
+  susceptibility_ipl_to_ebl,
+  i,
+  param_calculated
+)
 }
 \arguments{
 \item{susceptibility_ial_to_ipl}{A numeric.}

@@ -4,8 +4,15 @@
 \alias{plot_prevalences}
 \title{Plot the change in prevalence}
 \usage{
-plot_prevalences(simulation_length, path_to_csv, language = NULL,
-  title = T, xlab = T, ylab = T, font = NULL)
+plot_prevalences(
+  simulation_length,
+  path_to_csv,
+  language = NULL,
+  title = T,
+  xlab = T,
+  ylab = T,
+  font = NULL
+)
 }
 \arguments{
 \item{simulation_length}{See \link{param_simulation}.}

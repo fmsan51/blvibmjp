@@ -4,8 +4,7 @@
 \alias{calc_infection_in_barns}
 \title{Calculate infection in barns}
 \usage{
-calc_infection_in_barns(cows, month, area_table, area_list,
-  param_calculated)
+calc_infection_in_barns(cows, month, area_table, area_list, param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}

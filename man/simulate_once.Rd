@@ -4,9 +4,22 @@
 \alias{simulate_once}
 \title{Body of the simulation}
 \usage{
-simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
-  i_simulation, result, result_area, param_simulation, param_farm,
-  param_processed, param_modification, save_cows, save_param)
+simulate_once(
+  cows_areas,
+  last_cow_id,
+  area_table,
+  movement_table,
+  day_rp,
+  i_simulation,
+  result,
+  result_area,
+  param_simulation,
+  param_farm,
+  param_processed,
+  param_modification,
+  save_cows,
+  save_param
+)
 }
 \arguments{
 \item{cows_areas}{A result of \code{\link[=set_init_chamber_and_area_id]{set_init_chamber_and_area_id()}}.}

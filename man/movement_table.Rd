@@ -5,7 +5,9 @@
 \alias{movement_table}
 \alias{a_movement}
 \title{A data.table to manage cows' movement between areas}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.}
+\format{
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.
+}
 \usage{
 a_movement
 }

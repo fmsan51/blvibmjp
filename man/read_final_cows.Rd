@@ -4,8 +4,14 @@
 \alias{read_final_cows}
 \title{Read cow information at the end of a simulation}
 \usage{
-read_final_cows(output_filename, output_dir, n_simulation,
-  simulation_length, route_levels = NULL, route_labels = NULL)
+read_final_cows(
+  output_filename,
+  output_dir,
+  n_simulation,
+  simulation_length,
+  route_levels = NULL,
+  route_labels = NULL
+)
 }
 \arguments{
 \item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param_simulation}.}

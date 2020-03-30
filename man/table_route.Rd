@@ -5,8 +5,13 @@
 \alias{summary_route}
 \title{Summarize infection routes}
 \usage{
-table_route(output_filename, output_dir, n_simulation, simulation_length,
-  route_levels = NULL)
+table_route(
+  output_filename,
+  output_dir,
+  n_simulation,
+  simulation_length,
+  route_levels = NULL
+)
 
 summary_route(cows)
 }

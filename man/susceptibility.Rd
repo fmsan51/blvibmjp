@@ -4,8 +4,12 @@
 \alias{susceptibility}
 \title{Calculate susceptibility of newborns to the pathogen}
 \usage{
-susceptibility(n_newborns, susceptibility_ial_to_ipl_dam,
-  susceptibility_ipl_to_ebl_dam, param_calculated)
+susceptibility(
+  n_newborns,
+  susceptibility_ial_to_ipl_dam,
+  susceptibility_ipl_to_ebl_dam,
+  param_calculated
+)
 }
 \arguments{
 \item{n_newborns}{The number of newborns.}

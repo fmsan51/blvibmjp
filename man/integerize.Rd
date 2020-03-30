@@ -15,7 +15,7 @@ numerc vector of the same length with the input.
 \description{
 Convert non-integer to integer. \cr
 The output will be an integer which is obtained by \code{\link[=ceiling]{ceiling()}} or \code{\link[=floor]{floor()}} and the mean of the output of multiple trials equals to the input.
-For example, if input is 1.7, the output will be 1 by 30% or 2 by 70%.
+For example, if input is 1.7, the output will be 1 by 30\% or 2 by 70\%.
 }
 \examples{
 set.seed(1)

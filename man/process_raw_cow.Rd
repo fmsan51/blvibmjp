@@ -4,10 +4,17 @@
 \alias{process_raw_cow}
 \title{Process raw cow data to suitable form}
 \usage{
-process_raw_cow(csv, data = NULL, output_file = NULL,
-  today = Sys.Date(), create_calf_data = F, modify_prevalence = NULL,
+process_raw_cow(
+  csv,
+  data = NULL,
+  output_file = NULL,
+  today = Sys.Date(),
+  create_calf_data = F,
+  modify_prevalence = NULL,
   param_calculated = calc_param(param_farm, param_simulation),
-  area_name = NULL, n_chambers = NULL)
+  area_name = NULL,
+  n_chambers = NULL
+)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}

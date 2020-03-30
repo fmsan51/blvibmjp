@@ -4,8 +4,14 @@
 \alias{change_infection_status}
 \title{Check change of infection status of cows}
 \usage{
-change_infection_status(cows, i, month, area_table, area_list,
-  param_calculated)
+change_infection_status(
+  cows,
+  i,
+  month,
+  area_table,
+  area_list,
+  param_calculated
+)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}

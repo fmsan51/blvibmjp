@@ -5,7 +5,9 @@
 \alias{communal_pasture_table}
 \alias{a_communal_pasture_use}
 \title{A data.table to manage use of a communal pasture}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 5 columns.}
+\format{
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 5 columns.
+}
 \usage{
 a_communal_pasture_use
 }

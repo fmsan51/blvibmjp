@@ -5,7 +5,9 @@
 \alias{area_table}
 \alias{a_area}
 \title{A data.table to manage areas in a farm}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.}
+\format{
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.
+}
 \usage{
 a_area
 }

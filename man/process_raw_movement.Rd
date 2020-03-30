@@ -4,8 +4,13 @@
 \alias{process_raw_movement}
 \title{Process raw movement data to suitable form}
 \usage{
-process_raw_movement(csv, data = NULL, output_file = NULL,
-  area_name = NULL, sep = "[,\\t\\r\\n |;:]")
+process_raw_movement(
+  csv,
+  data = NULL,
+  output_file = NULL,
+  area_name = NULL,
+  sep = "[,\\t\\r\\n |;:]"
+)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}

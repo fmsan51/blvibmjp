@@ -20,7 +20,7 @@ Imports:
     lubridate,
     stringr,
     purrr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Suggests:
     testthat (>= 2.1.0),

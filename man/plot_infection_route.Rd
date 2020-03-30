@@ -4,10 +4,22 @@
 \alias{plot_infection_route}
 \title{Plot monthly infection routes nicely}
 \usage{
-plot_infection_route(path_to_csv, language = NULL, route_levels = NULL,
-  route_labels = NULL, max_ylim = 100, title = T, legend_title = T,
-  xlab = T, ylab = T, gray = F, area_color = NULL, border = F,
-  border_color = NULL, font = NULL)
+plot_infection_route(
+  path_to_csv,
+  language = NULL,
+  route_levels = NULL,
+  route_labels = NULL,
+  max_ylim = 100,
+  title = T,
+  legend_title = T,
+  xlab = T,
+  ylab = T,
+  gray = F,
+  area_color = NULL,
+  border = F,
+  border_color = NULL,
+  font = NULL
+)
 }
 \arguments{
 \item{path_to_csv}{Path to an output csv file.}

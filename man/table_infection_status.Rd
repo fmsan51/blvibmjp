@@ -5,8 +5,12 @@
 \alias{summary_infection_status}
 \title{Summarize infection status}
 \usage{
-table_infection_status(output_filename, output_dir, n_simulation,
-  simulation_length)
+table_infection_status(
+  output_filename,
+  output_dir,
+  n_simulation,
+  simulation_length
+)
 
 summary_infection_status(cows)
 }

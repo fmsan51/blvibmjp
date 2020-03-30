@@ -4,8 +4,7 @@
 \alias{read_initial_cows}
 \title{Read cow_table at the start of a simulation from a csv and modify data ready to plot}
 \usage{
-read_initial_cows(path_to_csv, route_levels = NULL,
-  route_labels = NULL)
+read_initial_cows(path_to_csv, route_levels = NULL, route_labels = NULL)
 }
 \arguments{
 \item{path_to_csv}{Path to a csv file which contains \link{cow_table}.}

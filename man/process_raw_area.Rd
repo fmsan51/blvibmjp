@@ -4,8 +4,12 @@
 \alias{process_raw_area}
 \title{Process raw area data to suitable form}
 \usage{
-process_raw_area(csv, data = NULL, output_file = NULL,
-  sep = "[,\\t\\r\\n |;:]")
+process_raw_area(
+  csv,
+  data = NULL,
+  output_file = NULL,
+  sep = "[,\\t\\r\\n |;:]"
+)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
@@ -27,7 +31,7 @@ An input csv file can have following columns. The csv file must contain \code{ar
 \itemize{
 \item \code{area_id}: If not set or non-numerical value is set, sequencial integers are allocated (from 1 to the number of input rows). More than two rows can have the same \code{area_id} only when these rows have \code{area_type}s as "tie". \emph{e.g.} \code{data.frame(area_id = c(1, 1), area_type = c("tie", "tie"), capacity = c(10, 20))} is identical to \code{data.frame(area_id = 1, area_type = "tie", capacity = list(c(10, 20)))}. If \code{NA}, the previous non-\code{NA} value is set.
 \item \code{area_type}
-\item \code{capacity}: If \code{NA}, \code{Inf} is set. If \code{area_type} is "tie" or "hatch", \code{capacity} must be set. A character like \code{"10,20,30x2"} will be converted to a numeric vector \code{c(10, 20, 30, 30)}. Separator (\code{,}) can be specifed by \code{sep} argument.
+\item \code{capacity}: If \code{NA}, \code{Inf} is set. If \code{area_type} is "tie" or "hatch", \code{capacity} must be set. A character like \code{"10,20,30x2"} will be converted to a numeric vector \code{c(10, 20, 30, 30)}. Separator (\verb{,}) can be specifed by \code{sep} argument.
 }
 
 For further detail of each variable, see \link{area_table}.
