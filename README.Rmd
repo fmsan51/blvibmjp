@@ -62,12 +62,6 @@ file.path(.libPaths()[1], "blvibmjp")
 # パッケージの読み込み
 library(blvibmjp)
 
-# データの入力
-data <- process_raw_data(
-  "C:\\Users\\xxx\\Desktop\\input.xlsx"  # データを入力したファイルの場所
-  )
-# Note: method with signature ... や Following item(s) in the `infection_status` ... というメッセージは無視してOK
-
 # シミュレーションの設定
 param_simulation$simulation_length <- 60  # シミュレーション期間の長さ（月）
 param_simulation$n_simulation <- 3  # シミュレーション回数
@@ -77,6 +71,12 @@ param_simulation$control_insects <- 0.5  # 吸血昆虫対策を行っている�
 param_simulation$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
 param_simulation$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
 # 他、詳細は help("param_simulation") 参照
+
+# データの入力
+data <- process_raw_data(
+  "C:\\Users\\xxx\\Desktop\\input.xlsx",  # データを入力したファイルの場所
+  param_simulation = param_simulation)
+# Note: method with signature ... や Following item(s) in the `infection_status` ... というメッセージは無視してOK
 
 # シミュレーションの実行（1回ごとに十数秒～数分）
 simulate_blv_spread(param_simulation, processed_data = data)

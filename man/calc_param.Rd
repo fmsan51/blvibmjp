@@ -18,3 +18,6 @@ Calculate parameters to the simulation and overwrite the default setting if nece
 \details{
 Parameters processed by \code{\link[=process_param]{process_param()}} are deteministic. Parameters calculated by \code{\link[=calc_param]{calc_param()}} are stochastic.
 }
+\seealso{
+\code{\link[=calc_param_pre]{calc_param_pre()}} \code{\link[=calc_param_both]{calc_param_both()}}
+}

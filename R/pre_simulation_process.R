@@ -27,16 +27,16 @@
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
-#' @param param_calculated The result from [calc_param].
+#' @param param_simulation See [param_simulation].
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`. Note if both of `area_name` and `n_chambers` are set, `area_id` in `n_chambers` option must be integer.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_cow <- function(csv, data = NULL, output_file = NULL,
+process_raw_cow <- function(csv, param_simulation = param_simulation,
+                            data = NULL, output_file = NULL,
                             today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
-                            param_calculated = calc_param(param_simulation),
                             area_name = NULL, n_chambers = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
@@ -132,7 +132,7 @@ process_raw_cow <- function(csv, data = NULL, output_file = NULL,
   }
 
 
-  # TODO: Improve this to be calcuated stochastic
+  param_calculated <- calc_param_pre(param_simulation)
   delivery_age_table <-
     integerize(param_calculated$age_first_delivery +
                param_calculated$calving_interval * 0:9)
@@ -627,25 +627,25 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #' Process raw data to suitable forms to use in simulation.
 #'
 #' @param excel Set this or `cow_data`, `area_data` and `movement_data`.
+#' @param param_simulation See [param_simulation].
 #' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
 #' @param cow_data See [process_raw_cow()] for detail.
 #' @param area_data See [process_raw_area()] for detail.
 #' @param movement_data See [process_raw_movement()] for detail.
 #' @param communal_pasture_data See [process_raw_communal_pasture()] for detail.
 #' @param cow_output_file,area_output_file,movement_output_file,communal_pasture_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
-#' @param param_calculated The result from [calc_param()].
 #' @param sep Separatator used in `capacity` column of area data. See [process_raw_area()] for detail.
 #' @param ... Other arguments passed to [process_raw_cow()].
 #'
 #' @export
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
-process_raw_data <- function(excel, output = F,
+process_raw_data <- function(excel, param_simulation = param_simulation,
+                             output = F,
                              cow_data = NULL, area_data = NULL,
                              movement_data = NULL, communal_pasture_data = NULL,
                              cow_output_file = NULL, area_output_file = NULL,
                              movement_output_file = NULL,
                              communal_pasture_output_file = NULL,
-                             param_calculated = calc_param(param_simulation),
                              sep = "[,\t\r\n |;:]", ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
@@ -672,9 +672,8 @@ process_raw_data <- function(excel, output = F,
     communal_pasture_output_file <- "communal_pasture.csv"
   }
 
-  cows <- process_raw_cow(data = cow_input,
+  cows <- process_raw_cow(data = cow_input, param_simulation = param_simulation,
                           output_file = cow_output_file,
-                          param_calculated = param_calculated,
                           area_name = area_name, ...)
   areas <- process_raw_area(data = area_input,
                             output_file = area_output_file, sep = sep)

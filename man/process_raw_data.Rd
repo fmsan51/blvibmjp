@@ -6,6 +6,7 @@
 \usage{
 process_raw_data(
   excel,
+  param_simulation = param_simulation,
   output = F,
   cow_data = NULL,
   area_data = NULL,
@@ -15,13 +16,14 @@ process_raw_data(
   area_output_file = NULL,
   movement_output_file = NULL,
   communal_pasture_output_file = NULL,
-  param_calculated = calc_param(param_simulation),
   sep = "[,\\t\\r\\n |;:]",
   ...
 )
 }
 \arguments{
 \item{excel}{Set this or \code{cow_data}, \code{area_data} and \code{movement_data}.}
+
+\item{param_simulation}{See \link{param_simulation}.}
 
 \item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
 
@@ -34,8 +36,6 @@ process_raw_data(
 \item{communal_pasture_data}{See \code{\link[=process_raw_communal_pasture]{process_raw_communal_pasture()}} for detail.}
 
 \item{cow_output_file, area_output_file, movement_output_file, communal_pasture_output_file}{If not \code{NULL}, created data is exported to the files with these names (must be csv files).}
-
-\item{param_calculated}{The result from \code{\link[=calc_param]{calc_param()}}.}
 
 \item{sep}{Separatator used in \code{capacity} column of area data. See \code{\link[=process_raw_area]{process_raw_area()}} for detail.}
 

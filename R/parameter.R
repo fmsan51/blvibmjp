@@ -142,6 +142,7 @@ set_param <- function(parameter, default) {
 #'
 #' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
 #'
+#' @seealso [calc_param_pre()] [calc_param_both()]
 #' @return A parameter list.
 #' @export
 calc_param <- function(param_simulation, modification = NULL) {
@@ -161,11 +162,9 @@ calc_param <- function(param_simulation, modification = NULL) {
   param$ebl_progress_scale <- 7.8
   # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
+
   ## Probabilities of disease progress ----
-  # Proportion of ial cattle which develops ipl
-  param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
-  # Proportion of blv infected cattle which develops ebl
-  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
+  # NOTE: prob_develop_ipl and prob_develop_ebl are calculated in calc_param_both().
 
   # Probability that an BLV-infected cow is detected
   # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
@@ -360,22 +359,7 @@ calc_param <- function(param_simulation, modification = NULL) {
 
 
   ## artificial_insemination ----
-
-  # Nyuken (H23-27)
   day_per_month <- 365 / 12
-  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
-  # TODO: Think way to remove these params
-  param$calving_interval <-
-    set_param(param_simulation$calving_interval / day_per_month,
-              mean(432, 430, 432, 429, 427) / day_per_month)
-  param$age_first_delivery <- set_param(param_simulation$age_first_delivery,
-                                        mean(25.2, 25.1, 25.0, 25.0, 24.8))
-  param$months_open <- set_param(param_simulation$days_open / day_per_month,
-                                 mean(160, 159, 159, 155, 154) / day_per_month)
-  param$months_milking <-
-    set_param(param_simulation$days_milking / day_per_month,
-              mean(366, 363, 365, 364, 363) / day_per_month)
-
   # First AI after delivery
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
   # The date of the first AI after a delivery of PREVIOUS year
@@ -439,8 +423,8 @@ calc_param <- function(param_simulation, modification = NULL) {
 
 
   # Length of milking period
-  # TODO: Use farm_parameter
-  length_milking <- set_param(param_simulation$days_milking, 363) / 30
+  length_milking <-
+    set_param(param_simulation$days_milking, 363) / day_per_month
   param$lower_lim_dried <- length_milking %/% 1
   param$prop_dried_shorter <- 1 - length_milking %% 1
 
@@ -503,47 +487,8 @@ calc_param <- function(param_simulation, modification = NULL) {
   param$prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
 
 
-  ## longevity ----
+  param <- c(param, calc_param_both(param_simulation))
 
-  ## Longevity ----
-  # See preps/Parameters_age_distribution.Rmd
-
-  # No. of slaughtered Holstein females in Hokkaido
-  n_slaughtered <- c(81580, 80220, 81597, 81632, 81377)
-  # No. of died Holstein females in Hokkaido
-  n_died <- c(63361, 62949, 65395, 66143, 63437)
-  prop_died <- n_died / (n_slaughtered + n_died)
-  lims_died <- set_param(param_simulation$prop_died,
-                         c(min(prop_died), max(prop_died)))
-  param$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
-
-  # Death
-  param_die <- list(
-    prop = c(0.1781149, 0.19206973, 0.18295625, 0.18357473, 0.17160985),
-    e_rate = c(0.69504391, 0.66565927, 0.62963687, 0.55892655, 0.62194143),
-    g_shape = c(3.94254619, 4.0635499, 4.11764786, 4.11193613, 4.06322732),
-    g_rate = c(0.06274259, 0.06433635, 0.06515513, 0.06596917, 0.06591569)
-  )
-  param_die_min <- sapply(param_die, min)
-  param_die_max <- sapply(param_die, max)
-  param_die_set <- runif(4, min = param_die_min, max = param_die_max)
-  param$die_prop <- param_die_set[1]
-  param$die_e_rate <- param_die_set[2]
-  param$die_g_shape <- param_die_set[3]
-  param$die_g_rate <- param_die_set[4]
-
-  # Slaughtering
-  param_slaughtered <- list(
-    shape = c(5.207747, 5.172914, 5.182164, 4.918844, 5.134622),
-    rate = c(0.07337904, 0.07226869, 0.07165169, 0.0678387, 0.06992455)
-  )
-  param_slaughtered_min <- sapply(param_slaughtered, min)
-  param_slaughtered_max <- sapply(param_slaughtered, max)
-  param_slaughtered_set <- runif(2,
-                                 min = param_slaughtered_min,
-                                 max = param_slaughtered_max)
-  param$slaughter_shape <- param_slaughtered_set[1]
-  param$slaughter_rate <- param_slaughtered_set[2]
 
   param <- c(modification, param)
   param <- param[!duplicated(names(param))]
@@ -585,4 +530,99 @@ process_param <- function(cows_areas, param_simulation) {
 }
 # TODO: Is this function really necessary?
 # TODO: process_paramとcalc_paramくっつけた方がよさそう
+
+
+#' Calculate parameters necessary to process_raw_data()
+#'
+#' Calculate parameters which are used only in [process_raw_data()] and overwrite the default setting if necessary.
+#'
+#' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
+#'
+#' @seealso [calc_param()] [calc_param_both()]
+#' @return A parameter list.
+calc_param_pre <- function(param_simulation, modification = NULL) {
+  param <- list()
+
+  # Nyuken (H23-27)
+  day_per_month <- 365 / 12
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
+  param$age_first_delivery <- set_param(param_simulation$age_first_delivery,
+                                        mean(25.2, 25.1, 25.0, 25.0, 24.8))
+  param$calving_interval <-
+    set_param(param_simulation$calving_interval / day_per_month,
+              mean(432, 430, 432, 429, 427) / day_per_month)
+  param$months_open <- set_param(param_simulation$days_open / day_per_month,
+                                 mean(160, 159, 159, 155, 154) / day_per_month)
+  param$months_milking <-
+    set_param(param_simulation$days_milking / day_per_month,
+              mean(366, 363, 365, 364, 363) / day_per_month)
+
+  param <- c(param, calc_param_both(param_simulation))
+
+  param <- c(modification, param)
+  param <- param[!duplicated(names(param))]
+
+  return(param)
+}
+
+
+#' Calculate parameters used in both of process_raw_data() and simulation
+#'
+#' Calculate parameters which are in both of [process_raw_data()] and simulation
+#'
+#' @seealso [calc_param()] [calc_param_pre()]
+#' @return A parameter list.
+calc_param_both <- function(param_simulation) {
+  param <- list()
+
+  ## Longevity ----
+  # See preps/Parameters_age_distribution.Rmd
+
+  # No. of slaughtered Holstein females in Hokkaido
+  n_slaughtered <- c(81580, 80220, 81597, 81632, 81377)
+  # No. of died Holstein females in Hokkaido
+  n_died <- c(63361, 62949, 65395, 66143, 63437)
+  prop_died <- n_died / (n_slaughtered + n_died)
+  lims_died <- set_param(param_simulation$prop_died,
+                         c(min(prop_died), max(prop_died)))
+  param$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
+
+  # Death
+  param_die <- list(
+    prop = c(0.1781149, 0.19206973, 0.18295625, 0.18357473, 0.17160985),
+    e_rate = c(0.69504391, 0.66565927, 0.62963687, 0.55892655, 0.62194143),
+    g_shape = c(3.94254619, 4.0635499, 4.11764786, 4.11193613, 4.06322732),
+    g_rate = c(0.06274259, 0.06433635, 0.06515513, 0.06596917, 0.06591569)
+  )
+  param_die_min <- sapply(param_die, min)
+  param_die_max <- sapply(param_die, max)
+  param_die_set <- runif(4, min = param_die_min, max = param_die_max)
+  param$die_prop <- param_die_set[1]
+  param$die_e_rate <- param_die_set[2]
+  param$die_g_shape <- param_die_set[3]
+  param$die_g_rate <- param_die_set[4]
+
+  # Slaughtering
+  param_slaughtered <- list(
+    shape = c(5.207747, 5.172914, 5.182164, 4.918844, 5.134622),
+    rate = c(0.07337904, 0.07226869, 0.07165169, 0.0678387, 0.06992455)
+  )
+  param_slaughtered_min <- sapply(param_slaughtered, min)
+  param_slaughtered_max <- sapply(param_slaughtered, max)
+  param_slaughtered_set <- runif(2,
+                                 min = param_slaughtered_min,
+                                 max = param_slaughtered_max)
+  param$slaughter_shape <- param_slaughtered_set[1]
+  param$slaughter_rate <- param_slaughtered_set[2]
+
+
+  ## Disease progress ----
+  # Proportion of ial cattle which develops ipl
+  param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
+  # Proportion of blv infected cattle which develops ebl
+  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
+
+
+  return(param)
+}
 

@@ -6,18 +6,20 @@
 \usage{
 process_raw_cow(
   csv,
+  param_simulation = param_simulation,
   data = NULL,
   output_file = NULL,
   today = Sys.Date(),
   create_calf_data = F,
   modify_prevalence = NULL,
-  param_calculated = calc_param(param_simulation),
   area_name = NULL,
   n_chambers = NULL
 )
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
+
+\item{param_simulation}{See \link{param_simulation}.}
 
 \item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
 
@@ -28,8 +30,6 @@ process_raw_cow(
 \item{create_calf_data}{logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If \code{TRUE}, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.}
 
 \item{modify_prevalence}{double (0-1). If not \code{NULL}, modify \code{infection_status} column to make prevalence to the specified value.}
-
-\item{param_calculated}{The result from \link{calc_param}.}
 
 \item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
 
