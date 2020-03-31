@@ -364,13 +364,14 @@ calc_param <- function(param_simulation, modification = NULL) {
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
-  mean_date_start_ai <- c(88, 88, 88, 88, 89) / 30
+  mean_date_start_ai <- c(88, 88, 88, 88, 89) / day_per_month
   lims_date_start_ai <- set_param(param_simulation$mean_day_start_ai,
                                   c(min(mean_date_start_ai),
                                     max(mean_date_start_ai)))
   # TODO: It's assumed that 95% of cows start AI within one month
-  param$sd_date_start_ai <- set_param(param_simulation$sd_day_start_ai / 30,
-                                      1 / qnorm(0.975))
+  param$sd_date_start_ai <-
+    set_param(param_simulation$sd_day_start_ai / day_per_month,
+              1 / qnorm(0.975))
   param$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
                                     max = lims_date_start_ai[2])
 
