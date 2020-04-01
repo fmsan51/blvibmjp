@@ -21,7 +21,6 @@
 #' - `n_mean_ai`: Mean number of AI done until conception.
 #' - `mean_age_first_ai`, `sd_age_first_ai`: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = `2 / qnorm(0.975)`)
 #' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
-#' - `months_grazing` (1-12), `hours_grazing` (0-23): Months and hours for grazing. (default: no grazing)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
 #' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
@@ -65,9 +64,6 @@ param <- list(
   sd_age_first_ai = NA,
   mean_day_start_ai = NA,
   sd_day_start_ai = NA,
-
-  months_grazing = NA,
-  hours_grazing = NA,
 
   n_introduced = c(0, 0, 0),
   days_qualantine = 0,
@@ -503,7 +499,6 @@ calc_param <- function(param, modification = NULL) {
 #' - `param_output_filename`: Name of a file to which output simulation parameters.
 #' - `herd_size_limits`: Lower and upper limits of the number of cattle should be kept in the herd.
 #' - `prob_rep`: The result of [set_prob_rep()]. The probability that a newborn female calf will be a replacement cow.
-#' - `graze_cows`: Whether cows are grazed or not.
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
@@ -524,12 +519,9 @@ process_param <- function(cows_areas, param) {
       } else {
         herd_size * c(0.9, 1.1)
       },
-    prob_rep = set_prob_rep(sum(cows_areas$cows$parity != 0, na.rm = T), param),
-    graze_cows = anyNA(param$hours_grazing)
+    prob_rep = set_prob_rep(sum(cows_areas$cows$parity != 1, na.rm = T), param)
   )
 }
-# TODO: Is this function really necessary?
-# TODO: process_paramとcalc_paramくっつけた方がよさそう
 
 
 #' Calculate parameters necessary to process_raw_data()

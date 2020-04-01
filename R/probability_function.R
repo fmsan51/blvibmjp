@@ -8,10 +8,6 @@
 #' - show symptom (ipl->ebl),
 #' in the month.
 #'
-#' Total infection risk = Infection risk in free-stall or grazing
-#'   * (hours_grazing / 24)
-#'   + Infection risk from neighborhood cows * (1 - hours_grazing / 24)
-#'
 #' @param susceptibility_ial_to_ipl A numeric.
 #' @param susceptibility_ipl_to_ebl A numeric.
 #' @param i The number of months from the start of a simulation.

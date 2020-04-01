@@ -34,12 +34,4 @@ Probabilities to:
 \item show symptom (ipl->ebl),
 in the month.
 }
-
-Total infection risk = Infection risk in free-stall or grazing
-\itemize{
-\item (hours_grazing / 24)
-}
-\itemize{
-\item Infection risk from neighborhood cows * (1 - hours_grazing / 24)
-}
 }
