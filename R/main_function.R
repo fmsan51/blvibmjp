@@ -478,14 +478,13 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param See [param].
-#' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
+#' @param param_calculated Return from [calc_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
 check_removal <- function(cows, areas, i, area_table,
-                          param, param_calculated, param_processed) {
+                          param_processed, param_calculated) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,

@@ -13,7 +13,6 @@ simulate_once(
   i_simulation,
   result,
   result_area,
-  param,
   param_processed,
   param_modification,
   save_cows,
@@ -34,8 +33,6 @@ simulate_once(
 \item{i_simulation}{The iteration number of simulations.}
 
 \item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
-
-\item{param}{See \link{param}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 
