@@ -29,7 +29,7 @@ simulate_blv_spread(
 
 \item{list_param_modification}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modification} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
 
-\item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
+\item{save_cows, save_param}{Wheher to save results of simulations and used parameters to files.}
 
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
 }

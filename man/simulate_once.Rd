@@ -38,7 +38,7 @@ simulate_once(
 
 \item{param_modification}{See \code{\link[=calc_param]{calc_param()}}.}
 
-\item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
+\item{save_cows, save_param}{Wheher to save a result of a simulation and used parameters to files.}
 }
 \value{
 A list composed of two components: \code{result_combined} and \code{result_area_combined}
