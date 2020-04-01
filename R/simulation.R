@@ -2,7 +2,7 @@
 #'
 #' Simulate spread of BLV in a typical Japanese dairy herd.
 #'
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param processed_data The result of [process_raw_data()]. Set this parameters or `area_table` and `movement_table`.
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
@@ -11,16 +11,16 @@
 #' @param save_cows,save_param Whether to save `result_combined` and `param_calculated` (a result of [calc_param()]) to a file.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
 #'
-#' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param_simulation$output_dir`.
+#' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
-simulate_blv_spread <- function(param_simulation, processed_data,
+simulate_blv_spread <- function(param, processed_data,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
                                 list_param_modification = NULL,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1) {
-  if ((save_param | save_cows) & !(file.exists(param_simulation$output_dir))) {
-    dir.create(param_simulation$output_dir, recursive = T)
+  if ((save_param | save_cows) & !(file.exists(param$output_dir))) {
+    dir.create(param$output_dir, recursive = T)
   }
 
   cow_table <- NULL
@@ -31,9 +31,9 @@ simulate_blv_spread <- function(param_simulation, processed_data,
     communal_pasture_table <- processed_data$communal_pasture
   }
 
-  # TODO: Varidate params (communal_pasture_table must not be NULL when param_simulation$use_communal_pasture is T)
-  setup_cows_res <- setup_cows(param_simulation, save_cows, cow_table)
-  area_table <- setup_area_table(area_table, param_simulation)
+  # TODO: Varidate params (communal_pasture_table must not be NULL when param$use_communal_pasture is T)
+  setup_cows_res <- setup_cows(param, save_cows, cow_table)
+  area_table <- setup_area_table(area_table, param)
 
   area_list <- setup_tie_stall_table(area_table)
   # setup_tie_stall_table() must come after setup_area_table()
@@ -43,31 +43,31 @@ simulate_blv_spread <- function(param_simulation, processed_data,
                                          communal_pasture_table)
   cows_areas <- set_init_chamber_and_area_id(setup_cows_res$init_cows,
                                     area_table, area_list)
-  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param_simulation)
-  param_processed <- process_param(cows_areas, param_simulation)
+  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param)
+  param_processed <- process_param(cows_areas, param)
 
   result <- result_area <-
-    vector("list", param_simulation$simulation_length + 1)
+    vector("list", param$simulation_length + 1)
   result[[1]] <- copy(cows_areas$cows)
   # result_aras is made to make debugging easy.
   result_area[[1]] <- cows_areas$area_list
 
   if (save_param) {
     save_param_txt(
-      c(param_simulation, param_processed),
+      c(param, param_processed),
       param_processed$param_output_filename, 0,
-      subdir = param_simulation$output_dir)
+      subdir = param$output_dir)
   }
   # TODO: Make param list to a data.frame
 
   # TODO: set seed for reproductivity
-  max_simulation <- param_simulation$n_simulation + i_simulation_start - 1
+  max_simulation <- param$n_simulation + i_simulation_start - 1
   for (i_simulation in (i_simulation_start:max_simulation)) {
     cat("Simulation ", i_simulation, " / ", max_simulation, "\n")
     res <- simulate_once(cows_areas, setup_cows_res$init_n_cows,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
-             param_simulation, param_processed,
+             param, param_processed,
              param_modification = list_param_modification[[i_simulation]],
              save_cows, save_param)
   }
@@ -90,7 +90,7 @@ simulate_blv_spread <- function(param_simulation, processed_data,
 #' @param day_rp A result of [setup_rp_table()].
 #' @param i_simulation The iteration number of simulations.
 #' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param param_processed A result of [process_param()].
 #' @param param_modification See [calc_param()].
 #' @param save_cows,save_param Whether to save `result_combined` and `param_calculated` (a result of [calc_param()]) to a file.
@@ -100,19 +100,19 @@ simulate_blv_spread <- function(param_simulation, processed_data,
 simulate_once <- function(cows_areas, last_cow_id, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
-                          param_simulation, param_processed, param_modification,
+                          param, param_processed, param_modification,
                           save_cows, save_param) {
   cows <- cows_areas$cows
   areas <- cows_areas$area_list
-  param_calculated <- calc_param(param_simulation, param_modification)
+  param_calculated <- calc_param(param, param_modification)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
-                   i_simulation, subdir = param_simulation$output_dir)
+                   i_simulation, subdir = param$output_dir)
   }
 
-  for (i in 1:param_simulation$simulation_length) {
+  for (i in 1:param$simulation_length) {
     # Here, 1:n, not seq_len(n), is used due to the speed
-    month <- (i + param_simulation$simulation_start - 2) %% 12 + 1
+    month <- (i + param$simulation_start - 2) %% 12 + 1
     cows <- set_i_month(cows, i)
 
     cows <- add_1_to_age(cows)
@@ -132,7 +132,7 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
 
     # check_removal() must come after add_newborns(), because check_removal()
     # replaces infected old cows with non-replacement newborns
-    res <- check_removal(cows, areas, i, area_table, param_simulation,
+    res <- check_removal(cows, areas, i, area_table, param,
                          param_calculated, param_processed)
     cows <- res$cows
     areas <- res$areas
@@ -152,8 +152,8 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
   result_combined <- rbindlist(result)
   result_combined <- result_combined[!is.na(cow_id), ]
   if (save_cows) {
-    save_to_csv(result_combined, param_simulation$output_filename,
-                i_simulation, subdir = param_simulation$output_dir)
+    save_to_csv(result_combined, param$output_filename,
+                i_simulation, subdir = param$output_dir)
   }
   # result_area, result_area_combined
   # result_area_combined <- lapply(result_area, rbindlist)

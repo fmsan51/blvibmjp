@@ -6,7 +6,7 @@
 \usage{
 process_raw_data(
   excel,
-  param_simulation = param_simulation,
+  param = param,
   output = F,
   cow_data = NULL,
   area_data = NULL,
@@ -23,7 +23,7 @@ process_raw_data(
 \arguments{
 \item{excel}{Set this or \code{cow_data}, \code{area_data} and \code{movement_data}.}
 
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
 

@@ -15,7 +15,7 @@ plot_prevalences(
 )
 }
 \arguments{
-\item{simulation_length}{See \link{param_simulation}.}
+\item{simulation_length}{See \link{param}.}
 
 \item{path_to_csv}{Path to a simulation output csv file.}
 

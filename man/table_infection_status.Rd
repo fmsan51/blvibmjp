@@ -15,13 +15,13 @@ table_infection_status(
 summary_infection_status(cows)
 }
 \arguments{
-\item{output_filename}{See \link{param_simulation}.}
+\item{output_filename}{See \link{param}.}
 
-\item{output_dir}{See \link{param_simulation}.}
+\item{output_dir}{See \link{param}.}
 
-\item{n_simulation}{See \link{param_simulation}.}
+\item{n_simulation}{See \link{param}.}
 
-\item{simulation_length}{See \link{param_simulation}.}
+\item{simulation_length}{See \link{param}.}
 
 \item{cows}{A \code{cow_table} read by \link{read_final_cows}.}
 }

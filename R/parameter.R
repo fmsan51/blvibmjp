@@ -39,7 +39,7 @@
 #' - `days_milking`: Length of milking period (in days). (default: average in Hokkaido)
 #'
 #' @export
-param_simulation <- list(
+param <- list(
   # TODO: The function to confirm the necessary parameters are set or not
   simulation_length = 60,
   n_simulation = 1,
@@ -145,8 +145,8 @@ set_param <- function(parameter, default) {
 #' @seealso [calc_param_pre()] [calc_param_both()]
 #' @return A parameter list.
 #' @export
-calc_param <- function(param_simulation, modification = NULL) {
-  param <- list()
+calc_param <- function(param, modification = NULL) {
+  res <- list()
 
   ## infection_status_change ----
   # Changes of infection status
@@ -154,12 +154,12 @@ calc_param <- function(param_simulation, modification = NULL) {
   #   because ordinal farms are assumed to change gloves for each rectal palpation.
   #   TODO: Some farmers don't change gloves. consider again.
 
-  param$mean_prop_ial_period <-  0.3
+  res$mean_prop_ial_period <-  0.3
   # TODO: Reconsider this parameter
-  param$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
+  res$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
   # Length of periods from PL to EBL is not well known. (several months to years)
-  param$ebl_progress_shape <- 3.3
-  param$ebl_progress_scale <- 7.8
+  res$ebl_progress_shape <- 3.3
+  res$ebl_progress_scale <- 7.8
   # Periods until an infected cattle develops EBL: rweibull(n, shape, scale) * 12 - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
 
@@ -170,39 +170,39 @@ calc_param <- function(param_simulation, modification = NULL) {
   # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
   # (Because they assumed as the same and there is no data about the length of period from clinical onset to detection.)
   # - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
-  param$prob_ebl_detected <- rnorm(1, mean = 0.397,
+  res$prob_ebl_detected <- rnorm(1, mean = 0.397,
                                    sd = (0.397 - 0.358) / qnorm(0.975))
 
   # Months until EBL cattle die
-  param$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
+  res$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
   # TODO: temporary, just by inspiration
 
 
   ## blv_test ----
   # Test frequency
-  if (param_simulation$test_frequency == 0) {
-    param$test_months <- numeric(0)
+  if (param$test_frequency == 0) {
+    res$test_months <- numeric(0)
   } else {
-    test_months <- floor(12 / param_simulation$test_frequency *
-                         seq(param_simulation$test_frequency))
+    test_months <- floor(12 / param$test_frequency *
+                         seq(param$test_frequency))
     test_months <-
-      (test_months + param_simulation$simulation_start + 6) %% 12 + 1
+      (test_months + param$simulation_start + 6) %% 12 + 1
     # Add 6 to avoid the first test occurs at i_month = 1 when test_frequency = 1
     # Add 1 because n %% 12 contains 0
-    param$test_months <- test_months
+    res$test_months <- test_months
   }
 
   # A list of BLV test methods available in Japan was obtained from here:
   # Mekata, 2016. https://doi.org/10.4190/jjlac.6.221
-  if (anyNA(param_simulation$test_method)) {
+  if (anyNA(param$test_method)) {
     # Not is.na() because length of test_method can be two
-    param$test_sensitivity <- 0
-    param$test_specificity <- 0
-  } else if (param_simulation$test_method == "immunodiffusion") {
-    param$test_sensitivity <- 0.981
-    param$test_specificity <- 0.967
+    res$test_sensitivity <- 0
+    res$test_specificity <- 0
+  } else if (param$test_method == "immunodiffusion") {
+    res$test_sensitivity <- 0.981
+    res$test_specificity <- 0.967
     # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
-  } else if (param_simulation$test_method == "ELISA") {
+  } else if (param$test_method == "ELISA") {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
@@ -214,9 +214,9 @@ calc_param <- function(param_simulation, modification = NULL) {
     estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
                      sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
     estimate <- estimates[sample.int(.N, 1), ]
-    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
-    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param_simulation$test_method == "PHA") {
+    res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param$test_method == "PHA") {
     estimates <- data.table(sensitivity = numeric(2),
                             specificity = numeric(2))
     # Calculate treating a result of nested PCR as gold standard
@@ -227,9 +227,9 @@ calc_param <- function(param_simulation, modification = NULL) {
     estimates[2, `:=`(sensitivity = 0.909,
                       specificity = 0.984)]
     estimate <- estimates[sample.int(.N, 1), ]
-    param$test_sensitivity <- estimate$sensitivity
-    param$test_specificity <- estimate$specificity
-  } else if (param_simulation$test_method == "nested PCR") {
+    res$test_sensitivity <- estimate$sensitivity
+    res$test_specificity <- estimate$specificity
+  } else if (param$test_method == "nested PCR") {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
                             se_lwr = c(0.901, 0.895, 0.878),
@@ -241,9 +241,9 @@ calc_param <- function(param_simulation, modification = NULL) {
     estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
                      sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
     estimate <- estimates[sample.int(.N, 1), ]
-    param$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
-    param$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param_simulation$test_method == "real-time PCR") {
+    res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
+    res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
+  } else if (param$test_method == "real-time PCR") {
     # Calculate treating a result of nested PCR as gold standard
     estimates <- data.table(sensitivity = numeric(3),
                             specificity = numeric(3))
@@ -257,11 +257,11 @@ calc_param <- function(param_simulation, modification = NULL) {
     estimates[3, `:=`(sensitivity = 1,
                       specificity = 1)]
     estimate <- estimates[sample.int(.N, 1), ]
-    param$test_sensitivity <- estimate$sensitivity
-    param$test_specificity <- estimate$specificity
+    res$test_sensitivity <- estimate$sensitivity
+    res$test_specificity <- estimate$specificity
   } else {
-    param$test_sensitivity <- param_simulation$test_method[1]
-    param$test_specificity <- param_simulation$test_method[2]
+    res$test_sensitivity <- param$test_method[1]
+    res$test_specificity <- param$test_method[2]
   }
 
 
@@ -279,19 +279,19 @@ calc_param <- function(param_simulation, modification = NULL) {
                                0.0001,  # Nov
                                0        # Dec
                                )
-  control_insects <- param_simulation$control_insects
+  control_insects <- param$control_insects
   if (is.logical(control_insects)) {
     insects_pressure <- fifelse(control_insects, 0.5, 1)
   } else {
     insects_pressure <- control_insects
   }
-  param$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
+  res$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
 
   ## infection_tiestall ----
   ## infection_neighbor ----
 
-  param$prob_inf_tiestall_baseline <- param$probs_inf_insects_month
-  param$hr_having_infected_neighbor <-
+  res$prob_inf_tiestall_baseline <- res$probs_inf_insects_month
+  res$hr_having_infected_neighbor <-
     exp(rnorm(1, mean = 2.52, sd = 0.73))
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
 
@@ -300,9 +300,9 @@ calc_param <- function(param_simulation, modification = NULL) {
   free_pressure <-
     rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
   # Kobayashi et al, 2014. https://doi.org/10.1016/j.rvsc.2013.11.014
-  param$prob_inf_free <- param$probs_inf_insects_month * free_pressure
+  res$prob_inf_free <- res$probs_inf_insects_month * free_pressure
 
-  param$average_prop_inf_in_free <-
+  res$average_prop_inf_in_free <-
     rnorm(1, mean = 0.409, sd = mean(c(0.404, 0.414)) / qnorm(0.975))
   # Murakami et al, 2013. https://doi.org/10.1292/jvms.12-0374
 
@@ -312,7 +312,7 @@ calc_param <- function(param_simulation, modification = NULL) {
   # Infection by using same needles among infected and non-infected cattle
   # Infection probability per day
   # TODO: temporary, just by inspiration
-  param$prob_inf_needles <- fifelse(param_simulation$change_needles, 0, 0.001)
+  res$prob_inf_needles <- fifelse(param$change_needles, 0, 0.001)
 
   ## infection_rp ----
   # Infection by rectal palpation
@@ -322,7 +322,7 @@ calc_param <- function(param_simulation, modification = NULL) {
 
   # 直検1回ごとの感染確率
   # Kohara, Konnai and Onuma, 2016.
-  param$prob_inf_rp <- fifelse(param_simulation$change_gloves,
+  res$prob_inf_rp <- fifelse(param$change_gloves,
                                0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
@@ -333,8 +333,8 @@ calc_param <- function(param_simulation, modification = NULL) {
   # 0% - Kajikawa et al, 1981. https://doi.org/10.12935/jvma1951.34.423
   # 18.6% (24/129: 10.8% (14) - transplacental: 7.7% (10) - birth canal) The viral load of the dam has significant association. - Mekata et al, 2015. http://dx.doi.org/10.1136/vr.102464
 
-  param$prob_vert_inf_ial <- (4 + 5) / 95
-  param$prob_vert_inf_ipl <- (10 + 4) / 29
+  res$prob_vert_inf_ial <- (4 + 5) / 95
+  res$prob_vert_inf_ipl <- (10 + 4) / 29
 
   # TODO: check
   # Piper et al, 1979. https://pubmed.ncbi.nlm.nih.gov/214609
@@ -344,8 +344,8 @@ calc_param <- function(param_simulation, modification = NULL) {
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
   # Frequency of infection by colostrum may be smaller than that by contact. 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months. - Ferrer and Piper, 1981. https://www.ncbi.nlm.nih.gov/pubmed/6272983
   # Probability of BLV infection after freeze-thaw can be considered as 0 - Kanno et al, 2014. https://doi.org/10.1292/jvms.13-0253
-  feed_raw_colostrum <- param_simulation$feed_raw_colostrum
-  param$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
+  feed_raw_colostrum <- param$feed_raw_colostrum
+  res$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
 
 
   ## infection_introduced ----
@@ -353,9 +353,9 @@ calc_param <- function(param_simulation, modification = NULL) {
 
   ## infection_communal_pasture ----
   # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
-  param$prob_seroconv_communal_pasture <-
-    fifelse(param_simulation$use_communal_pasture,
-            param_simulation$prob_seroconversion_in_communal_pasture, 0)
+  res$prob_seroconv_communal_pasture <-
+    fifelse(param$use_communal_pasture,
+            param$prob_seroconversion_in_communal_pasture, 0)
 
 
   ## artificial_insemination ----
@@ -365,32 +365,32 @@ calc_param <- function(param_simulation, modification = NULL) {
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
   mean_date_start_ai <- c(88, 88, 88, 88, 89) / day_per_month
-  lims_date_start_ai <- set_param(param_simulation$mean_day_start_ai,
+  lims_date_start_ai <- set_param(param$mean_day_start_ai,
                                   c(min(mean_date_start_ai),
                                     max(mean_date_start_ai)))
   # TODO: It's assumed that 95% of cows start AI within one month
-  param$sd_date_start_ai <-
-    set_param(param_simulation$sd_day_start_ai / day_per_month,
+  res$sd_date_start_ai <-
+    set_param(param$sd_day_start_ai / day_per_month,
               1 / qnorm(0.975))
-  param$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
+  res$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
                                     max = lims_date_start_ai[2])
 
 
   # First AI for heifer
   mean_age_first_ai <- c(427, 427, 435, 432) / day_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
-  lims_age_first_ai <- set_param(param_simulation$mean_age_first_ai,
+  lims_age_first_ai <- set_param(param$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month
-  param$sd_age_first_ai <-
-    set_param(param_simulation$sd_age_first_ai, 1 / qnorm(0.975))
-  param$mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
+  res$sd_age_first_ai <-
+    set_param(param$sd_age_first_ai, 1 / qnorm(0.975))
+  res$mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
                                    max = lims_age_first_ai[2])
-  param$lower_lim_first_ai <- 12
+  res$lower_lim_first_ai <- 12
 
 
   # Detection of heats
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # Probability of detection of heat from Nenkan Kentei Seiseki from HRK (H23-28)
-  param$prob_heat_detected <- set_param(param_simulation$prop_heat_detected,
+  res$prob_heat_detected <- set_param(param$prop_heat_detected,
                                         runif(1, min = min(prop_heat_detected),
                                               max = max(prop_heat_detected)))
 
@@ -399,7 +399,7 @@ calc_param <- function(param_simulation, modification = NULL) {
   # From Gyugun Kentei Seisekihyo by HRK
   # (because the data of the current year is only known from Feb to Dec)
   prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  param$prob_first_ai_success <- runif(1,
+  res$prob_first_ai_success <- runif(1,
                                        min(prop_first_ai_success),
                                        max(prop_first_ai_success))
 
@@ -410,14 +410,14 @@ calc_param <- function(param_simulation, modification = NULL) {
   # (p1: the prob in which the first AI successes; p2: the prop in which AI after the first successes)
   # The probability in which the AI after the first successes
   mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
-  prop_ai_success <- (1 - param$prob_first_ai_success) / (mean_ai - 1)
+  prop_ai_success <- (1 - res$prob_first_ai_success) / (mean_ai - 1)
   lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
-  param$prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
+  res$prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
 
 
   # Heat cycle
   # Martin et al, 2019. https://doi.org/10.1017/S1751731118001830
-  param$sd_heat <- 1  # SD of length of heat cycle (days)
+  res$sd_heat <- 1  # SD of length of heat cycle (days)
 
 
   ## milking_stage ----
@@ -425,9 +425,9 @@ calc_param <- function(param_simulation, modification = NULL) {
 
   # Length of milking period
   length_milking <-
-    set_param(param_simulation$days_milking, 363) / day_per_month
-  param$lower_lim_dried <- length_milking %/% 1
-  param$prop_dried_shorter <- 1 - length_milking %% 1
+    set_param(param$days_milking, 363) / day_per_month
+  res$lower_lim_dried <- length_milking %/% 1
+  res$prop_dried_shorter <- 1 - length_milking %% 1
 
 
   ## reproduction ----
@@ -444,13 +444,13 @@ calc_param <- function(param_simulation, modification = NULL) {
   ## Probability to be twins ----
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
-  param$prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
+  res$prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
 
   ## Sex ratio ----
   sex_ratio_f <- prop_f / (prop_m + prop_f)
-  lims_female <- set_param(param_simulation$prop_female,
+  lims_female <- set_param(param$prop_female,
                            c(min(sex_ratio_f), max(sex_ratio_f)))
-  param$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
+  res$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
 
   ## Sex ratio for twins ----
   sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)
@@ -458,10 +458,10 @@ calc_param <- function(param_simulation, modification = NULL) {
   lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))
   lims_ff <- c(min(sex_ratio_ff), max(sex_ratio_ff))
 
-  if (!is.na(param_simulation$prop_female)) {
-    if (length(param_simulation$prop_female) == 1) {
+  if (!is.na(param$prop_female)) {
+    if (length(param$prop_female) == 1) {
       prop_female <-
-        c(param_simulation$prop_female, param_simulation$prop_female)
+        c(param$prop_female, param$prop_female)
     }
     tend_mm <- sex_ratio_mm / (prop_m ^ 2)
     tend_ff <- sex_ratio_ff / (prop_f ^ 2)
@@ -477,24 +477,24 @@ calc_param <- function(param_simulation, modification = NULL) {
 
   prob_mm <- runif(1, min = lims_mm[1], max = lims_mm[2])
   prob_ff <- runif(1, min = lims_ff[1], max = lims_ff[2])
-  param$probs_sex_pairs <- c(prob_mm, 1 - prob_mm - prob_ff, prob_ff)
+  res$probs_sex_pairs <- c(prob_mm, 1 - prob_mm - prob_ff, prob_ff)
 
 
   # Failure of delivery (stillbirth/abortion)
-  param$prob_sb_1 <- runif(1, min = 0.0834, max = 0.1070)  # Parity = 1 (Heifer)
-  param$prob_sb_2 <- runif(1, min = 0.0473, max = 0.0563)  # 2
-  param$prob_sb_3 <- runif(1, min = 0.0487, max = 0.0572)  # 3
-  param$prob_sb_4 <- runif(1, min = 0.0526, max = 0.0604)  # 4
-  param$prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
+  res$prob_sb_1 <- runif(1, min = 0.0834, max = 0.1070)  # Parity = 1 (Heifer)
+  res$prob_sb_2 <- runif(1, min = 0.0473, max = 0.0563)  # 2
+  res$prob_sb_3 <- runif(1, min = 0.0487, max = 0.0572)  # 3
+  res$prob_sb_4 <- runif(1, min = 0.0526, max = 0.0604)  # 4
+  res$prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
 
 
-  param <- c(param, calc_param_both(param_simulation))
+  res <- c(res, calc_param_both(param))
 
 
-  param <- c(modification, param)
-  param <- param[!duplicated(names(param))]
+  res <- c(modification, res)
+  res <- res[!duplicated(names(res))]
 
-  return(param)
+  return(res)
 }
 
 
@@ -508,25 +508,25 @@ calc_param <- function(param_simulation, modification = NULL) {
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
 #' @param cows_areas A result of [set_chamber_id()].
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #'
 #' @return A list of calculated parameters.
 #' @export
-process_param <- function(cows_areas, param_simulation) {
+process_param <- function(cows_areas, param) {
   herd_size <- sum(cows_areas$cows$is_owned, na.rm = T)
 
   list(
-    param_output_filename = paste0("param_", param_simulation$output_filename),
-    herd_size_limits = if (!anyNA(param_simulation$capacity_in_head)) {
-        param_simulation$capacity_in_head
-      } else if (!anyNA(param_simulation$capacity_as_ratio)) {
+    param_output_filename = paste0("param_", param$output_filename),
+    herd_size_limits = if (!anyNA(param$capacity_in_head)) {
+        param$capacity_in_head
+      } else if (!anyNA(param$capacity_as_ratio)) {
         herd_size * capacity_as_ratio
       } else {
         herd_size * c(0.9, 1.1)
       },
     prob_rep = set_prob_rep(
-      cows_areas$cows[stage %in% c("milking", "dry"), .N], param_simulation),
-    graze_cows = anyNA(param_simulation$hours_grazing)
+      cows_areas$cows[stage %in% c("milking", "dry"), .N], param),
+    graze_cows = anyNA(param$hours_grazing)
   )
 }
 # TODO: Is this function really necessary?
@@ -541,29 +541,29 @@ process_param <- function(cows_areas, param_simulation) {
 #'
 #' @seealso [calc_param()] [calc_param_both()]
 #' @return A parameter list.
-calc_param_pre <- function(param_simulation, modification = NULL) {
-  param <- list()
+calc_param_pre <- function(param, modification = NULL) {
+  res <- list()
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
   # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
-  param$age_first_delivery <- set_param(param_simulation$age_first_delivery,
+  res$age_first_delivery <- set_param(param$age_first_delivery,
                                         mean(25.2, 25.1, 25.0, 25.0, 24.8))
-  param$calving_interval <-
-    set_param(param_simulation$calving_interval / day_per_month,
+  res$calving_interval <-
+    set_param(param$calving_interval / day_per_month,
               mean(432, 430, 432, 429, 427) / day_per_month)
-  param$months_open <- set_param(param_simulation$days_open / day_per_month,
+  res$months_open <- set_param(param$days_open / day_per_month,
                                  mean(160, 159, 159, 155, 154) / day_per_month)
-  param$months_milking <-
-    set_param(param_simulation$days_milking / day_per_month,
+  res$months_milking <-
+    set_param(param$days_milking / day_per_month,
               mean(366, 363, 365, 364, 363) / day_per_month)
 
-  param <- c(param, calc_param_both(param_simulation))
+  res <- c(res, calc_param_both(param))
 
-  param <- c(modification, param)
-  param <- param[!duplicated(names(param))]
+  res <- c(modification, res)
+  res <- res[!duplicated(names(res))]
 
-  return(param)
+  return(res)
 }
 
 
@@ -573,8 +573,8 @@ calc_param_pre <- function(param_simulation, modification = NULL) {
 #'
 #' @seealso [calc_param()] [calc_param_pre()]
 #' @return A parameter list.
-calc_param_both <- function(param_simulation) {
-  param <- list()
+calc_param_both <- function(param) {
+  res <- list()
 
   ## Longevity ----
   # See preps/Parameters_age_distribution.Rmd
@@ -584,9 +584,9 @@ calc_param_both <- function(param_simulation) {
   # No. of died Holstein females in Hokkaido
   n_died <- c(63361, 62949, 65395, 66143, 63437)
   prop_died <- n_died / (n_slaughtered + n_died)
-  lims_died <- set_param(param_simulation$prop_died,
+  lims_died <- set_param(param$prop_died,
                          c(min(prop_died), max(prop_died)))
-  param$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
+  res$prob_died <- runif(1, min = lims_died[1], max = lims_died[2])
 
   # Death
   param_die <- list(
@@ -598,10 +598,10 @@ calc_param_both <- function(param_simulation) {
   param_die_min <- sapply(param_die, min)
   param_die_max <- sapply(param_die, max)
   param_die_set <- runif(4, min = param_die_min, max = param_die_max)
-  param$die_prop <- param_die_set[1]
-  param$die_e_rate <- param_die_set[2]
-  param$die_g_shape <- param_die_set[3]
-  param$die_g_rate <- param_die_set[4]
+  res$die_prop <- param_die_set[1]
+  res$die_e_rate <- param_die_set[2]
+  res$die_g_shape <- param_die_set[3]
+  res$die_g_rate <- param_die_set[4]
 
   # Slaughtering
   param_slaughtered <- list(
@@ -613,17 +613,17 @@ calc_param_both <- function(param_simulation) {
   param_slaughtered_set <- runif(2,
                                  min = param_slaughtered_min,
                                  max = param_slaughtered_max)
-  param$slaughter_shape <- param_slaughtered_set[1]
-  param$slaughter_rate <- param_slaughtered_set[2]
+  res$slaughter_shape <- param_slaughtered_set[1]
+  res$slaughter_rate <- param_slaughtered_set[2]
 
 
   ## Disease progress ----
   # Proportion of ial cattle which develops ipl
-  param$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
+  res$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
-  param$prob_develop_ebl <- 0.014 / param$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
+  res$prob_develop_ebl <- 0.014 / res$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
 
 
-  return(param)
+  return(res)
 }
 

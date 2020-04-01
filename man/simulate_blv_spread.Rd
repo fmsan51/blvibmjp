@@ -5,7 +5,7 @@
 \title{Simulate spread of BLV}
 \usage{
 simulate_blv_spread(
-  param_simulation,
+  param,
   processed_data,
   area_table,
   movement_table,
@@ -17,7 +17,7 @@ simulate_blv_spread(
 )
 }
 \arguments{
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{processed_data}{The result of \code{\link[=process_raw_data]{process_raw_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
 
@@ -34,7 +34,7 @@ simulate_blv_spread(
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
 }
 \value{
-The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param_simulation$output_dir}.
+The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param$output_dir}.
 }
 \description{
 Simulate spread of BLV in a typical Japanese dairy herd.

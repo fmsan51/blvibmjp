@@ -14,7 +14,7 @@ read_final_cows(
 )
 }
 \arguments{
-\item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param_simulation}.}
+\item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param}.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }

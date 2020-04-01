@@ -4,14 +4,14 @@
 \alias{cull_infected_cows}
 \title{Cull infected cows}
 \usage{
-cull_infected_cows(cows, i, param_simulation, param_calculated)
+cull_infected_cows(cows, i, param, param_calculated)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 }

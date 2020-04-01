@@ -4,17 +4,17 @@
 \alias{setup_cows}
 \title{Setup of \code{cow_table}}
 \usage{
-setup_cows(param_simulation, save_cows, cow_table = NULL)
+setup_cows(param, save_cows, cow_table = NULL)
 }
 \arguments{
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{save_cows}{logical. Whether to save initial \code{cows} to a file.}
 
 \item{cow_table}{See \link{cow_table}.}
 }
 \value{
-A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_n_cows} (the number of rows of \code{cows}) as return of the function and \code{month0000.csv} in the directionry specified as \code{param_simulation$output_dir}.
+A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_n_cows} (the number of rows of \code{cows}) as return of the function and \code{month0000.csv} in the directionry specified as \code{param$output_dir}.
 }
 \description{
 Load initial cow status from a csv file, transform it to a \link{cow_table}, and output the \code{cow_table} to a csv file \code{month0000.csv}.

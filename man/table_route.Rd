@@ -16,13 +16,13 @@ table_route(
 summary_route(cows)
 }
 \arguments{
-\item{output_filename}{See \link{param_simulation}.}
+\item{output_filename}{See \link{param}.}
 
-\item{output_dir}{See \link{param_simulation}.}
+\item{output_dir}{See \link{param}.}
 
-\item{n_simulation}{See \link{param_simulation}.}
+\item{n_simulation}{See \link{param}.}
 
-\item{simulation_length}{See \link{param_simulation}.}
+\item{simulation_length}{See \link{param}.}
 
 \item{route_levels}{See \link{redefine_route_levels}.}
 

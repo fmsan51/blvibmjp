@@ -478,14 +478,14 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param param_calculated Return from [calc_param()].
 #' @param param_processed Return from [process_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
 check_removal <- function(cows, areas, i, area_table,
-                          param_simulation, param_calculated, param_processed) {
+                          param, param_calculated, param_processed) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -495,7 +495,7 @@ check_removal <- function(cows, areas, i, area_table,
                                           "died", "slaughtered"))]
 
   # Removal by culling
-  cows <- cull_infected_cows(cows, i, param_simulation, param_calculated)
+  cows <- cull_infected_cows(cows, i, param, param_calculated)
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
@@ -589,20 +589,20 @@ assign_newborns <- function(cows, area_table, area_list) {
 #'
 #' @param cows See [cow_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param param_calculated Return from [calc_param()].
 #'
 #' @return A [cow_table].
 #' @export
-cull_infected_cows <- function(cows, i, param_simulation, param_calculated) {
-  if (param_simulation$cull_infected_cows != "no") {
+cull_infected_cows <- function(cows, i, param, param_calculated) {
+  if (param$cull_infected_cows != "no") {
     id_detected_highrisk <-
       cows[(infection_status == "pl" | infection_status == "ebl") &
            is_detected & is_owned,
            cow_id]
     cows <- replace_selected_cows(cows, id_detected_highrisk, i)
   }
-  if (param_simulation$cull_infected_cows == "all") {
+  if (param$cull_infected_cows == "all") {
     id_detected <- cows[is_detected & is_owned, cow_id]
     cows <- replace_selected_cows(cows, id_detected, i)
   }

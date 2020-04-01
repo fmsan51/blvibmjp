@@ -4,7 +4,7 @@
 \alias{calc_param_pre}
 \title{Calculate parameters necessary to process_raw_data()}
 \usage{
-calc_param_pre(param_simulation, modification = NULL)
+calc_param_pre(param, modification = NULL)
 }
 \arguments{
 \item{modification}{A list used to overwrite the defaut parameter like \code{list(parameter_name = new_value, ...)}.}

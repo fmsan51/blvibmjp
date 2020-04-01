@@ -8,8 +8,8 @@
 #' - `age`: Age in month. Either one of `age` or `date_birth` must be set.
 #' - `date_birth`: Birth day. If `age` is not set, `age` is calculated from this and `today` argument in the function.
 #' - `sex`: One of "female", "male" or "freemartin". If not set, all cows are assumed to be "female".
-#' - `is_replacement`: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, `age` = 0 female cows are assumed to be a replacement according to `prop_replacement` parameter in `param_simulation` and all male cows are assumed to be a non-replacement.
-#' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param_simulation].
+#' - `is_replacement`: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, `age` = 0 female cows are assumed to be a replacement according to `prop_replacement` parameter in `param` and all male cows are assumed to be a non-replacement.
+#' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param].
 #' - `is_to_test_pregnancy`: If not set, `FALSE` is set.
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
@@ -27,13 +27,13 @@
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`. Note if both of `area_name` and `n_chambers` are set, `area_id` in `n_chambers` option must be integer.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_cow <- function(csv, param_simulation = param_simulation,
+process_raw_cow <- function(csv, param = param,
                             data = NULL, output_file = NULL,
                             today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
@@ -132,7 +132,7 @@ process_raw_cow <- function(csv, param_simulation = param_simulation,
   }
 
 
-  param_calculated <- calc_param_pre(param_simulation)
+  param_calculated <- calc_param_pre(param)
   delivery_age_table <-
     integerize(param_calculated$age_first_delivery +
                param_calculated$calving_interval * 0:9)
@@ -151,7 +151,7 @@ process_raw_cow <- function(csv, param_simulation = param_simulation,
 
   if (anyNA(cows$is_replacement)) {
     is_na <- is.na(cows$is_replacement)
-    prob_rep <- set_prob_rep(sum(cows$parity != 0), param_simulation)
+    prob_rep <- set_prob_rep(sum(cows$parity != 0), param)
     cows[is_na,
          is_replacement := (sex == "female" & (age > 0 | runif(.N) < prob_rep))]
   }
@@ -627,7 +627,7 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #' Process raw data to suitable forms to use in simulation.
 #'
 #' @param excel Set this or `cow_data`, `area_data` and `movement_data`.
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
 #' @param cow_data See [process_raw_cow()] for detail.
 #' @param area_data See [process_raw_area()] for detail.
@@ -639,7 +639,7 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #'
 #' @export
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
-process_raw_data <- function(excel, param_simulation = param_simulation,
+process_raw_data <- function(excel, param = param,
                              output = F,
                              cow_data = NULL, area_data = NULL,
                              movement_data = NULL, communal_pasture_data = NULL,
@@ -672,7 +672,7 @@ process_raw_data <- function(excel, param_simulation = param_simulation,
     communal_pasture_output_file <- "communal_pasture.csv"
   }
 
-  cows <- process_raw_cow(data = cow_input, param_simulation = param_simulation,
+  cows <- process_raw_cow(data = cow_input, param = param,
                           output_file = cow_output_file,
                           area_name = area_name, ...)
   areas <- process_raw_area(data = area_input,

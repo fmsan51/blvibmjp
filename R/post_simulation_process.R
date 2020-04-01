@@ -24,7 +24,7 @@ read_initial_cows <- function(path_to_csv, route_levels = NULL,
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
-#' @param output_filename,output_dir,n_simulation,simulation_length See [param_simulation].
+#' @param output_filename,output_dir,n_simulation,simulation_length See [param].
 #' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
@@ -76,7 +76,7 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
 
 #' Plot the change in prevalence
 #'
-#' @param simulation_length See [param_simulation].
+#' @param simulation_length See [param].
 #' @param path_to_csv Path to a simulation output csv file.
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.

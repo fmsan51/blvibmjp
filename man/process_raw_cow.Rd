@@ -6,7 +6,7 @@
 \usage{
 process_raw_cow(
   csv,
-  param_simulation = param_simulation,
+  param = param,
   data = NULL,
   output_file = NULL,
   today = Sys.Date(),
@@ -19,7 +19,7 @@ process_raw_cow(
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
 
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{data}{data.frame as a input instead of \code{csv}. See the Detail section to know about form of input data.}
 
@@ -48,8 +48,8 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{age}: Age in month. Either one of \code{age} or \code{date_birth} must be set.
 \item \code{date_birth}: Birth day. If \code{age} is not set, \code{age} is calculated from this and \code{today} argument in the function.
 \item \code{sex}: One of "female", "male" or "freemartin". If not set, all cows are assumed to be "female".
-\item \code{is_replacement}: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, \code{age} = 0 female cows are assumed to be a replacement according to \code{prop_replacement} parameter in \code{param_simulation} and all male cows are assumed to be a non-replacement.
-\item \code{stage}, \code{parity}, \code{date_last_delivery}, \code{date_got_pregnant}, \code{date_dried}: If not set, they will be calculated in according to parameters related with reproduction in \link{param_simulation}.
+\item \code{is_replacement}: If a farm keeps non-replacement cows (e.g. a male newborn which will be send to a livestock market), set this parameter. If not set, \code{age} = 0 female cows are assumed to be a replacement according to \code{prop_replacement} parameter in \code{param} and all male cows are assumed to be a non-replacement.
+\item \code{stage}, \code{parity}, \code{date_last_delivery}, \code{date_got_pregnant}, \code{date_dried}: If not set, they will be calculated in according to parameters related with reproduction in \link{param}.
 \item \code{is_to_test_pregnancy}: If not set, \code{FALSE} is set.
 \item \code{n_ai}: If not set, it is assumed to be 0.
 \item \code{infection_status}: At least one of this variable or \code{modify_prevalence} argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or \code{NA} will be coerced to "s" (= non-infected). When \code{modify_prevalence} is set, prevalence is modified to make prevalence equal to the value of \code{modify_prevalence}.

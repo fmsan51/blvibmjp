@@ -2,29 +2,29 @@
 #'
 #' Load initial cow status from a csv file, transform it to a [cow_table], and output the `cow_table` to a csv file `month0000.csv`.
 #'
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
 #' @param cow_table See [cow_table].
 #'
-#' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param_simulation$output_dir`.
+#' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 #' @export
-setup_cows <- function(param_simulation, save_cows, cow_table = NULL) {
+setup_cows <- function(param, save_cows, cow_table = NULL) {
   if (is.null(cow_table)) {
-    cow_table <- fread(file = param_simulation$input_csv,
+    cow_table <- fread(file = param$input_csv,
                        colClasses = sapply(a_new_calf, class))
   }
 
   # Prepare cow_table with many rows to reserve enough memory while simulation
   init_n_cows <- nrow(cow_table)
-  max_herd_size <- init_n_cows * param_simulation$simulation_length * 2
+  max_herd_size <- init_n_cows * param$simulation_length * 2
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
   init_cows[1:init_n_cows, ] <- cow_table
   # Used 1:n instead of seq_len(n) because it is faster
 
   if (save_cows) {
-    save_to_csv(init_cows, "month", 0, param_simulation$output_dir)
+    save_to_csv(init_cows, "month", 0, param$output_dir)
   }
 
   return(list(init_cows = init_cows, init_n_cows = init_n_cows))
@@ -36,11 +36,11 @@ setup_cows <- function(param_simulation, save_cows, cow_table = NULL) {
 #' Make initial `rp_table`.
 #'
 #' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 #' @export
-setup_rp_table <- function(init_n_cows, param_simulation) {
+setup_rp_table <- function(init_n_cows, param) {
   # TODO: do_aiをimproveするときに再検討
   # Prepare rp_table with many rows to reserve enough memory while simulation
   one_day_rp[1:init_n_cows, ]
@@ -106,13 +106,13 @@ set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
 #' Setup [area_table].
 #'
 #' @param area_table See [area_table].
-#' @param param_simulation See [param_simulation].
+#' @param param See [param].
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 #' @export
-setup_area_table <- function(area_table, param_simulation) {
+setup_area_table <- function(area_table, param) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param_simulation$use_communal_pasture &
+  if (param$use_communal_pasture &
       all(area_table$area_type != "communal pasture")) {
     communal_pasture_area_id <- max(area_table$area_id) + 1L
     area_table <- rbindlist(list(area_table,

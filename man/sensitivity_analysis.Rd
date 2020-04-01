@@ -4,10 +4,10 @@
 \alias{sensitivity_analysis}
 \title{Do sensitivity analysis}
 \usage{
-sensitivity_analysis(param_simulation, param_group, i_simulation_start = 1)
+sensitivity_analysis(param, param_group, i_simulation_start = 1)
 }
 \arguments{
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
 }

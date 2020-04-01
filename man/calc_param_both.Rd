@@ -4,7 +4,7 @@
 \alias{calc_param_both}
 \title{Calculate parameters used in both of process_raw_data() and simulation}
 \usage{
-calc_param_both(param_simulation)
+calc_param_both(param)
 }
 \value{
 A parameter list.

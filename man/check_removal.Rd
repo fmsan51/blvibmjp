@@ -9,7 +9,7 @@ check_removal(
   areas,
   i,
   area_table,
-  param_simulation,
+  param,
   param_calculated,
   param_processed
 )
@@ -21,7 +21,7 @@ check_removal(
 
 \item{i}{The number of months from the start of the simulation.}
 
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
 \item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
 

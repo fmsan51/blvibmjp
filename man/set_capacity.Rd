@@ -4,12 +4,12 @@
 \alias{set_capacity}
 \title{Calculate capacity of an area based on inputed parameters}
 \usage{
-set_capacity(herd_size, param_simulation)
+set_capacity(herd_size, param)
 }
 \arguments{
 \item{herd_size}{The herd size in a simulated herd.}
 
-\item{param_simulation}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 }
 \value{
 Numeric vector of length 2: \code{c(lower_limit_of_herd_size, upper_limit_of_herd_size)}.
