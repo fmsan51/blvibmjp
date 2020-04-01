@@ -524,8 +524,7 @@ process_param <- function(cows_areas, param) {
       } else {
         herd_size * c(0.9, 1.1)
       },
-    prob_rep = set_prob_rep(
-      cows_areas$cows[stage %in% c("milking", "dry"), .N], param),
+    prob_rep = set_prob_rep(sum(cows_areas$cows$parity != 0, na.rm = T), param),
     graze_cows = anyNA(param$hours_grazing)
   )
 }
