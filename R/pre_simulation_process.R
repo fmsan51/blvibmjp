@@ -33,11 +33,10 @@
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_cow <- function(csv, param,
-                            data = NULL, output_file = NULL,
-                            today = Sys.Date(),
-                            create_calf_data = F, modify_prevalence = NULL,
-                            area_name = NULL, n_chambers = NULL) {
+prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
+                        today = Sys.Date(),
+                        create_calf_data = F, modify_prevalence = NULL,
+                        area_name = NULL, n_chambers = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -354,8 +353,8 @@ process_raw_cow <- function(csv, param,
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_area <- function(csv, data = NULL, output_file = NULL,
-                             sep = "[,\t\r\n |;:]") {
+prepare_area <- function(csv, data = NULL, output_file = NULL,
+                         sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -445,8 +444,8 @@ process_raw_area <- function(csv, data = NULL, output_file = NULL,
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_movement <- function(csv, data = NULL, output_file = NULL,
-                                 area_name = NULL, sep = "[,\t\r\n |;:]") {
+prepare_movement <- function(csv, data = NULL, output_file = NULL,
+                             area_name = NULL, sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -542,8 +541,8 @@ process_raw_movement <- function(csv, data = NULL, output_file = NULL,
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
-                                 area_name = NULL, sep = "[,\t\r\n |;:]") {
+prepare_communal_pasture <- function(csv, data = NULL, output_file = NULL,
+                                     area_name = NULL, sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -629,23 +628,23 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #' @param excel Set this or `cow_data`, `area_data` and `movement_data`.
 #' @param param See [param].
 #' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
-#' @param cow_data See [process_raw_cow()] for detail.
-#' @param area_data See [process_raw_area()] for detail.
-#' @param movement_data See [process_raw_movement()] for detail.
-#' @param communal_pasture_data See [process_raw_communal_pasture()] for detail.
+#' @param cow_data See [prepare_cow()] for detail.
+#' @param area_data See [prepare_area()] for detail.
+#' @param movement_data See [prepare_movement()] for detail.
+#' @param communal_pasture_data See [prepare_communal_pasture()] for detail.
 #' @param cow_output_file,area_output_file,movement_output_file,communal_pasture_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
-#' @param sep Separatator used in `capacity` column of area data. See [process_raw_area()] for detail.
-#' @param ... Other arguments passed to [process_raw_cow()].
+#' @param sep Separatator used in `capacity` column of area data. See [prepare_area()] for detail.
+#' @param ... Other arguments passed to [prepare_cow()].
 #'
 #' @export
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
-process_raw_data <- function(excel, param, output = F,
-                             cow_data = NULL, area_data = NULL,
-                             movement_data = NULL, communal_pasture_data = NULL,
-                             cow_output_file = NULL, area_output_file = NULL,
-                             movement_output_file = NULL,
-                             communal_pasture_output_file = NULL,
-                             sep = "[,\t\r\n |;:]", ...) {
+prepare_data <- function(excel, param, output = F,
+                         cow_data = NULL, area_data = NULL,
+                         movement_data = NULL, communal_pasture_data = NULL,
+                         cow_output_file = NULL, area_output_file = NULL,
+                         movement_output_file = NULL,
+                         communal_pasture_output_file = NULL,
+                         sep = "[,\t\r\n |;:]", ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
     area_input <- read_excel(excel, sheet = "area", skip = 3)
@@ -671,20 +670,19 @@ process_raw_data <- function(excel, param, output = F,
     communal_pasture_output_file <- "communal_pasture.csv"
   }
 
-  cows <- process_raw_cow(data = cow_input, param = param,
-                          output_file = cow_output_file,
-                          area_name = area_name, ...)
-  areas <- process_raw_area(data = area_input,
-                            output_file = area_output_file, sep = sep)
-  movement <- process_raw_movement(data = movement_input,
-                                   output_file = movement_output_file,
-                                   area_name = area_name, sep = sep)
+  cows <- prepare_cow(data = cow_input, param = param,
+                      output_file = cow_output_file, area_name = area_name, ...)
+  areas <- prepare_area(data = area_input,
+                        output_file = area_output_file, sep = sep)
+  movement <- prepare_movement(data = movement_input,
+                               output_file = movement_output_file,
+                               area_name = area_name, sep = sep)
 
   if (is.null(communal_pasture_data)) {
     communal_pasture <- NULL
   } else {
     communal_pasture <-
-      process_raw_communal_pasture(data = communal_pasture_data,
+      prepare_communal_pasture(data = communal_pasture_data,
                                    area_name = area_name, sep = sep)
   }
 

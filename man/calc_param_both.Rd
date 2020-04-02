@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameter.R
 \name{calc_param_both}
 \alias{calc_param_both}
-\title{Calculate parameters used in both of process_raw_data() and simulation}
+\title{Calculate parameters used in both of prepare_data() and simulation}
 \usage{
 calc_param_both(param)
 }
@@ -10,7 +10,7 @@ calc_param_both(param)
 A parameter list.
 }
 \description{
-Calculate parameters which are in both of \code{\link[=process_raw_data]{process_raw_data()}} and simulation
+Calculate parameters which are in both of \code{\link[=prepare_data]{prepare_data()}} and simulation
 }
 \seealso{
 \code{\link[=calc_param]{calc_param()}} \code{\link[=calc_param_pre]{calc_param_pre()}}

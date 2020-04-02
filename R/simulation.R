@@ -2,7 +2,7 @@
 #'
 #' Simulate spread of BLV in a typical Japanese dairy herd.
 #'
-#' @param processed_data The result of [process_raw_data()]. Set this parameters or `area_table` and `movement_table`.
+#' @param prepared_data The result of [prepare_data()]. Set this parameters or `area_table` and `movement_table`.
 #' @param param See [param].
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
@@ -13,7 +13,7 @@
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
-simulate_blv_spread <- function(processed_data, param,
+simulate_blv_spread <- function(prepared_data, param,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
                                 list_param_modif = NULL,
@@ -24,11 +24,11 @@ simulate_blv_spread <- function(processed_data, param,
   }
 
   cow_table <- NULL
-  if (!missing(processed_data)) {
-    cow_table <- processed_data$cows
-    area_table <- processed_data$areas
-    movement_table <- processed_data$movement
-    communal_pasture_table <- processed_data$communal_pasture
+  if (!missing(prepared_data)) {
+    cow_table <- prepared_data$cows
+    area_table <- prepared_data$areas
+    movement_table <- prepared_data$movement
+    communal_pasture_table <- prepared_data$communal_pasture
   }
 
   # TODO: Varidate params (communal_pasture_table must not be NULL when param$use_communal_pasture is T)

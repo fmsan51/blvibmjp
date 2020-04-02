@@ -526,9 +526,9 @@ process_param <- function(cows_areas, param) {
 }
 
 
-#' Calculate parameters necessary to process_raw_data()
+#' Calculate parameters necessary to prepare_data()
 #'
-#' Calculate parameters which are used only in [process_raw_data()] and overwrite the default setting if necessary.
+#' Calculate parameters which are used only in [prepare_data()] and overwrite the default setting if necessary.
 #'
 #' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
 #'
@@ -539,7 +539,7 @@ calc_param_pre <- function(param, modification = NULL) {
 
   # Nyuken (H23-27)
   day_per_month <- 365 / 12
-  # calving_interval, age_first_delivery, months_open, months_milking is used only in process_raw_cow()
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in prepare_cow()
   res$age_first_delivery <- set_param(param$age_first_delivery,
                                         mean(25.2, 25.1, 25.0, 25.0, 24.8))
   res$calving_interval <-
@@ -560,9 +560,9 @@ calc_param_pre <- function(param, modification = NULL) {
 }
 
 
-#' Calculate parameters used in both of process_raw_data() and simulation
+#' Calculate parameters used in both of prepare_data() and simulation
 #'
-#' Calculate parameters which are in both of [process_raw_data()] and simulation
+#' Calculate parameters which are in both of [prepare_data()] and simulation
 #'
 #' @seealso [calc_param()] [calc_param_pre()]
 #' @return A parameter list.

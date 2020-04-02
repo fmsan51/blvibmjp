@@ -66,7 +66,7 @@ param$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳�
 # 他、詳細は help("param") 参照
 
 # データの入力
-data <- process_raw_data(
+data <- prepare_data(
   "C:\\Users\\xxx\\Desktop\\input.xlsx",  # データを入力したファイルの場所
   param)
 # Note: method with signature ... や Following item(s) in the `infection_status` ... というメッセージは無視してOK

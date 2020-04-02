@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameter.R
 \name{calc_param_pre}
 \alias{calc_param_pre}
-\title{Calculate parameters necessary to process_raw_data()}
+\title{Calculate parameters necessary to prepare_data()}
 \usage{
 calc_param_pre(param, modification = NULL)
 }
@@ -13,7 +13,7 @@ calc_param_pre(param, modification = NULL)
 A parameter list.
 }
 \description{
-Calculate parameters which are used only in \code{\link[=process_raw_data]{process_raw_data()}} and overwrite the default setting if necessary.
+Calculate parameters which are used only in \code{\link[=prepare_data]{prepare_data()}} and overwrite the default setting if necessary.
 }
 \seealso{
 \code{\link[=calc_param]{calc_param()}} \code{\link[=calc_param_both]{calc_param_both()}}
