@@ -7,7 +7,7 @@
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
 #' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
-#' @param list_param_modification List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to `param_modification` of  [calc_param()]. Specify like `list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)`.
+#' @param list_param_modif List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to `param_modif` of  [calc_param()]. Specify like `list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)`.
 #' @param save_cows,save_param Wheher to save results of simulations and used parameters to files.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
 #'
@@ -16,7 +16,7 @@
 simulate_blv_spread <- function(param, processed_data,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
-                                list_param_modification = NULL,
+                                list_param_modif = NULL,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1) {
   if ((save_param | save_cows) & !(file.exists(param$output_dir))) {
@@ -66,7 +66,7 @@ simulate_blv_spread <- function(param, processed_data,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
              param_processed,
-             param_modification = list_param_modification[[i_simulation]],
+             param_modif = list_param_modif[[i_simulation]],
              save_cows, save_param)
   }
 
@@ -89,7 +89,7 @@ simulate_blv_spread <- function(param, processed_data,
 #' @param i_simulation The iteration number of simulations.
 #' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
 #' @param param_processed A result of [process_param()].
-#' @param param_modification See [calc_param()].
+#' @param param_modif See [calc_param()].
 #' @param save_cows,save_param Wheher to save a result of a simulation and used parameters to files.
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
@@ -97,11 +97,10 @@ simulate_blv_spread <- function(param, processed_data,
 simulate_once <- function(cows_areas, last_cow_id, area_table,
                           movement_table, day_rp, i_simulation,
                           result, result_area,
-                          param_processed, param_modification,
-                          save_cows, save_param) {
+                          param_processed, param_modif, save_cows, save_param) {
   cows <- cows_areas$cows
   areas <- cows_areas$area_list
-  param_calculated <- calc_param(param_processed, param_modification)
+  param_calculated <- calc_param(param_processed, param_modif)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
                    i_simulation, subdir = param_processed$output_dir)

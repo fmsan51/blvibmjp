@@ -14,7 +14,7 @@ simulate_once(
   result,
   result_area,
   param_processed,
-  param_modification,
+  param_modif,
   save_cows,
   save_param
 )
@@ -36,7 +36,7 @@ simulate_once(
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 
-\item{param_modification}{See \code{\link[=calc_param]{calc_param()}}.}
+\item{param_modif}{See \code{\link[=calc_param]{calc_param()}}.}
 
 \item{save_cows, save_param}{Wheher to save a result of a simulation and used parameters to files.}
 }
