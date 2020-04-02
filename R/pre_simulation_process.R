@@ -33,7 +33,7 @@
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-process_raw_cow <- function(csv, param = param,
+process_raw_cow <- function(csv, param,
                             data = NULL, output_file = NULL,
                             today = Sys.Date(),
                             create_calf_data = F, modify_prevalence = NULL,
@@ -639,8 +639,7 @@ process_raw_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #'
 #' @export
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
-process_raw_data <- function(excel, param = param,
-                             output = F,
+process_raw_data <- function(excel, param, output = F,
                              cow_data = NULL, area_data = NULL,
                              movement_data = NULL, communal_pasture_data = NULL,
                              cow_output_file = NULL, area_output_file = NULL,

@@ -6,7 +6,7 @@
 \usage{
 process_raw_data(
   excel,
-  param = param,
+  param,
   output = F,
   cow_data = NULL,
   area_data = NULL,

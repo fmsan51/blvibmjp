@@ -5,8 +5,8 @@
 \title{Simulate spread of BLV}
 \usage{
 simulate_blv_spread(
-  param,
   processed_data,
+  param,
   area_table,
   movement_table,
   communal_pasture_table = NULL,
@@ -17,9 +17,9 @@ simulate_blv_spread(
 )
 }
 \arguments{
-\item{param}{See \link{param}.}
-
 \item{processed_data}{The result of \code{\link[=process_raw_data]{process_raw_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
+
+\item{param}{See \link{param}.}
 
 \item{area_table}{See \link{area_table}.}
 

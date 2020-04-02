@@ -6,7 +6,7 @@
 \usage{
 process_raw_cow(
   csv,
-  param = param,
+  param,
   data = NULL,
   output_file = NULL,
   today = Sys.Date(),

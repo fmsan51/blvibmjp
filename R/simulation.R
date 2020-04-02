@@ -2,8 +2,8 @@
 #'
 #' Simulate spread of BLV in a typical Japanese dairy herd.
 #'
-#' @param param See [param].
 #' @param processed_data The result of [process_raw_data()]. Set this parameters or `area_table` and `movement_table`.
+#' @param param See [param].
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
 #' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
@@ -13,7 +13,7 @@
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
-simulate_blv_spread <- function(param, processed_data,
+simulate_blv_spread <- function(processed_data, param,
                                 area_table, movement_table,
                                 communal_pasture_table = NULL,
                                 list_param_modif = NULL,
