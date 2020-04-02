@@ -149,12 +149,10 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     save_to_csv(result_combined, param_processed$output_filename,
                 i_simulation, subdir = param_processed$output_dir)
   }
-  # result_area, result_area_combined
   # result_area_combined <- lapply(result_area, rbindlist)
 
   return(result_combined)
 }
 # TODO: simulationが強制終了したとき用の備え
-# TODO: Make functions to load area_table, area_list, ... from csv files
 # TODO: ここcowsとareasと何度も分配するくらいなら最初からlist(cows, areas)ベースでやったほうが楽では?
 
