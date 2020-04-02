@@ -102,8 +102,8 @@ simulate_once <- function(cows_areas, last_cow_id,
                           area_table, movement_table, day_rp, i_simulation,
                           result, result_area,
                           param_processed, param_modif, save_cows, save_param) {
-  cows <- cows_areas$cows
-  areas <- cows_areas$area_list
+  cows <- copy(cows_areas$cows)
+  areas <- copy(cows_areas$area_list)
   param_calculated <- calc_param(param_processed, param_modif)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
