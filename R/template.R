@@ -50,7 +50,7 @@
 #'     - "rp": by rectal palpation.
 #'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-#'     - "communal_pasture": infected at a communal pasture.
+#'     - "pasture": infected at a communal pasture.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
 #' - `area_id`: Area ID. `0` means that the cow is in a communal pasture.

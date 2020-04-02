@@ -99,8 +99,8 @@ is_infected_insects <- function(n_cows, month, param_sim) {
 #' @param aram_farm See [param].
 #'
 #' @return A logical vector.
-is_infected_communal_pasture <- function(n_cows, param) {
-  runif(n_cows) < param$prob_seroconv_communal_pasture
+is_infected_pasture <- function(n_cows, param) {
+  runif(n_cows) < param$prob_seroconv_pasture
 }
 
 

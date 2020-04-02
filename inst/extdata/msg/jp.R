@@ -22,7 +22,7 @@ Japanese_redefine_route_levels <- list(
     vertical = "垂直感染",
     colostrum = "初乳",
     introduced = "感染牛の導入",
-    communal_pasture = "公共牧場",
+    pasture = "公共牧場",
     other = "その他")
 )
 
