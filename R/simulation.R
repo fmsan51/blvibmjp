@@ -8,7 +8,7 @@
 #' @param movement_table See [movement_table].
 #' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
 #' @param list_param_modification List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to `param_modification` of  [calc_param()]. Specify like `list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)`.
-#' @param save_cows,save_param Whether to save `result_combined` and `param_calculated` (a result of [calc_param()]) to a file.
+#' @param save_cows,save_param Wheher to save results of simulations and used parameters to files.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
@@ -90,7 +90,7 @@ simulate_blv_spread <- function(param, processed_data,
 #' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
 #' @param param_processed A result of [process_param()].
 #' @param param_modification See [calc_param()].
-#' @param save_cows,save_param Whether to save `result_combined` and `param_calculated` (a result of [calc_param()]) to a file.
+#' @param save_cows,save_param Wheher to save a result of a simulation and used parameters to files.
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
 #' @export
@@ -106,21 +106,21 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
     save_param_txt(param_calculated, param_processed$param_output_filename,
                    i_simulation, subdir = param_processed$output_dir)
   }
+  param_sim <- c(param_processed, param_calculated)
 
-  for (i in 1:param_processed$simulation_length) {
+  for (i in 1:param_sim$simulation_length) {
     # Here, 1:n, not seq_len(n), is used due to the speed
-    month <- (i + param_processed$simulation_start - 2) %% 12 + 1
+    month <- (i + param_sim$simulation_start - 2) %% 12 + 1
     cows <- set_i_month(cows, i)
 
     cows <- add_1_to_age(cows)
-    cows <- do_ai(cows, i, day_rp, param_calculated)
-    cows <- change_stage(cows, i, param_calculated)
-    cows <- do_test(cows, month, param_calculated)
+    cows <- do_ai(cows, i, day_rp, param_sim)
+    cows <- change_stage(cows, i, param_sim)
+    cows <- do_test(cows, month, param_sim)
 
     cows <- change_infection_status(cows, i, month, area_table, areas,
-                                    param_calculated)
-    res <- add_newborns(cows, area_table, i, last_cow_id,
-                        param_calculated, param_processed)
+                                    param_sim)
+    res <- add_newborns(cows, area_table, i, last_cow_id, param_sim)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
     res <- tether_roaming_cows(cows, areas)
@@ -129,15 +129,13 @@ simulate_once <- function(cows_areas, last_cow_id, area_table,
 
     # check_removal() must come after add_newborns(), because check_removal()
     # replaces infected old cows with non-replacement newborns
-    res <- check_removal(cows, areas, i, area_table, param_processed,
-                         param_calculated)
+    res <- check_removal(cows, areas, i, area_table, param_sim)
     cows <- res$cows
     areas <- res$areas
 
     # change_area() must be come after check_removal(), because change_area()
     # assigns newborns to areas and removes dead cows from areas.
-    res <- change_area(cows, i, movement_table, area_table, areas,
-                       param_calculated)
+    res <- change_area(cows, i, movement_table, area_table, areas, param_sim)
     cows <- res$cows
     areas <- res$area_list
 

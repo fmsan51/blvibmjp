@@ -4,12 +4,12 @@
 \alias{is_ebl_detected}
 \title{Whether a EBL cow is detected}
 \usage{
-is_ebl_detected(id_cow_ebl, param_calculated)
+is_ebl_detected(id_cow_ebl, param_sim)
 }
 \arguments{
 \item{id_cow_ebl}{The ID of EBL cows.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

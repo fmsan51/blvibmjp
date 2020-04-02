@@ -4,7 +4,7 @@
 \alias{calc_infection_in_barns}
 \title{Calculate infection in barns}
 \usage{
-calc_infection_in_barns(cows, month, area_table, area_list, param_calculated)
+calc_infection_in_barns(cows, month, area_table, area_list, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -14,6 +14,8 @@ calc_infection_in_barns(cows, month, area_table, area_list, param_calculated)
 \item{area_table}{See \link{area_table}.}
 
 \item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
+
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A \link{cow_table}.

@@ -6,16 +6,16 @@
 \alias{age_slaughtered}
 \title{Expected age of death or slaugher}
 \usage{
-age_die(n_cows, param_calculated)
+age_die(n_cows, param_sim)
 
-age_slaughtered(n_cows, param_calculated)
+age_slaughtered(n_cows, param_sim)
 
-longevity(n_cows, param_calculated)
+longevity(n_cows, param_sim)
 }
 \arguments{
 \item{n_cows}{The number of cows to calculate expected age of death.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A numeric vector.

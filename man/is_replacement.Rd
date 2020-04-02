@@ -8,7 +8,7 @@
 \usage{
 set_prob_rep(n_delivered, param)
 
-is_replacement(n_calves, herd_size, param_processed)
+is_replacement(n_calves, herd_size, param_sim)
 }
 \arguments{
 \item{n_delivered}{The number of delivered cows in a herd.}
@@ -19,7 +19,7 @@ is_replacement(n_calves, herd_size, param_processed)
 
 \item{herd_size}{The current herd size.}
 
-\item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector or a numeric value.

@@ -5,14 +5,14 @@
 \alias{is_ai_successed}
 \title{Whether a cow is concepted at the first or later AI}
 \usage{
-is_first_ai_successed(n_cows, param_calculated)
+is_first_ai_successed(n_cows, param_sim)
 
-is_ai_successed(n_cows, param_calculated)
+is_ai_successed(n_cows, param_sim)
 }
 \arguments{
 \item{n_cows}{The number of cows on which the first AI were conducted.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

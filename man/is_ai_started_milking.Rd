@@ -4,12 +4,12 @@
 \alias{is_ai_started_milking}
 \title{Whether the first AIs for milking cows are conducted}
 \usage{
-is_ai_started_milking(n_month_from_delivery, param_calculated)
+is_ai_started_milking(n_month_from_delivery, param_sim)
 }
 \arguments{
 \item{n_month_from_delivery}{The month past from the last delivery.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

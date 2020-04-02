@@ -4,12 +4,12 @@
 \alias{heat_cycle}
 \title{Heat cycle}
 \usage{
-heat_cycle(n_cows, param_calculated)
+heat_cycle(n_cows, param_sim)
 }
 \arguments{
 \item{n_cows}{The number of cows to which heat cycle should be calculated.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A numeric vector.

@@ -16,20 +16,20 @@ add_1_to_age <- function(cows) {
 #'
 #' @param cows See [cow_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #' @param day_rp See [rp_table].
 #'
 #' @return A [cow_table].
 #' @export
-do_ai <- function(cows, i, day_rp, param_calculated) {
+do_ai <- function(cows, i, day_rp, param_sim) {
   day_rp_last_row <- 0
 
   heifers_start_ai <- cows[
     stage == "heifer" & n_ai == 0 & is.na(date_got_pregnant),
-    .SD[is_ai_started_heifer(age, param_calculated), ]]
+    .SD[is_ai_started_heifer(age, param_sim), ]]
   milking_cows_start_ai <- cows[
     stage == "milking" & n_ai == 0 & is.na(cows$date_got_pregnant),
-    .SD[is_ai_started_milking(i - date_last_delivery, param_calculated), ]]
+    .SD[is_ai_started_milking(i - date_last_delivery, param_sim), ]]
   cows_started_ai <- rbindlist(list(heifers_start_ai, milking_cows_start_ai))
 
   # The first AI
@@ -41,7 +41,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
     # Heat can occur 1-2 times/month because mean heat cycle is 21.
     # Here we use 4 to calculate the number of heat in month with some margin.
     heat_matrix <- matrix(
-      heat_cycle(n_cows_started_ai * 4, param_calculated),
+      heat_cycle(n_cows_started_ai * 4, param_sim),
       nrow = 4)
     heat_matrix <- rbind(cows_started_ai$day_heat, heat_matrix)
     heat_matrix <- apply(heat_matrix, 2, cumsum)
@@ -56,7 +56,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
       index_ai_not_done <- which(n_ai_vec == 0)
       possible_heat_detection_list[index_ai_not_done] <-
         lapply(possible_heat_list[index_ai_not_done],
-               function(x) is_heat_detected(length(x), param_calculated))
+               function(x) is_heat_detected(length(x), param_sim))
       possible_detected_heat_list[index_ai_not_done] <-
         mapply(function(x, y) x[y],
           possible_heat_list[index_ai_not_done],
@@ -64,7 +64,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
           SIMPLIFY = F)
       possible_ai_success_list[index_ai_not_done] <- lapply(
         possible_detected_heat_list[index_ai_not_done],
-        function(x) is_first_ai_successed(length(x), param_calculated))
+        function(x) is_first_ai_successed(length(x), param_sim))
       n_ai_vec[index_ai_not_done] <- vapply(
         possible_ai_success_list[index_ai_not_done],
         function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))),
@@ -118,20 +118,19 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 
   n_open_cows <- nrow(open_cows)
   if (n_open_cows != 0) {
-    heat_matrix <- matrix(heat_cycle(n_open_cows * 4, param_calculated),
-                          nrow = 4)
+    heat_matrix <- matrix(heat_cycle(n_open_cows * 4, param_sim), nrow = 4)
     heat_matrix <- rbind(open_cows$day_heat, heat_matrix)
     heat_matrix <- apply(heat_matrix, 2, cumsum)
     possible_heat_list <-
       lapply(data.frame(heat_matrix), function(x) x[x <= 30])
     possible_heat_detection_list <- lapply(possible_heat_list,
-      function(x) is_heat_detected(length(x), param_calculated))
+      function(x) is_heat_detected(length(x), param_sim))
     possible_detected_heat_list <- mapply(function(x, y) x[y],
                                           possible_heat_list,
                                           possible_heat_detection_list,
                                           SIMPLIFY = F)
     possible_ai_success_list <- lapply(possible_detected_heat_list,
-      function(x) is_ai_successed(length(x), param_calculated))
+      function(x) is_ai_successed(length(x), param_sim))
     n_ai_vec <- vapply(possible_ai_success_list,
       function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))), 0)
     # Here ifelse is used, too.
@@ -250,8 +249,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
                  is_after_inf := (shift(infection_status, type = "lag") != "s"),
                  by = .(day_rp, type)]
     rp_inf_check[infection_status == "s",
-                 is_infected := (is_after_inf &
-                                   is_infected_rp(.N, param_calculated))]
+                 is_infected := (is_after_inf & is_infected_rp(.N, param_sim))]
     cows_inf_rp <- rp_inf_check[is_infected == T, cow_id]
     cows[cow_id %in% cows_inf_rp,
          `:=`(infection_status = "ial",
@@ -261,7 +259,7 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
          c("date_ipl_expected", "date_ebl_expected") :=
            n_month_to_progress(susceptibility_ial_to_ipl,
                                susceptibility_ipl_to_ebl,
-                               i, param_calculated)]
+                               i, param_sim)]
   }
 
   return(cows)
@@ -272,11 +270,11 @@ do_ai <- function(cows, i, day_rp, param_calculated) {
 #'
 #' @param cows See [cow_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consists of `cow_table` and `tie_stall_table`.
 #' @export
-change_stage <- function(cows, i, param_calculated) {
+change_stage <- function(cows, i, param_sim) {
   # TODO: 12-23mo is heifer (temporary)
   # Calf to heifer
   cows[age == 12, ':='(stage = "heifer",
@@ -291,7 +289,7 @@ change_stage <- function(cows, i, param_calculated) {
             day_heat = sample.int(30, .N, replace = T) * 1)]
 
   # Milking to dry
-  cows[stage == "milking" & is_dried(i - date_last_delivery, param_calculated),
+  cows[stage == "milking" & is_dried(i - date_last_delivery, param_sim),
        stage := "dry"]
 
   return(cows)
@@ -305,24 +303,22 @@ change_stage <- function(cows, i, param_calculated) {
 #' @param month The month (1, 2, ..., 12) of month `i`.
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
 #' @export
 change_infection_status <- function(cows, i, month, area_table, area_list,
-                                    param_calculated) {
+                                    param_sim) {
   n_cows <- nrow(cows)
 
-  # cows[is_infected_insects(n_cows, month, param_calculated) &
+  # cows[is_infected_insects(n_cows, month, param_sim) &
   #        infection_status == "s",
   #      ':='(infection_status = "ial",
   #           date_ial = i,
   #           cause_infection = "insects"
   #           )]
-  cows <- calc_infection_in_barns(cows, month, area_table, area_list,
-                                  param_calculated)
-  cows[is_infected_needles(n_cows, cows, param_calculated) &
-         infection_status == "s",
+  cows <- calc_infection_in_barns(cows, month, area_table, area_list, param_sim)
+  cows[is_infected_needles(n_cows, cows, param_sim) & infection_status == "s",
        ':='(infection_status = "ial",
             date_ial = i,
             cause_infection = "needles")]
@@ -331,7 +327,7 @@ change_infection_status <- function(cows, i, month, area_table, area_list,
        c("date_ipl_expected", "date_ebl_expected") :=
          n_month_to_progress(susceptibility_ial_to_ipl,
                              susceptibility_ipl_to_ebl,
-                             i, param_calculated)]
+                             i, param_sim)]
 
   cows[date_ipl_expected == i,
        ":="(infection_status = "ipl",
@@ -348,17 +344,17 @@ change_infection_status <- function(cows, i, month, area_table, area_list,
 #'
 #' @param cows See [cow_table].
 #' @param month The month (1, 2, ..., 12).
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
 #' @export
-do_test <- function(cows, month, param_calculated) {
-  if (sum(month == param_calculated$test_months) > 0) {
+do_test <- function(cows, month, param_sim) {
+  if (sum(month == param_sim$test_months) > 0) {
     n_cow <- nrow(cows)
     is_detected <- cows$infection_status != "s" &
-      (cows$is_detected | runif(n_cow) < param_calculated$test_sensitivity)
+      (cows$is_detected | runif(n_cow) < param_sim$test_sensitivity)
     is_false_positive <- cows$infection_status == "s" &
-      runif(n_cow) > param_calculated$test_specificity
+      runif(n_cow) > param_sim$test_specificity
     cows$is_detected <- is_detected | is_false_positive
   }
   return(cows)
@@ -370,13 +366,11 @@ do_test <- function(cows, month, param_calculated) {
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
-#' @param param_calculated Return from [calc_param()].
-#' @param param_processed Return from [process_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of two elements: `cows` and `last_cow_id`.
 #' @export
-add_newborns <- function(cows, area_table, i, last_cow_id,
-                         param_calculated, param_processed) {
+add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
   rows_mothers <- which(cows$date_last_delivery == i)
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
@@ -384,8 +378,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
   n_cows <- sum(!is.na(cows$cow_id))
 
   if (length(rows_mothers) != 0) {  # If there is any cow delivers in 'month i'
-    n_newborns_per_cow <- n_newborn_per_dam(length(rows_mothers),
-                                            param_calculated)
+    n_newborns_per_cow <- n_newborn_per_dam(length(rows_mothers), param_sim)
     n_newborns <- sum(n_newborns_per_cow)
 
     newborns <- a_new_calf[rep(1, n_newborns), ]
@@ -397,7 +390,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
                                         n_newborns_per_cow),
                     age = 0,
                     stage = "calf",
-                    sex = sex_newborns(n_newborns, param_calculated),
+                    sex = sex_newborns(n_newborns, param_sim),
                     is_freemartin = F,
                     date_birth = i,
                     is_owned = T,
@@ -413,17 +406,17 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
     # Setting about twins
     if (sum(newborns$n_newborns_per_cow == 2) != 0) {
       newborns[n_newborns_per_cow == 2,
-               ':='(sex = sex_twins(.N, param_calculated),
+               ':='(sex = sex_twins(.N, param_sim),
                     is_freemartin = (sex == "freemartin"))]
       newborns[is_freemartin == T, sex := "female"]
     }
 
     newborns[sex == "male" | is_freemartin == T, is_replacement := F]  # Male calves and freemartin female calves will be sold
     newborns[is.na(is_replacement),
-             is_replacement := is_replacement(.N, n_cows, param_processed)]
+             is_replacement := is_replacement(.N, n_cows, param_sim)]
 
     # Setting of longevity
-    longevity <- longevity(n_newborns, param_calculated)
+    longevity <- longevity(n_newborns, param_sim)
     newborns[, ':='(date_death_expected = i + longevity$age,
                     cause_removal = longevity$cause)]
 
@@ -432,18 +425,18 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
       n_newborns,
       rep(cows[rows_mothers, susceptibility_ial_to_ipl], n_newborns_per_cow),
       rep(cows[rows_mothers, susceptibility_ipl_to_ebl], n_newborns_per_cow),
-      param_calculated
+      param_sim
       )
     newborns[, ':='(susceptibility_ial_to_ipl = susceptibility$ial_to_ipl,
                     susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
 
     # Calculation of vertical infection
-    newborns[is_infected_vertical(newborns$status_mother, param_calculated),
+    newborns[is_infected_vertical(newborns$status_mother, param_sim),
              ':='(infection_status = "ial",
                   date_ial = i,
                   cause_infection = "vertical"
                   )]
-    newborns[is_infected_by_colostrum(status_mother, param_calculated) &
+    newborns[is_infected_by_colostrum(status_mother, param_sim) &
                infection_status != "s",
              `:=`(infection_status = "ial",
                   date_ial = i,
@@ -452,11 +445,11 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
              c("date_ipl_expected", "date_ebl_expected") :=
                n_month_to_progress(susceptibility_ial_to_ipl,
                                    susceptibility_ipl_to_ebl,
-                                   i, param_calculated)]
+                                   i, param_sim)]
 
     # TODO: Simulate failure of delivery (stillbirth/abortion) 妊娠途中で流産する場合についてもどこかで計算しなければ。
     parity_mothers <- cows[newborns$id_mother, parity]
-    newborns <- newborns[!is_stillbirth(parity_mothers, param_calculated), ]
+    newborns <- newborns[!is_stillbirth(parity_mothers, param_sim), ]
 
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
@@ -478,13 +471,11 @@ add_newborns <- function(cows, area_table, i, last_cow_id,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_processed Return from [process_param()].
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 #' @export
-check_removal <- function(cows, areas, i, area_table,
-                          param_processed, param_calculated) {
+check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
   cows[rows_removed_death, ':='(is_owned = F,
@@ -494,7 +485,7 @@ check_removal <- function(cows, areas, i, area_table,
                                           "died", "slaughtered"))]
 
   # Removal by culling
-  cows <- cull_infected_cows(cows, i, param, param_calculated)
+  cows <- cull_infected_cows(cows, i, param_sim)
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
@@ -505,8 +496,7 @@ check_removal <- function(cows, areas, i, area_table,
 
   # Removal by detection of EBL
   rows_new_ebl <- which(cows$date_ebl == i)
-  rows_removed_ebl <-
-    rows_new_ebl[is_ebl_detected(rows_new_ebl, param_calculated)]
+  rows_removed_ebl <- rows_new_ebl[is_ebl_detected(rows_new_ebl, param_sim)]
   if (length(rows_removed_ebl) != 0) {
     cows[rows_removed_ebl,  ':='(is_owned = F,
                                  date_death = i,
@@ -514,8 +504,7 @@ check_removal <- function(cows, areas, i, area_table,
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
-    month_ebl_die <-
-      n_month_until_ebl_die(rows_overlooked, param_calculated) + i
+    month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
     cows[seq_len(nrow(cows)) %in% rows_overlooked,
          ':='(date_death_expected =
                 fifelse(date_death_expected >= month_ebl_die,
@@ -588,12 +577,11 @@ assign_newborns <- function(cows, area_table, area_list) {
 #'
 #' @param cows See [cow_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param See [param].
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
 #' @export
-cull_infected_cows <- function(cows, i, param, param_calculated) {
+cull_infected_cows <- function(cows, i, param_sim) {
   if (param$cull_infected_cows != "no") {
     id_detected_highrisk <-
       cows[(infection_status == "pl" | infection_status == "ebl") &
@@ -673,12 +661,12 @@ extract_owned_cows <- function(cows) {
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
 #' @param area_list See [setup_areas] and [tie_stall_table].
-#' @param param_calculated Return from [calc_param()].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [area_list].
 #' @export
 change_area <- function(cows, i, movement_table, area_table, area_list,
-                        param_calculated) {
+                        param_sim) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
@@ -839,7 +827,7 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
   if (!is.null(communal_pasture_area_id)) {
     cow_id_infected_in_communal_pasture <-
       cow_id_returned_from_communal_pasture[is_infected_communal_pasture(
-          length(cow_id_returned_from_communal_pasture), param_calculated
+          length(cow_id_returned_from_communal_pasture), param_sim
         )]
     cows[cow_id %in% cow_id_infected_in_communal_pasture,
          `:=`(infection_status = "ial",

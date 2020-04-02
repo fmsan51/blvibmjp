@@ -8,7 +8,7 @@ susceptibility(
   n_newborns,
   susceptibility_ial_to_ipl_dam,
   susceptibility_ipl_to_ebl_dam,
-  param_calculated
+  param_sim
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ susceptibility(
 
 \item{susceptibility_ial_to_ipl_dam, susceptibility_ipl_to_ebl_dam}{The dam's susceptibility to the pathogen.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A list consisted of susceptibility of newborns.

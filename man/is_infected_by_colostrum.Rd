@@ -4,12 +4,12 @@
 \alias{is_infected_by_colostrum}
 \title{Wheter newborns are infected by colostrum milk}
 \usage{
-is_infected_by_colostrum(status_mother, param_calculated)
+is_infected_by_colostrum(status_mother, param_sim)
 }
 \arguments{
 \item{status_mother}{The \code{infection_status} of dams.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

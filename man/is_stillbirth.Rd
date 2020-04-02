@@ -4,12 +4,12 @@
 \alias{is_stillbirth}
 \title{Whether a delivery end up in stillbirth or abortion}
 \usage{
-is_stillbirth(parity, param_calculated)
+is_stillbirth(parity, param_sim)
 }
 \arguments{
 \item{parity}{Parity of dams.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

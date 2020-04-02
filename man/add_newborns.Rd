@@ -4,14 +4,7 @@
 \alias{add_newborns}
 \title{Add newborns to a cow_table}
 \usage{
-add_newborns(
-  cows,
-  area_table,
-  i,
-  last_cow_id,
-  param_calculated,
-  param_processed
-)
+add_newborns(cows, area_table, i, last_cow_id, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -22,9 +15,7 @@ add_newborns(
 
 \item{last_cow_id}{The ID of a cow at the last non-empty row of \code{cows}.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
-
-\item{param_processed}{Return from \code{\link[=process_param]{process_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A list consisted of two elements: \code{cows} and \code{last_cow_id}.
