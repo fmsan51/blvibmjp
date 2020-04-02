@@ -50,7 +50,6 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                  ipl_to_ebl = months_ipl_to_ebl)
   return(months)
 }
-# TODO: test
 
 
 #' Whether a EBL cow is detected

@@ -17,5 +17,5 @@ calculate_area_assignment(cows, area_table, assigned_cow_id)
 A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
 }
 \description{
-Make an \code{area_assignment} list which is used for \code{\link[=assign_chambers]{assign_chambers()}} and \code{\link[=assign_cows]{assign_cows()}}.
+Make an \code{area_assignment} list which is used in \code{\link[=assign_chambers]{assign_chambers()}}.
 }

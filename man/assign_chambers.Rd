@@ -19,6 +19,3 @@ A \link{cow_table}.
 \description{
 Assign \code{chamber_id} to cows allocated to tie-stall barns.
 }
-\note{
-This function assign \code{chamber_id} just for \code{cows}. Assignment of \code{cow_id} in \code{area_list} must be done by \link{assign_cows} after using this function.
-}

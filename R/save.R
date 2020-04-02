@@ -13,7 +13,6 @@ save_to_csv <- function(cows, filename, i, subdir = ".") {
   file <- construct_filepath(filename, i, subdir)
   fwrite(cows, file)
 }
-# TODO: ここあとでテストかく
 
 
 #' @rdname save_file
@@ -38,5 +37,4 @@ construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
 
   return(path)
 }
-# TODO: test
 

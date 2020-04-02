@@ -45,8 +45,6 @@ remove_from_areas <- function(cows, area_list, area_table, removed_cow_id) {
 #' @param area_list See [setup_areas].
 #' @param area_assignment See [calculate_area_assignment()].
 #'
-#' @note This function assign `chamber_id` just for `cows`. Assignment of `cow_id` in `area_list` must be done by [assign_cows] after using this function.
-#'
 #' @return A [cow_table].
 assign_chambers <- function(cows, area_list, area_assignment) {
   for (i_area in names(area_assignment)) {
@@ -66,7 +64,6 @@ assign_chambers <- function(cows, area_list, area_assignment) {
   }
   return(list(cows = cows, area_list = area_list))
 }
-# TODO: Think a way to combine assign_chambers and assign_cows
 
 
 #' Calculate infection in barns
@@ -148,7 +145,7 @@ tether_roaming_cows <- function(cows, area_list) {
 
 #' Make area_assignment list
 #'
-#' Make an `area_assignment` list which is used for [assign_chambers()] and [assign_cows()].
+#' Make an `area_assignment` list which is used in [assign_chambers()].
 #'
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].

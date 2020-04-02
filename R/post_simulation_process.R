@@ -288,7 +288,6 @@ table_route <- function(output_filename, output_dir, n_simulation,
   summary <- summary_route(cows)
   return(summary)
 }
-# TODO: add examples
 
 
 #' @name table_route
@@ -320,7 +319,6 @@ table_infection_status <- function(output_filename, output_dir,
     summary <- summary_infection_status(cows)
     return(summary)
   }
-# TODO: add examples
 
 
 #' @name table_infection_status
