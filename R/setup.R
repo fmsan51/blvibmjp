@@ -9,7 +9,6 @@
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
-#' @export
 setup_cows <- function(param, save_cows, cow_table = NULL) {
   if (is.null(cow_table)) {
     cow_table <- fread(file = param$input_csv,
@@ -39,7 +38,6 @@ setup_cows <- function(param, save_cows, cow_table = NULL) {
 #' @param param See [param].
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
-#' @export
 setup_rp_table <- function(init_n_cows, param) {
   # TODO: do_aiをimproveするときに再検討
   # Prepare rp_table with many rows to reserve enough memory while simulation
@@ -58,7 +56,6 @@ setup_rp_table <- function(init_n_cows, param) {
 #' @return A list composed of [tie_stall_table] and NA.
 #' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
 #' @name area_list
-#' @export
 setup_tie_stall_table <- function(area_table) {
   area_list <- vector("list", nrow(area_table))
   names(area_list) <- area_table$area_id
@@ -90,8 +87,6 @@ setup_tie_stall_table <- function(area_table) {
 #' @param area_list A result of [setup_tie_stall_table()].
 #'
 #' @return A list consisted of `cows` and `areas`.
-#'
-#' @export
 set_init_chamber_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   res <- assign_chambers(init_cows, area_list, area_assignment)
@@ -107,7 +102,6 @@ set_init_chamber_id <- function(init_cows, area_table, area_list) {
 #' @param param See [param].
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
-#' @export
 setup_area_table <- function(area_table, param) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
 
@@ -130,7 +124,6 @@ setup_area_table <- function(area_table, param) {
 #' @param movement_table See [movement_table].
 #'
 #' @seealso [area_table] [movement_table] [setup_cows] [setup_rp_table] [setup_areas]
-#' @export
 setup_movement_table <- function(area_table, movement_table) {
   # Sort next_area along with priority
   movement_table$next_area <-

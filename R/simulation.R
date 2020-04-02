@@ -92,7 +92,6 @@ simulate_blv_spread <- function(prepared_data, param,
 #' @param save_cows,save_param Wheher to save a result of a simulation and used parameters to files.
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
-#' @export
 simulate_once <- function(cows_areas, last_cow_id,
                           area_table, movement_table, day_rp, i_simulation,
                           result, result_area,

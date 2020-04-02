@@ -138,7 +138,6 @@ set_param <- function(parameter, default) {
 #'
 #' @seealso [calc_param_pre()] [calc_param_both()]
 #' @return A parameter list.
-#' @export
 calc_param <- function(param, modification = NULL) {
   res <- list()
 
@@ -497,7 +496,6 @@ calc_param <- function(param, modification = NULL) {
 #' @param param See [param].
 #'
 #' @return A list of calculated parameters.
-#' @export
 process_param <- function(cows_areas, param) {
   herd_size <- sum(cows_areas$cows$is_owned, na.rm = T)
 

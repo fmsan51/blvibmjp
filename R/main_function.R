@@ -5,7 +5,6 @@
 #' @param cows See [cow_table].
 #'
 #' @return A [cow_table].
-#' @export
 add_1_to_age <- function(cows) {
   cows[, age := age + 1]
   return(cows)
@@ -20,7 +19,6 @@ add_1_to_age <- function(cows) {
 #' @param day_rp See [rp_table].
 #'
 #' @return A [cow_table].
-#' @export
 do_ai <- function(cows, i, day_rp, param_sim) {
   day_rp_last_row <- 0
 
@@ -273,7 +271,6 @@ do_ai <- function(cows, i, day_rp, param_sim) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consists of `cow_table` and `tie_stall_table`.
-#' @export
 change_stage <- function(cows, i, param_sim) {
   # TODO: 12-23mo is heifer (temporary)
   # Calf to heifer
@@ -306,7 +303,6 @@ change_stage <- function(cows, i, param_sim) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
-#' @export
 change_infection_status <- function(cows, i, month, area_table, area_list,
                                     param_sim) {
   n_cows <- nrow(cows)
@@ -347,7 +343,6 @@ change_infection_status <- function(cows, i, month, area_table, area_list,
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
-#' @export
 do_test <- function(cows, month, param_sim) {
   if (sum(month == param_sim$test_months) > 0) {
     n_cow <- nrow(cows)
@@ -369,7 +364,6 @@ do_test <- function(cows, month, param_sim) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of two elements: `cows` and `last_cow_id`.
-#' @export
 add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
   rows_mothers <- which(cows$date_last_delivery == i)
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
@@ -474,7 +468,6 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
-#' @export
 check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
@@ -580,7 +573,6 @@ assign_newborns <- function(cows, area_table, area_list) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
-#' @export
 cull_infected_cows <- function(cows, i, param_sim) {
   if (param$cull_infected_cows != "no") {
     id_detected_highrisk <-
@@ -604,7 +596,6 @@ cull_infected_cows <- function(cows, i, param_sim) {
 #' @param i The number of months from the start of the simulation.
 #'
 #' @return A [cow_table].
-#' @export
 replace_selected_cows <- function(cows, cow_id_to_cull, i) {
   id_non_replacement_newborns <-
     cows[age == 0 & is_owned & !is_replacement & sex == "female",
@@ -635,7 +626,6 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
 #' @param i The number of months from the start of the simulation.
 #'
 #' @return A [cow_table].
-#' @export
 set_i_month <- function(cows, i) {
   cows[, i_month := i]
   return(cows)
@@ -647,7 +637,6 @@ set_i_month <- function(cows, i) {
 #' @param cows See [cow_table].
 #'
 #' @return A [cow_table].
-#' @export
 extract_owned_cows <- function(cows) {
   cows <- cows[is_owned == T | is.na(is_owned), ]
   return(cows)
@@ -664,7 +653,6 @@ extract_owned_cows <- function(cows) {
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [area_list].
-#' @export
 change_area <- function(cows, i, movement_table, area_table, area_list,
                         param_sim) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出

@@ -14,7 +14,6 @@
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of a month.
-#' @export
 n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
                                 i, param_sim) {

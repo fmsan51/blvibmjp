@@ -9,7 +9,6 @@
 #'
 #' @rdname save_file
 #' @return An output file at the specified location (`save_to_csv()` and `save_param_txt()`) or a character string indicates a file path (eg. "subdir/filename001.csv") (`construct_filepath()`).
-#' @export
 save_to_csv <- function(cows, filename, i, subdir = ".") {
   file <- construct_filepath(filename, i, subdir)
   fwrite(cows, file)
@@ -18,7 +17,6 @@ save_to_csv <- function(cows, filename, i, subdir = ".") {
 
 
 #' @rdname save_file
-#' @export
 save_param_txt <- function(param, filename, i, subdir = ".") {
   sink(file = construct_filepath(filename, i, subdir, ".txt"))
   str(param, vec.len = Inf, give.attr = F, give.head = F,
@@ -29,7 +27,6 @@ save_param_txt <- function(param, filename, i, subdir = ".") {
 
 
 #' @rdname save_file
-#' @export
 construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
   if (is.null(i)) {
     filenameXX <- filename

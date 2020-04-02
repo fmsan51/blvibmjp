@@ -246,7 +246,6 @@ a_movement <- data.table(current_area = NA_integer_,
 #' @format [data.table] [data.table::data.table]
 #' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table]
 #' @name rp_table
-#' @export
 one_day_rp <- data.table(cow_id = NA_integer_,
                          infection_status = NA_character_,
                          day_rp = NA_real_,

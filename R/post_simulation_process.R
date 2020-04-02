@@ -8,7 +8,6 @@
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
 #' @seealso [read_final_cows]
-#' @export
 read_initial_cows <- function(path_to_csv, route_levels = NULL,
                               route_labels = NULL) {
   cows <- fread(path_to_csv)
@@ -30,7 +29,6 @@ read_initial_cows <- function(path_to_csv, route_levels = NULL,
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
 #' @seealso [read_initial_cows]
-#' @export
 read_final_cows <- function(output_filename, output_dir, n_simulation,
                             simulation_length,
                             route_levels = NULL, route_labels = NULL) {
@@ -187,8 +185,6 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
-#'
-#' @export
 plot_infection_route <- function(path_to_csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = T,
@@ -285,7 +281,6 @@ plot_infection_route <- function(path_to_csv, language = NULL,
 #'
 #' @seealso [table_infection_status]
 #' @name table_route
-#' @export
 table_route <- function(output_filename, output_dir, n_simulation,
                         simulation_length, route_levels = NULL) {
   cows <- read_final_cows(output_filename, output_dir, n_simulation,
@@ -318,7 +313,6 @@ summary_route <- function(cows) {
 #'
 #' @seealso [table_route]
 #' @name table_infection_status
-#' @export
 table_infection_status <- function(output_filename, output_dir,
                                    n_simulation, simulation_length) {
     cows <- read_final_cows(output_filename, output_dir, n_simulation,
