@@ -70,8 +70,7 @@ simulate_blv_spread <- function(prepared_data, param,
     res <- simulate_once(cows_areas, setup_cows_res$init_n_cows,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
-             param_processed,
-             param_modif = list_param_modif[[i_simulation]],
+             param_processed, param_modif = list_param_modif[[i_simulation]],
              save_cows, save_param)
   }
 
@@ -99,8 +98,8 @@ simulate_blv_spread <- function(prepared_data, param,
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
 #' @export
-simulate_once <- function(cows_areas, last_cow_id, area_table,
-                          movement_table, day_rp, i_simulation,
+simulate_once <- function(cows_areas, last_cow_id,
+                          area_table, movement_table, day_rp, i_simulation,
                           result, result_area,
                           param_processed, param_modif, save_cows, save_param) {
   cows <- cows_areas$cows
