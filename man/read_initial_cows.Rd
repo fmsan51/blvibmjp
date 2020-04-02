@@ -15,7 +15,7 @@ read_initial_cows(path_to_csv, route_levels = NULL, route_labels = NULL)
 A \link{cow_table} with an additional column \code{i_simulation}.
 }
 \description{
-Read cow_table from a csv file, extract owned cows, set \code{i_simulation} column to 1, and redefine infection routes.
+Read cow_table from a csv file, extract owned cows, set \code{i_simulation} column to 0, and redefine infection routes.
 }
 \seealso{
 \link{read_final_cows}

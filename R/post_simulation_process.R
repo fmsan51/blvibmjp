@@ -1,6 +1,6 @@
 #' Read cow_table at the start of a simulation from a csv and modify data ready to plot
 #'
-#' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 1, and redefine infection routes.
+#' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 0, and redefine infection routes.
 #'
 #' @param path_to_csv Path to a csv file which contains [cow_table].
 #' @param route_levels,route_labels See [redefine_route_levels].
