@@ -13,7 +13,8 @@ simulate_blv_spread(
   list_param_modif = NULL,
   save_cows = T,
   save_param = T,
-  i_simulation_start = 1
+  i_simulation_start = 1,
+  seed = NULL
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ simulate_blv_spread(
 \item{save_cows, save_param}{Wheher to save results of simulations and used parameters to files.}
 
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
+
+\item{seed}{Seed for a simulation.}
 }
 \value{
 The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param$output_dir}.
