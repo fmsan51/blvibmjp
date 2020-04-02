@@ -5,7 +5,7 @@
 \alias{param}
 \title{Parameters about a simulation which should be set by users}
 \format{
-An object of class \code{list} of length 34.
+An object of class \code{list} of length 33.
 }
 \usage{
 param
@@ -36,7 +36,6 @@ Parameters depends on a farm:
 \item \code{mean_day_start_ai}, \code{sd_day_start_ai}: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = \code{10 / qnorm(0.975)})
 \item \code{capacity_in_head} c(lower, upper): Lower/upper limit of the herd size. Set either this or \code{capacity_as_ratio} below.
 \item \code{capacity_as_ratio} c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = \code{lower * initial_herd_size}, upper limit = \code{upper * initial_herd_size}). Set either this or \code{capacity_in_head} above. When both of \code{capacity_in_head} and \code{capacity_as_ratio} is NA, \code{capacity_as_ratio} is set to \code{c(0.9, 1.1)}.
-\item \code{use_communal_pasture} (logical): whether use a communal pasture. (default: FALSE)
 \item \code{prob_seroconversion_in_communal_pasture} (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
 \item \code{n_introduced} c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 \item \code{days_qualantine}: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)

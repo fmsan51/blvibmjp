@@ -688,13 +688,8 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
                            cow_id_met_condition, duplicated_cow_id,
                            SIMPLIFY = FALSE)
 
-  communal_pasture_area_id <- attr(area_table, "communal_pasture_area_id")
-  if (!is.null(communal_pasture_area_id)) {
-    cow_id_returned_from_communal_pasture <-
-      cows[cow_id %in% unlist(cow_id_to_move) &
-             area_id == communal_pasture_area_id,
-           cow_id]
-  }
+  cow_id_returned_from_communal_pasture <-
+      cows[cow_id %in% unlist(cow_id_to_move) & area_id == 0, cow_id]
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <-
@@ -824,7 +819,7 @@ change_area <- function(cows, i, movement_table, area_table, area_list,
          area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
 
   # Calculate seroconversion of cows have returned from a communal pasture
-  if (!is.null(communal_pasture_area_id)) {
+  if (any(cows$area_id == 0, na.rm = T)) {
     cow_id_infected_in_communal_pasture <-
       cow_id_returned_from_communal_pasture[is_infected_communal_pasture(
           length(cow_id_returned_from_communal_pasture), param_sim

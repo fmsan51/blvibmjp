@@ -81,9 +81,9 @@ setup_tie_stall_table <- function(area_table) {
 }
 
 
-#' Initial assignment of `chamber_id` and `area_id`
+#' Initial assignment of `chamber_id`
 #'
-#' Initial assignment of `chamber_id` and `area_id` of communal pasture.
+#' Initial assignment of `chamber_id`
 #'
 #' @param init_cows `init_cows` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
@@ -92,11 +92,9 @@ setup_tie_stall_table <- function(area_table) {
 #' @return A list consisted of `cows` and `areas`.
 #'
 #' @export
-set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
+set_init_chamber_id <- function(init_cows, area_table, area_list) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
   res <- assign_chambers(init_cows, area_list, area_assignment)
-  res$cows[area_id == 0,
-           area_id := attr(area_table, "communal_pasture_area_id")]
   return(res)
 }
 
@@ -112,17 +110,6 @@ set_init_chamber_and_area_id <- function(init_cows, area_table, area_list) {
 #' @export
 setup_area_table <- function(area_table, param) {
   area_table$capacity[is.na(area_table$capacity)] <- Inf
-  if (param$use_communal_pasture &
-      all(area_table$area_type != "communal pasture")) {
-    communal_pasture_area_id <- max(area_table$area_id) + 1L
-    area_table <- rbindlist(list(area_table,
-                                 list(area_id = communal_pasture_area_id,
-                                      area_type = "communal pasture",
-                                      capacity = list(Inf))
-                                 )
-                            )
-    attr(area_table, "communal_pasture_area_id") <- communal_pasture_area_id
-  }
 
   attr(area_table, "capacity") <-
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
@@ -137,40 +124,18 @@ setup_area_table <- function(area_table, param) {
 
 #' Setup of `movement_table`
 #'
-#' Setup `movement_table` from [area_table], [movement_table] and [communal_pasture_table].
+#' Setup `movement_table` from [area_table] and [movement_table].
 #'
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
-#' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
 #'
-#' @seealso [area_table] [movement_table] [communal_pasture_table] [setup_cows] [setup_rp_table] [setup_areas]
+#' @seealso [area_table] [movement_table] [setup_cows] [setup_rp_table] [setup_areas]
 #' @export
-setup_movement_table <- function(area_table, movement_table,
-                                 communal_pasture_table) {
+setup_movement_table <- function(area_table, movement_table) {
   # Sort next_area along with priority
   movement_table$next_area <-
     mapply(function(next_area, priority) {next_area[order(priority)]},
            movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
-
-  # Add movement from/to a communal pasture to movement_table
-  if (!is.null(communal_pasture_table)) {
-    # Set movement to a communal pasture with the highest priority
-    # (= in the top rows)
-    move_to_communal_pasture <- data.table(
-      current_area = communal_pasture_table$area_out,
-      condition = communal_pasture_table$condition_out,
-      next_area = attr(area_table, "communal_pasture_area_id"),
-      priority = 1)
-    move_from_communal_pasture <- data.table(
-      current_area = attr(area_table, "communal_pasture_area_id"),
-      condition = communal_pasture_table$condition_back,
-      next_area = communal_pasture_table$area_back,
-      priority = communal_pasture_table$priority)
-    movement_table <- rbindlist(list(move_to_communal_pasture,
-                                     move_from_communal_pasture,
-                                     movement_table))
-  }
-  # TODO: warn when capacity > cows at the start of a simulation.
 
   # translate condition from a form that users can easily understand
   # to a form that functions can easily understand

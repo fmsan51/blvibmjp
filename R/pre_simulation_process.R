@@ -519,120 +519,17 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 }
 
 
-#' Process raw communal pasture use data to suitable form
-#'
-#' Transform an input csv into a suitable form, which is in a form of [communal_pasture_table].
-#'
-#' An input csv file can have following columns. The csv file must contain `area_out`, `area_back`, `condition_out` and `condition_back` column.
-#'
-#' - `area_out`
-#' - `area_back`: A character like `"1|2|3"` will be converted to a character vector `c(1, 2, 3)`. Separator (`|`) can be specifed by `sep` argument. (This transformation from character to numeric is necessary if you want to read data from a csv file.)
-#' - `condition_out`
-#' - `condition_back`
-#' - `priority`: If `NA`, `rep(1, length(area_back))` is set (which means all `area_back`s have the same priority and cows are randomly allocated among all `area_back`s). Values must be integer/numeric vectors of the same length with `area_back` or `NA`. Multiple values can be specified like `area_back`.
-#'
-#' For further detail of each variable, see [communal_pasture_table].
-#'
-#' @param csv File path of an input csv file. See the Detail section to know about form of input csv.
-#' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
-#' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
-#' @param area_name If `area_out` and `area_back` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
-#' @param sep Separatator used in `priority` column. See explanation of `priority` in Detail section.
-#'
-#' @export
-#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-prepare_communal_pasture <- function(csv, data = NULL, output_file = NULL,
-                                     area_name = NULL, sep = "[,\t\r\n |;:]") {
-  if (!missing(csv)) {
-    input <- fread(csv)
-  } else {
-    input <- as.data.table(data)
-  }
-
-  cols_in_input <- intersect(colnames(a_communal_pasture_use), colnames(input))
-  n_rows <- nrow(input)
-  communal_pasture_table <- a_communal_pasture_use[rep(1, n_rows), ]
-  communal_pasture_table[,
-    (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
-
-  necessary_cols <-
-    c("area_out", "area_back", "condition_out", "condition_back")
-  necessary_data <- communal_pasture_table[, .SD, .SDcols = necessary_cols]
-  if (anyNA(necessary_data)) {
-    missing_cols <- necessary_cols[vapply(necessary_data, anyNA, F)]
-    stop(glue(
-      "Following column(s) in communal pasture use data must not contain \\
-       missing value(s):
-       {paste0('`', missing_cols, '`', collapse = ', ')}"
-     ))
-  }
-
-  communal_pasture_table$area_back <-
-    strsplit(as.character(communal_pasture_table$area_back), paste0(sep, "+"))
-  # as.character() to when capacity is an integer/numeric vector.
-  if (!is.null(area_name)) {
-    if (any(!unique(communal_pasture_table$area_out) %in% names(area_name))) {
-      stop(glue("`area_out` in the communal pasture use data contains \\
-                 an area name which is not contained in the area data."))
-    }
-    if (any(
-        !unique(unlist(communal_pasture_table$area_back)) %in% names(area_name))
-        ) {
-      stop(glue("`area_back` in the communal pasture use data contains \\
-                 an area name which is not contained in the area data."))
-    }
-
-    communal_pasture_table$area_out <- factor(communal_pasture_table$area_out,
-      levels = names(area_name), labels = area_name)
-    communal_pasture_table$area_back <- lapply(communal_pasture_table$area_back,
-      function(x) factor(x, levels = names(area_name), labels = area_name))
-  }
-  communal_pasture_table$area_out <- as.integer(communal_pasture_table$area_out)
-  communal_pasture_table$area_back <-
-    lapply(communal_pasture_table$area_back, as.integer)
-
-  communal_pasture_table$priority <-
-    strsplit(as.character(communal_pasture_table$priority), paste0(sep, "+"))
-  # as.character() to when capacity is an integer/numeric vector.
-  communal_pasture_table$priority <-
-    lapply(communal_pasture_table$priority, as.numeric)
-  n_priority <- vapply(communal_pasture_table$priority, length, 1)
-  if (anyNA(communal_pasture_table$priority) | any(n_priority == 0)) {
-    n_area_back <- vapply(communal_pasture_table$area_back,
-                          function(x) length(na.omit(x)), 1)
-    list1 <- lapply(n_area_back, function(x) rep(1, x))
-    is_priority_missing <-
-      is.na(communal_pasture_table$priority) | n_priority == 0
-    communal_pasture_table$priority[is_priority_missing] <-
-      list1[is_priority_missing]
-    n_priority[is_priority_missing] <- n_area_back[is_priority_missing]
-  }
-  if (any(vapply(communal_pasture_table$area_back, length, 1) != n_priority)) {
-    stop(glue("`priority` in the communal pasture use data must be \\
-               consisted of NA or integer/numeric vectors of \\
-               the same number of items with `area_back`."))
-  }
-
-  if (!is.null(output_file)) {
-    fwrite(communal_pasture_table, output_file)
-  }
-
-  return(communal_pasture_table)
-}
-
-
 #' Process raw data to suitable forms
 #'
 #' Process raw data to suitable forms to use in simulation.
 #'
 #' @param excel Set this or `cow_data`, `area_data` and `movement_data`.
 #' @param param See [param].
-#' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
+#' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv" and "movement.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
 #' @param cow_data See [prepare_cow()] for detail.
 #' @param area_data See [prepare_area()] for detail.
 #' @param movement_data See [prepare_movement()] for detail.
-#' @param communal_pasture_data See [prepare_communal_pasture()] for detail.
-#' @param cow_output_file,area_output_file,movement_output_file,communal_pasture_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
+#' @param cow_output_file,area_output_file,movement_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
 #' @param sep Separatator used in `capacity` column of area data. See [prepare_area()] for detail.
 #' @param ... Other arguments passed to [prepare_cow()].
 #'
@@ -640,10 +537,9 @@ prepare_communal_pasture <- function(csv, data = NULL, output_file = NULL,
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
 prepare_data <- function(excel, param, output = F,
                          cow_data = NULL, area_data = NULL,
-                         movement_data = NULL, communal_pasture_data = NULL,
+                         movement_data = NULL,
                          cow_output_file = NULL, area_output_file = NULL,
                          movement_output_file = NULL,
-                         communal_pasture_output_file = NULL,
                          sep = "[,\t\r\n |;:]", ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
@@ -667,7 +563,6 @@ prepare_data <- function(excel, param, output = F,
     cow_output_file <- "cow.csv"
     area_output_file <- "area.csv"
     movement_output_file <- "movement.csv"
-    communal_pasture_output_file <- "communal_pasture.csv"
   }
 
   cows <- prepare_cow(data = cow_input, param = param,
@@ -678,15 +573,6 @@ prepare_data <- function(excel, param, output = F,
                                output_file = movement_output_file,
                                area_name = area_name, sep = sep)
 
-  if (is.null(communal_pasture_data)) {
-    communal_pasture <- NULL
-  } else {
-    communal_pasture <-
-      prepare_communal_pasture(data = communal_pasture_data,
-                                   area_name = area_name, sep = sep)
-  }
-
-  return(list(cows = cows, areas = areas, movement = movement,
-              communal_pasture = communal_pasture))
+  return(list(cows = cows, areas = areas, movement = movement))
 }
 

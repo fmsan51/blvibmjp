@@ -4,18 +4,16 @@
 \alias{setup_movement_table}
 \title{Setup of \code{movement_table}}
 \usage{
-setup_movement_table(area_table, movement_table, communal_pasture_table)
+setup_movement_table(area_table, movement_table)
 }
 \arguments{
 \item{area_table}{See \link{area_table}.}
 
 \item{movement_table}{See \link{movement_table}.}
-
-\item{communal_pasture_table}{See \link{communal_pasture_table}. Set \code{NULL} if a farm does not use communal pastures.}
 }
 \description{
-Setup \code{movement_table} from \link{area_table}, \link{movement_table} and \link{communal_pasture_table}.
+Setup \code{movement_table} from \link{area_table} and \link{movement_table}.
 }
 \seealso{
-\link{area_table} \link{movement_table} \link{communal_pasture_table} \link{setup_cows} \link{setup_rp_table} \link{setup_areas}
+\link{area_table} \link{movement_table} \link{setup_cows} \link{setup_rp_table} \link{setup_areas}
 }

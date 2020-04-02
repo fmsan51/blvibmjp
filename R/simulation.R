@@ -6,7 +6,6 @@
 #' @param param See [param].
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
-#' @param communal_pasture_table See [communal_pasture_table]. Set `NULL` if a farm does not use communal pastures.
 #' @param list_param_modif List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to `param_modif` of  [calc_param()]. Specify like `list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)`.
 #' @param save_cows,save_param Wheher to save results of simulations and used parameters to files.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
@@ -16,7 +15,6 @@
 #' @export
 simulate_blv_spread <- function(prepared_data, param,
                                 area_table, movement_table,
-                                communal_pasture_table = NULL,
                                 list_param_modif = NULL,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1, seed = NULL) {
@@ -33,10 +31,8 @@ simulate_blv_spread <- function(prepared_data, param,
     cow_table <- prepared_data$cows
     area_table <- prepared_data$areas
     movement_table <- prepared_data$movement
-    communal_pasture_table <- prepared_data$communal_pasture
   }
 
-  # TODO: Varidate params (communal_pasture_table must not be NULL when param$use_communal_pasture is T)
   setup_cows_res <- setup_cows(param, save_cows, cow_table)
   area_table <- setup_area_table(area_table, param)
 
@@ -44,9 +40,8 @@ simulate_blv_spread <- function(prepared_data, param,
   # setup_tie_stall_table() must come after setup_area_table()
   # because it uses an attributes which setup_area_table() calculates
 
-  movement_table <- setup_movement_table(area_table, movement_table,
-                                         communal_pasture_table)
-  cows_areas <- set_init_chamber_and_area_id(setup_cows_res$init_cows,
+  movement_table <- setup_movement_table(area_table, movement_table)
+  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows,
                                     area_table, area_list)
   day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param)
   param_processed <- c(param, process_param(cows_areas, param))
@@ -85,7 +80,7 @@ simulate_blv_spread <- function(prepared_data, param,
 #'
 #' @note This function does not output the result to a csv file.
 #'
-#' @param cows_areas A result of [set_init_chamber_and_area_id()].
+#' @param cows_areas A result of [set_init_chamber_id()].
 #' @param last_cow_id `init_last_cow_id` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param movement_table A result of [setup_movement_table()].

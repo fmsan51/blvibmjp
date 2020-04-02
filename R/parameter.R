@@ -23,7 +23,6 @@
 #' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
-#' - `use_communal_pasture` (logical): whether use a communal pasture. (default: FALSE)
 #' - `prob_seroconversion_in_communal_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
@@ -72,7 +71,6 @@ param <- list(
   # TODO: Warn if capacity doesn't follow current number of cows
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
-  use_communal_pasture = F,
   prob_seroconversion_in_communal_pasture = 0.5,
   # Probability of seroconversion in communal pastures
   # Reports about seroconversion in communal pastures
@@ -345,13 +343,6 @@ calc_param <- function(param, modification = NULL) {
 
 
   ## infection_introduced ----
-
-
-  ## infection_communal_pasture ----
-  # TODO: これ計算しなくても、use_communal_pasture=Fならprob_seroconv_communal_pastureが使われるタイミングないな
-  res$prob_seroconv_communal_pasture <-
-    fifelse(param$use_communal_pasture,
-            param$prob_seroconversion_in_communal_pasture, 0)
 
 
   ## artificial_insemination ----

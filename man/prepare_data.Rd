@@ -11,11 +11,9 @@ prepare_data(
   cow_data = NULL,
   area_data = NULL,
   movement_data = NULL,
-  communal_pasture_data = NULL,
   cow_output_file = NULL,
   area_output_file = NULL,
   movement_output_file = NULL,
-  communal_pasture_output_file = NULL,
   sep = "[,\\t\\r\\n |;:]",
   ...
 )
@@ -25,7 +23,7 @@ prepare_data(
 
 \item{param}{See \link{param}.}
 
-\item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv", "movement.csv" and "communal_pasture.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
+\item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv" and "movement.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
 
 \item{cow_data}{See \code{\link[=prepare_cow]{prepare_cow()}} for detail.}
 
@@ -33,9 +31,7 @@ prepare_data(
 
 \item{movement_data}{See \code{\link[=prepare_movement]{prepare_movement()}} for detail.}
 
-\item{communal_pasture_data}{See \code{\link[=prepare_communal_pasture]{prepare_communal_pasture()}} for detail.}
-
-\item{cow_output_file, area_output_file, movement_output_file, communal_pasture_output_file}{If not \code{NULL}, created data is exported to the files with these names (must be csv files).}
+\item{cow_output_file, area_output_file, movement_output_file}{If not \code{NULL}, created data is exported to the files with these names (must be csv files).}
 
 \item{sep}{Separatator used in \code{capacity} column of area data. See \code{\link[=prepare_area]{prepare_area()}} for detail.}
 

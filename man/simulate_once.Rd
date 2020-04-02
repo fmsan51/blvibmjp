@@ -20,7 +20,7 @@ simulate_once(
 )
 }
 \arguments{
-\item{cows_areas}{A result of \code{\link[=set_init_chamber_and_area_id]{set_init_chamber_and_area_id()}}.}
+\item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
 
 \item{last_cow_id}{\code{init_last_cow_id} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
 

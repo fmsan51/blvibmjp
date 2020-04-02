@@ -9,7 +9,6 @@ simulate_blv_spread(
   param,
   area_table,
   movement_table,
-  communal_pasture_table = NULL,
   list_param_modif = NULL,
   save_cows = T,
   save_param = T,
@@ -25,8 +24,6 @@ simulate_blv_spread(
 \item{area_table}{See \link{area_table}.}
 
 \item{movement_table}{See \link{movement_table}.}
-
-\item{communal_pasture_table}{See \link{communal_pasture_table}. Set \code{NULL} if a farm does not use communal pastures.}
 
 \item{list_param_modif}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modif} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
 
