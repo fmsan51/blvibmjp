@@ -4,7 +4,7 @@
 \alias{change_infection_status}
 \title{Check change of infection status of cows}
 \usage{
-change_infection_status(cows, i, month, area_table, area_list, param_sim)
+change_infection_status(cows, i, month, area_table, areas, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -15,7 +15,7 @@ change_infection_status(cows, i, month, area_table, area_list, param_sim)
 
 \item{area_table}{See \link{area_table}.}
 
-\item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
+\item{areas}{See \link{setup_areas} and \link{tie_stall_table}.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }

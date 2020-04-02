@@ -55,10 +55,10 @@ setup_rp_table <- function(init_n_cows, param) {
 #'
 #' @return A list composed of [tie_stall_table] and NA.
 #' @seealso [setup_rp_table] [tie_stall_table] [setup_cows] [setup_area_table]
-#' @name area_list
+#' @name areas
 setup_tie_stall_table <- function(area_table) {
-  area_list <- vector("list", nrow(area_table))
-  names(area_list) <- area_table$area_id
+  areas <- vector("list", nrow(area_table))
+  names(areas) <- area_table$area_id
   for (i_area in attr(area_table, "tie_stall")) {
     # [[1]] is faster than using which()
     area_capacity <- area_table$capacity[i_area == area_table$area_id][[1]]
@@ -72,9 +72,9 @@ setup_tie_stall_table <- function(area_table) {
     a_tie_stall[c(1, lane_edges[-length(lane_edges)] + 1),
                 adjoint_previous_chamber := F]
 
-    area_list[[as.character(i_area)]] <- a_tie_stall
+    areas[[as.character(i_area)]] <- a_tie_stall
   }
-  return(area_list)
+  return(areas)
 }
 
 
@@ -84,12 +84,12 @@ setup_tie_stall_table <- function(area_table) {
 #'
 #' @param init_cows `init_cows` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
-#' @param area_list A result of [setup_tie_stall_table()].
+#' @param areas A result of [setup_tie_stall_table()].
 #'
 #' @return A list consisted of `cows` and `areas`.
-set_init_chamber_id <- function(init_cows, area_table, area_list) {
+set_init_chamber_id <- function(init_cows, area_table, areas) {
   area_assignment <- calculate_area_assignment(init_cows, area_table, NULL)
-  res <- assign_chambers(init_cows, area_list, area_assignment)
+  res <- assign_chambers(init_cows, areas, area_assignment)
   return(res)
 }
 

@@ -2,19 +2,19 @@
 % Please edit documentation in R/main_function.R
 \name{unassign_removed_cows}
 \alias{unassign_removed_cows}
-\title{Remove dead/culled/sold cows from \code{area_list}}
+\title{Remove dead/culled/sold cows from \code{areas}}
 \usage{
-unassign_removed_cows(cows, area_table, area_list, i)
+unassign_removed_cows(cows, area_table, areas, i)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
 \item{area_table}{See \link{area_table}.}
 
-\item{area_list}{See \link{setup_areas} and \link{tie_stall_table}.}
+\item{areas}{See \link{setup_areas} and \link{tie_stall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 }
 \description{
-Remove dead/culled/sold cows from \code{area_list}
+Remove dead/culled/sold cows from \code{areas}
 }

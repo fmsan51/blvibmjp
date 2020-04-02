@@ -36,13 +36,12 @@ simulate_blv_spread <- function(prepared_data, param,
   setup_cows_res <- setup_cows(param, save_cows, cow_table)
   area_table <- setup_area_table(area_table, param)
 
-  area_list <- setup_tie_stall_table(area_table)
+  areas <- setup_tie_stall_table(area_table)
   # setup_tie_stall_table() must come after setup_area_table()
   # because it uses an attributes which setup_area_table() calculates
 
   movement_table <- setup_movement_table(area_table, movement_table)
-  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows,
-                                    area_table, area_list)
+  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows, area_table, areas)
   day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param)
   param_processed <- c(param, process_param(cows_areas, param))
 
@@ -50,7 +49,7 @@ simulate_blv_spread <- function(prepared_data, param,
     vector("list", param_processed$simulation_length + 1)
   result[[1]] <- copy(cows_areas$cows)
   # result_aras is made to make debugging easy.
-  result_area[[1]] <- cows_areas$area_list
+  result_area[[1]] <- cows_areas$areas
 
   seeds <- sample.int(.Machine$integer.max, param_processed$n_simulation)
   if (save_param) {
@@ -97,7 +96,7 @@ simulate_once <- function(cows_areas, last_cow_id,
                           result, result_area,
                           param_processed, param_modif, save_cows, save_param) {
   cows <- copy(cows_areas$cows)
-  areas <- copy(cows_areas$area_list)
+  areas <- copy(cows_areas$areas)
   param_calculated <- calc_param(param_processed, param_modif)
   if (save_param) {
     save_param_txt(param_calculated, param_processed$param_output_filename,
@@ -122,7 +121,7 @@ simulate_once <- function(cows_areas, last_cow_id,
     last_cow_id <- res$last_cow_id
     res <- tether_roaming_cows(cows, areas)
     cows <- res$cows
-    areas <- res$area_list
+    areas <- res$areas
 
     # check_removal() must come after add_newborns(), because check_removal()
     # replaces infected old cows with non-replacement newborns
@@ -134,7 +133,7 @@ simulate_once <- function(cows_areas, last_cow_id,
     # assigns newborns to areas and removes dead cows from areas.
     res <- change_area(cows, i, movement_table, area_table, areas, param_sim)
     cows <- res$cows
-    areas <- res$area_list
+    areas <- res$areas
 
     result[[i + 1]] <- copy(cows)
     # result_area[[i + 1]] <- copy(areas)

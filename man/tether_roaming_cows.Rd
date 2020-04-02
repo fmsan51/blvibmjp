@@ -4,15 +4,15 @@
 \alias{tether_roaming_cows}
 \title{Assign cows roaming in a tie-stall to empty chambers}
 \usage{
-tether_roaming_cows(cows, area_list)
+tether_roaming_cows(cows, areas)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{area_list}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_areas}.}
 }
 \value{
-A list consisted of \link{area_list} and \link{cow_table}.
+A list consisted of \link{areas} and \link{cow_table}.
 }
 \description{
 Assign \code{chamber_id} to cows roaming in a tie-stall barn.

@@ -4,12 +4,12 @@
 \alias{remove_from_areas}
 \title{Remove cows from areas}
 \usage{
-remove_from_areas(cows, area_list, area_table, removed_cow_id)
+remove_from_areas(cows, areas, area_table, removed_cow_id)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{area_list}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_areas}.}
 
 \item{area_table}{See \link{area_table}.}
 

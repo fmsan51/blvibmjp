@@ -4,14 +4,14 @@
 \alias{set_init_chamber_id}
 \title{Initial assignment of \code{chamber_id}}
 \usage{
-set_init_chamber_id(init_cows, area_table, area_list)
+set_init_chamber_id(init_cows, area_table, areas)
 }
 \arguments{
 \item{init_cows}{\code{init_cows} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
 
 \item{area_table}{A result of \code{\link[=setup_area_table]{setup_area_table()}}.}
 
-\item{area_list}{A result of \code{\link[=setup_tie_stall_table]{setup_tie_stall_table()}}.}
+\item{areas}{A result of \code{\link[=setup_tie_stall_table]{setup_tie_stall_table()}}.}
 }
 \value{
 A list consisted of \code{cows} and \code{areas}.

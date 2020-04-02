@@ -4,12 +4,12 @@
 \alias{assign_chambers}
 \title{Assign chamber_id to cows allocated to tie-stall barns}
 \usage{
-assign_chambers(cows, area_list, area_assignment)
+assign_chambers(cows, areas, area_assignment)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{area_list}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_areas}.}
 
 \item{area_assignment}{See \code{\link[=calculate_area_assignment]{calculate_area_assignment()}}.}
 }
