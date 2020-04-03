@@ -55,13 +55,16 @@ assign_chambers <- function(cows, areas, area_assignment) {
 #' Calculate infection in barns depending on barn type (tied or freed)
 #'
 #' @param cows See [cow_table].
+#' @param i The number of months from the start of the simulation.
 #' @param month The current month (1, 2, ..., 12).
 #' @param area_table See [area_table].
 #' @param areas See [setup_areas] and [tie_stall_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
-calc_infection_in_barns <- function(cows, month, area_table, areas, param_sim) {
+calc_infection_in_barns <- function(cows, i, month, area_table, areas,
+                                    param_sim) {
+  # TODO: bring infect() out of the for loop
   for (i_area in names(areas)) {
     area <- areas[[i_area]]
     if (i_area %in% attr(area_table, "tie_stall")) {
@@ -81,18 +84,15 @@ calc_infection_in_barns <- function(cows, month, area_table, areas, param_sim) {
         is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
                                        month, param_sim)
       exposed_cow <- area$cow_id[is_exposed_to_infected_cow]
-      cows[cow_id %in% exposed_cow,
-           `:=`(infection_status =
-                  c("ial", NA_character_)[is.na(expose_result) + 1],
-                cause_infection = expose_result)]
+      infected_cow_id <- exposed_cow[!is.na(expose_result)]
+      res <- infect(cows, areas, area_table, infected_cow_id,
+                    expose_result[!is.na(expose_result)], i)
       non_exposed_cow <-
         area$cow_id[is_s_in_chamber & !is_exposed_to_infected_cow]
       infected_non_exposed <- non_exposed_cow[
         is_infected_in_non_exposed_chamber(length(non_exposed_cow),
                                            month, param_sim)]
-      cows[cow_id %in% infected_non_exposed,
-           `:=`(infection_status = "ial",
-                cause_infection = "insect")]
+      res <- infect(cows, areas, area_table, infected_non_exposed, "insect", i)
       # TODO: Where is the cow_status in areas changed?
     } else {
       s_cow_id <- area$cow_id[area$cow_status == "s"]
@@ -101,12 +101,10 @@ calc_infection_in_barns <- function(cows, month, area_table, areas, param_sim) {
                                   sum(area$cow_status != "s", na.rm = T),
                                   month, param_sim)
         ]
-      cows[cow_id %in% new_infected_cow_id,
-           `:=`(infection_status = "ial",
-                cause_infection = "insect")]
+      res <- infect(cows, areas, area_table, new_infected_cow_id, "insect", i)
     }
   }
-  return(cows)
+  return(res)
 }
 
 

@@ -14,12 +14,14 @@ add_1_to_age <- function(cows) {
 #' Conduct AI and check chance of infection
 #'
 #' @param cows See [cow_table].
+#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #' @param day_rp See [rp_table].
 #'
 #' @return A [cow_table].
-do_ai <- function(cows, i, day_rp, param_sim) {
+do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   day_rp_last_row <- 0
 
   heifers_start_ai <- cows[
@@ -249,18 +251,12 @@ do_ai <- function(cows, i, day_rp, param_sim) {
     rp_inf_check[infection_status == "s",
                  is_infected := (is_after_inf & is_infected_rp(.N, param_sim))]
     cows_inf_rp <- rp_inf_check[is_infected == T, cow_id]
-    cows[cow_id %in% cows_inf_rp,
-         `:=`(infection_status = "ial",
-              date_ial = i,
-              cause_infection = "rp")]
-    cows[cow_id %in% cows_inf_rp,
-         c("date_ipl_expected", "date_ebl_expected") :=
-           n_month_to_progress(susceptibility_ial_to_ipl,
-                               susceptibility_ipl_to_ebl,
-                               i, param_sim)]
+    res <- infect(cows, areas, area_table, cows_inf_rp, "rp", i)
+  } else {
+    res <- list(cows = cows, areas = areas)
   }
 
-  return(cows)
+  return(res)
 }
 
 
@@ -313,26 +309,19 @@ change_infection_status <- function(cows, i, month, area_table, areas,
   #           date_ial = i,
   #           cause_infection = "insects"
   #           )]
-  cows <- calc_infection_in_barns(cows, month, area_table, areas, param_sim)
-  cows[is_infected_needles(n_cows, cows, param_sim) & infection_status == "s",
-       ':='(infection_status = "ial",
-            date_ial = i,
-            cause_infection = "needles")]
 
-  cows[date_ial == i,
-       c("date_ipl_expected", "date_ebl_expected") :=
-         n_month_to_progress(susceptibility_ial_to_ipl,
-                             susceptibility_ipl_to_ebl,
-                             i, param_sim)]
+  cows_inf_by_needles <- cows$cow_id[
+    is_infected_needles(n_cows, cows, param_sim) & cows$infection_status == "s"
+    ]
+  res <- infect(cows, areas, area_table, cows_inf_by_needles, "needles", i)
 
-  cows[date_ipl_expected == i,
-       ":="(infection_status = "ipl",
-            date_ipl = i)]
-  cows[date_ebl_expected == i,
-       ":="(infection_status = "ebl",
-            date_ebl = i)]
+  res$cows[date_ial == i,
+           c("date_ipl_expected", "date_ebl_expected") :=
+             n_month_to_progress(susceptibility_ial_to_ipl,
+                                 susceptibility_ipl_to_ebl,
+                                 i, param_sim)]
 
-  return(cows)
+  return(res)
 }
 
 
@@ -425,6 +414,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
                     susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
 
     # Calculation of vertical infection
+    # infect() cannot used here because newborns are not yet added to areas.
     newborns[is_infected_vertical(newborns$status_mother, param_sim),
              ':='(infection_status = "ial",
                   date_ial = i,
@@ -795,24 +785,44 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   cows_to_allocate_chambers <-
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
-  cows <- res$cows
-  areas <- res$areas
-  cows[cow_id %in% cow_id_allocated_to_full_areas &
-         area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
+  res$cows[cow_id %in% cow_id_allocated_to_full_areas &
+           area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
 
   # Calculate seroconversion of cows have returned from a communal pasture
   if (any(cows$area_id == 0, na.rm = T)) {
     cow_id_infected_in_pasture <- cow_id_returned_from_pasture[
       is_infected_pasture(length(cow_id_returned_from_pasture), param_sim)
       ]
-    cows[cow_id %in% cow_id_infected_in_pasture,
-         `:=`(infection_status = "ial",
-              date_ial = i,
-              cause_infection = "pasture")]
+    res <-
+      infect(cows, areas, area_table, cow_id_infected_in_pasture, "pasture", i)
   }
 
-  return(list(cows = cows, areas = areas))
+  return(res)
 }
 
 # TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
+
+
+#' Change infection status of new infected cows
+#'
+#' Update `infection_status`, `date_ial` and `cause_infection` of [cow_table] and `cow_status` of [areas].
+#'
+#' @param cows See [cow_table].
+#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param area_table See [area_table].
+#' @param infected_cow_id `cow_id` of new infected cows.
+#' @param cause A cause of infection.
+#' @param i The number of months from the start of the simulation.
+#'
+#' @return A list composed of [cow_table] and [areas].
+infect <- function(cows, areas, area_table, infected_cow_id, cause, i) {
+  cows[cow_id %in% infected_cow_id,
+       `:=`(infection_status = "ial",
+            cause_infection = cause)]
+  for (i_area in as.character(attr(area_table, "tie_stall"))) {
+    areas[[i_area]][cow_id %in% infected_cow_id,
+                    `:=`(cow_status = "ial")]
+  }
+  return(list(cows = cows, areas = areas))
+}
 

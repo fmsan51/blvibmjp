@@ -4,10 +4,12 @@
 \alias{calc_infection_in_barns}
 \title{Calculate infection in barns}
 \usage{
-calc_infection_in_barns(cows, month, area_table, areas, param_sim)
+calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{i}{The number of months from the start of the simulation.}
 
 \item{month}{The current month (1, 2, ..., 12).}
 

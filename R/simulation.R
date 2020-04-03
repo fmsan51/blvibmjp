@@ -110,15 +110,22 @@ simulate_once <- function(cows_areas, last_cow_id,
     cows <- set_i_month(cows, i)
 
     cows <- add_1_to_age(cows)
-    cows <- do_ai(cows, i, day_rp, param_sim)
+    res <- do_ai(cows, areas, area_table, i, day_rp, param_sim)
+    cows <- res$cows
+    areas <- res$areas
     cows <- change_stage(cows, i, param_sim)
     cows <- do_test(cows, month, param_sim)
-
-    cows <- change_infection_status(cows, i, month, area_table, areas,
-                                    param_sim)
     res <- add_newborns(cows, area_table, i, last_cow_id, param_sim)
     cows <- res$cows
     last_cow_id <- res$last_cow_id
+
+    # change_infection_status() must come after all functions which calculate
+    # new infections, because this sets date_ipl/ebl_expected to new infected
+    # cows.
+    res <- change_infection_status(cows, i, month, area_table, areas,
+                                   param_sim)
+    cows <- res$cows
+    areas <- res$areas
     res <- tether_roaming_cows(cows, areas)
     cows <- res$cows
     areas <- res$areas
