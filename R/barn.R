@@ -64,7 +64,8 @@ assign_chambers <- function(cows, areas, area_assignment) {
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                                     param_sim) {
-  # TODO: bring infect() out of the for loop
+  expose_status <- causes <- character(nrow(cows))
+  names(expose_status) <- as.character(cows$cow_id)
   for (i_area in names(areas)) {
     area <- areas[[i_area]]
     if (i_area %in% attr(area_table, "tie_stall")) {
@@ -80,20 +81,12 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
       is_exposed_to_infected_cow <- is_s_in_chamber &
         (is_exposed_to_infected_cow_in_next_chamber |
          is_exposed_to_infected_cow_in_previous_chamber)
-      expose_result <-
-        is_infected_in_exposed_chamber(sum(is_exposed_to_infected_cow),
-                                       month, param_sim)
       exposed_cow <- area$cow_id[is_exposed_to_infected_cow]
-      infected_cow_id <- exposed_cow[!is.na(expose_result)]
-      res <- infect(cows, areas, area_table, infected_cow_id,
-                    expose_result[!is.na(expose_result)], i)
       non_exposed_cow <-
         area$cow_id[is_s_in_chamber & !is_exposed_to_infected_cow]
-      infected_non_exposed <- non_exposed_cow[
-        is_infected_in_non_exposed_chamber(length(non_exposed_cow),
-                                           month, param_sim)]
-      res <- infect(cows, areas, area_table, infected_non_exposed, "insect", i)
       # TODO: Where is the cow_status in areas changed?
+      expose_status[as.character(exposed_cow)] <- "exposed"
+      expose_status[as.character(non_exposed_cow)] <- "non_exposed"
     } else {
       s_cow_id <- area$cow_id[area$cow_status == "s"]
       new_infected_cow_id <- s_cow_id[
@@ -101,9 +94,22 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                                   sum(area$cow_status != "s", na.rm = T),
                                   month, param_sim)
         ]
-      res <- infect(cows, areas, area_table, new_infected_cow_id, "insect", i)
+      expose_status[s_cow_id] <- "insect"
     }
   }
+  expose_result <- is_infected_in_exposed_chamber(
+    sum(expose_status == "exposed"), month, param_sim
+    )
+  causes[expose_status == "exposed"] <- expose_result
+  non_expose_result <- is_infected_in_non_exposed_chamber(
+    sum(expose_status == "non_exposed"), month, param_sim
+    )
+  causes[expose_status == "non_exposed"] <-
+    c("", "insect")[non_expose_result + 1]
+  causes[expose_status == "not_tied"] <- "insect"
+  is_inf <- causes != ""
+  res <- infect(cows, areas, area_table, cows$cow_id[is_inf], causes[is_inf], i)
+
   return(res)
 }
 
