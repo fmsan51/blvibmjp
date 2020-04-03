@@ -508,15 +508,10 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   }
 
   rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
-  areas_removed <- cows[rows_removed, area_id]
 
-  for (i_area in as.character(attr(area_table, "tie_stall"))) {
-    rows_removed_this_area <- rows_removed[areas_removed == i_area]
-    areas[[i_area]] <-
-      remove_from_area(areas[[i_area]], cows[rows_removed_this_area, cow_id])
-  }
+  res <- remove_from_areas(cows, areas, area_table, cows$cow_id[rows_removed])
 
-  return(list(cows = cows, areas = areas))
+  return(res)
 }
 
 

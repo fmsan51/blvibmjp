@@ -1,19 +1,3 @@
-#' Remove dead or sold cows from a area
-#'
-#' @param area See [tie_stall_table].
-#' @param cow_id_removed The ID of cows removed from the area.
-#'
-#' @return A [tie_stall_table].
-remove_from_area <- function(area, cow_id_removed) {
-  # Remove chambers for isolation
-  removed_chamber <- area[cow_id %in% cow_id_removed, chamber_id]
-  area[removed_chamber, ':='(cow_id = NA,
-                             cow_status = NA,
-                             is_isolated = NA)]
-  return(area)
-}
-
-
 #' Remove cows from areas
 #'
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
@@ -32,7 +16,7 @@ remove_from_areas <- function(cows, areas, area_table, removed_cow_id) {
                     `:=`(cow_id = NA_integer_,
                          cow_status = NA_character_,
                          is_isolated = NA)]
-}
+  }
   return(list(cows = cows, areas = areas))
 }
 
