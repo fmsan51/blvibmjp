@@ -303,12 +303,7 @@ change_infection_status <- function(cows, i, month, area_table, areas,
                                     param_sim) {
   n_cows <- nrow(cows)
 
-  # cows[is_infected_insects(n_cows, month, param_sim) &
-  #        infection_status == "s",
-  #      ':='(infection_status = "ial",
-  #           date_ial = i,
-  #           cause_infection = "insects"
-  #           )]
+  res <- calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
 
   cows_inf_by_needles <- cows$cow_id[
     is_infected_needles(n_cows, cows, param_sim) & cows$infection_status == "s"
@@ -446,6 +441,8 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
     }
 
   }
+
+  # areas will be updated later in tether_roaming_cows().
   return(list(cows = cows, last_cow_id = last_cow_id))
 }
 
