@@ -1,26 +1,3 @@
-#' Make a named list
-#'
-#' Construct a named list whose elements' names are same with the inputs.
-#'
-#' @param ... Inputs.
-#'
-#' @return A list consisted of inputs and having same names with inputs.
-#' @examples
-#' a <- "a"
-#' b <- "B"
-#' c <- 3
-#' \dontrun{
-#' vars_to_named_list(a, b, c)  # list(a = "a", b = "B", c = 3)
-#' }
-vars_to_named_list <- function(...) {
-  vars <- quos_auto_name(enquos(...))
-  list <- eval_tidy(expr(list(!!!vars)))
-  return(list)
-}
-# TODO: いらんかも
-# TODO: スピード的にボトルネックになりそう
-
-
 #' Update a list if an input is not `NULL`
 #'
 #' Overwrite components of a list if inputs are not `NULL`.
