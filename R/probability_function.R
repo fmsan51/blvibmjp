@@ -17,7 +17,6 @@
 n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
                                 i, param_sim) {
-  # TODO: ここsusceptibility...って結局何してるんだ？
   n_cows <- length(susceptibility_ial_to_ipl)
   months_ial_to_ebl <- prop_ial_period <- months_ial_to_ipl <- numeric(n_cows)
   neg_months_ial_to_ipl <- rep(T, n_cows)
@@ -42,7 +41,6 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
   months_ial_to_ipl <- ceiling(months_ial_to_ipl)
   # シミュレーションには「その月に起きた出来事」を反映する方針 (＝月の最終日におけるステータス) なのでroundではなくceiling
-  # TODO: 他のroundを使ってる部分について、本当にそれでいいか考慮
   months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
   months_ial_to_ipl[!susceptibility_ial_to_ipl] <- NA_real_
   months_ipl_to_ebl[!susceptibility_ipl_to_ebl] <- NA_real_
@@ -132,11 +130,6 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
   runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month]
 }
 
-
-# hr_neighbor_inf <- exp(rnorm(1, mean = log(12.43), sd = (log(51.98) - log(12.43)) / qnorm(0.975)))
-# risk_unexposed <- prob_ial / (0.396 + hr_neighbor_inf * 0.694)
-# risk_exposed <- risk_unexposed * hr_neighbor_inf
-# r_neighborhood_infection <- c(risk_unexposed, risk_exposed)
 
 # TODO: そういや全国平均感染率は感染農場も非感染農場も一緒にしてるんだった。あとで感染農場のみにしぼって計算し直す。
 
@@ -330,8 +323,6 @@ susceptibility <- function(n_newborns,
   return(susceptibility)
 }
 
-# TODO: test
-
 
 #' The number of newborns per dam
 #'
@@ -364,7 +355,6 @@ sex_newborns <- function(n_newborns, param_sim) {
 
 #' @rdname sex_newborns
 sex_twins <- function(n_calves, param_sim) {
-  # TODO: なんでここn_newbornsじゃなくてn_calvesなんだ？
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
                       size = (n_calves / 2), replace = T,
                       prob = param_sim$probs_sex_pairs)
@@ -387,7 +377,6 @@ sex_twins <- function(n_calves, param_sim) {
 #' @encoding UTF-8
 #' @return A logical vector or a numeric value.
 set_prob_rep <- function(n_delivered, param) {
-  # TODO: これ他の場所に移動した方がいいか確認する
   prob_rep <- if (!is.na(param$prop_replacement)) {
     param$prop_replacement
   } else if (n_delivered < 30) {
@@ -475,7 +464,6 @@ age_slaughtered <- function(n_cows, param_sim) {
 
 #' @name longevity
 longevity <- function(n_cows, param_sim) {
-  # TODO: これcause_deathとかのが正確やな
   longevity <- list(
     age = numeric(n_cows),
     cause = rep("will_be_slaughtered", n_cows)

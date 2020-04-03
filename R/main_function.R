@@ -780,7 +780,6 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
   # Assignment of a chamber_id for a cow allocated to a full but free area will not occur
   # because calculate_area_assignment() calculates only about tie-stall areas.
-  # TODO: Do not have to compare vacancy and #cows
   cows_to_allocate_chambers <-
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
@@ -798,8 +797,6 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 
   return(res)
 }
-
-# TODO: tie-stallのAreaに割り当てられているがchamber_idの決まってない牛にchamber_idを割り振るためのfunction
 
 
 #' Change infection status of new infected cows

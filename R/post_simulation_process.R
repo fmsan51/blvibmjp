@@ -386,5 +386,3 @@ define_msg <- function(original_msg, default_msg, language) {
   }
 }
 
-# TODO: Make functions to summary multiple simulation.csv
-

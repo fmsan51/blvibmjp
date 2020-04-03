@@ -70,7 +70,6 @@ simulate_blv_spread <- function(prepared_data, param,
 
   invisible(res)
 }
-# TODO: ドキュメント改善
 
 
 #' Body of the simulation

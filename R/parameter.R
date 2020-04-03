@@ -45,7 +45,6 @@ param <- list(
   output_dir = "data/output",
   output_filename = "simulation",
 
-  # TODO: Unify "farm" and "herd"
   # TODO: The function to confirm the necessary parameters are set or not
   prop_female = NA,
   prop_replacement = NA,
@@ -326,9 +325,6 @@ calc_param <- function(param, modification = NULL) {
 
   res$prob_vert_inf_ial <- (4 + 5) / 95
   res$prob_vert_inf_ipl <- (10 + 4) / 29
-
-  # TODO: check
-  # Piper et al, 1979. https://pubmed.ncbi.nlm.nih.gov/214609
 
   ## infection_by_colostrum ----
 

@@ -39,7 +39,6 @@ setup_cows <- function(param, save_cows, cow_table = NULL) {
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 setup_rp_table <- function(init_n_cows, param) {
-  # TODO: do_aiをimproveするときに再検討
   # Prepare rp_table with many rows to reserve enough memory while simulation
   one_day_rp[1:init_n_cows, ]
   # Used 1:n instead of seq_len(n) because it is faster
@@ -177,5 +176,4 @@ setup_movement_table <- function(area_table, movement_table) {
 
 # TODO: make an option to decide do validation of input or not
 # TODO: connect to validation functions
-# TODO: add a function to randomly set parameter which is not specified by user input
 

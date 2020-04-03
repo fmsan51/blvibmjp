@@ -301,7 +301,6 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   cows$is_owned <- T
   cows[is.na(date_got_pregnant), day_heat := sample.int(30, .N, replace = T)]
-  # TODO: Think better implementation of is_to_test_pregnancy
 
   cows$is_detected[cows$infection_status != "s"] <- T
   susceptibility <- runif(n_cows)

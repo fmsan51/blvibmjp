@@ -65,25 +65,22 @@
 #' @name cow_table
 #' @export
 a_new_calf <- data.table(
-  # TODO: Add notes indicating which parameter is necessary and which is not.
   cow_id = NA_integer_,
   age = NA_real_,
   stage = NA_character_,
   sex = NA_character_,
   date_birth = NA_real_,
   date_death = NA_real_,
-  # TODO: date_removal が必要か？ もしそうならdate_deathと統合するべきか？
   date_death_expected = NA_real_,
   is_owned = NA,
   cause_removal = NA_character_,
-  # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
 
   # Delivery and milking
   parity = NA_real_,
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
-  date_dried = NA_real_,  # TODO: make function to set this
+  date_dried = NA_real_,
   # n_ai is currently used nowhere,
   # but recorded for when to consider repeat breeder.
   n_ai = NA_real_,
@@ -117,7 +114,6 @@ a_new_calf <- data.table(
   is_isolated = NA,
   i_month = NA_real_
 )
-# TODO: consider whether status can removed from the codes.
 
 
 # ---- tie_stall_template ----
@@ -225,7 +221,6 @@ a_movement <- data.table(current_area = NA_integer_,
                          condition = NA_character_,
                          next_area = list(NA),
                          priority = list(NA))
-# TODO: Make UI to setup this.
 
 
 # ---- rectal_palpation_template ----
@@ -253,5 +248,4 @@ one_day_rp <- data.table(cow_id = NA_integer_,
                          i_rp = NA_integer_,
                          is_after_inf = NA,
                          is_infected = NA)
-# TODO: 名前は検討
 
