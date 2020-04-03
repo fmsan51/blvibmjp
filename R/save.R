@@ -28,12 +28,11 @@ save_param_txt <- function(param, filename, i, subdir = ".") {
 #' @rdname save_file
 construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
   if (is.null(i)) {
-    filenameXX <- filename
+    filenameXXX <- filename
   } else {
-    filenameXX <- paste0(filename, formatC(i, width = 2, flag = "0"))
-    #TODO: i を 4桁に
+    filenameXXX <- paste0(filename, formatC(i, width = 3, flag = "0"))
   }
-  path <- paste0(gsub("[\\/]*$", "/", subdir), filenameXX, ext)
+  path <- paste0(gsub("[\\/]*$", "/", subdir), filenameXXX, ext)
 
   return(path)
 }
