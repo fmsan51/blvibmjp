@@ -220,15 +220,6 @@ is_infected_by_colostrum <- function(status_mother, param_sim) {
 }
 
 
-#' Whether introduced cows are infected
-#'
-#' @return A logical vector
-is_infected_introduced <- function() {
-  # TODO: 中身はあとで考える
-  # これまだどこからも繋がってない
-}
-
-
 #' Whether the first AIs for milking cows are conducted
 #'
 #' @param n_month_from_delivery The month past from the last delivery.
