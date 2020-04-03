@@ -18,7 +18,6 @@
 #' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 #' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 #' - `calving_interval`: Calving interval in day. (default: average in Hokkaido)
-#' - `n_mean_ai`: Mean number of AI done until conception.
 #' - `mean_age_first_ai`, `sd_age_first_ai`: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = `2 / qnorm(0.975)`)
 #' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
@@ -58,7 +57,6 @@ param <- list(
   age_first_delivery = NA,
   days_open = NA,
   days_milking = NA,
-  n_mean_ai = NA,  # TODO: currently used nowhere
   mean_age_first_ai = NA,
   sd_age_first_ai = NA,
   mean_day_start_ai = NA,

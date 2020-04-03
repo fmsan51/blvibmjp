@@ -5,7 +5,7 @@
 \alias{param}
 \title{Parameters about a simulation which should be set by users}
 \format{
-An object of class \code{list} of length 33.
+An object of class \code{list} of length 32.
 }
 \usage{
 param
@@ -31,7 +31,6 @@ Parameters depends on a farm:
 \item \code{prop_died} (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 \item \code{prop_heat_detected} (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 \item \code{calving_interval}: Calving interval in day. (default: average in Hokkaido)
-\item \code{n_mean_ai}: Mean number of AI done until conception.
 \item \code{mean_age_first_ai}, \code{sd_age_first_ai}: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = \code{2 / qnorm(0.975)})
 \item \code{mean_day_start_ai}, \code{sd_day_start_ai}: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = \code{10 / qnorm(0.975)})
 \item \code{capacity_in_head} c(lower, upper): Lower/upper limit of the herd size. Set either this or \code{capacity_as_ratio} below.
