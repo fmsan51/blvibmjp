@@ -84,7 +84,6 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
       exposed_cow <- area$cow_id[is_exposed_to_infected_cow]
       non_exposed_cow <-
         area$cow_id[is_s_in_chamber & !is_exposed_to_infected_cow]
-      # TODO: Where is the cow_status in areas changed?
       expose_status[as.character(exposed_cow)] <- "exposed"
       expose_status[as.character(non_exposed_cow)] <- "non_exposed"
     } else {
