@@ -133,14 +133,6 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 }
 
 
-#' Whether cows are infected by direct contact
-#'
-#' @return A logical vector.
-is_infected_contact <- function() {
-  # TODO: 中身はあとで考える
-  # これまだどこからも繋がってない
-}
-
 # hr_neighbor_inf <- exp(rnorm(1, mean = log(12.43), sd = (log(51.98) - log(12.43)) / qnorm(0.975)))
 # risk_unexposed <- prob_ial / (0.396 + hr_neighbor_inf * 0.694)
 # risk_exposed <- risk_unexposed * hr_neighbor_inf
