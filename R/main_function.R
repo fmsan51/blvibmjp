@@ -316,6 +316,13 @@ change_infection_status <- function(cows, i, month, area_table, areas,
                                  susceptibility_ipl_to_ebl,
                                  i, param_sim)]
 
+  res$cows[date_ipl_expected == i,
+           ":="(infection_status = "ipl",
+                date_ipl = i)]
+  res$cows[date_ebl_expected == i,
+           ":="(infection_status = "ebl",
+                date_ebl = i)]
+
   return(res)
 }
 
@@ -420,11 +427,6 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
              `:=`(infection_status = "ial",
                   date_ial = i,
                   cause_infection = "colostrum")]
-    newborns[infection_status != "s",
-             c("date_ipl_expected", "date_ebl_expected") :=
-               n_month_to_progress(susceptibility_ial_to_ipl,
-                                   susceptibility_ipl_to_ebl,
-                                   i, param_sim)]
 
     # TODO: Simulate failure of delivery (stillbirth/abortion) 妊娠途中で流産する場合についてもどこかで計算しなければ。
     parity_mothers <- cows[newborns$id_mother, parity]
