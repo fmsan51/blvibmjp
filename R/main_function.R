@@ -17,8 +17,8 @@ add_1_to_age <- function(cows) {
 #' @param areas See [setup_areas] and [tie_stall_table].
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
-#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #' @param day_rp See [rp_table].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
 do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
