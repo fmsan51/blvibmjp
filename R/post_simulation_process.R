@@ -160,7 +160,8 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
   cows[infection_status == "s", cause_infection := "uninfected"]
 
   if (is.null(route_levels)) {
-    route_levels <- c("uninfected", "initial", "insects", "contact",
+    route_levels <- c("uninfected", "initial", "insects",
+                      # "contact",  TODO: Fix this
                       # "needles",  TODO: Fix this
                       "rp", "vertical", "colostrum", "introduced", "pasture")
   }
