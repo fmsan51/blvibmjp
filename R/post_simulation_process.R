@@ -53,20 +53,37 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 #'
 #' @param cows See `cow_table`
 #' @param path_to_csv Path to a csv file.
+#' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows.
 #'
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
-calculate_prevalences <- function(cows = NULL, path_to_csv = NULL) {
+calculate_prevalences <- function(cows = NULL, path_to_csv = NULL,
+                                  type = c("prop", "count", "status")) {
   stopifnot(sum(is.null(cows), is.null(path_to_csv)) == 1)
   if (is.null(cows)) {
     cows <- fread(path_to_csv)
   }
   cows <- cows[is_owned == T, ]
 
-  prevalences <- cows[,
-                      list(prevalence = .SD[infection_status != "s", .N] / .N),
-                      by = i_month][!is.na(i_month)]
+  type <- match.arg(type)
+  if (type == "prop") {
+    prevalences <- cows[,
+      list(prevalence = .SD[infection_status != "s", .N] / .N),
+      by = i_month
+      ][!is.na(i_month)]
+  } else if (type == "count") {
+    cows$is_infected <-
+      factor(cows$infection_status != "s", levels = c("TRUE", "FALSE"),
+             labels = c("inf", "noinf"))
+    prevalences <-
+      dcast(cows, i_month ~ is_infected, fun.aggregate = length, drop = F)
+  } else {
+    cows$infection_status  <-
+      factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
+    prevalences <- dcast(cows, i_month ~ infection_status,
+                         fun.aggregate = length, drop = F)
+  }
 
   return(prevalences)
 }

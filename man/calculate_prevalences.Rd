@@ -4,12 +4,18 @@
 \alias{calculate_prevalences}
 \title{Calculate prevalence from \code{cow_table} or a csv file}
 \usage{
-calculate_prevalences(cows = NULL, path_to_csv = NULL)
+calculate_prevalences(
+  cows = NULL,
+  path_to_csv = NULL,
+  type = c("prop", "count", "status")
+)
 }
 \arguments{
 \item{cows}{See \code{cow_table}}
 
 \item{path_to_csv}{Path to a csv file.}
+
+\item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows.}
 }
 \value{
 A \link[data.table:data.table]{data.table} contains monthly prevalences.
