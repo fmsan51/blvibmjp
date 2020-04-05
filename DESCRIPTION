@@ -11,15 +11,22 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    cellranger,
     data.table,
-    rlang,
-    ggplot2,
-    glue,
+    dplyr,
     forcats,
-    tidyr,
+    ggplot2,
+    ggthemes,
+    glue,
     lubridate,
+    readxl,
+    rlang,
+    stats,
     stringr,
-    purrr
+    tidyr,
+    purrr,
+    utils,
+    zoo
 RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Suggests:
