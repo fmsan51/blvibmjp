@@ -112,7 +112,7 @@ is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
   hr <- param_sim$hr_having_infected_neighbor
   is_infected <-
     runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] * hr
-  inf_cause <- sample(c("neighbor", "insect"), size = sum(is_infected),
+  inf_cause <- sample(c("neighbor", "insects"), size = sum(is_infected),
                       replace = T, prob = c(hr - 1, 1))
   inf_status[is_infected] <- inf_cause
   return(inf_status)

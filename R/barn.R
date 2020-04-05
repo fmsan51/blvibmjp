@@ -93,7 +93,7 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                                   sum(area$cow_status != "s", na.rm = T),
                                   month, param_sim)
         ]
-      expose_status[s_cow_id] <- "insect"
+      expose_status[s_cow_id] <- "insects"
     }
   }
   expose_result <- is_infected_in_exposed_chamber(
@@ -104,8 +104,8 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
     sum(expose_status == "non_exposed"), month, param_sim
     )
   causes[expose_status == "non_exposed"] <-
-    c("", "insect")[non_expose_result + 1]
-  causes[expose_status == "not_tied"] <- "insect"
+    c("", "insects")[non_expose_result + 1]
+  causes[expose_status == "not_tied"] <- "insects"
   is_inf <- causes != ""
   res <- infect(cows, areas, area_table, cows$cow_id[is_inf], causes[is_inf], i)
 
