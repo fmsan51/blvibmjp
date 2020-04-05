@@ -96,7 +96,6 @@ calc_prev <- function(csv = NULL, cows = NULL,
 
 #' Plot the change in prevalence
 #'
-#' @param simulation_length See [param].
 #' @param csv Path to a simulation output csv file.
 #' @param cows See `cow_table`
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
@@ -106,8 +105,7 @@ calc_prev <- function(csv = NULL, cows = NULL,
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prev <- function(simulation_length, csv = NULL, cows = NULL,
-                      language = NULL,
+plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <- calc_prev(csv = csv, cows = cows)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
@@ -127,7 +125,7 @@ plot_prev <- function(simulation_length, csv = NULL, cows = NULL,
   gp <- ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
-    scale_x_continuous(breaks = seq.int(0, simulation_length, by = 12)) +
+    scale_x_continuous(breaks = seq.int(0, max(prevalences$i_month), by = 12)) +
     theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
   if (!is.null(title)) {

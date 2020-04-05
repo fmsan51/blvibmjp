@@ -5,7 +5,6 @@
 \title{Plot the change in prevalence}
 \usage{
 plot_prev(
-  simulation_length,
   csv = NULL,
   cows = NULL,
   language = NULL,
@@ -16,8 +15,6 @@ plot_prev(
 )
 }
 \arguments{
-\item{simulation_length}{See \link{param}.}
-
 \item{csv}{Path to a simulation output csv file.}
 
 \item{cows}{See \code{cow_table}}
