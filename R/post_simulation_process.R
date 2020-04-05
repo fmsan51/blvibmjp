@@ -213,7 +213,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @export
 plot_route <- function(csv = NULL, cows = NULL, language = NULL,
                        route_levels = NULL, route_labels = NULL,
-                       max_ylim = 100, title = T, legend_title = T,
+                       max_ylim = NULL, title = T, legend_title = T,
                        xlab = T, ylab = T, gray = F, area_color = NULL,
                        border = F, border_color = NULL, font = NULL) {
   stopifnot(sum(is.null(cows), is.null(csv)) == 1)
@@ -266,6 +266,9 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
   }
 
+  if (is.null(max_ylim)) {
+    max_ylim <- max(table(cows$i_month))
+  }
   gp <- ggplot(infection_route, aes(x = i_month, y = N)) +
     geom_area(aes(fill = cause_infection, color = !!color)) +
     scale_x_continuous(breaks =
