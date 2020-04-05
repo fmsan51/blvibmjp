@@ -2,15 +2,15 @@
 #'
 #' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 0, and redefine infection routes.
 #'
-#' @param path_to_csv Path to a csv file which contains [cow_table].
+#' @param csv Path to a csv file which contains [cow_table].
 #' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 #'
 #' @seealso [read_final_cows]
-read_initial_cows <- function(path_to_csv, route_levels = NULL,
+read_initial_cows <- function(csv, route_levels = NULL,
                               route_labels = NULL) {
-  cows <- fread(path_to_csv)
+  cows <- fread(csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_route_levels(cows, lenguage = NULL,
                                 route_levels, route_labels)
@@ -49,20 +49,20 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 
 #' Calculate prevalence from `cow_table` or a csv file
 #'
-#' Calculate monthly prevalences from `cow_table` or a csv file. Set either one of `cows` or `path_to_csv`.
+#' Calculate monthly prevalences from `cow_table` or a csv file. Set either one of `cows` or `csv`.
 #'
 #' @param cows See `cow_table`
-#' @param path_to_csv Path to a csv file.
+#' @param csv Path to a csv file.
 #' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows.
 #'
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
-calculate_prevalences <- function(cows = NULL, path_to_csv = NULL,
+calculate_prevalences <- function(cows = NULL, csv = NULL,
                                   type = c("prop", "count", "status")) {
-  stopifnot(sum(is.null(cows), is.null(path_to_csv)) == 1)
+  stopifnot(sum(is.null(cows), is.null(csv)) == 1)
   if (is.null(cows)) {
-    cows <- fread(path_to_csv)
+    cows <- fread(csv)
   }
   cows <- cows[is_owned == T, ]
 
@@ -92,7 +92,7 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL,
 #' Plot the change in prevalence
 #'
 #' @param simulation_length See [param].
-#' @param path_to_csv Path to a simulation output csv file.
+#' @param csv Path to a simulation output csv file.
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
@@ -100,9 +100,9 @@ calculate_prevalences <- function(cows = NULL, path_to_csv = NULL,
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prevalences <- function(simulation_length, path_to_csv, language = NULL,
+plot_prevalences <- function(simulation_length, csv, language = NULL,
                              title = T, xlab = T, ylab = T, font = NULL) {
-  prevalences <- calculate_prevalences(path_to_csv = path_to_csv)
+  prevalences <- calculate_prevalences(csv = csv)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   translate_msg("plot_prevalences", language)
   default_msg <- list(title = "Change of prevalence",
@@ -190,7 +190,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 
 #' Plot monthly infection routes nicely
 #'
-#' @param path_to_csv Path to an output csv file.
+#' @param csv Path to an output csv file.
 #' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
@@ -204,13 +204,13 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_infection_route <- function(path_to_csv, language = NULL,
+plot_infection_route <- function(csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = T,
                                  legend_title = T, xlab = T, ylab = T,
                                  gray = F, area_color = NULL,
                                  border = F, border_color = NULL, font = NULL) {
-  cows <- fread(path_to_csv)
+  cows <- fread(csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_route_levels(cows, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,

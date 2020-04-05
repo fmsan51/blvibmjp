@@ -5,7 +5,7 @@
 \title{Plot monthly infection routes nicely}
 \usage{
 plot_infection_route(
-  path_to_csv,
+  csv,
   language = NULL,
   route_levels = NULL,
   route_labels = NULL,
@@ -22,7 +22,7 @@ plot_infection_route(
 )
 }
 \arguments{
-\item{path_to_csv}{Path to an output csv file.}
+\item{csv}{Path to an output csv file.}
 
 \item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 

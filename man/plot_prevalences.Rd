@@ -6,7 +6,7 @@
 \usage{
 plot_prevalences(
   simulation_length,
-  path_to_csv,
+  csv,
   language = NULL,
   title = T,
   xlab = T,
@@ -17,7 +17,7 @@ plot_prevalences(
 \arguments{
 \item{simulation_length}{See \link{param}.}
 
-\item{path_to_csv}{Path to a simulation output csv file.}
+\item{csv}{Path to a simulation output csv file.}
 
 \item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 
