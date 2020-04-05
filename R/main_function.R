@@ -351,11 +351,11 @@ do_test <- function(cows, month, param_sim) {
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
-#' @param last_cow_id The ID of a cow at the last non-empty row of `cows`.
+#' @param max_cow_id The ID of a cow at the last non-empty row of `cows`.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
-#' @return A list consisted of two elements: `cows` and `last_cow_id`.
-add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
+#' @return A list consisted of two elements: `cows` and `max_cow_id`.
+add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
   rows_mothers <- which(cows$date_last_delivery == i)
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
@@ -435,8 +435,8 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
       rows_newborns <- n_cows + seq_len(n_newborns_born)
-      newborns$cow_id <- last_cow_id + seq_len(n_newborns_born)
-      last_cow_id <- last_cow_id + n_newborns_born
+      newborns$cow_id <- max_cow_id + seq_len(n_newborns_born)
+      max_cow_id <- max_cow_id + n_newborns_born
       cows[rows_newborns, ] <-
         newborns[, c("id_mother", "id_calf", "n_newborns_per_cow",
                      "status_mother", "is_freemartin") := NULL]
@@ -445,7 +445,7 @@ add_newborns <- function(cows, area_table, i, last_cow_id, param_sim) {
   }
 
   # areas will be updated later in tether_roaming_cows().
-  return(list(cows = cows, last_cow_id = last_cow_id))
+  return(list(cows = cows, max_cow_id = max_cow_id))
 }
 
 

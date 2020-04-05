@@ -61,7 +61,7 @@ simulate_blv_spread <- function(prepared_data, param,
   for (i_simulation in (i_simulation_start:param_processed$n_simulation)) {
     cat("Simulation ", i_simulation, " / ", param_processed$n_simulation, "\n")
     set.seed(seeds[i_simulation])
-    res <- simulate_once(cows_areas, setup_cows_res$init_n_cows,
+    res <- simulate_once(cows_areas, setup_cows_res$init_max_cow_id,
              area_table, movement_table,
              day_rp, i_simulation, result, result_area,
              param_processed, param_modif = list_param_modif[[i_simulation]],
@@ -79,7 +79,7 @@ simulate_blv_spread <- function(prepared_data, param,
 #' @note This function does not output the result to a csv file.
 #'
 #' @param cows_areas A result of [set_init_chamber_id()].
-#' @param last_cow_id `init_last_cow_id` component of a result of [setup_cows()].
+#' @param max_cow_id `init_max_cow_id` component of a result of [setup_cows()].
 #' @param area_table A result of [setup_area_table()].
 #' @param movement_table A result of [setup_movement_table()].
 #' @param day_rp A result of [setup_rp_table()].
@@ -90,7 +90,7 @@ simulate_blv_spread <- function(prepared_data, param,
 #' @param save_cows,save_param Wheher to save a result of a simulation and used parameters to files.
 #'
 #' @return A list composed of two components: `result_combined` and `result_area_combined`
-simulate_once <- function(cows_areas, last_cow_id,
+simulate_once <- function(cows_areas, max_cow_id,
                           area_table, movement_table, day_rp, i_simulation,
                           result, result_area,
                           param_processed, param_modif, save_cows, save_param) {
@@ -114,9 +114,9 @@ simulate_once <- function(cows_areas, last_cow_id,
     areas <- res$areas
     cows <- change_stage(cows, i, param_sim)
     cows <- do_test(cows, month, param_sim)
-    res <- add_newborns(cows, area_table, i, last_cow_id, param_sim)
+    res <- add_newborns(cows, area_table, i, max_cow_id, param_sim)
     cows <- res$cows
-    last_cow_id <- res$last_cow_id
+    max_cow_id <- res$max_cow_id
 
     # change_infection_status() must come after all functions which calculate
     # new infections, because this sets date_ipl/ebl_expected to new infected
