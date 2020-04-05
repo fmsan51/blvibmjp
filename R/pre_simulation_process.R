@@ -542,7 +542,8 @@ prepare_data <- function(excel, param, output = F,
                          sep = "[,\t\r\n |;:]", ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
-    area_input <- read_excel(excel, sheet = "area", skip = 3)
+    area_input <- read_excel(excel, sheet = "area", skip = 3,
+      range = cell_limits(c(4, 1), c(NA, 3)))  # cells from A4:C4
     movement_input <- read_excel(excel, sheet = "movement", skip = 3)
   } else {
     cow_input <- cow_data

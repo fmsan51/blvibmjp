@@ -2,6 +2,7 @@
 #'
 #' This package provides functions to construct a individual based model of simulation of Bovine Leukemia virus in a tipical Japanese dairy herd.
 #'
+#' @importFrom cellranger cell_limits
 #' @importFrom data.table as.data.table CJ copy data.table dcast.data.table fifelse fcoalesce fread fwrite melt.data.table rbindlist shift := .N .SD
 #' @importFrom dplyr n_distinct
 #' @importFrom forcats fct_other
