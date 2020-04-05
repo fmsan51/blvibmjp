@@ -108,14 +108,9 @@ is_infected_pasture <- function(n_cows, param) {
 #'
 #' @return A logical vector.
 is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
-  inf_status <- character(n_cows)
-  hr <- param_sim$hr_having_infected_neighbor
-  is_infected <-
-    runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] * hr
-  inf_cause <- sample(c("neighbor", "insects"), size = sum(is_infected),
-                      replace = T, prob = c(hr - 1, 1))
-  inf_status[is_infected] <- inf_cause
-  return(inf_status)
+  is_infected <- runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] *
+                                  param_sim$hr_having_infected_neighbor
+  return(is_infected)
 }
 
 
