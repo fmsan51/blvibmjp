@@ -202,6 +202,8 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
+#'
+#' @export
 plot_infection_route <- function(path_to_csv, language = NULL,
                                  route_levels = NULL, route_labels = NULL,
                                  max_ylim = 100, title = T,
