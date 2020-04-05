@@ -58,8 +58,8 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
-calculate_prevalences <- function(cows = NULL, csv = NULL,
-                                  type = c("prop", "count", "status")) {
+calc_prevalences <- function(cows = NULL, csv = NULL,
+                             type = c("prop", "count", "status")) {
   stopifnot(sum(is.null(cows), is.null(csv)) == 1)
   if (is.null(cows)) {
     cows <- fread(csv)
@@ -100,11 +100,11 @@ calculate_prevalences <- function(cows = NULL, csv = NULL,
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prevalences <- function(simulation_length, csv, language = NULL,
-                             title = T, xlab = T, ylab = T, font = NULL) {
-  prevalences <- calculate_prevalences(csv = csv)
+plot_prev <- function(simulation_length, csv, language = NULL,
+                      title = T, xlab = T, ylab = T, font = NULL) {
+  prevalences <- calc_prevalences(csv = csv)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
-  translate_msg("plot_prevalences", language)
+  translate_msg("plot_prev", language)
   default_msg <- list(title = "Change of prevalence",
                       xlab = "Months in simulation",
                       ylab = "Prevalence")
@@ -204,18 +204,17 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_infection_route <- function(csv, language = NULL,
-                                 route_levels = NULL, route_labels = NULL,
-                                 max_ylim = 100, title = T,
-                                 legend_title = T, xlab = T, ylab = T,
-                                 gray = F, area_color = NULL,
-                                 border = F, border_color = NULL, font = NULL) {
+plot_route <- function(csv, language = NULL,
+                       route_levels = NULL, route_labels = NULL,
+                       max_ylim = 100, title = T, legend_title = T,
+                       xlab = T, ylab = T, gray = F, area_color = NULL,
+                       border = F, border_color = NULL, font = NULL) {
   cows <- fread(csv)
   cows <- cows[is_owned == T, ]
   cows <- redefine_route_levels(cows, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
-  translate_msg("plot_infection_route", language)
+  translate_msg("plot_route", language)
   default_msg <- list(title = "Change of prevalence",
                       legend_title = "Infection route",
                       xlab = "Months in simulation",
