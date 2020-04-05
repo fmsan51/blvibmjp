@@ -6,7 +6,8 @@
 \usage{
 plot_prev(
   simulation_length,
-  csv,
+  csv = NULL,
+  cows = NULL,
   language = NULL,
   title = T,
   xlab = T,
@@ -18,6 +19,8 @@ plot_prev(
 \item{simulation_length}{See \link{param}.}
 
 \item{csv}{Path to a simulation output csv file.}
+
+\item{cows}{See \code{cow_table}}
 
 \item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
 

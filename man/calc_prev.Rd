@@ -4,12 +4,12 @@
 \alias{calc_prev}
 \title{Calculate prevalence from \code{cow_table} or a csv file}
 \usage{
-calc_prev(cows = NULL, csv = NULL, type = c("prop", "count", "status"))
+calc_prev(csv = NULL, cows = NULL, type = c("prop", "count", "status"))
 }
 \arguments{
-\item{cows}{See \code{cow_table}}
-
 \item{csv}{Path to a csv file.}
+
+\item{cows}{See \code{cow_table}}
 
 \item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows.}
 }
