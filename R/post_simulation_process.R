@@ -58,8 +58,8 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
-calc_prevalences <- function(cows = NULL, csv = NULL,
-                             type = c("prop", "count", "status")) {
+calc_prev <- function(cows = NULL, csv = NULL,
+                      type = c("prop", "count", "status")) {
   stopifnot(sum(is.null(cows), is.null(csv)) == 1)
   if (is.null(cows)) {
     cows <- fread(csv)
@@ -102,7 +102,7 @@ calc_prevalences <- function(cows = NULL, csv = NULL,
 #' @export
 plot_prev <- function(simulation_length, csv, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
-  prevalences <- calc_prevalences(csv = csv)
+  prevalences <- calc_prev(csv = csv)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   translate_msg("plot_prev", language)
   default_msg <- list(title = "Change of prevalence",
