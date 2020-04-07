@@ -178,7 +178,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
     n_cow_heat_overlooked <- nrow(cows_heat_overlooked)
     if (n_cow_heat_overlooked != 0) {
       # TODO: Consider the probability that next heat comes before pregnancy_test.
-      possible_day_rp <- one_day_rp[rep(1, n_cow_heat_missed), ]
+      possible_day_rp <- one_day_rp[rep(1, n_cow_heat_overlooked), ]
       possible_day_rp[,
         `:=`(cow_id = cows_heat_overlooked$cow_id,
              infection_status = cows_heat_overlooked$infection_status,
