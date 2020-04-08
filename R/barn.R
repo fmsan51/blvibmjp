@@ -139,11 +139,9 @@ tether_roaming_cows <- function(cows, areas) {
 #'
 #' @return A list in a form of `list(area_id_of_a_tie_stall_barn = c(cow_ids_to_be_assigned_to_chambers_in_the_area), ...).
 calculate_area_assignment <- function(cows, area_table, assigned_cow_id) {
-  cows_assigned_to_tie <-
-    cows[cow_id %in% assigned_cow_id &
-         area_id %in% attr(area_table, "tie_stall"), list(cow_id, area_id)]
-  area_assignment <- split(cows_assigned_to_tie$cow_id,
-                           cows_assigned_to_tie$area_id)
+  area_assignment <- cows[cow_id %in% assigned_cow_id &
+                          area_id %in% attr(area_table, "tie_stall"),
+                          split(cow_id, area_id)]
   return(area_assignment)
 }
 
