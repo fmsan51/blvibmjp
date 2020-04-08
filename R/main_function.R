@@ -278,12 +278,12 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
 change_stage <- function(cows, i, param_sim) {
   # TODO: 12-23mo is heifer (temporary)
   # Calf to heifer
-  cows[age == 12, ':='(stage = "heifer",
+  cows[age == 12, `:=`(stage = "heifer",
                        parity = 0)]
 
   # Heifer/Dry to milking
   cows[(i - date_got_pregnant) == 10,
-       ':='(stage = "milking",
+       `:=`(stage = "milking",
             date_last_delivery = i,
             parity = parity + 1,
             date_got_pregnant = NA,
@@ -325,10 +325,10 @@ change_infection_status <- function(cows, i, month, area_table, areas,
                                  i, param_sim)]
 
   res$cows[date_ipl_expected == i,
-           ":="(infection_status = "ipl",
+           `:=`(infection_status = "ipl",
                 date_ipl = i)]
   res$cows[date_ebl_expected == i,
-           ":="(infection_status = "ebl",
+           `:=`(infection_status = "ebl",
                 date_ebl = i)]
 
   return(res)
@@ -375,7 +375,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
     n_newborns <- sum(n_newborns_per_cow)
 
     newborns <- a_new_calf[rep(1, n_newborns), ]
-    newborns[, ':='(id_mother = rep(rows_mothers, n_newborns_per_cow),
+    newborns[, `:=`(id_mother = rep(rows_mothers, n_newborns_per_cow),
                     id_calf = 1:n_newborns,
                     # 1:n is used because it is much faster than seq_len(n).
                     n_newborns_per_cow =
@@ -400,7 +400,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
     # Setting about twins
     if (sum(newborns$n_newborns_per_cow == 2) != 0) {
       newborns[n_newborns_per_cow == 2,
-               ':='(sex = sex_twins(.N, param_sim),
+               `:=`(sex = sex_twins(.N, param_sim),
                     is_freemartin = (sex == "freemartin"))]
       newborns[is_freemartin == T, sex := "female"]
     }
@@ -411,7 +411,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
-    newborns[, ':='(date_death_expected = i + longevity$age,
+    newborns[, `:=`(date_death_expected = i + longevity$age,
                     cause_removal = longevity$cause)]
 
     # Susceptibility
@@ -421,13 +421,13 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
       rep(cows[rows_mothers, susceptibility_ipl_to_ebl], n_newborns_per_cow),
       param_sim
       )
-    newborns[, ':='(susceptibility_ial_to_ipl = susceptibility$ial_to_ipl,
+    newborns[, `:=`(susceptibility_ial_to_ipl = susceptibility$ial_to_ipl,
                     susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
 
     # Calculation of vertical infection
     # infect() cannot used here because newborns are not yet added to areas.
     newborns[is_infected_vertical(newborns$status_mother, param_sim),
-             ':='(infection_status = "ial",
+             `:=`(infection_status = "ial",
                   date_ial = i,
                   cause_infection = "vertical"
                   )]
@@ -470,7 +470,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
   rows_removed_death <- which(cows$date_death_expected == i)
-  cows[rows_removed_death, ':='(is_owned = F,
+  cows[rows_removed_death, `:=`(is_owned = F,
                                 date_death = i,
                                 cause_removal =
                                   fifelse(cause_removal == "will_die",
@@ -482,7 +482,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
                                cows$date_death_expected != i)
-  cows[rows_removed_sold, ':='(is_owned = F,
+  cows[rows_removed_sold, `:=`(is_owned = F,
                                cause_removal = "sold")]
   # TODO: とりあえず後継牛以外は0ヶ月齢で売却
 
@@ -490,7 +490,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   rows_new_ebl <- which(cows$date_ebl == i)
   rows_removed_ebl <- rows_new_ebl[is_ebl_detected(rows_new_ebl, param_sim)]
   if (length(rows_removed_ebl) != 0) {
-    cows[rows_removed_ebl,  ':='(is_owned = F,
+    cows[rows_removed_ebl,  `:=`(is_owned = F,
                                  date_death = i,
                                  cause_removal = "culled")]
   }
@@ -498,7 +498,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   if (length(rows_overlooked) != 0) {
     month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
     cows[1:nrow(cows) %in% rows_overlooked,
-         ':='(date_death_expected =
+         `:=`(date_death_expected =
                 fifelse(date_death_expected >= month_ebl_die,
                         month_ebl_die, date_death_expected),
               cause_removal =
