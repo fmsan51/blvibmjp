@@ -45,6 +45,9 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   cols_in_input <- intersect(colnames(a_new_calf), colnames(input))
   n_cows <- nrow(input)
+  if (n_cows == 0) {
+    stop("No data is contained in the cow input.")
+  }
   cows <- a_new_calf[rep(1, n_cows), ]
   cows[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
@@ -362,6 +365,9 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 
   cols_in_input <- intersect(colnames(a_area), colnames(input))
   n_rows <- nrow(input)
+  if (n_rows == 0) {
+    stop("No data is contained in the area input.")
+  }
   area_table <- a_area[rep(1, n_rows), ]
   area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
@@ -453,6 +459,9 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 
   cols_in_input <- intersect(colnames(a_movement), colnames(input))
   n_rows <- nrow(input)
+  if (n_rows == 0) {
+    stop("No data is contained in the movement input.")
+  }
   movement_table <- a_movement[rep(1, n_rows), ]
   movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
