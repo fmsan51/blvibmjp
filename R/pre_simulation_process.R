@@ -52,8 +52,8 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   cows[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
   # First, calculate values in columns which users can specify.
-  if (anyNA(cows$cow_id)) {
-    is_na <- is.na(cows$cow_id)
+  is_na <- is.na(cows$cow_id)
+  if (any(is_na)) {
     n_na <- sum(is_na)
     cows$cow_id[is_na] <- setdiff(1:n_cows, cows$cow_id)[1:n_na]
     # 1:n is used because it is much faster than seq_len(n).

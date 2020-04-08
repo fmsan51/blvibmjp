@@ -177,6 +177,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
                   type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- day_rp_last_row + n_ai_done
     }
+
     # No conception, however pregnancy cheking is done
     # because the heat right after the AI is overlooked.
     rows_ai_failed <- cows[is_to_test_pregnancy &
