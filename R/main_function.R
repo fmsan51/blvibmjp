@@ -22,6 +22,7 @@ add_1_to_age <- function(cows) {
 #'
 #' @return A [cow_table].
 do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
+  day_rp[, ] <- NA
   day_rp_last_row <- 0
 
   heifers_start_ai <- cows[
