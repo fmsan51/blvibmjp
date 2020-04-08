@@ -106,7 +106,8 @@ simulate_once <- function(cows_areas, max_cow_id,
     save_param_txt(param_calculated, param_processed$param_output_filename,
                    i_simulation, subdir = param_processed$output_dir)
   }
-  param_sim <- c(param_processed, param_calculated)
+  param_sim <- c(param_calculated, param_processed)
+  param_sim <- param_sim[!duplicated(names(param_sim))]
 
   for (i in 1:param_sim$simulation_length) {
     # Here, 1:n, not seq_len(n), is used due to the speed
