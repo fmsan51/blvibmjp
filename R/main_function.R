@@ -185,7 +185,6 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
                            which = T]
     n_cow_ai_failed <- length(rows_ai_failed)
     if (n_cow_ai_failed != 0) {
-      # possible_day_rp <- one_day_rp[rep(1, n_cow_ai_failed), ]
       day_rp[day_rp_last_row + (1:n_cow_ai_failed),
         `:=`(cow_id = cows$cow_id[rows_ai_failed],
              infection_status = cows$infection_status[rows_ai_failed],
@@ -365,6 +364,7 @@ do_test <- function(cows, month, param_sim) {
 #' @return A list consisted of two elements: `cows` and `max_cow_id`.
 add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
   rows_mothers <- which(cows$date_last_delivery == i)
+  # TODO: Make newborn_list like day_rp
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
   # TODO: Consider the functions to change stage and consider delivery could be the same or not.
