@@ -139,12 +139,13 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   delivery_age_table <-
     integerize(param_calculated$age_first_delivery +
                param_calculated$calving_interval * 0:9)
-  if (anyNA(cows$parity)) {
-    cows[is.na(parity) & (stage == "heifer" | stage == "calf"), parity := 0]
-    cows[is.na(parity) & (is.na(stage) | stage == "dry" | stage == "milking"),
+  is_na <- is.na(cows$parity)
+  if (any(is_na)) {
+    cows[is_na & (stage == "heifer" | stage == "calf"), parity := 0]
+    cows[is_na & (is.na(stage) | stage == "dry" | stage == "milking"),
          parity := vapply(age, function(x) sum(x >= delivery_age_table), 1)]
-    cows[!is.na(date_last_delivery) & parity == 0, parity := 1]
-    cows[!is.na(date_got_pregnant) & parity == 0, parity := 1]
+    cows[(stage == "milking" | stage == "dry" | !is.na(date_last_delivery)) &
+         age < delivery_age_table[1], parity := 1]
   }
   if (any(is.na(cows$date_last_delivery) & cows$parity != 0)) {
     cows[is.na(date_last_delivery) & parity != 0,
@@ -306,6 +307,8 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   cows$is_owned <- T
   cows[is.na(date_got_pregnant), day_heat := sample.int(30, .N, replace = T)]
+  cows[is.na(day_last_detected_heat),
+       day_last_detected_heat := sample.int(30, .N, replace = T)]  # TODO: Improve this
 
   cows$is_detected[cows$infection_status != "s"] <- T
   susceptibility <- runif(n_cows)
