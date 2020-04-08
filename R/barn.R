@@ -122,8 +122,8 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
 #'
 #' @return A list consisted of [areas] and [cow_table].
 tether_roaming_cows <- function(cows, areas) {
-  roaming_cows <- cows[chamber_id == 0 & is_owned, ]
-  roaming_cow_assign_list <- split(roaming_cows$cow_id, roaming_cows$area_id)
+  roaming_cow_assign_list <-
+    cows[chamber_id == 0 & is_owned, split(cow_id, area_id)]
   res <- assign_chambers(cows, areas, roaming_cow_assign_list)
   return(res)
 }

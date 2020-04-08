@@ -439,17 +439,18 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 
     # TODO: Simulate failure of delivery (stillbirth/abortion) 妊娠途中で流産する場合についてもどこかで計算しなければ。
     parity_mothers <- cows[newborns$id_mother, parity]
-    newborns <- newborns[!is_stillbirth(parity_mothers, param_sim), ]
+    is_born_alive <- !is_stillbirth(parity_mothers, param_sim)
 
-    n_newborns_born <- nrow(newborns)
+    n_newborns_born <- sum(is_born_alive)
     if (n_newborns_born != 0) {
       rows_newborns <- n_cows + 1:n_newborns_born
-      newborns$cow_id <- max_cow_id + 1:n_newborns_born
+      newborns$cow_id[is_born_alive] <- max_cow_id + 1:n_newborns_born
       # 1:n is used because it is much faster than seq_len(n).
       max_cow_id <- max_cow_id + n_newborns_born
-      cows[rows_newborns, ] <-
-        newborns[, c("id_mother", "id_calf", "n_newborns_per_cow",
-                     "status_mother", "is_freemartin") := NULL]
+      newborns[,
+               c("id_mother", "id_calf", "n_newborns_per_cow", "status_mother",
+                 "is_freemartin") := NULL]
+      cows[rows_newborns, ] <- newborns[is_born_alive, ]
     }
 
   }
