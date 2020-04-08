@@ -99,9 +99,7 @@ param <- list(
   cull_infected_cows = "no",
   culling_frequency = 1,
   test_frequency = 0,
-  test_method = NA,
-
-  days_milking = NA
+  test_method = NA
 )
 
 
