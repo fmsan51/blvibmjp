@@ -133,8 +133,8 @@ validate_cow_table <- function(cows,
 #' @return Stop if the `col` contains invalid category.
 validate_category <- function(cows, col, category) {
   values <- cows[[col]]
-  if (any(!(values %in% category))) {
-    invalid_value <- unique(values[!(values %in% category)])
+  if (any(!values %in% category)) {
+    invalid_value <- unique(values[!values %in% category])
     stop(glue("column `{col}` contains invalid value(s): \\
               {paste(invalid_value, collapse = ', ')}
               column `{col}` must contain only following values: \\

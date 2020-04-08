@@ -469,12 +469,11 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
-  rows_removed_death <- which(cows$date_death_expected == i)
-  cows[rows_removed_death, `:=`(is_owned = F,
-                                date_death = i,
-                                cause_removal =
-                                  fifelse(cause_removal == "will_die",
-                                          "died", "slaughtered"))]
+  cows[date_death_expected == i,
+       `:=`(is_owned = F,
+            date_death = i,
+            cause_removal =
+              fifelse(cause_removal == "will_die", "died", "slaughtered"))]
 
   # Removal by culling
   cows <- cull_infected_cows(cows, i, param_sim)
@@ -497,7 +496,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
     month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
-    cows[1:nrow(cows) %in% rows_overlooked,
+    cows[rows_overlooked,
          `:=`(date_death_expected =
                 fifelse(date_death_expected >= month_ebl_die,
                         month_ebl_die, date_death_expected),
