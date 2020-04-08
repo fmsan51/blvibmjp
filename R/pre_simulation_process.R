@@ -55,7 +55,8 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   if (anyNA(cows$cow_id)) {
     is_na <- is.na(cows$cow_id)
     n_na <- sum(is_na)
-    cows$cow_id[is_na] <- setdiff(seq_len(n_cows), cows$cow_id)[seq_len(n_na)]
+    cows$cow_id[is_na] <- setdiff(1:n_cows, cows$cow_id)[1:n_na]
+    # 1:n is used because it is much faster than seq_len(n).
   }
 
   # Convert date variables from character to Date
@@ -290,7 +291,8 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
 
   # Next, calculate values in columns users should not specify.
-  rows_to_calc_longevity <- seq_len(n_cows)
+  rows_to_calc_longevity <- 1:n_cows
+  # 1:n is used because it is much faster than seq_len(n).
   n_rows_to_calc_longevity <- n_cows
   while (n_rows_to_calc_longevity > 0) {
     calculated_longevity <-
@@ -317,8 +319,9 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   if (!is.null(n_chambers)) {
     for (i_area in names(n_chambers)) {
-      empty_chambers <- setdiff(seq_len(n_chambers[i_area]),
+      empty_chambers <- setdiff(1:n_chambers[i_area],
                                 cows$chamber_id[cows$area_id == i_area])
+      # 1:n is used because it is much faster than seq_len(n).
       cows[area_id == i_area & is.na(chamber_id),
            chamber_id := resample(empty_chambers, .N)]
     }
@@ -372,7 +375,8 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
   if (all(is.na(area_table$area_id))) {
-    area_table$area_id <- seq_len(n_rows)
+    area_table$area_id <- 1:n_rows
+    # 1:n is used because it is much faster than seq_len(n).
   } else if (!is.numeric(input$area_id)) {  # Here, input, not area_table, is correct.
     area_table$area_id <-
       factor(area_table$area_id, levels = unique(area_table$area_id))

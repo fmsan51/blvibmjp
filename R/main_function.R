@@ -368,7 +368,8 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 
     newborns <- a_new_calf[rep(1, n_newborns), ]
     newborns[, ':='(id_mother = rep(rows_mothers, n_newborns_per_cow),
-                    id_calf = seq_len(n_newborns),
+                    id_calf = 1:n_newborns,
+                    # 1:n is used because it is much faster than seq_len(n).
                     n_newborns_per_cow =
                       rep(n_newborns_per_cow, n_newborns_per_cow),
                     status_mother = rep(cows[rows_mothers, infection_status],
@@ -434,8 +435,9 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
 
     n_newborns_born <- nrow(newborns)
     if (n_newborns_born != 0) {
-      rows_newborns <- n_cows + seq_len(n_newborns_born)
-      newborns$cow_id <- max_cow_id + seq_len(n_newborns_born)
+      rows_newborns <- n_cows + 1:n_newborns_born
+      newborns$cow_id <- max_cow_id + 1:n_newborns_born
+      # 1:n is used because it is much faster than seq_len(n).
       max_cow_id <- max_cow_id + n_newborns_born
       cows[rows_newborns, ] <-
         newborns[, c("id_mother", "id_calf", "n_newborns_per_cow",
@@ -487,13 +489,14 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
     month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
-    cows[seq_len(nrow(cows)) %in% rows_overlooked,
+    cows[1:nrow(cows) %in% rows_overlooked,
          ':='(date_death_expected =
                 fifelse(date_death_expected >= month_ebl_die,
                         month_ebl_die, date_death_expected),
               cause_removal =
                 fifelse(date_death_expected >= month_ebl_die,
                         "will_die", cause_removal))]
+    # 1:n is used because it is much faster than seq_len(n).
   }
 
   rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
@@ -683,7 +686,8 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   cow_id_allocated_to_full_areas_index <- 0
 
   # Decide to which next_area cows will move
-  for (i_movement in seq_len(nrow(movement_table))) {
+  for (i_movement in 1:nrow(movement_table)) {
+    # 1:n is used because it is much faster than seq_len(n).
     i_cow_id <- resample(cow_id_to_move[[i_movement]])
     # sample() here must not be replaced with sample.int() because the latter
     # causes error when the length of x is 0.
@@ -718,8 +722,9 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
                      prob = capacity_of_next_areas)
         }
         cow_id_allocated_to_full_areas[
-          cow_id_allocated_to_full_areas_index + seq_len(n_na_allocated_areas)
+          cow_id_allocated_to_full_areas_index + 1:n_na_allocated_areas
           ] <- i_cow_id[is_na_allocated_areas]
+        # 1:n is used because it is much faster than seq_len(n).
         cow_id_allocated_to_full_areas_index <-
           cow_id_allocated_to_full_areas_index + n_na_allocated_areas
       }

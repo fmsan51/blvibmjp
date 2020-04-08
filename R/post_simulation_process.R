@@ -38,7 +38,8 @@ read_final_cows <- function(output_filename, output_dir, n_simulation,
                             simulation_length,
                             route_levels = NULL, route_labels = NULL) {
   all_simulations <- vector("list", n_simulation)
-  for (i in seq_len(n_simulation)) {
+  for (i in 1:n_simulation) {
+    # 1:n is used because it is much faster than seq_len(n).
     cows <- fread(construct_filepath(output_filename, i, output_dir))
     cows$i_simulation <- i
     all_simulations[[i]] <- cows
