@@ -38,12 +38,12 @@ assign_chambers <- function(cows, areas, area_assignment) {
     n_assigned_cows <- min(length(candidate_cow_id), length(empty_chambers))
     assigned_chambers <- resample(empty_chambers, n_assigned_cows)
     assigned_cow_id <- candidate_cow_id[seq_len(n_assigned_cows)]
-    cows$chamber_id[match(assigned_cow_id, cows$cow_id)] <-
-      assigned_chambers
-    assigned_cows <- cows[match(assigned_cow_id, cow_id),
-                          list(cow_id, infection_status, is_isolated)]
+    rows_assigned <- match(assigned_cow_id, cows$cow_id)
+    cows$chamber_id[rows_assigned] <- assigned_chambers
     assigned_area[match(assigned_chambers, chamber_id),
-                  c("cow_id", "cow_status", "is_isolated") := assigned_cows]
+                  `:=`(cow_id = cows$cow_id[rows_assigned],
+                       cow_statuts = cows$infection_status[rows_assigned],
+                       is_isolated = cows$is_isolated[rows_assigned])]
     areas[[i_area]] <- assigned_area
   }
   return(list(cows = cows, areas = areas))
