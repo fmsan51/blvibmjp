@@ -601,3 +601,14 @@ calc_param_both <- function(param) {
   return(res)
 }
 
+
+#' Validate parameters
+#'
+#' @return A parameter list.
+validate_param <- function(param) {
+  if (param$simulation_length <= 0 | !is.wholenumber(param$simulation_length)) {
+    stop("simulation_length must be a positive integer")
+  }
+  invisible(NULL)
+}
+
