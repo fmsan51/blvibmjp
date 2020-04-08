@@ -10,7 +10,7 @@ plot_route(
   language = NULL,
   route_levels = NULL,
   route_labels = NULL,
-  max_ylim = 100,
+  max_ylim = NULL,
   title = T,
   legend_title = T,
   xlab = T,
