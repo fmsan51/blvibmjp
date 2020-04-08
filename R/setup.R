@@ -89,9 +89,9 @@ setup_tie_stall_table <- function(area_table) {
                        adjoint_previous_chamber = T,
                        adjoint_next_chamber = T)]
     lane_edges <- cumsum(area_capacity)
-    a_tie_stall[lane_edges, adjoint_next_chamber := F]
+    a_tie_stall[lane_edges, `:=`(adjoint_next_chamber = F)]
     a_tie_stall[c(1, lane_edges[-length(lane_edges)] + 1),
-                adjoint_previous_chamber := F]
+                `:=`(adjoint_previous_chamber = F)]
 
     areas[[as.character(i_area)]] <- a_tie_stall
   }

@@ -158,7 +158,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
                                   route_labels = NULL) {
   cows <- copy(cows)
 
-  cows[infection_status == "s", cause_infection := "uninfected"]
+  cows[infection_status == "s", `:=`(cause_infection = "uninfected")]
 
   if (is.null(route_levels)) {
     route_levels <- c("uninfected", "initial", "insects",
@@ -328,10 +328,10 @@ summary_route <- function(cows) {
   table_route <- cows[, .N, by = .(i_simulation, cause_infection)]
   table_route <- dcast.data.table(table_route, i_simulation ~ cause_infection,
                                   value.var = "N", fill = 0, drop = F)
-  table_route[, total := rowSums(.SD),
+  table_route[, `:=`(total = rowSums(.SD)),
                .SDcols = setdiff(colnames(table_route), "i_simulation")]
-  table_route[, total_inf := total - uninfected]
-  table_route[, p_inf := round(total_inf / total * 100, 2)]
+  table_route[, `:=`(total_inf = total - uninfected)]
+  table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))]
   return(table_route)
 }
 
@@ -362,7 +362,7 @@ summary_infection_status <- function(cows) {
   table_status <- dcast.data.table(table_status,
                                    i_simulation ~ infection_status,
                                    value.var = "N", fill = 0, drop = F)
-  table_status[, total := rowSums(.SD),
+  table_status[, `:=`(total = rowSums(.SD)),
                .SDcols = c("s", "ial", "ipl", "ebl")]
   p_status <- table_status[, lapply(.SD, function(x) round(x / total * 100, 2)),
                            .SDcols = c("s", "ial", "ipl", "ebl")]

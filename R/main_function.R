@@ -6,7 +6,7 @@
 #'
 #' @return A [cow_table].
 add_1_to_age <- function(cows) {
-  cows[, age := age + 1]
+  cows$age <- cows$age + 1
   return(cows)
 }
 
@@ -250,12 +250,14 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   # (At first, cows after (not RIGHT after) an infected cow has a risk of infection. But it was modified because it showed too high infection rate.)
 
   if (day_rp_last_row != 0) {
-    day_rp[1:day_rp_last_row, i_rp := sample.int(.N), by = list(day_rp, type)]
+    day_rp[1:day_rp_last_row, `:=`(i_rp = sample.int(.N)),
+           by = list(day_rp, type)]
     setorder(day_rp, day_rp, type, i_rp, na.last = T)
-    day_rp[, is_after_inf := (shift(infection_status, type = "lag") != "s"),
+    day_rp[,
+           `:=`(is_after_inf = (shift(infection_status, type = "lag") != "s")),
            by = list(day_rp, type)]
     day_rp[infection_status == "s",
-           is_infected := (is_after_inf & is_infected_rp(.N, param_sim))]
+           `:=`(is_infected = (is_after_inf & is_infected_rp(.N, param_sim)))]
     res <- infect(cows, areas, area_table,
                   day_rp[is_infected == T, cow_id], "rp", i)
                   # is_infected = NA rows are excluded
@@ -290,7 +292,7 @@ change_stage <- function(cows, i, param_sim) {
 
   # Milking to dry
   cows[stage == "milking" & is_dried(i - date_last_delivery, param_sim),
-       stage := "dry"]
+       `:=`(stage = "dry")]
 
   return(cows)
 }
@@ -406,13 +408,13 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
       newborn_table[n_litter == 2,
                     `:=`(sex = sex_twins(.N, param_sim),
                          is_freemartin = (sex == "freemartin"))]
-      newborn_table[is_freemartin == T, sex := "female"]
+      newborn_table[is_freemartin == T, `:=`(sex = "female")]
     }
 
-    newborn_table[sex == "male" | is_freemartin == T, is_replacement := F]
+    newborn_table[sex == "male" | is_freemartin == T, `:=`(is_replacement = F)]
     # Male calves and freemartin female calves will be sold
     newborn_table[is.na(is_replacement) & !is.na(id_calf),
-                  is_replacement := is_replacement(.N, n_cows, param_sim)]
+                  `:=`(is_replacement = is_replacement(.N, n_cows, param_sim))]
 
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
@@ -535,8 +537,8 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
 unassign_removed_cows <- function(cows, area_table, areas, i) {
   removed_cow_id <- cows$cow_id[cows$date_death == i]
   for (i_area in attr(area_table, "tie_stall")) {
-    areas[[i_area]] <-
-      areas[[i_area]][match(removed_cow_id, cow_id), area_id := NA_integer_]
+    areas[[i_area]] <- areas[[i_area]][match(removed_cow_id, cow_id),
+                                       `:=`(area_id = NA_integer_)]
   }
   return(cows)
 }
@@ -565,8 +567,9 @@ assign_newborns <- function(cows, area_table, areas) {
 
   assigned_chambers <- resample(calf_area$chamber_id[is_empty_chambers],
                                 length(newborn_can_be_assigned))
-  cows[match(newborn_can_be_assigned, cow_id), chamber_id := assigned_chambers]
-  areas[["1"]][assigned_chambers, cow_id := newborn_can_be_assigned]
+  cows[match(newborn_can_be_assigned, cow_id),
+       `:=`(chamber_id = assigned_chambers)]
+  areas[["1"]][assigned_chambers, `:=`(cow_id = newborn_can_be_assigned)]
 
   return(list(cows = cows, areas = areas))
 }
@@ -633,7 +636,7 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
 #'
 #' @return A [cow_table].
 set_i_month <- function(cows, i) {
-  cows[, i_month := i]
+  cows$i_month <- i
   return(cows)
 }
 
@@ -808,7 +811,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
   res$cows[cow_id %in% cow_id_allocated_to_full_areas &
-           area_id %in% attr(area_table, "tie_stall"), chamber_id := 0]
+           area_id %in% attr(area_table, "tie_stall"), `:=`(chamber_id = 0)]
 
   # Calculate seroconversion of cows have returned from a communal pasture
   if (any(cows$area_id == 0, na.rm = T)) {

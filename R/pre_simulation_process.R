@@ -143,51 +143,52 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
                param_calculated$calving_interval * 0:9)
   is_na <- is.na(cows$parity)
   if (any(is_na)) {
-    cows[is_na & (stage == "heifer" | stage == "calf"), parity := 0]
+    cows[is_na & (stage == "heifer" | stage == "calf"), `:=`(parity = 0)]
     cows[is_na & (is.na(stage) | stage == "dry" | stage == "milking"),
-         parity := vapply(age, function(x) sum(x >= delivery_age_table), 1)]
+      `:=`(parity = vapply(age, function(x) sum(x >= delivery_age_table), 1))]
     cows[(stage == "milking" | stage == "dry" | !is.na(date_last_delivery)) &
-         age < delivery_age_table[1], parity := 1]
+         age < delivery_age_table[1], `:=`(parity = 1)]
   }
   if (any(is.na(cows$date_last_delivery) & cows$parity != 0)) {
     cows[is.na(date_last_delivery) & parity != 0,
-         date_last_delivery := fifelse(age <= delivery_age_table[parity], 0,
-           trunc(runif(.N, 0, param_calculated$calving_interval - 1)) * -1)]
+         `:=`(date_last_delivery = fifelse(age <= delivery_age_table[parity], 0,
+              trunc(runif(.N, 0, param_calculated$calving_interval - 1)) * -1))]
   }
 
   if (anyNA(cows$is_replacement)) {
     is_na <- is.na(cows$is_replacement)
     prob_rep <- set_prob_rep(sum(cows$parity != 0), param)
-    cows[is_na,
-         is_replacement := (sex == "female" & (age > 0 | runif(.N) < prob_rep))]
+    cows[is_na, `:=`(is_replacement =
+                     (sex == "female" & (age > 0 | runif(.N) < prob_rep)))]
   }
 
   is_na_date_got_pregnant <- is.na(cows$date_got_pregnant) & cows$parity != 0
   if (any(is_na_date_got_pregnant)) {
     months_open <- integerize(param_calculated$months_open)
     cows[is_na_date_got_pregnant,
-         date_got_pregnant :=
-           fifelse(date_last_delivery * -1 > months_open,
-                   date_last_delivery + months_open, NA_real_)]
+         `:=`(date_got_pregnant =
+              fifelse(date_last_delivery * -1 > months_open,
+                      date_last_delivery + months_open, NA_real_))]
   }
   cows[date_got_pregnant < -10 |
        ((date_got_pregnant == -10 | date_got_pregnant == -9) &
          stage == "milking"),
-       date_got_pregnant := NA_real_]
+       `:=`(date_got_pregnant = NA_real_)]
   is_na_date_dried <- is.na(cows$date_dried) &
                         (is.na(cows$stage) | cows$stage != "milking")
   months_milking <- integerize(param_calculated$months_milking)
   if (any(is_na_date_dried)) {
     cows[is_na_date_dried,
-         date_dried := fifelse(date_last_delivery * -1 > months_milking,
-                               date_last_delivery + months_milking, NA_real_)]
+         `:=`(date_dried =
+                fifelse(date_last_delivery * -1 > months_milking,
+                        date_last_delivery + months_milking, NA_real_))]
   }
-  cows[stage == "milking", date_dried := NA]
+  cows[stage == "milking", `:=`(date_dried = NA)]
   if (anyNA(cows$stage)) {
     is_na <- is.na(cows$stage)
-    cows[is_na & parity == 0, stage := fifelse(age < 4, "calf", "heifer")]
+    cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
     cows[is_na & parity != 0,
-         stage := fifelse(is.na(date_dried), "milking", "dry")]
+         `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
   }
 
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
@@ -227,27 +228,27 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
     if (appropreate_n_inf < inf_count["TRUE"]) {
       cows[resample(which(infection_status != "s"),
                     inf_count["TRUE"] - appropreate_n_inf),
-           infection_status := "s"]
+           `:=`(infection_status = "s")]
       cows$infection_status[is_na] <- "s"
     } else if (appropreate_n_inf <= max_n_inf) {
       cows[resample(which(is_na), max_n_inf - appropreate_n_inf),
-           infection_status := "ial"]
+           `:=`(infection_status = "ial")]
       cows$infection_status[is.na(cows$infection_status)] <- "s"
     } else {
       cows[resample(which(infection_status == "s"),
                     appropreate_n_inf - max_n_inf),
-           infection_status := "ial"]
+           `:=`(infection_status = "ial")]
       cows$infection_status[is_na] <- "ial"
     }
   } else if (anyNA(cows$infection_status)) {
     cows$infection_status[is.na(cows$infection_status)] <- "s"
   }
 
-  cows[infection_status != "s" & is.na(date_ial), date_ial := 0]
+  cows[infection_status != "s" & is.na(date_ial), `:=`(date_ial = 0)]
   cows[(infection_status == "ipl" | infection_status == "ebl") &
         is.na(date_ipl),
-       date_ipl := 0]
-  cows[infection_status == "ebl" & is.na(date_ebl), date_ebl := 0]
+       `:=`(date_ipl = 0)]
+  cows[infection_status == "ebl" & is.na(date_ebl), `:=`(date_ebl = 0)]
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
   if (!is.null(area_name)) {
@@ -283,14 +284,14 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
            by = "stage"]
     area_by_stage <-
       area_by_stage[CJ(stage = cow_stage, sorted = F), on = "stage"]
-    area_by_stage[, freq_area := fcoalesce(freq_area, empty_area_id)]
+    area_by_stage[, `:=`(freq_area = fcoalesce(freq_area, empty_area_id))]
     cows <- area_by_stage[cows, on = "stage"]
     cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
   }
 
-  cows[is.na(months_in_area), months_in_area := 0]
-  cows[is.na(is_isolated), is_isolated := F]
+  cows[is.na(months_in_area), `:=`(months_in_area = 0)]
+  cows[is.na(is_isolated), `:=`(is_isolated = F)]
 
 
   # Next, calculate values in columns users should not specify.
@@ -308,9 +309,10 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   }
 
   cows$is_owned <- T
-  cows[is.na(date_got_pregnant), day_heat := sample.int(30, .N, replace = T)]
+  cows[is.na(date_got_pregnant),
+       `:=`(day_heat = sample.int(30, .N, replace = T))]
   cows[is.na(day_last_detected_heat),
-       day_last_detected_heat := sample.int(30, .N, replace = T)]  # TODO: Improve this
+       `:=`(day_last_detected_heat = sample.int(30, .N, replace = T))]  # TODO: Improve this
 
   cows$is_detected[cows$infection_status != "s"] <- T
   susceptibility <- runif(n_cows)
@@ -328,7 +330,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
                                 cows$chamber_id[cows$area_id == i_area])
       # 1:n is used because it is much faster than seq_len(n).
       cows[area_id == i_area & is.na(chamber_id),
-           chamber_id := resample(empty_chambers, .N)]
+           `:=`(chamber_id = resample(empty_chambers, .N))]
     }
   }
 
