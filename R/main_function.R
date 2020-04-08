@@ -825,11 +825,11 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 #'
 #' @return A list composed of [cow_table] and [areas].
 infect <- function(cows, areas, area_table, infected_cow_id, cause, i) {
-  cows[cow_id %in% infected_cow_id,
+  cows[match(infected_cow_id, cow_id),
        `:=`(infection_status = "ial",
             cause_infection = cause)]
   for (i_area in as.character(attr(area_table, "tie_stall"))) {
-    areas[[i_area]][cow_id %in% infected_cow_id,
+    areas[[i_area]][match(infected_cow_id, cow_id),
                     `:=`(cow_status = "ial")]
   }
   return(list(cows = cows, areas = areas))
