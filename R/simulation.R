@@ -10,6 +10,7 @@
 #' @param save_cows,save_param Wheher to save results of simulations and used parameters to files.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
 #' @param seed Seed for a simulation.
+#' @param validate A logical value indicates whether validate inputs (data and paramters).
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
@@ -17,7 +18,8 @@ simulate_blv_spread <- function(prepared_data, param,
                                 area_table, movement_table,
                                 list_param_modif = NULL,
                                 save_cows = T, save_param = T,
-                                i_simulation_start = 1, seed = NULL) {
+                                i_simulation_start = 1, seed = NULL,
+                                validate = T) {
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -43,6 +45,9 @@ simulate_blv_spread <- function(prepared_data, param,
   movement_table <- setup_movement_table(area_table, movement_table)
   cows_areas <- set_init_chamber_id(setup_cows_res$init_cows, area_table, areas)
   day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param)
+  if (validate) {
+    validate_param(param)
+  }
   param_processed <- c(param, process_param(cows_areas, param))
 
   result <- result_area <-
