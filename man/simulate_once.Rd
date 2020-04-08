@@ -10,6 +10,7 @@ simulate_once(
   area_table,
   movement_table,
   day_rp,
+  newborn_table,
   i_simulation,
   result,
   result_area,
@@ -29,6 +30,8 @@ simulate_once(
 \item{movement_table}{A result of \code{\link[=setup_movement_table]{setup_movement_table()}}.}
 
 \item{day_rp}{A result of \code{\link[=setup_rp_table]{setup_rp_table()}}.}
+
+\item{newborn_table}{A result of \code{\link[=setup_newborn_table]{setup_newborn_table()}}.}
 
 \item{i_simulation}{The iteration number of simulations.}
 

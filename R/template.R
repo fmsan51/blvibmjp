@@ -115,6 +115,9 @@ a_new_calf <- data.table(
   i_month = NA_real_
 )
 
+#' @name cow_table
+cow_table_cols <- colnames(a_new_calf)
+
 
 # ---- tie_stall_template ----
 

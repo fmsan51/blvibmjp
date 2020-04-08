@@ -48,6 +48,25 @@ setup_rp_table <- function(init_n_cows, param) {
 }
 
 
+#' Setup of `newborn_table`
+#'
+#' Make initial `newborn_table`. `newborn_table` is similar to [cow_table] and with additional columns `"id_mother"`, `"id_calf"`, `"n_newborns_per_cow"`, `"status_mother"` and `"is_freemartin`".
+#'
+#' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
+#'
+#' @seealso [setup_cows] [setup_areas] [cow_table] [rp_table] [setup_area_table]
+setup_newborn_table <- function(init_n_cows) {
+  # Prepare newborn_table with many rows to reserve enough memory
+  # while simulation
+  newborn_table <- a_new_calf[1:(init_n_cows * 2), ]
+  # Used 1:n instead of seq_len(n) because it is faster
+  newborn_table[, c("id_mother", "id_calf", "n_litter", "status_mother",
+                    "is_freemartin") :=
+                list(NA_integer_, NA_integer_, NA_real_, NA_character_, NA)]
+  return(newborn_table)
+}
+
+
 #' Setup of `tie_stall_table`
 #'
 #' Make chamber matrix, which indicates in which chamber each cow is.

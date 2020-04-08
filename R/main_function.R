@@ -359,10 +359,13 @@ do_test <- function(cows, month, param_sim) {
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param max_cow_id The ID of a cow at the last non-empty row of `cows`.
+#' @param newborn_table A result of [setup_newborn_table()].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of two elements: `cows` and `max_cow_id`.
-add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
+add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
+                         param_sim) {
+  newborn_table[, ] <- NA
   rows_mothers <- which(cows$date_last_delivery == i)
   # TODO: Make newborn_list like day_rp
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
@@ -373,84 +376,92 @@ add_newborns <- function(cows, area_table, i, max_cow_id, param_sim) {
   if (length(rows_mothers) != 0) {  # If there is any cow delivers in 'month i'
     n_newborns_per_cow <- n_newborn_per_dam(length(rows_mothers), param_sim)
     n_newborns <- sum(n_newborns_per_cow)
+    rows_newborns <- 1:n_newborns
+    # 1:n is used because it is much faster than seq_len(n).
 
-    newborns <- a_new_calf[rep(1, n_newborns), ]
-    newborns[, `:=`(id_mother = rep(rows_mothers, n_newborns_per_cow),
-                    id_calf = 1:n_newborns,
-                    # 1:n is used because it is much faster than seq_len(n).
-                    n_newborns_per_cow =
-                      rep(n_newborns_per_cow, n_newborns_per_cow),
-                    status_mother = rep(cows[rows_mothers, infection_status],
-                                        n_newborns_per_cow),
-                    age = 0,
-                    stage = "calf",
-                    sex = sex_newborns(n_newborns, param_sim),
-                    is_freemartin = F,
-                    date_birth = i,
-                    is_owned = T,
-                    parity = 0,
-                    n_ai = 0,
-                    day_heat = sample.int(30, n_newborns, replace = T) * 1,
-                    infection_status = "s",
-                    area_id = 1,
-                    months_in_area = 0,
-                    is_isolated = attr(area_table, "is_calf_isolated"),
-                    i_month = i)]
+    newborn_table[rows_newborns,
+      `:=`(id_mother = rep(cows$cow_id[rows_mothers], n_newborns_per_cow),
+           id_calf = rows_newborns,
+           n_litter =
+             rep(n_newborns_per_cow, n_newborns_per_cow),
+           status_mother = rep(cows[rows_mothers, infection_status],
+                               n_newborns_per_cow),
+           age = 0,
+           stage = "calf",
+           sex = sex_newborns(n_newborns, param_sim),
+           is_freemartin = F,
+           date_birth = i,
+           is_owned = T,
+           parity = 0,
+           n_ai = 0,
+           day_heat = sample.int(30, n_newborns, replace = T) * 1,
+           infection_status = "s",
+           area_id = 1,
+           months_in_area = 0,
+           is_isolated = attr(area_table, "is_calf_isolated"),
+           i_month = i)]
 
     # Setting about twins
-    if (sum(newborns$n_newborns_per_cow == 2) != 0) {
-      newborns[n_newborns_per_cow == 2,
-               `:=`(sex = sex_twins(.N, param_sim),
-                    is_freemartin = (sex == "freemartin"))]
-      newborns[is_freemartin == T, sex := "female"]
+    if (sum(newborn_table$n_litter == 2, na.rm = T) != 0) {
+      newborn_table[n_litter == 2,
+                    `:=`(sex = sex_twins(.N, param_sim),
+                         is_freemartin = (sex == "freemartin"))]
+      newborn_table[is_freemartin == T, sex := "female"]
     }
 
-    newborns[sex == "male" | is_freemartin == T, is_replacement := F]  # Male calves and freemartin female calves will be sold
-    newborns[is.na(is_replacement),
-             is_replacement := is_replacement(.N, n_cows, param_sim)]
+    newborn_table[sex == "male" | is_freemartin == T, is_replacement := F]
+    # Male calves and freemartin female calves will be sold
+    newborn_table[is.na(is_replacement) & !is.na(id_calf),
+                  is_replacement := is_replacement(.N, n_cows, param_sim)]
 
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
-    newborns[, `:=`(date_death_expected = i + longevity$age,
-                    cause_removal = longevity$cause)]
+    newborn_table[rows_newborns,
+                  `:=`(date_death_expected = i + longevity$age,
+                       cause_removal = longevity$cause)]
 
     # Susceptibility
     susceptibility <- susceptibility(
       n_newborns,
-      rep(cows[rows_mothers, susceptibility_ial_to_ipl], n_newborns_per_cow),
-      rep(cows[rows_mothers, susceptibility_ipl_to_ebl], n_newborns_per_cow),
+      rep(cows$susceptibility_ial_to_ipl[rows_mothers], n_newborns_per_cow),
+      rep(cows$susceptibility_ipl_to_ebl[rows_mothers], n_newborns_per_cow),
       param_sim
       )
-    newborns[, `:=`(susceptibility_ial_to_ipl = susceptibility$ial_to_ipl,
-                    susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
+    newborn_table[rows_newborns,
+                  `:=`(susceptibility_ial_to_ipl = susceptibility$ial_to_ipl,
+                       susceptibility_ipl_to_ebl = susceptibility$ipl_to_ebl)]
 
     # Calculation of vertical infection
     # infect() cannot used here because newborns are not yet added to areas.
-    newborns[is_infected_vertical(newborns$status_mother, param_sim),
-             `:=`(infection_status = "ial",
-                  date_ial = i,
-                  cause_infection = "vertical"
-                  )]
-    newborns[is_infected_by_colostrum(status_mother, param_sim) &
-               infection_status != "s",
-             `:=`(infection_status = "ial",
-                  date_ial = i,
-                  cause_infection = "colostrum")]
+    is_inf_vert <-
+      is_infected_vertical(newborn_table$status_mother[rows_newborns],
+                           param_sim)
+    newborn_table[rows_newborns[is_inf_vert],
+                  `:=`(infection_status = "ial",
+                       date_ial = i,
+                       cause_infection = "vertical"
+                       )]
+    is_inf_colostrum <-
+      is_infected_by_colostrum(newborn_table$status_mother[rows_newborns],
+                               param_sim) &
+      newborn_table$infection_status[rows_newborns] != "s"
+    newborn_table[rows_newborns[is_inf_colostrum],
+                  `:=`(infection_status = "ial",
+                       date_ial = i,
+                       cause_infection = "colostrum")]
 
     # TODO: Simulate failure of delivery (stillbirth/abortion) 妊娠途中で流産する場合についてもどこかで計算しなければ。
-    parity_mothers <- cows[newborns$id_mother, parity]
-    is_born_alive <- !is_stillbirth(parity_mothers, param_sim)
+    parity_mothers <-
+      cows[match(newborn_table$id_mother[rows_newborns], cow_id), parity]
+    rows_born_alive <- rows_newborns[!is_stillbirth(parity_mothers, param_sim)]
 
-    n_newborns_born <- sum(is_born_alive)
+    n_newborns_born <- length(rows_born_alive)
     if (n_newborns_born != 0) {
-      rows_newborns <- n_cows + 1:n_newborns_born
-      newborns$cow_id[is_born_alive] <- max_cow_id + 1:n_newborns_born
+      newborn_table$cow_id[rows_born_alive] <- max_cow_id + 1:n_newborns_born
       # 1:n is used because it is much faster than seq_len(n).
       max_cow_id <- max_cow_id + n_newborns_born
-      newborns[,
-               c("id_mother", "id_calf", "n_newborns_per_cow", "status_mother",
-                 "is_freemartin") := NULL]
-      cows[rows_newborns, ] <- newborns[is_born_alive, ]
+      cows[n_cows + 1:n_newborns_born, ] <-
+        newborn_table[rows_born_alive, ..cow_table_cols]
     }
 
   }

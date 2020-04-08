@@ -4,12 +4,17 @@
 \name{cow_table}
 \alias{cow_table}
 \alias{a_new_calf}
+\alias{cow_table_cols}
 \title{A data.table to store status of cows}
 \format{
 \link[data.table:data.table]{data.table}
+
+An object of class \code{character} of length 33.
 }
 \usage{
 a_new_calf
+
+cow_table_cols
 }
 \description{
 \code{cow_table} is a \link[data.table:data.table]{data.table} to store status of cows.
