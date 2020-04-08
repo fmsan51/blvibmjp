@@ -675,7 +675,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <-
-    table(factor(cows[(is_owned), area_id], levels = area_table$area_id))
+    table(factor(cows$area_id[cows$is_owned], levels = area_table$area_id))
   n_cows_to_move_by_each_condition <- sapply(cow_id_to_move, length)
   n_cows_to_move_in_each_area <- tapply(
     n_cows_to_move_by_each_condition,
@@ -784,7 +784,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
                    prob = capacity_of_areas))
       }
     }
-    cows[match(i_cow_id, cow_id), area_id := allocated_areas]
+    cows$area_id[match(i_cow_id, cows$cow_id)] <- allocated_areas
   }
   cow_id_allocated_to_full_areas <-
     cow_id_allocated_to_full_areas[cow_id_allocated_to_full_areas != 0]
