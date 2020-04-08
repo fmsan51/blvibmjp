@@ -223,6 +223,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
            type = "pregnancy_test")
       ]
     day_rp_last_row <- day_rp_last_row + n_pregnant_cows
+    cows$is_to_test_pregnancy <- (cows$date_got_pregnant == i - 2)
   }
 
   # Health check after delivery
