@@ -9,10 +9,10 @@
 #'
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
 remove_from_areas <- function(cows, areas, area_table, removed_cow_id) {
-  cows[cow_id %in% removed_cow_id, `:=`(area_id = NA_integer_,
-                                        chamber_id = NA_integer_)]
+  cows[match(removed_cow_id, cow_id), `:=`(area_id = NA_integer_,
+                                           chamber_id = NA_integer_)]
   for (i_area in as.character(attr(area_table, "tie_stall"))) {
-    areas[[i_area]][cow_id %in% removed_cow_id,
+    areas[[i_area]][match(removed_cow_id, cow_id),
                     `:=`(cow_id = NA_integer_,
                          cow_status = NA_character_,
                          is_isolated = NA)]

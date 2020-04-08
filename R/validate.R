@@ -68,13 +68,13 @@ validate_cow_table <- function(cows,
   }
 
   # stage
-  if (any(cows[stage %in% c("calf", "heifer"), parity] != 0)) {
+  if (any(cows[match(c("calf", "heifer"), stage), parity] != 0)) {
     stop("`parity` for calves and heifers must be 0.", call. = F)
   }
-  if (any(cows[stage %in% c("milking", "dry"), parity] == 0)) {
+  if (any(cows[match(c("milking", "dry"), stage), parity] == 0)) {
     stop("`parity` for milking cows and dry cows must not be 0.", call. = F)
   }
-  if (any(!is.na(cows[stage %in% c("calf", "heifer"), date_last_delivery]))) {
+  if (any(!is.na(cows[match(c("calf", "heifer"), stage), date_last_delivery]))) {
     stop("`date_last_delivery` for calves and heifers must be NA.", call. = F)
   }
   if (any(!is.na(cows[stage == "calf", date_got_pregnant]))) {
@@ -98,7 +98,7 @@ validate_cow_table <- function(cows,
       stop("stopped.", call. = F)
     }
   }
-  if (any(cows[stage %in% c("milking", "dry"), age] < 18)) {
+  if (any(cows[match(c("milking", "dry"), stage), age] < 18)) {
     ans <- menu(c("continue", "stop and fix"),
                 title = glue("There is milking cow or dry cow who is younger \\
                              than 18 months old.

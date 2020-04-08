@@ -204,7 +204,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
       day_rp$type[rp_rows_wrong_pregnancy_test] <- "pregnency_test"
       day_rp[type == "pregnancy_test_candidate", ] <- NA
       cows$is_to_test_pregnancy[
-        cows$cow_id %in% day_rp$cow_id[rp_rows_wrong_pregnancy_test]
+        match(day_rp[rp_rows_wrong_pregnancy_test], cows$cow_id)
         ] <- F
     }
   }
@@ -525,7 +525,7 @@ unassign_removed_cows <- function(cows, area_table, areas, i) {
   removed_cow_id <- cows$cow_id[cows$date_death == i]
   for (i_area in attr(area_table, "tie_stall")) {
     areas[[i_area]] <-
-      areas[[i_area]][cow_id %in% removed_cow_id, area_id := NA_integer_]
+      areas[[i_area]][match(removed_cow_id, cow_id), area_id := NA_integer_]
   }
   return(cows)
 }
@@ -605,11 +605,11 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
       id_culled <- resample(cow_id_to_cull, n_non_replacement)
       id_replaced <- id_non_replacement_newborns
     }
-    cows[cow_id %in% id_culled,
+    cows[match(id_culled, cow_id),
          `:=`(is_owned = F,
               date_death = i,
               cause_removal = "culled")]
-    cows$is_replacement[cows$cow_id %in% id_replaced] <- T
+    cows$is_replacement[match(id_replaced, cows$cow_id)] <- T
   }
   return(cows)
 }
