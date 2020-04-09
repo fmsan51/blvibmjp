@@ -64,8 +64,8 @@ assign_chambers <- function(cows, areas, area_assignment) {
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                                     param_sim) {
-  expose_status <- causes <- character(nrow(cows))
-  names(expose_status) <- as.character(cows$cow_id)
+  expose_status <- causes <- character(sum(!is.na(cows)))
+  names(expose_status) <- as.character(cows$cow_id[!is.na(cows$cow_id)])
   for (i_area in names(areas)) {
     area <- areas[[i_area]]
     if (i_area %in% attr(area_table, "tie_stall")) {
