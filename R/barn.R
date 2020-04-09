@@ -104,19 +104,15 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
     if (i_area %in% attr(area_table, "tie_stall")) {
       is_infectious <- area[, cow_status != "s" & !is_isolated]
       is_infectious[is.na(is_infectious)] <- F
-      is_exposed_to_infected_cow_in_next_chamber <-
-        area$adjoint_next_chamber &
-        shift(is_infectious, type = "lead", fill = F)
-      is_exposed_to_infected_cow_in_previous_chamber <-
-        area$adjoint_next_chamber &
-        shift(is_infectious, type = "lag", fill = F)
+      is_exposed_to_inf_next <- area$adjoint_next_chamber &
+                                  shift(is_infectious, type = "lead", fill = F)
+      is_exposed_to_inf_prev <- area$adjoint_next_chamber &
+                                  shift(is_infectious, type = "lag", fill = F)
       is_s_in_chamber <- !is.na(area$cow_status) & area$cow_status == "s"
-      is_exposed_to_infected_cow <- is_s_in_chamber &
-        (is_exposed_to_infected_cow_in_next_chamber |
-         is_exposed_to_infected_cow_in_previous_chamber)
-      exposed_cow <- cows_in_area[is_exposed_to_infected_cow]
-      non_exposed_cow <-
-        cows_in_area[is_s_in_chamber & !is_exposed_to_infected_cow]
+      is_exposed_to_inf <-
+        is_s_in_chamber & (is_exposed_to_inf_next | is_exposed_to_inf_prev)
+      exposed_cow <- cows_in_area[is_exposed_to_inf]
+      non_exposed_cow <- cows_in_area[is_s_in_chamber & !is_exposed_to_inf]
       expose_status[exposed_cow] <- "exposed"
       expose_status[non_exposed_cow] <- "non_exposed"
     } else {
