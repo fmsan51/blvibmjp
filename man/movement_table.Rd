@@ -4,12 +4,17 @@
 \name{movement_table}
 \alias{movement_table}
 \alias{a_movement}
+\alias{movement_table_cols}
 \title{A data.table to manage cows' movement between areas}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.
+
+An object of class \code{character} of length 4.
 }
 \usage{
 a_movement
+
+movement_table_cols
 }
 \description{
 \code{movement_table} is a \link[data.table:data.table]{data.table} to manage cow movement among areas.

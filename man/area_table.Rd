@@ -4,12 +4,17 @@
 \name{area_table}
 \alias{area_table}
 \alias{a_area}
+\alias{area_table_cols}
 \title{A data.table to manage areas in a farm}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.
+
+An object of class \code{character} of length 3.
 }
 \usage{
 a_area
+
+area_table_cols
 }
 \description{
 \code{area_table} is a \link[data.table:data.table]{data.table} to manage areas (barns, paddocks, hatches, etc.) in a farm.

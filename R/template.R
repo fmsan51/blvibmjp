@@ -189,6 +189,10 @@ a_area <- data.table(area_id = NA_integer_,
 # TODO: How to hundle when multiple cows are set to one hatch
 
 
+#' @name area_table
+area_table_cols <- colnames(a_area)
+
+
 # ---- movement_template ----
 
 #' A data.table to manage cows' movement between areas
@@ -224,6 +228,10 @@ a_movement <- data.table(current_area = NA_integer_,
                          condition = NA_character_,
                          next_area = list(NA),
                          priority = list(NA))
+
+
+#' @name movement_table
+movement_table_cols <- colnames(a_movement)
 
 
 # ---- rectal_palpation_template ----
