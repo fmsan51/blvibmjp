@@ -673,8 +673,10 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
       cows[cow_id %in% unlist(cow_id_to_move) & area_id == 0, cow_id]
 
   # Remove cows to move from n_cows
-  n_cows_in_each_area <-
-    table(factor(cows$area_id[cows$is_owned], levels = area_table$area_id))
+  n_cows_in_each_area <- table(
+    factor(cows$area_id[cows$is_owned & !is.na(cows$is_owned)],
+           levels = area_table$area_id)
+    )
   n_cows_to_move_by_each_condition <- sapply(cow_id_to_move, length)
   n_cows_to_move_in_each_area <- tapply(
     n_cows_to_move_by_each_condition,
