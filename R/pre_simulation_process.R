@@ -29,14 +29,13 @@
 #' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
 #' @param param See [param].
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
-#' @param n_chambers Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like `c(area_id = the_number_of_chambers_in_the_area, ...)`. Note if both of `area_name` and `n_chambers` are set, `area_id` in `n_chambers` option must be integer.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
 prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
                         today = Sys.Date(),
                         create_calf_data = F, modify_prevalence = NULL,
-                        area_name = NULL, n_chambers = NULL) {
+                        area_name = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -323,16 +322,6 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   cows$susceptibility_ipl_to_ebl <-
     susceptibility < param_calculated$prob_develop_ebl
   cows$susceptibility_ipl_to_ebl[cows$infection_status == "ebl"] <- T
-
-  if (!is.null(n_chambers)) {
-    for (i_area in names(n_chambers)) {
-      empty_chambers <- setdiff(1:n_chambers[i_area],
-                                cows$chamber_id[cows$area_id == i_area])
-      # 1:n is used because it is much faster than seq_len(n).
-      cows[area_id == i_area & is.na(chamber_id),
-           `:=`(chamber_id = resample(empty_chambers, .N))]
-    }
-  }
 
   cows$i_month <- 0
 

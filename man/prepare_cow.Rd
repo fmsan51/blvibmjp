@@ -12,8 +12,7 @@ prepare_cow(
   today = Sys.Date(),
   create_calf_data = F,
   modify_prevalence = NULL,
-  area_name = NULL,
-  n_chambers = NULL
+  area_name = NULL
 )
 }
 \arguments{
@@ -32,8 +31,6 @@ prepare_cow(
 \item{modify_prevalence}{double (0-1). If not \code{NULL}, modify \code{infection_status} column to make prevalence to the specified value.}
 
 \item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
-
-\item{n_chambers}{Set if a farm owns tie-stall barns. Specify the number of chambers in each tie-stall barn like \code{c(area_id = the_number_of_chambers_in_the_area, ...)}. Note if both of \code{area_name} and \code{n_chambers} are set, \code{area_id} in \code{n_chambers} option must be integer.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
