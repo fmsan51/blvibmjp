@@ -131,6 +131,8 @@ setup_area_table <- function(area_table, param) {
     setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
   attr(area_table, "tie_stall") <-
     area_table$area_id[area_table$area_type == "tie"]
+  attr(area_table, "tie_stall_chr") <-
+    as.character(attr(area_table, "tie_stall"))
   attr(area_table, "is_calf_isolated") <-
     area_table[area_id == 1, area_type == "hatch"]
 
