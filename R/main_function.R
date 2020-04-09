@@ -25,6 +25,18 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   day_rp[, ] <- NA
   day_rp_last_row <- 0
 
+  # Calculate day of next heat
+  # Heat can occur 1-2 times/month because mean heat cycle is 21.
+  # Here we use 4 to calculate the number of heat in month with some margin.
+  heat_matrix <- matrix(heat_cycle(attr(cows, "herd_size") * 4, param_sim),
+                        nrow = 4)
+  heat_matrix <-
+    rbind(cows$day_heat[cows$is_owned & !is.na(cows$is_owned)], heat_matrix)
+  heat_matrix <- apply(heat_matrix, 2, cumsum)
+  possible_heat_list <- lapply(data.frame(heat_matrix), function(x) x[x <= 30])
+  day_heat_of_next_month <- apply(heat_matrix, 2,
+                                  function(x) x[sum(x <= 30) + 1] - 30)
+
   rows_heifer <-
     cows[stage == "heifer" & n_ai == 0 & is.na(date_got_pregnant), which = TRUE]
   is_ai_started_heifer <-
@@ -42,65 +54,37 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   # in order to follow the data about date of doing first AI.
   n_cows_started_ai <- length(rows_started_ai)
   if (n_cows_started_ai != 0) {
-    # Calculate day of next heat
-    # Heat can occur 1-2 times/month because mean heat cycle is 21.
-    # Here we use 4 to calculate the number of heat in month with some margin.
-    heat_matrix <- matrix(
-      heat_cycle(n_cows_started_ai * 4, param_sim),
-      nrow = 4)
-    heat_matrix <- rbind(cows$day_heat[rows_started_ai], heat_matrix)
-    heat_matrix <- apply(heat_matrix, 2, cumsum)
-    possible_heat_list <-
-      lapply(data.frame(heat_matrix), function(x) x[x <= 30])
-
     possible_heat_detection_list <- possible_detected_heat_list <-
-      possible_ai_success_list <- vector("list", n_cows_started_ai)
+      possible_succeeded_ai_list <- vector("list", n_cows_started_ai)
     n_ai_vec <- numeric(n_cows_started_ai)
+    pregnancy <- logical(n_cows_started_ai)
+
     # Continue until AI is conducted to all candidate cows
+    possible_heat_started_ai <- possible_heat_list[rows_started_ai]
     while (sum(n_ai_vec == 0) != 0) {
       index_ai_not_done <- which(n_ai_vec == 0)
+      possible_heat <- possible_heat_started_ai[index_ai_not_done]
+      calculated_ai <- calc_ai_list(possible_heat, param_sim)
+      n_ai_vec[index_ai_not_done] <- calculated_ai$n_ai
+      possible_succeeded_ai_list[index_ai_not_done] <-
+        calculated_ai$succeeded_ai
       possible_heat_detection_list[index_ai_not_done] <-
-        lapply(possible_heat_list[index_ai_not_done],
-               function(x) is_heat_detected(length(x), param_sim))
+        calculated_ai$heat_detection
       possible_detected_heat_list[index_ai_not_done] <-
-        mapply(function(x, y) x[y],
-          possible_heat_list[index_ai_not_done],
-          possible_heat_detection_list[index_ai_not_done],
-          SIMPLIFY = F)
-      possible_ai_success_list[index_ai_not_done] <- lapply(
-        possible_detected_heat_list[index_ai_not_done],
-        function(x) is_first_ai_successed(length(x), param_sim))
-      n_ai_vec[index_ai_not_done] <- vapply(
-        possible_ai_success_list[index_ai_not_done],
-        function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))),
-        0)
-      # Here ifelse is used instead of fifelse,
-      # because min(which(x)) may cause warning when the condition is not met.
+        calculated_ai$detected_heat
+      pregnancy[index_ai_not_done] <- calculated_ai$pregnancy
     }
 
-    n_heat_vec <- vapply(possible_ai_success_list,
-      function(x) ifelse(!any(x), length(x), min(which(x))), 0)
-    # Here ifelse is used, too.
-    heat_list <- mapply(function(x, y) x[1:y], possible_heat_list, n_heat_vec,
-                        SIMPLIFY = F)
-    heat_detection_list <-
-      mapply(function(x, y) x[1:y], possible_heat_detection_list, n_heat_vec,
-             SIMPLIFY = F)
-    detected_heat_list <-
-      mapply(function(x, y) x[1:y], possible_detected_heat_list, n_heat_vec,
-             SIMPLIFY = F)
-
-    day_heat_of_next_month <-
-      apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
-    day_last_detected_heat_vec <- vapply(detected_heat_list,
-      function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
-    # Here ifelse is used, too.
-    pregnancy <- vapply(possible_ai_success_list, function(x) length(x) > 0, T)
+    calculated_heat <-
+      calc_heat(possible_heat_started_ai,
+                list(succeeded_ai = possible_succeeded_ai_list,
+                     heat_detection = possible_heat_detection_list,
+                     detected_heat = possible_detected_heat_list))
 
     cows[rows_started_ai,
-         `:=`(n_ai = n_ai,
-              day_heat = day_heat_of_next_month,
-              day_last_detected_heat = day_last_detected_heat_vec,
+         `:=`(n_ai = n_ai_vec,
+              day_heat = day_heat_of_next_month[rows_started_ai],
+              day_last_detected_heat = calculated_heat$day_last_detected_heat,
               is_to_test_pregnancy = T)]
     cows[rows_started_ai[pregnancy], `:=`(date_got_pregnant = i,
                                           n_ai = 0)]
@@ -111,7 +95,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
              `:=`(cow_id = rep(cows$cow_id[rows_started_ai], n_ai_vec),
                   infection_status = rep(cows$infection_status[rows_started_ai],
                                          n_ai_vec),
-                  day_rp = unlist(detected_heat_list),
+                  day_rp = calculated_heat$detected_heat,
                   type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- n_ai_done
     }
@@ -122,58 +106,27 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
 
   n_open_cows <- length(rows_open)
   if (n_open_cows != 0) {
-    heat_matrix <- matrix(heat_cycle(n_open_cows * 4, param_sim), nrow = 4)
-    heat_matrix <- rbind(cows$day_heat[rows_open], heat_matrix)
-    heat_matrix <- apply(heat_matrix, 2, cumsum)
-    possible_heat_list <-
-      lapply(data.frame(heat_matrix), function(x) x[x <= 30])
-    possible_heat_detection_list <- lapply(possible_heat_list,
-      function(x) is_heat_detected(length(x), param_sim))
-    possible_detected_heat_list <- mapply(function(x, y) x[y],
-                                          possible_heat_list,
-                                          possible_heat_detection_list,
-                                          SIMPLIFY = F)
-    possible_ai_success_list <- lapply(possible_detected_heat_list,
-      function(x) is_ai_successed(length(x), param_sim))
-    n_ai_vec <- vapply(possible_ai_success_list,
-      function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))), 0)
-    # Here ifelse is used, too.
-
-    n_heat_vec <- vapply(possible_ai_success_list,
-      function(x) ifelse(!any(x), length(x), min(which(x))), 0)
-    # Here ifelse is used, too.
-    heat_list <- mapply(function(x, y) x[seq_len(y)],
-                        possible_heat_list, n_heat_vec, SIMPLIFY = F)
-    heat_detection_list <- mapply(function(x, y) x[seq_len(y)],
-                                  possible_heat_detection_list, n_heat_vec,
-                                  SIMPLIFY = F)
-    detected_heat_list <- mapply(function(x, y) x[seq_len(y)],
-                                 possible_detected_heat_list, n_heat_vec,
-                                 SIMPLIFY = F)
-
-    day_heat_of_next_month <-
-      apply(heat_matrix, 2, function(x) x[sum(x <= 30) + 1] - 30)
-    day_last_detected_heat_vec <- vapply(detected_heat_list,
-      function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
-    # Here, ifelse is used, too.
-    pregnancy <- vapply(possible_ai_success_list, function(x) length(x) > 0, T)
+    possible_heat_open <- possible_heat_list[rows_open]
+    calculated_ai <- calc_ai_list(possible_heat_open, param_sim)
+    calculated_heat <- calc_heat(possible_heat_open, calculated_ai)
 
     cows[rows_open,
-         `:=`(n_ai = n_ai + n_ai_vec,
-              day_heat = day_heat_of_next_month,
+         `:=`(n_ai = n_ai + calculated_ai$n_ai,
+              day_heat = day_heat_of_next_month[rows_open],
               day_last_detected_heat =
-                fcoalesce(day_last_detected_heat_vec, day_last_detected_heat),
+                fcoalesce(calculated_heat$day_last_detected_heat,
+                          day_last_detected_heat),
               is_to_test_pregnancy = T)]
     cows[rows_open[pregnancy], `:=`(date_got_pregnant = i,
                                     n_ai = 0)]
 
-    n_ai_done <- sum(n_ai_vec)
+    n_ai_done <- sum(calculated_ai$n_ai)
     if (n_ai_done != 0) {
       day_rp[day_rp_last_row + (1:n_ai_done),
-             `:=`(cow_id = rep(cows$cow_id[rows_open], n_ai_vec),
+             `:=`(cow_id = rep(cows$cow_id[rows_open], calculated_ai$n_ai),
                   infection_status =
-                    rep(cows$infection_status[rows_open], n_ai_vec),
-                  day_rp = unlist(detected_heat_list),
+                    rep(cows$infection_status[rows_open], calculated_ai$n_ai),
+                  day_rp = calculated_heat$detected_heat,
                   type = c("ai_am", "ai_pm")[(runif(n_ai_done) < 0.5) + 1])]
       day_rp_last_row <- day_rp_last_row + n_ai_done
     }
@@ -266,6 +219,56 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   }
 
   return(res)
+}
+
+
+#' Calculate the number of conducted AI
+#'
+#' @param possible_heat A list consisted of day of possible heats in a month.
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
+#'
+#' @name calc_ai
+calc_ai_list <- function(possible_heat, param_sim) {
+  heat_detection <-
+    lapply(possible_heat, function(x) is_heat_detected(length(x), param_sim))
+  detected_heat <- mapply(function(x, y) x[y],
+                          possible_heat, heat_detection,
+                          SIMPLIFY = F)
+  succeeded_ai <-
+    lapply(detected_heat, function(x) is_ai_succeeded(length(x), param_sim))
+  n_ai <- vapply(succeeded_ai,
+    function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))), 0)
+  # Here ifelse is used instead of fifelse,
+  # because min(which(x)) may cause warning when the condition is not met.
+  pregnancy <- vapply(succeeded_ai, function(x) length(x) > 0, T)
+  return(list(succeeded_ai = succeeded_ai, heat_detection = heat_detection,
+              detected_heat = detected_heat, n_ai = n_ai,
+              pregnancy = pregnancy))
+}
+
+
+#' @param calculated_ai A list consisted of `"succeeded_ai"`, `"heat_detection"` and `"detected_heat"`.
+#'
+#' @name calc_ai
+calc_heat <- function(possible_heat, calculated_ai) {
+  n_heat <- vapply(calculated_ai$succeeded_ai,
+    function(x) ifelse(!any(x), length(x), min(which(x))), 0)
+  # Here ifelse is used instead of fifelse,
+  # because min(which(x)) may cause warning when the condition is not met.
+  heat_list <- mapply(function(x, y) x[1:y],
+                      possible_heat, n_heat, SIMPLIFY = F)
+  heat_detection_list <-
+    mapply(function(x, y) x[1:y], calculated_ai$heat_detection, n_heat,
+           SIMPLIFY = F)
+  detected_heat_list <-
+    mapply(function(x, y) x[1:y], calculated_ai$detected_heat, n_heat,
+           SIMPLIFY = F)
+  detected_heat <- unlist(detected_heat_list)
+  day_last_detected_heat <- vapply(detected_heat_list,
+    function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
+  # Here ifelse is used, too.
+  return(list(detected_heat = detected_heat,
+              day_last_detected_heat = day_last_detected_heat))
 }
 
 
