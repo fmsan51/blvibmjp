@@ -43,7 +43,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
     input <- as.data.table(data)
   }
 
-  cols_in_input <- intersect(colnames(a_new_calf), colnames(input))
+  cols_in_input <- intersect(cow_table_cols, colnames(input))
   n_cows <- nrow(input)
   if (n_cows == 0) {
     stop("No data is contained in the cow input.")
@@ -63,7 +63,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   if (is.character(today)) {
     today <- ymd(today)
   }
-  date_vars <- grep("^date_", colnames(a_new_calf), value = T)
+  date_vars <- grep("^date_", cow_table_cols, value = T)
   is_date_as_chr <- cows[, vapply(.SD, is.character, T), .SDcols = date_vars]
   date_as_chr <- date_vars[is_date_as_chr]
   # if statement here is to prevent warning due to 0-length RHS of :=
@@ -74,7 +74,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
   # To suppress a message "Note: method with signature ..." by lubridate
 
   # Convert is_xxx variables from numeric or character to logical
-  lgl_vars <- grep("^is_", colnames(a_new_calf), value = T)
+  lgl_vars <- grep("^is_", cow_table_cols, value = T)
   cows_w_lgl_vars <- cows[, .SD, .SDcols = lgl_vars]
   cows_lgl_vars_converted <- lapply(cows_w_lgl_vars, function(x)
     as.logical(factor(x, levels = c("1", "TRUE", "0", "FALSE"),
@@ -336,7 +336,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   cows$i_month <- 0
 
-  cows <- cows[, .SD, .SDcols = colnames(a_new_calf)]
+  cows <- cows[, ..cow_table_cols]
 
   if (!is.null(output_file)) {
     fwrite(cows, output_file)
@@ -373,7 +373,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
     input <- as.data.table(data)
   }
 
-  cols_in_input <- intersect(colnames(a_area), colnames(input))
+  cols_in_input <- intersect(area_table_cols, colnames(input))
   n_rows <- nrow(input)
   if (n_rows == 0) {
     stop("No data is contained in the area input.")
@@ -468,7 +468,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
     input <- as.data.table(data)
   }
 
-  cols_in_input <- intersect(colnames(a_movement), colnames(input))
+  cols_in_input <- intersect(movement_table_cols, colnames(input))
   n_rows <- nrow(input)
   if (n_rows == 0) {
     stop("No data is contained in the movement input.")
