@@ -19,8 +19,8 @@ validate_cow_table <- function(cows,
     }
   }
 
-  for (i in c("date_death", "date_death_expected", "is_owned", "cause_removal",
-              "day_heat", "day_last_heat", "n_heat_from_ai",
+  for (i in c("date_removal", "date_removal_expected", "is_owned",
+              "cause_removal", "day_heat", "day_last_heat", "n_heat_from_ai",
               "date_ipl_expected", "date_ebl_expected", "cause_infection",
               "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl",
               "area_id", "i_month")) {

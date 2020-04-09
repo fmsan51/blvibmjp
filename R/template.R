@@ -14,8 +14,8 @@
 #' - `stage`: One of "calf", "heifer", "milking" or "dry".
 #' - `sex`: One of "female" (Holstern), "male" (Holstein), "freemartin" (female Hostein), "f1-female" (Hostein x Japanese black), "f1-male" (Holstein x Japanese black), "black-female" (Japanese black), "black-male" (Japanese black).
 #' - `date_birth`: Date of birth.
-#' - `date_death`: Date of death. The value is NA while the cow is alive. It is set after the cow died.
-#' - `date_death_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
+#' - `date_removal`: Date of death. The value is NA while the cow is alive. It is set after the cow died.
+#' - `date_removal_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 #' - `is_owned`: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 #' - `cause_removal`:
 #'     - "died": died.
@@ -70,8 +70,8 @@ a_new_calf <- data.table(
   stage = NA_character_,
   sex = NA_character_,
   date_birth = NA_real_,
-  date_death = NA_real_,
-  date_death_expected = NA_real_,
+  date_removal = NA_real_,
+  date_removal_expected = NA_real_,
   is_owned = NA,
   cause_removal = NA_character_,
   is_replacement = NA,

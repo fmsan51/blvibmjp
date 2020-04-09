@@ -416,7 +416,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
     newborn_table[rows_newborns,
-                  `:=`(date_death_expected = i + longevity$age,
+                  `:=`(date_removal_expected = i + longevity$age,
                        cause_removal = longevity$cause)]
 
     # Susceptibility
@@ -480,9 +480,9 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
 #' @return A list consisted of [cow_table] and [tie_stall_table].
 check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
-  cows[date_death_expected == i,
+  cows[date_removal_expected == i,
        `:=`(is_owned = F,
-            date_death = i,
+            date_removal = i,
             cause_removal =
               fifelse(cause_removal == "will_die", "died", "slaughtered"))]
   attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
@@ -492,8 +492,9 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
 
   # Removal by selling
   rows_removed_sold <- which(cows$is_replacement == F &
-                               cows$date_death_expected != i)
+                               cows$date_removal_expected != i)
   cows[rows_removed_sold, `:=`(is_owned = F,
+                               date_removal = i,
                                cause_removal = "sold")]
   attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   # TODO: とりあえず後継牛以外は0ヶ月齢で売却
@@ -503,7 +504,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   rows_removed_ebl <- rows_new_ebl[is_ebl_detected(rows_new_ebl, param_sim)]
   if (length(rows_removed_ebl) != 0) {
     cows[rows_removed_ebl,  `:=`(is_owned = F,
-                                 date_death = i,
+                                 date_removal = i,
                                  cause_removal = "culled")]
   attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   }
@@ -511,16 +512,16 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   if (length(rows_overlooked) != 0) {
     month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
     cows[rows_overlooked,
-         `:=`(date_death_expected =
-                fifelse(date_death_expected >= month_ebl_die,
-                        month_ebl_die, date_death_expected),
+         `:=`(date_removal_expected =
+                fifelse(date_removal_expected >= month_ebl_die,
+                        month_ebl_die, date_removal_expected),
               cause_removal =
-                fifelse(date_death_expected >= month_ebl_die,
+                fifelse(date_removal_expected >= month_ebl_die,
                         "will_die", cause_removal))]
     # 1:n is used because it is much faster than seq_len(n).
   }
 
-  rows_removed <- c(which(cows$date_death == i), rows_removed_sold)
+  rows_removed <- c(which(cows$date_removal == i), rows_removed_sold)
 
   res <- remove_from_areas(cows, areas, area_table, cows$cow_id[rows_removed])
 
@@ -606,7 +607,7 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
     }
     cows[match(id_culled, cow_id),
          `:=`(is_owned = F,
-              date_death = i,
+              date_removal = i,
               cause_removal = "culled")]
     cows$is_replacement[match(id_replaced, cows$cow_id)] <- T
     attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)

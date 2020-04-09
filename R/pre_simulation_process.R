@@ -301,9 +301,9 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
     calculated_longevity <-
       longevity(n_rows_to_calc_longevity, param_calculated)
     cows[rows_to_calc_longevity,
-         `:=`(date_death_expected = date_birth + calculated_longevity$age,
+         `:=`(date_removal_expected = date_birth + calculated_longevity$age,
               cause_removal = calculated_longevity$cause)]
-    rows_to_calc_longevity <- which(cows$date_death_expected <= 0)
+    rows_to_calc_longevity <- which(cows$date_removal_expected <= 0)
     n_rows_to_calc_longevity <- length(rows_to_calc_longevity)
   }
 
