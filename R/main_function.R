@@ -346,8 +346,7 @@ change_infection_status <- function(cows, i, month, area_table, areas,
 do_test <- function(cows, month, param_sim) {
   if (sum(month == param_sim$test_months) > 0) {
     is_detected <- cows$infection_status != "s" &
-      (cows$is_detected | runif(attr(cows, "herd_size")) <
-       param_sim$test_sensitivity)
+       runif(attr(cows, "herd_size")) < param_sim$test_sensitivity
     is_false_positive <- cows$infection_status == "s" &
       runif(attr(cows, "herd_size")) > param_sim$test_specificity
     cows$is_detected <- is_detected | is_false_positive
