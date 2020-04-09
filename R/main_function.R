@@ -714,11 +714,11 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     # sample() here must not be replaced with sample.int() because the latter
     # causes error when the length of x is 0.
     # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
+    i_next_area <- movement_table$next_area[[i_movement]]
+    chr_i_next_area <- as.character(i_next_area)
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
       # A. For conditions with priorities specified by integers
 
-      i_next_area <- movement_table$next_area[[i_movement]]
-      chr_i_next_area <- as.character(i_next_area)
       empty_spaces_in_next_areas <- empty_spaces[chr_i_next_area]
       allocated_area_index <-
         findInterval(seq_along(i_cow_id),
@@ -753,8 +753,6 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     } else {
       # B. For conditions with priorities specified by real numbers
 
-      i_next_area <- movement_table$next_area[[i_movement]]
-      chr_i_next_area <- as.character(i_next_area)
       n_cows_to_move <- length(i_cow_id)
       i_priority <- movement_table$priority[[i_movement]]
       vacancy <- empty_spaces[i_next_area]
