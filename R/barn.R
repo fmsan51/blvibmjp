@@ -34,13 +34,18 @@ assign_chambers <- function(cows, areas, area_assignment) {
   for (i_area in names(area_assignment)) {
     assigned_area <- areas[[i_area]]
     candidate_cow_id <- area_assignment[[i_area]]
-
     empty_chambers <- assigned_area$chamber_id[is.na(assigned_area$cow_id)]
-    n_assigned_cows <- min(length(candidate_cow_id), length(empty_chambers))
+
+    n_candidates <- length(candidate_cow_id)
+    n_chambers <- length(empty_chambers)
+    n_assigned_cows <- min(n_candidates, n_chambers)
     assigned_chambers <- resample(empty_chambers, n_assigned_cows)
     assigned_cow_id <- resample(candidate_cow_id, n_assigned_cows)
 
     rows_assigned <- match(assigned_cow_id, cows$cow_id)
+    if (n_candidates > n_chambers) {
+      rows$chamber_id[match(candidate_cow_id, cows$cow_id)] <- 0
+    }
     cows$chamber_id[rows_assigned] <- assigned_chambers
     assigned_area[match(assigned_chambers, chamber_id),
                   `:=`(cow_id = cows$cow_id[rows_assigned],

@@ -110,9 +110,8 @@ setup_tie_stall_table <- function(area_table) {
 #'
 #' @return A list consisted of `cows` and `areas`.
 set_init_chamber_id <- function(init_cows, area_table, areas) {
-  area_assignment <-
-    calculate_area_assignment(init_cows, area_table,
-                              init_cows$cow_id[!is.na(init_cows$cow_id)])
+  area_assignment <- calculate_area_assignment(init_cows, area_table,
+                       init_cows[!is.na(cow_id) & is.na(chamber_id), cow_id])
   res <- assign_chambers(init_cows, areas, area_assignment)
   return(res)
 }

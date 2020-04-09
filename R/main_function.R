@@ -550,7 +550,7 @@ unassign_removed_cows <- function(cows, area_table, areas, i) {
 #' @param area_table See [area_table].
 #' @param areas See [setup_areas] and [tie_stall_table].
 assign_newborns <- function(cows, area_table, areas) {
-  newborn_cow_id <- cows$cow_id[cows$age == 0]
+  newborn_cow_id <- cows$cow_id[cows$age == 0 & !is.na(cows$age)]
   n_newborn <- length(newborn_cow_id)
   if (all(attr(area_table, "tie_stall") != 1) | n_newborn == 0) {
     return(list(cows = cows, areas = areas))
@@ -560,16 +560,17 @@ assign_newborns <- function(cows, area_table, areas) {
   is_empty_chambers <- is.na(calf_area$cow_id)
   n_empty_chambers <- sum(is_empty_chambers)
   if (n_empty_chambers < n_newborn) {
-    newborn_can_be_assigned <- sample.int(newborn_cow_id, n_empty_chambers)
+    cows$chamber_id[match(newborn_cow_id, cows$cow_id)] <- 0
+    newborn_can_be_assigned <- resample(newborn_cow_id, n_empty_chambers)
   } else {
     newborn_can_be_assigned <- newborn_cow_id
   }
 
   assigned_chambers <- resample(calf_area$chamber_id[is_empty_chambers],
                                 length(newborn_can_be_assigned))
-  cows[match(newborn_can_be_assigned, cow_id),
-       `:=`(chamber_id = assigned_chambers)]
-  areas[["1"]][assigned_chambers, `:=`(cow_id = newborn_can_be_assigned)]
+  cows$chamber_id[match(newborn_can_be_assigned, cows$cow_id)] <-
+    assigned_chambers
+  areas[["1"]]$cow_id[assigned_chambers] <- newborn_can_be_assigned
 
   return(list(cows = cows, areas = areas))
 }
@@ -798,18 +799,12 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     }
     cows$area_id[match(i_cow_id, cows$cow_id)] <- allocated_areas
   }
-  cow_id_allocated_to_full_areas <-
-    cow_id_allocated_to_full_areas[cow_id_allocated_to_full_areas != 0]
-  # a[!a %in% b] is 5x faster than setdiff()
-  cow_id_to_allocate_chambers <-
-    vec_cows_to_move[!vec_cows_to_move %in% cow_id_allocated_to_full_areas]
-  # Assignment of a chamber_id for a cow allocated to a full but free area will not occur
-  # because calculate_area_assignment() calculates only about tie-stall areas.
+  # Assignment of a chamber_id for a cow allocated to a full but free area
+  # will not occur because calculate_area_assignment() calculates only about
+  # tie-stall areas.
   cows_to_allocate_chambers <-
-    calculate_area_assignment(cows, area_table, cow_id_to_allocate_chambers)
+    calculate_area_assignment(cows, area_table, vec_cows_to_move)
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
-  res$cows[cow_id %in% cow_id_allocated_to_full_areas &
-           area_id %in% attr(area_table, "tie_stall"), `:=`(chamber_id = 0)]
 
   # Calculate seroconversion of cows have returned from a communal pasture
   if (any(cows$area_id == 0, na.rm = T)) {
