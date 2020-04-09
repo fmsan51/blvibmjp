@@ -23,6 +23,7 @@ setup_cows <- function(param, save_cows, cow_table = NULL) {
   # Used 1:n instead of seq_len(n) because it is faster
 
   init_max_cow_id <- max(init_cows$cow_id, na.rm = T)
+  attr(init_cows, "herd_size") <- init_n_cows
 
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param$output_dir)

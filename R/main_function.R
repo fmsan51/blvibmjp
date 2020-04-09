@@ -310,13 +310,10 @@ change_stage <- function(cows, i, param_sim) {
 #' @return A [cow_table].
 change_infection_status <- function(cows, i, month, area_table, areas,
                                     param_sim) {
-  n_cows <- nrow(cows)
-
   res <- calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
 
-  cows_inf_by_needles <- cows$cow_id[
-    is_infected_needles(n_cows, cows, param_sim) & cows$infection_status == "s"
-    ]
+  s_cows <- cows$cow_id[cows$infection_status == "s"]
+  cows_inf_by_needles <- s_cows[is_infected_needles(cows, param_sim)]
   res <- infect(cows, areas, area_table, cows_inf_by_needles, "needles", i)
 
   res$cows[date_ial == i,
@@ -345,11 +342,11 @@ change_infection_status <- function(cows, i, month, area_table, areas,
 #' @return A [cow_table].
 do_test <- function(cows, month, param_sim) {
   if (sum(month == param_sim$test_months) > 0) {
-    n_cow <- nrow(cows)
     is_detected <- cows$infection_status != "s" &
-      (cows$is_detected | runif(n_cow) < param_sim$test_sensitivity)
+      (cows$is_detected | runif(attr(cows, "herd_size")) <
+       param_sim$test_sensitivity)
     is_false_positive <- cows$infection_status == "s" &
-      runif(n_cow) > param_sim$test_specificity
+      runif(attr(cows, "herd_size")) > param_sim$test_specificity
     cows$is_detected <- is_detected | is_false_positive
   }
   return(cows)
@@ -373,7 +370,6 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
   # TODO: Consider the functions to change stage and consider delivery could be the same or not.
-  n_cows <- sum(!is.na(cows$cow_id))
 
   if (length(rows_mothers) != 0) {  # If there is any cow delivers in 'month i'
     n_newborns_per_cow <- n_newborn_per_dam(length(rows_mothers), param_sim)
@@ -414,7 +410,8 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
     newborn_table[sex == "male" | is_freemartin == T, `:=`(is_replacement = F)]
     # Male calves and freemartin female calves will be sold
     newborn_table[is.na(is_replacement) & !is.na(id_calf),
-                  `:=`(is_replacement = is_replacement(.N, n_cows, param_sim))]
+      `:=`(is_replacement =
+             is_replacement(.N, attr(cows, "herd_size"), param_sim))]
 
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
@@ -462,7 +459,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
       newborn_table$cow_id[rows_born_alive] <- max_cow_id + 1:n_newborns_born
       # 1:n is used because it is much faster than seq_len(n).
       max_cow_id <- max_cow_id + n_newborns_born
-      cows[n_cows + 1:n_newborns_born, ] <-
+      cows[attr(cows, "herd_size") + 1:n_newborns_born, ] <-
         newborn_table[rows_born_alive, ..cow_table_cols]
     }
 
@@ -488,6 +485,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
             date_death = i,
             cause_removal =
               fifelse(cause_removal == "will_die", "died", "slaughtered"))]
+  attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
 
   # Removal by culling
   cows <- cull_infected_cows(cows, i, param_sim)
@@ -497,6 +495,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
                                cows$date_death_expected != i)
   cows[rows_removed_sold, `:=`(is_owned = F,
                                cause_removal = "sold")]
+  attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   # TODO: とりあえず後継牛以外は0ヶ月齢で売却
 
   # Removal by detection of EBL
@@ -506,6 +505,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
     cows[rows_removed_ebl,  `:=`(is_owned = F,
                                  date_death = i,
                                  cause_removal = "culled")]
+  attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   }
   rows_overlooked <- setdiff(rows_new_ebl, rows_removed_ebl)
   if (length(rows_overlooked) != 0) {
@@ -609,6 +609,7 @@ replace_selected_cows <- function(cows, cow_id_to_cull, i) {
               date_death = i,
               cause_removal = "culled")]
     cows$is_replacement[match(id_replaced, cows$cow_id)] <- T
+    attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   }
   return(cows)
 }
@@ -688,7 +689,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   res <- remove_from_areas(cows, areas, area_table, vec_cows_to_move)
   cows <- res$cows
   areas <- res$areas
-  cow_id_allocated_to_full_areas <- numeric(sum(cows$is_owned, na.rm = T))
+  cow_id_allocated_to_full_areas <- numeric(attr(cows, "herd_size"))
   cow_id_allocated_to_full_areas_index <- 0
 
   # Decide to which next_area cows will move

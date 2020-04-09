@@ -4,11 +4,9 @@
 \alias{is_infected_needles}
 \title{Whether cows are infected by contaminated needles}
 \usage{
-is_infected_needles(n_cows, cows, param_sim)
+is_infected_needles(cows, param_sim)
 }
 \arguments{
-\item{n_cows}{The number of cows.}
-
 \item{cows}{See \link{cow_table}.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}

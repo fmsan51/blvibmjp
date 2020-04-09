@@ -489,16 +489,14 @@ calc_param <- function(param, modification = NULL) {
 #'
 #' @return A list of calculated parameters.
 process_param <- function(cows_areas, param) {
-  herd_size <- sum(cows_areas$cows$is_owned, na.rm = T)
-
   res <- list(
     param_output_filename = paste0("param_", param$output_filename),
     herd_size_limits = if (!anyNA(param$capacity_in_head)) {
         param$capacity_in_head
       } else if (!anyNA(param$capacity_as_ratio)) {
-        herd_size * capacity_as_ratio
+        attr(cows_areas$cows, "herd_size") * capacity_as_ratio
       } else {
-        herd_size * c(0.9, 1.1)
+        attr(cows_areas$cows, "herd_size") * c(0.9, 1.1)
       },
     prob_rep = set_prob_rep(sum(cows_areas$cows$parity != 1, na.rm = T), param)
     )
