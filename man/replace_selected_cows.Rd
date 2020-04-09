@@ -4,10 +4,12 @@
 \alias{replace_selected_cows}
 \title{Replace selected cows}
 \usage{
-replace_selected_cows(cows, cow_id_to_cull, i)
+replace_selected_cows(cows, areas, cow_id_to_cull, i)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{areas}{See \link{tie_stall_table}.}
 
 \item{cow_id_to_cull}{\code{cow_id} to remove from \code{cows}.}
 

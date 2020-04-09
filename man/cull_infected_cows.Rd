@@ -4,10 +4,12 @@
 \alias{cull_infected_cows}
 \title{Cull infected cows}
 \usage{
-cull_infected_cows(cows, i, param_sim)
+cull_infected_cows(cows, areas, i, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{areas}{See \link{tie_stall_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 

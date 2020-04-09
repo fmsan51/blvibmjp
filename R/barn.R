@@ -1,3 +1,27 @@
+#' Remove cows from a herd
+#'
+#' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
+#'
+#' @param cows See [cow_table].
+#' @param areas See [setup_areas].
+#' @param i The number of months from the start of the simulation.
+#' @param area_table See [area_table].
+#' @param removed_row Row indice in `cow_table` of cows to be removed from current areas.
+#' @param cause_removal A cause of removal of a cow.
+#'
+#' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
+remove_cows <- function(cows, areas, i, area_table, removed_row,
+                        cause_removal) {
+  cows[removed_row, `:=`(is_owned = F,
+                         date_removal = i,
+                         cause_removal = cause_removal)]
+  attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
+  res <- remove_from_areas(cows, areas, area_table, removed_row)
+  return(res)
+}
+
+
+
 #' Remove cows from areas
 #'
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
@@ -5,12 +29,13 @@
 #' @param cows See [cow_table].
 #' @param areas See [setup_areas].
 #' @param area_table See [area_table].
-#' @param removed_cow_id `cow_id` of cows to be removed from current areas.
+#' @param removed_row Row indice in `cow_table` of cows to be removed from current areas.
 #'
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
-remove_from_areas <- function(cows, areas, area_table, removed_cow_id) {
-  cows[match(removed_cow_id, cow_id), `:=`(area_id = NA_integer_,
-                                           chamber_id = NA_integer_)]
+remove_from_areas <- function(cows, areas, area_table, removed_row) {
+  cows[removed_row, `:=`(area_id = NA_integer_,
+                         chamber_id = NA_integer_)]
+  removed_cow_id <- cows$cow_id[removed_row]
   for (i_area in attr(area_table, "tie_stall_chr")) {
     areas[[i_area]][match(removed_cow_id, cow_id),
                     `:=`(cow_id = NA_integer_,
