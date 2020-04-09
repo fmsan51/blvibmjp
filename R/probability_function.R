@@ -150,13 +150,13 @@ is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_needles <- function(cows, param_sim) {
-  # Studies successed to prove infection by contaminated needles
+  # Studies succeeded to prove infection by contaminated needles
   # (in Japan) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2835688/?tool=pmcentrez&report=abstract
   # Several studies failed to prove infection by contaminated needles
   # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
   # https://academic.oup.com/aje/article/117/5/621/102629
   # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
-  #   By same authors with a "successed" paper in Japan, probably with more samples
+  #   By same authors with a "succeeded" paper in Japan, probably with more samples
   n_infected <- cows[is_owned & infection_status != "s", .N]
   is_infected_needles <- runif(attr(cows, "herd_size")) <
     param_sim$prob_inf_needles * (n_infected / attr(cows, "herd_size"))
@@ -255,15 +255,15 @@ is_heat_detected <- function(n_cows, param_sim) {
 #' @param n_cows The number of cows on which the first AI were conducted.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
-#' @rdname is_ai_successed
+#' @rdname is_ai_succeeded
 #' @return A logical vector.
-is_first_ai_successed <- function(n_cows, param_sim) {
+is_first_ai_succeeded <- function(n_cows, param_sim) {
   runif(n_cows) < param_sim$prob_first_ai_success
 }
 
 
-#' @rdname is_ai_successed
-is_ai_successed <- function(n_cows, param_sim) {
+#' @rdname is_ai_succeeded
+is_ai_succeeded <- function(n_cows, param_sim) {
   runif(n_cows) < param_sim$prob_ai_success
 }
 
