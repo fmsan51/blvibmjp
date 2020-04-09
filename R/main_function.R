@@ -528,22 +528,6 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
 }
 
 
-#' Remove dead/culled/sold cows from `areas`
-#'
-#' @param cows See [cow_table].
-#' @param area_table See [area_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
-#' @param i The number of months from the start of the simulation.
-unassign_removed_cows <- function(cows, area_table, areas, i) {
-  removed_cow_id <- cows$cow_id[cows$date_death == i]
-  for (i_area in attr(area_table, "tie_stall")) {
-    areas[[i_area]] <- areas[[i_area]][match(removed_cow_id, cow_id),
-                                       `:=`(area_id = NA_integer_)]
-  }
-  return(cows)
-}
-
-
 #' Assign `chamber_id` to newborns
 #'
 #' @param cows See [cow_table].
@@ -667,7 +651,6 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   # area_tableに沿って、移動する個体、合致したconditionを抽出
   # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
 
-  cows <- unassign_removed_cows(cows, area_table, areas, i)
   res <- assign_newborns(cows, area_table, areas)
   cows <- res$cows
   areas <- res$areas
