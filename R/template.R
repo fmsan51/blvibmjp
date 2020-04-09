@@ -110,7 +110,10 @@ a_new_calf <- data.table(
   months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)
-  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tie_stall_table holds chamber_id.
+  chamber_id = NA_integer_,
+  # chamber_id is used in setup_tie_stall_table().
+  # After set up, it is used to identify whether a cow is tied, freed or
+  # roaming in a tie-stall.
   is_isolated = NA,
   i_month = NA_real_
 )
