@@ -85,9 +85,10 @@ setup_tie_stall_table <- function(area_table) {
     area_capacity <- area_table$capacity[i_area == area_table$area_id][[1]]
     n_chambers <- sum(area_capacity)
     a_tie_stall <- a_chamber[rep(1, n_chambers), ]
-    a_tie_stall[, `:=`(chamber_id = seq_len(n_chambers),
+    a_tie_stall[, `:=`(chamber_id = 1:n_chambers,
                        adjoint_previous_chamber = T,
                        adjoint_next_chamber = T)]
+    # 1:n is used because it is much faster than seq_len(n).
     lane_edges <- cumsum(area_capacity)
     a_tie_stall[lane_edges, `:=`(adjoint_next_chamber = F)]
     a_tie_stall[c(1, lane_edges[-length(lane_edges)] + 1),
