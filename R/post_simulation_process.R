@@ -328,8 +328,9 @@ summary_route <- function(cows) {
   table_route <- cows[, .N, by = .(i_simulation, cause_infection)]
   table_route <- dcast.data.table(table_route, i_simulation ~ cause_infection,
                                   value.var = "N", fill = 0, drop = F)
+  cols <- colnames(table_route)
   table_route[, `:=`(total = rowSums(.SD)),
-               .SDcols = setdiff(colnames(table_route), "i_simulation")]
+               .SDcols = cols[cols != "i_simulation"]]
   table_route[, `:=`(total_inf = total - uninfected)]
   table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))]
   return(table_route)
