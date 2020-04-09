@@ -75,7 +75,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
 
   # Convert is_xxx variables from numeric or character to logical
   lgl_vars <- grep("^is_", cow_table_cols, value = T)
-  cows_w_lgl_vars <- cows[, .SD, .SDcols = lgl_vars]
+  cows_w_lgl_vars <- cows[, ..lgl_vars]
   cows_lgl_vars_converted <- lapply(cows_w_lgl_vars, function(x)
     as.logical(factor(x, levels = c("1", "TRUE", "0", "FALSE"),
                       labels = c("TRUE", "TRUE", "FALSE", "FALSE")))
@@ -477,7 +477,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
   necessary_cols <- c("current_area", "condition", "next_area")
-  necessary_data <- movement_table[, .SD, .SDcols = necessary_cols]
+  necessary_data <- movement_table[, ..necessary_cols]
   if (anyNA(necessary_data)) {
     missing_cols <- necessary_cols[vapply(necessary_data, anyNA, F)]
     stop(glue(
