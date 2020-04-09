@@ -275,7 +275,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
     cows <- area_by_stage_and_parity[cows, on = join_on]
     cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
                 freq_area = NULL)]
-    area_id_in_input <- unique(na.omit(cows$area_id))
+    area_id_in_input <- unique(cows$area_id[!is.na(cows$area_id)])
     empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4L),
                              area_id_in_input)[1:4]
     area_by_stage <- cows[,
@@ -427,9 +427,9 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 
   if (any(duplicated(area_table$area_id))) {
     area_table <- area_table[,
-                             list(area_type = unique(na.omit(area_type))[1],
-                                  capacity = list(unlist(capacity))),
-                             by = area_id]
+      list(area_type = unique(area_type[!is.na(area_type)])[1],
+           capacity = list(unlist(capacity))),
+      by = area_id]
   }
 
   if (!is.null(output_file)) {
@@ -518,7 +518,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   n_priority <- vapply(movement_table$priority, length, 1)
   if (anyNA(movement_table$priority) | any(n_priority == 0)) {
     n_next_area <-
-      vapply(movement_table$next_area, function(x) length(na.omit(x)), 1)
+      vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 1)
     list1 <- lapply(n_next_area, function(x) rep(1, x))
     is_priority_missing <- is.na(movement_table$priority) | n_priority == 0
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
