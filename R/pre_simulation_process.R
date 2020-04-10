@@ -382,7 +382,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
     stop(glue("If any value is set to `area_id` column in area data, \\
                the first value in `area_id` column must be set."))
   }
-  area_table$area_id <- na.locf(area_table$area_id)
+  area_table$area_id <- nafill(area_table$area_id, type = "locf")
 
   area_type_list <- split(area_table$area_type, area_table$area_id)
   n_type_in_each_area <-
