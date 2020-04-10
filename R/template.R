@@ -106,7 +106,7 @@ a_new_calf <- data.table(
   susceptibility_ipl_to_ebl = NA,
   # TODO: これ削除
 
-  area_id = NA_integer_,
+  area_id = NA_integer_,  # TODO: consider how to set pastures in UI
   months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)

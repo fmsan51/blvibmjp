@@ -171,11 +171,10 @@ calc_param <- function(param, modification = NULL) {
   if (param$test_frequency == 0) {
     res$test_months <- numeric(0)
   } else {
-    test_months <- ceiling(12 / param$test_frequency *
-                         seq(param$test_frequency))
-    test_months <-
-      (test_months + param$simulation_start + 6) %% 12 + 1
-    # Add 6 to avoid the first test occurs at i_month = 1 when test_frequency = 1
+    test_months <- ceiling(12 / param$test_frequency * 1:param$test_frequency)
+    test_months <- (test_months + param$simulation_start + 11) %% 12 + 1
+    # Add 11 to avoid the first test occurs at i_month = 1
+    # when test_frequency = 1
     # Add 1 because n %% 12 contains 0
     res$test_months <- test_months
   }

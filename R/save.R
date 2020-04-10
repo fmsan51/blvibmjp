@@ -12,6 +12,7 @@
 save_to_csv <- function(cows, filename, i, subdir = ".") {
   file <- construct_filepath(filename, i, subdir)
   fwrite(cows, file)
+  invisible(NULL)
 }
 
 

@@ -86,7 +86,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   if (any(!is_na_age & !is_na_date_birth) & !is.numeric(cows$date_birth)) {
     today <- mean(cows$date_birth + months(cows$age), na.rm = T)
   }
-  if (anyNA(cows$age)) {
+  if (any(is_na_age)) {
     if (is.numeric(cows$date_birth)) {
       cows$age[is_na_age] <- (cows$date_birth * -1)[is_na_age]
     } else {
@@ -94,7 +94,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
         (interval(cows$date_birth, today) %/% months(1))[is_na_age]
     }
   }
-  if (anyNA(cows$date_birth)) {
+  if (any(is_na_date_birth)) {
     if (!is.numeric(cows$date_birth)) {
       cows$date_birth <- interval(today, cows$date_birth) %/% months(1)
     }
@@ -109,8 +109,9 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
             .SDcols = date_not_as_num]]
   }
 
-  if (anyNA(cows$sex)) {
-    cows$sex[is.na(cows$sex)] <- "female"
+  is_na <- is.na(cows$sex)
+  if (any(is_na)) {
+    cows$sex[is_na] <- "female"
   }
 
 
@@ -125,7 +126,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
     n_old_cows <- sum(age_make_calf * 2 < cows$age &
                       cows$age <= age_make_calf * 3)
     n_cows_add <- n_mid_cows * (n_mid_cows / n_old_cows)
-    cows_add_age <- sample.int(age_make_calf, n_cows_add, replace = T)
+    cows_add_age <- sample.int(age_make_calf, n_cows_add, replace = T) * 1
     cows_add <- a_new_calf[rep(1, n_cows_add), ]
     cows_add[, `:=`(cow_id = max(cows$cow_id) + 1:n_cows_add,
                     age = cows_add_age,
@@ -148,14 +149,15 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
     cows[(stage == "milking" | stage == "dry" | !is.na(date_last_delivery)) &
          age < delivery_age_table[1], `:=`(parity = 1)]
   }
-  if (any(is.na(cows$date_last_delivery) & cows$parity != 0)) {
-    cows[is.na(date_last_delivery) & parity != 0,
+  is_na_date_delivered <- is.na(cows$date_last_delivery) & cows$parity != 0
+  if (any(is_na_date_delivered)) {
+    cows[is_na_date_delivered,
          `:=`(date_last_delivery = fifelse(age <= delivery_age_table[parity], 0,
               trunc(runif(.N, 0, param_calculated$calving_interval - 1)) * -1))]
   }
 
-  if (anyNA(cows$is_replacement)) {
-    is_na <- is.na(cows$is_replacement)
+  is_na <- cows$is_replacement
+  if (any(is_na)) {
     prob_rep <- set_prob_rep(sum(cows$parity != 0), param)
     cows[is_na, `:=`(is_replacement =
                      (sex == "female" & (age > 0 | runif(.N) < prob_rep)))]
@@ -182,9 +184,9 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
                 fifelse(date_last_delivery * -1 > months_milking,
                         date_last_delivery + months_milking, NA_real_))]
   }
-  cows[stage == "milking", `:=`(date_dried = NA)]
-  if (anyNA(cows$stage)) {
-    is_na <- is.na(cows$stage)
+  cows$date_dried[cows$stage == "milking"] <- NA_real_
+  is_na <- cows$stage
+  if (any(is_na)) {
     cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
     cows[is_na & parity != 0,
          `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
@@ -210,54 +212,58 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows$infection_status[is_ial] <- "ial"
   cows$infection_status[is_ipl] <- "ipl"
   cows$infection_status[is_ebl] <- "ebl"
-  if (any(is_s)) {
-    cows$infection_status[is_s] <- "s"
-    items_coerced_to_s <- unique(cows$infection_status[is_s])
+  cows$infection_status[is_s] <- "s"
+  items_coerced_to_s <- unique(cows$infection_status[is_s])
+  items_coerced_to_s <- items_coerced_to_s[items_coerced_to_s != "s"]
+  if (length(items_coerced_to_s) != 0) {
     message(glue(
       "Following item(s) in the `infection_status` column is treated as \\
        non-infected:
        {paste(items_coerced_to_s, collapse = ',')}"
           ))
   }
+
+  is_na <- cows$infection_status
   if (!is.null(modify_prevalence)) {
     appropreate_n_inf <- round(n_cows * modify_prevalence)
     inf_count <- table(cows$infection_status != "s", useNA = "always")
     max_n_inf <- inf_count["TRUE"] + inf_count["<NA>"]
     is_na <- is.na(cows$infection_status)
     if (appropreate_n_inf < inf_count["TRUE"]) {
-      cows[resample(which(infection_status != "s"),
-                    inf_count["TRUE"] - appropreate_n_inf),
-           `:=`(infection_status = "s")]
+      cows$infection_status[
+        resample(which(infection_status != "s"),
+                 inf_count["TRUE"] - appropreate_n_inf)
+        ] <- "s"
       cows$infection_status[is_na] <- "s"
     } else if (appropreate_n_inf <= max_n_inf) {
-      cows[resample(which(is_na), max_n_inf - inf_count["TRUE"]),
-           `:=`(infection_status = "ial")]
+      cows$infection_status[
+        resample(which(is_na), max_n_inf - inf_count["TRUE"])
+        ] <- "ial"
       cows$infection_status[is.na(cows$infection_status)] <- "s"
     } else {
-      cows[resample(which(infection_status == "s"),
-                    appropreate_n_inf - max_n_inf),
-           `:=`(infection_status = "ial")]
+      cows$infection_status[
+        resample(which(infection_status == "s"), appropreate_n_inf - max_n_inf)
+        ] <- "ial"
       cows$infection_status[is_na] <- "ial"
     }
-  } else if (anyNA(cows$infection_status)) {
-    cows$infection_status[is.na(cows$infection_status)] <- "s"
+  } else if (any(is_na)) {
+    cows$infection_status[is_na] <- "s"
   }
 
-  cows[infection_status != "s" & is.na(date_ial), `:=`(date_ial = 0)]
-  cows[(infection_status == "ipl" | infection_status == "ebl") &
-        is.na(date_ipl),
-       `:=`(date_ipl = 0)]
-  cows[infection_status == "ebl" & is.na(date_ebl), `:=`(date_ebl = 0)]
+  cows$date_ial[cows$infection_status != "s" & is.na(cows$date_ial)] <- 0
+  cows[
+    (infection_status == "ipl" | infection_status == "ebl") & is.na(date_ipl),
+    `:=`(date_ipl = 0)]
+  cows$date_ebl[cows$infection_status == "ebl" & is.na(cows$date_ebl)] <- 0
   cows$cause_infection[cows$infection_status != "s"] <- "initial"
 
   if (!is.null(area_name)) {
-    if (any(!cows$area_id %in% c(names(area_name), "0", NA_character_))) {
+    chr_area_name <- names(area_name)
+    if (any(!cows$area_id %in% c(chr_area_name, NA_character_))) {
       stop(glue("`area_name` in the cow data contains area names \\
                  which are not contained in the area data."))
     }
-    cows$area_id <-
-      factor(cows$area_id, levels = c(names(area_name), "0"),
-             labels = c(area_name, "0"))
+    cows$area_id <- factor(cows$area_id, levels = chr_area_name)
   }
   cows$area_id <- as.integer(cows$area_id)
   if (anyNA(cows$area_id)) {
@@ -272,26 +278,26 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
                                   parity = parity, unique = T),
                                on = join_on]
     cows <- area_by_stage_and_parity[cows, on = join_on]
-    cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
-                freq_area = NULL)]
+    cows$area_id <- fcoalesce(cows$area_id, cows$freq_area)
+    cows$freq_area <- NULL
     area_id_in_input <- unique(cows$area_id[!is.na(cows$area_id)])
     empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4L),
                              area_id_in_input)[1:4]
+    join_on <- "stage"
     area_by_stage <- cows[,
       list(freq_area =
              as.integer(names(sort(table(area_id), decreasing = T))[1])),
-           by = "stage"]
+           by = join_on]
     area_by_stage <-
-      area_by_stage[CJ(stage = cow_stage, sorted = F), on = "stage"]
-    area_by_stage[, `:=`(freq_area = fcoalesce(freq_area, empty_area_id))]
-    cows <- area_by_stage[cows, on = "stage"]
-    cows[, `:=`(area_id = fcoalesce(area_id, freq_area),
-                freq_area = NULL)]
+      area_by_stage[CJ(stage = cow_stage, sorted = F), on = join_on]
+    area_by_stage$freq_area <- fcoalesce(area_by_stage$freq_area, empty_area_id)
+    cows <- area_by_stage[cows, on = join_on]
+    cows$area_id <- fcoalesce(cows$area_id, cows$freq_area)
+    cows$freq_area <- NULL
   }
 
-  cows[is.na(months_in_area), `:=`(months_in_area = 0)]
-  cows[is.na(is_isolated), `:=`(is_isolated = F)]
-
+  cows$months_in_area[is.na(cows$months_in_area)] <- 0
+  cows$is_isolated[is.na(cows$is_isolated)] <- F
 
   # Next, calculate values in columns users should not specify.
   rows_to_calc_longevity <- 1:n_cows
@@ -309,7 +315,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 
   cows$is_owned <- T
   cows[is.na(date_got_pregnant),
-       `:=`(day_heat = sample.int(30, .N, replace = T))]
+       `:=`(day_heat = sample.int(30, .N, replace = T) * 1)]
   cows[is.na(day_last_detected_heat),
        `:=`(day_last_detected_heat = sample.int(30, .N, replace = T))]  # TODO: Improve this
 
@@ -401,7 +407,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
             area_table$area_type[is_na] == "hatch")) {
       stop("`capacity` column in area data must be set for tie or hatch areas.")
     }
-    area_table$capacity[is_na] <- Inf
+    area_table$capacity[is_na] <- "Inf"
   }
   area_table$capacity <- as.character(area_table$capacity)
   # as.character() to when capacity is an integer/numeric vector.
@@ -479,22 +485,21 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
     strsplit(as.character(movement_table$next_area), paste0(sep, "+"))
   # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
-    if (any(!unique(movement_table$current_area) %in% c(names(area_name), "0"))) {
+    chr_area_name <- names(area_name)
+    if (any(!movement_table$current_area %in% chr_area_name)) {
       stop(glue("`current_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
-    if (any(
-        !unique(unlist(movement_table$next_area)) %in% c(names(area_name), "0")
-        )) {
+    if (any(!unlist(movement_table$next_area) %in% chr_area_name)) {
       stop(glue("`next_area` in the movement data contains \\
                  an area name which is not contained in the area data."))
     }
 
-    movement_table$current_area <- factor(movement_table$current_area,
-      levels = c(names(area_name), "0"), labels = c(area_name, "0"))
+    movement_table$current_area <-
+      factor(movement_table$current_area,
+             levels = chr_area_name, labes = area_name)
     movement_table$next_area <- lapply(movement_table$next_area,
-      function(x) factor(x, levels = c(names(area_name), "0"),
-                         labels = c(area_name, "0"))
+      function(x) factor(x, levels = chr_area_name, labels = area_name)
       )
   }
   movement_table$current_area <- as.integer(movement_table$current_area)
@@ -518,6 +523,43 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
                integer/numeric vectors of the same number of items with \\
                `next_area`."))
   }
+
+  # Sort next_area along with priority
+  movement_table$next_area <-
+    mapply(function(next_area, priority) {next_area[order(priority)]},
+           movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
+
+  # translate condition from a form that users can easily understand
+  # to a form that functions can easily understand
+  cond <- movement_table$condition
+  convert_day_to_month <- function(day) {
+    day <- as.numeric(day)
+    month <- round(day / days_per_month, 3)  # rounded for readability
+    return(month)
+  }
+  cond <- str_replace_all(cond, "(?<=dim[^|&]{1,20}?)\\d+",
+                          convert_day_to_month)
+  # max range is 20 because it seems enough
+  cond <- str_replace_all(cond, "(?<!parity[^|&]{1,20}?)(\\d*\\.\\d+)",
+                          "integerize(\\1)")
+
+  # fixed = T because it's about 2-3x faster
+  cond <- gsub("months_from_delivery", "i_month - date_last_delivery",
+               cond, fixed = T)
+  cond <- gsub("months_from_pregnancy", "i_month - date_got_pregnant",
+               cond, fixed = T)
+  cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
+
+  # (?^|[^_]) is about 3x faster than (?<!_)
+  cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
+  cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
+  cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)
+  cond <- gsub("dim", "i_month - date_last_delivery", cond, fixed = T)
+  cond <- gsub("stay", "months_in_area", cond, fixed = T)
+
+  cond <- paste0(cond, "& area_id == ", movement_table$current_area,
+                 "& is_owned == T")
+  movement_table$condition <- cond
 
   if (!is.null(output_file)) {
     fwrite(movement_table, output_file)

@@ -84,9 +84,10 @@ setup_tie_stall_table <- function(area_table) {
                        adjoint_next_chamber = T)]
     # 1:n is used because it is much faster than seq_len(n).
     lane_edges <- cumsum(area_capacity)
-    a_tie_stall[lane_edges, `:=`(adjoint_next_chamber = F)]
-    a_tie_stall[c(1, lane_edges[-length(lane_edges)] + 1),
-                `:=`(adjoint_previous_chamber = F)]
+    a_tie_stall$adjoint_next_chamber[lane_edges] <- F
+    a_tie_stall$adjoint_previous_chamber[
+      c(1, lane_edges[-length(lane_edges)] + 1)
+      ] <- F
 
     areas[[as.character(i_area)]] <- a_tie_stall
   }
@@ -105,7 +106,7 @@ setup_tie_stall_table <- function(area_table) {
 #' @return A list consisted of `cows` and `areas`.
 set_init_chamber_id <- function(init_cows, area_table, areas) {
   area_assignment <- calculate_area_assignment(init_cows, area_table,
-                       init_cows[!is.na(cow_id) & is.na(chamber_id), cow_id])
+    init_cows$cow_id[!is.na(init_cows$cow_id) & is.na(init_cows$chamber_id)])
   res <- assign_chambers(init_cows, areas, area_assignment)
   return(res)
 }
@@ -120,10 +121,9 @@ set_init_chamber_id <- function(init_cows, area_table, areas) {
 #'
 #' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
 setup_area_table <- function(area_table, param) {
-  area_table$capacity[is.na(area_table$capacity)] <- Inf
-
-  attr(area_table, "capacity") <-
-    setNames(vapply(area_table$capacity, sum, 1), area_table$area_id)
+  capacity <- vapply(area_table$capacity, sum, 1)
+  names(capacity) <- area_table$area_id
+  attr(area_table, "capacity") <- capacity
   attr(area_table, "tie_stall") <-
     area_table$area_id[area_table$area_type == "tie"]
   attr(area_table, "tie_stall_chr") <-
@@ -144,49 +144,12 @@ setup_area_table <- function(area_table, param) {
 #'
 #' @seealso [area_table] [movement_table] [setup_cows] [setup_rp_table] [setup_areas]
 setup_movement_table <- function(area_table, movement_table) {
-  # Sort next_area along with priority
-  movement_table$next_area <-
-    mapply(function(next_area, priority) {next_area[order(priority)]},
-           movement_table$next_area, movement_table$priority, SIMPLIFY = FALSE)
-
-  # translate condition from a form that users can easily understand
-  # to a form that functions can easily understand
-  cond <- movement_table$condition
-  convert_day_to_month <- function(day) {
-    day <- as.numeric(day)
-    month <- round(day / days_per_month, 3)  # rounded for readability
-    return(month)
-  }
-  cond <- str_replace_all(cond, "(?<=dim[^|&]{1,20}?)\\d+",
-                          convert_day_to_month)
-  # max range is 20 because it seems enough
-  cond <- str_replace_all(cond, "(?<!parity[^|&]{1,20}?)(\\d*\\.\\d+)",
-                          "integerize(\\1)")
-
-  # fixed = T because it's about 2-3x faster
-  cond <- gsub("months_from_delivery", "i_month - date_last_delivery",
-               cond, fixed = T)
-  cond <- gsub("months_from_pregnancy", "i_month - date_got_pregnant",
-               cond, fixed = T)
-  cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
-
-  # (?^|[^_]) is about 3x faster than (?<!_)
-  cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
-  cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
-  cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)
-  cond <- gsub("dim", "i_month - date_last_delivery", cond, fixed = T)
-  cond <- gsub("stay", "months_in_area", cond, fixed = T)
-
-  cond <- paste0(cond, "& area_id == ", movement_table$current_area)
-  movement_table$condition <- cond
-
-  movement_table$priority <- lapply(movement_table$priority,
-                                    function(x) ifelse(is.na(x), 1, x))
-
   # Attributes is added instead of converting area_id column to factor
   # because I don't want to change class of the columns from the original one
   attr(movement_table, "factored_current_area") <-
     factor(movement_table$current_area, levels = area_table$area_id)
+  attr(movement_table, "chr_next_area") <-
+    as.character(movement_table$next_area)
   attr(movement_table, "is_priority_specified_by_integer") <-
     vapply(movement_table$priority, is.wholenumber, T)
   attr(movement_table, "cond_as_expr") <- parse(text = cond)

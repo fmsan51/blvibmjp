@@ -96,13 +96,14 @@ assign_chambers <- function(cows, areas, area_assignment) {
 #' @return A [cow_table].
 calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                                     param_sim) {
-  expose_status <- causes <- character(sum(!is.na(cows)))
-  names(expose_status) <- as.character(cows$cow_id[!is.na(cows$cow_id)])
+  is_cow_id_set <- !is.na(cows$cow_id)
+  expose_status <- causes <- character(sum(is_cow_id_set))
+  names(expose_status) <- as.character(cows$cow_id[is_cow_id_set])
   for (i_area in names(areas)) {
     area <- areas[[i_area]]
     cows_in_area <- as.character(area$cow_id)
-    if (i_area %in% attr(area_table, "tie_stall")) {
-      is_infectious <- area[, cow_status != "s" & !is_isolated]
+    if (any(attr(area_table, "tie_stall") == i_area)) {
+      is_infectious <- area$cow_status != "s" & !area$is_isolated
       is_infectious[is.na(is_infectious)] <- F
       is_exposed_to_inf_next <- area$adjoint_next_chamber &
                                   shift(is_infectious, type = "lead", fill = F)

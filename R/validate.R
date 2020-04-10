@@ -10,8 +10,6 @@
 validate_cow_table <- function(cows,
                                date_format = "ymd",
                                today = lubridate::today(tzone = "Asia/Tokyo")) {
-  cows <- copy(cows)
-
   # Check missing parameters
   for (i in c("stage", "parity")) {
     if (anyNA(cows[[i]])) {
@@ -118,8 +116,7 @@ validate_cow_table <- function(cows,
               (a cow whose `date_got_pregnant` is NA) must be 0."), call. = F)
   }
 
-  return(cows)
-
+  invisible(NULL)
   # TODO: chamber_idとis_isolatedの設定をしたいなー（Free-stall以外で設定してはいけない）
 }
 
@@ -152,8 +149,6 @@ validate_category <- function(cows, col, category) {
 #' @return A [cow_table] whose date columns are formatted.
 format_date <- function(cows, date_format = "ymd",
                         today = lubridate::today(tzone = "Asia/Tokyo")) {
-  cows <- copy(cows)
-
   if (all(date_format != c("ymd", "ydm", "myd", "mdy", "dym", "dmy"))) {
     stop("date_format must be one of ymd, ydm, myd, mdy, dym, dmy", call. = F)
   }

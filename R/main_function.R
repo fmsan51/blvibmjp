@@ -61,7 +61,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
 
     # Continue until AI is conducted to all candidate cows
     possible_heat_started_ai <- possible_heat_list[rows_started_ai]
-    while (sum(n_ai_vec == 0) != 0) {
+    while (any(n_ai_vec == 0)) {
       index_ai_not_done <- which(n_ai_vec == 0)
       possible_heat <- possible_heat_started_ai[index_ai_not_done]
       calculated_ai <- calc_ai_list(possible_heat, param_sim)
@@ -315,7 +315,8 @@ change_infection_status <- function(cows, i, month, area_table, areas,
                                     param_sim) {
   res <- calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
 
-  s_cows <- cows$cow_id[cows$infection_status == "s"]
+  s_cows <-
+    cows$cow_id[cows$infection_status == "s" & !is.na(cows$infection_status)]
   cows_inf_by_needles <- s_cows[is_infected_needles(cows, param_sim)]
   res <- infect(cows, areas, area_table, cows_inf_by_needles, "needles", i)
 
@@ -344,11 +345,12 @@ change_infection_status <- function(cows, i, month, area_table, areas,
 #'
 #' @return A [cow_table].
 do_test <- function(cows, month, param_sim) {
-  if (sum(month == param_sim$test_months) > 0) {
+  if (any(month == param_sim$test_months)) {
+    herd_size <- attr(cows, "herd_size")
     is_detected <- cows$infection_status != "s" &
-       runif(attr(cows, "herd_size")) < param_sim$test_sensitivity
+       runif(herd_size) < param_sim$test_sensitivity
     is_false_positive <- cows$infection_status == "s" &
-      runif(attr(cows, "herd_size")) > param_sim$test_specificity
+      runif(herd_size) > param_sim$test_specificity
     cows$is_detected <- is_detected | is_false_positive
   }
   return(cows)
@@ -402,18 +404,21 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
            i_month = i)]
 
     # Setting about twins
-    if (sum(newborn_table$n_litter == 2, na.rm = T) != 0) {
+    if (any(newborn_table$n_litter == 2, na.rm = T)) {
       newborn_table[n_litter == 2,
                     `:=`(sex = sex_twins(.N, param_sim),
                          is_freemartin = (sex == "freemartin"))]
-      newborn_table[is_freemartin == T, `:=`(sex = "female")]
+      newborn_table$sex[
+        newborn_table$is_freemartin & !is.na(newborn_table$is_freemartin)
+        ] <- "female"
     }
 
     newborn_table[sex == "male" | is_freemartin == T, `:=`(is_replacement = F)]
     # Male calves and freemartin female calves will be sold
+    herd_size <- attr(cows, "herd_size")
     newborn_table[is.na(is_replacement) & !is.na(id_calf),
       `:=`(is_replacement =
-             is_replacement(.N, attr(cows, "herd_size"), param_sim))]
+             is_replacement(.N, herd_size, param_sim))]
 
     # Setting of longevity
     longevity <- longevity(n_newborns, param_sim)
@@ -453,7 +458,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
 
     # TODO: Simulate failure of delivery (stillbirth/abortion) 妊娠途中で流産する場合についてもどこかで計算しなければ。
     parity_mothers <-
-      cows[match(newborn_table$id_mother[rows_newborns], cow_id), parity]
+      cows$parity[match(newborn_table$id_mother[rows_newborns], cows$cow_id)]
     rows_born_alive <- rows_newborns[!is_stillbirth(parity_mothers, param_sim)]
 
     n_newborns_born <- length(rows_born_alive)
@@ -461,7 +466,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
       newborn_table$cow_id[rows_born_alive] <- max_cow_id + 1:n_newborns_born
       # 1:n is used because it is much faster than seq_len(n).
       max_cow_id <- max_cow_id + n_newborns_born
-      cows[attr(cows, "herd_size") + 1:n_newborns_born, ] <-
+      cows[herd_size + 1:n_newborns_born, ] <-
         newborn_table[rows_born_alive, ..cow_table_cols]
     }
 

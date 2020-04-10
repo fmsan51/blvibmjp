@@ -18,25 +18,27 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
                                 i, param_sim) {
   n_cows <- length(susceptibility_ial_to_ipl)
-  months_ial_to_ebl <- prop_ial_period <- months_ial_to_ipl <- numeric(n_cows)
-  neg_months_ial_to_ipl <- rep(T, n_cows)
-  while (any(neg_months_ial_to_ipl)) {
-    months_ial_to_ebl[neg_months_ial_to_ipl] <- rweibull(
+  months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <-
+    prop_ial_period <- numeric(n_cows)
+  neg_months_ipl_to_ebl <- logical(n_cows)
+  while (any(neg_months_ipl_to_ebl)) {
+    months_ial_to_ebl[neg_months_ipl_to_ebl] <- rweibull(
                            n_cows,
                            shape = param_sim$ebl_progress_shape,
                            scale = param_sim$ebl_progress_scale
                          ) * 12
-    prop_ial_period[neg_months_ial_to_ipl] <- rnorm(n_cows,
+    prop_ial_period[neg_months_ipl_to_ebl] <- rnorm(n_cows,
                              mean = param_sim$mean_prop_ial_period,
                              sd = param_sim$sd_prop_ial_period)
     prop_ial_period[prop_ial_period < 0] <- 0
-    months_ial_to_ipl[neg_months_ial_to_ipl] <- rweibull(
+    months_ial_to_ipl[neg_months_ipl_to_ebl] <- rweibull(
                            n_cows,
                            shape = param_sim$ebl_progress_shape,
                            scale = param_sim$ebl_progress_scale *
                              prop_ial_period
                          ) * 12
-    neg_months_ial_to_ipl <- months_ial_to_ipl < 0
+    months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
+    neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
   }
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
   months_ial_to_ipl <- ceiling(months_ial_to_ipl)
@@ -68,9 +70,7 @@ is_ebl_detected <- function(n_cows, param_sim) {
 #'
 #' @return A numeric vector.
 n_month_until_ebl_die <- function(n_cows, param_sim) {
-  months <- rexp(n_cows, param_sim$rate_ebl_die)
-  months <- ceiling(months)
-  return(months)
+  ceiling(rexp(n_cows, param_sim$rate_ebl_die))
 }
 
 
@@ -82,9 +82,7 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_insects <- function(n_cows, month, param_sim) {
-  prob_inf_insects <- param_sim$probs_inf_insects_month[1:12 == month]
-  is_infected <- runif(n_cows) < prob_inf_insects
-  return(is_infected)
+  runif(n_cows) < param_sim$probs_inf_insects_month[month]
 }
 
 
@@ -107,9 +105,8 @@ is_infected_pasture <- function(n_cows, param) {
 #'
 #' @return A logical vector.
 is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
-  is_infected <- runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] *
-                                  param_sim$hr_having_infected_neighbor
-  return(is_infected)
+  runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] *
+                    param_sim$hr_having_infected_neighbor
 }
 
 
@@ -156,10 +153,11 @@ is_infected_needles <- function(cows, param_sim) {
   # https://academic.oup.com/aje/article/117/5/621/102629
   # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
   #   By same authors with a "succeeded" paper in Japan, probably with more samples
-  n_infected <- cows[is_owned & infection_status != "s", .N]
-  is_infected_needles <- runif(attr(cows, "herd_size")) <
-    param_sim$prob_inf_needles * (n_infected / attr(cows, "herd_size"))
-  return(is_infected_needles)
+  n_infected <- sum(cows$is_owned & cows$infection_status != "s", na.rm = T)
+  herd_size <- attr(cows, "herd_size")
+  is_infected <- runif(herd_size) <
+    param_sim$prob_inf_needles * (n_infected / herd_size)
+  return(is_infected)
 }
 # TODO: Gauge dehorning https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1236184/pdf/compmed00003-0104.pdf
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
@@ -188,8 +186,8 @@ is_infected_vertical <- function(status_mother, param_sim) {
     runif(n_calf) < param_sim$prob_vert_inf_ial * (status_mother == "ial")
   is_vert_inf_ipl <- runif(n_calf) < param_sim$prob_vert_inf_ipl *
     (status_mother == "ipl" | status_mother == "ebl")
-  is_vert_inf <- (is_vert_inf_ial | is_vert_inf_ipl)
-  return(is_vert_inf)
+  is_infected <- (is_vert_inf_ial | is_vert_inf_ipl)
+  return(is_infected)
 }
 
 
@@ -216,7 +214,7 @@ is_ai_started_milking <- function(n_month_from_delivery, param_sim) {
                          mean = param_sim$mean_date_start_ai,
                          sd = param_sim$sd_date_start_ai)
   is_ai_started_milking <-
-    (runif(length(n_month_from_delivery)) <= prob_start_ai)
+    (runif(length(n_month_from_delivery)) < prob_start_ai)
   return(is_ai_started_milking)
 }
 
@@ -232,7 +230,7 @@ is_ai_started_heifer <- function(ages, param_sim) {
                          mean = param_sim$mean_age_first_ai,
                          sd = param_sim$sd_age_first_ai)
   prob_first_ai[ages < param_sim$lower_lim_first_ai] <- 0
-  is_ai_started_heifer <- (runif(length(ages)) <= prob_first_ai)
+  is_ai_started_heifer <- (runif(length(ages)) < prob_first_ai)
   return(is_ai_started_heifer)
 }
 
@@ -358,19 +356,40 @@ sex_twins <- function(n_calves, param_sim) {
 
 #' @name is_replacement
 is_replacement <- function(n_calves, herd_size, param_sim) {
-  spaces <- (param_sim$herd_size_limits - herd_size) *
-              (param_sim$herd_size_limits > herd_size)
-  spaces <- spaces * (spaces <= n_calves) + n_calves * (spaces > n_calves)
+  desirable_n_rep <- (param_sim$herd_size_limits - herd_size) *
+                      (param_sim$herd_size_limits > herd_size)
+  # Identical to:
+  # desirable_n_rep <- numeric(2)  # Upper and lower limits of desirable #calves
+  # if (param_sim$herd_size_limits[1] > herd_size) {
+  #   desirable_n_rep[1] <- param_sim$herd_size_limits[1] - herd_size
+  # } else {
+  #   desirable_n_rep[1] <- 0
+  # }
+  # if (param_sim$herd_size_limits[2] < herd_size) {
+  #   desirable_n_rep[2] <- 0
+  # } else {
+  #   desirable_n_rep[2] <- param_sim$herd_size_limits[2] - herd_size
+  # }
 
-  n_selected <- rbinom(1, n_calves, param_sim$prob_rep)
-  if (n_selected < spaces[1]) {
-    n_selected <- spaces[1]
-  } else if (n_selected > spaces[2]) {
-    n_selected <- spaces[2]
+  feasible_n_rep <- n_calves * (feasible_n_rep > n_calves) +
+                       feasible_n_rep * (feasible_n_rep <= n_calves)
+  # Identical to:
+  # if (feasible_n_rep[1] > n_calves) {
+  #   feasible_n_rep[1] <- n_calves
+  # }
+  # if (feasible_n_rep[2] > n_calves) {
+  #   feasible_n_rep[2] <- n_calves
+  # }
+
+  n_will_be_rep <- rbinom(1, n_calves, param_sim$prob_rep)
+  if (n_will_be_rep < feasible_n_rep[1]) {
+    n_will_be_rep <- feasible_n_rep[1]
+  } else if (n_will_be_rep > feasible_n_rep[2]) {
+    n_will_be_rep <- feasible_n_rep[2]
   }
 
-  is_replacement <- rep(F, n_calves)
-  is_replacement[sample.int(n_calves, n_selected)] <- T
+  is_replacement <- logical(n_calves)
+  is_replacement[sample.int(n_calves, n_will_be_rep)] <- T
 
   return(is_replacement)
 }

@@ -306,7 +306,7 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
 
 #' @name table_route
 summary_route <- function(cows) {
-  table_route <- cows[, .N, by = .(i_simulation, cause_infection)]
+  table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
   table_route <- dcast.data.table(table_route, i_simulation ~ cause_infection,
                                   value.var = "N", fill = 0, drop = F)
   cols <- colnames(table_route)
@@ -347,7 +347,7 @@ table_infection_status <- function(param,
 summary_infection_status <- function(cows) {
   cows$infection_status <- factor(cows$infection_status,
                                   levels = c("s", "ial", "ipl", "ebl"))
-  table_status <- cows[, .N, by = .(i_simulation, infection_status)]
+  table_status <- cows[, .N, by = list(i_simulation, infection_status)]
   table_status <- dcast.data.table(table_status,
                                    i_simulation ~ infection_status,
                                    value.var = "N", fill = 0, drop = F)
@@ -406,5 +406,6 @@ define_msg <- function(original_msg, default_msg, language) {
     mapply(function(x, value) assign(x, value, envir = env),
            msg[original_msg_true], default_msg[original_msg_true])
   }
+  invisible(NULL)
 }
 
