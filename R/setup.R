@@ -12,7 +12,7 @@
 setup_cows <- function(cow_table, param, save_cows) {
   # Prepare cow_table with many rows to reserve enough memory while simulation
   init_n_cows <- nrow(cow_table)
-  max_herd_size <- init_n_cows * param$simulation_length * 2
+  max_herd_size <- ceiling(param$max_herd_size * param$simulation_length)
   init_cows <- a_new_calf[rep(1, max_herd_size), ]
   init_cows[1:init_n_cows, ] <- cow_table
   # Used 1:n instead of seq_len(n) because it is faster
@@ -37,7 +37,7 @@ setup_cows <- function(cow_table, param, save_cows) {
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 setup_rp_table <- function(param) {
   # Prepare rp_table with many rows to reserve enough memory while simulation
-  one_day_rp[1:(param$herd_size_limits[2] * 2), ]
+  one_day_rp[1:param$max_herd_size, ]
   # Used 1:n instead of seq_len(n) because it is faster
 }
 
@@ -52,7 +52,7 @@ setup_rp_table <- function(param) {
 setup_newborn_table <- function(param) {
   # Prepare newborn_table with many rows to reserve enough memory
   # while simulation
-  newborn_table <- a_new_calf[1:(param$herd_size_limits[2] * 2), ]
+  newborn_table <- a_new_calf[1:param$max_herd_size, ]
   # Used 1:n instead of seq_len(n) because it is faster
   newborn_table[, c("id_mother", "id_calf", "n_litter", "status_mother",
                     "is_freemartin") :=

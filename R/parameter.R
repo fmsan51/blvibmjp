@@ -480,6 +480,7 @@ calc_param <- function(param, modification = NULL) {
 #'
 #' - `param_output_filename`: Name of a file to which output simulation parameters.
 #' - `herd_size_limits`: Lower and upper limits of the number of cattle should be kept in the herd.
+#' - `max_herd_size`: The maximum herd size allowed in a simulation. Used to reserve memory to store cow data while simulation.
 #' - `prob_rep`: The result of [set_prob_rep()]. The probability that a newborn female calf will be a replacement cow.
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
@@ -489,15 +490,17 @@ calc_param <- function(param, modification = NULL) {
 #'
 #' @return A list of calculated parameters.
 process_param <- function(cows_areas, param) {
+  if (!anyNA(param$capacity_in_head)) {
+    herd_size_limits <- param$capacity_in_head
+  } else if (!anyNA(param$capacity_as_ratio)) {
+    herd_size_limits <- attr(cows_areas$cows, "herd_size") * capacity_as_ratio
+  } else {
+    herd_size_limits <- attr(cows_areas$cows, "herd_size") * c(0.9, 1.1)
+  }
   res <- list(
     param_output_filename = paste0("param_", param$output_filename),
-    herd_size_limits = if (!anyNA(param$capacity_in_head)) {
-        param$capacity_in_head
-      } else if (!anyNA(param$capacity_as_ratio)) {
-        attr(cows_areas$cows, "herd_size") * capacity_as_ratio
-      } else {
-        attr(cows_areas$cows, "herd_size") * c(0.9, 1.1)
-      },
+    herd_size_limits = herd_size_limits,
+    max_herd_size = herd_size_limits[2] * 2,
     prob_rep = set_prob_rep(sum(cows_areas$cows$parity != 1, na.rm = T), param)
     )
 
