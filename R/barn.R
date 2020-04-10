@@ -7,14 +7,14 @@
 #' @param i The number of months from the start of the simulation.
 #' @param area_table See [area_table].
 #' @param removed_row Row indice in `cow_table` of cows to be removed from current areas.
-#' @param cause_removal A cause of removal of a cow.
+#' @param cause A cause of removal of a cow.
 #'
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
 remove_cows <- function(cows, areas, i, area_table, removed_row,
-                        cause_removal) {
+                        cause) {
   cows[removed_row, `:=`(is_owned = F,
                          date_removal = i,
-                         cause_removal = cause_removal)]
+                         cause_removal = cause)]
   attr(cows, "herd_size") <- sum(cows$is_owned, na.rm = T)
   res <- remove_from_areas(cows, areas, area_table, removed_row)
   return(res)

@@ -4,7 +4,7 @@
 \alias{remove_cows}
 \title{Remove cows from a herd}
 \usage{
-remove_cows(cows, areas, i, area_table, removed_row, cause_removal)
+remove_cows(cows, areas, i, area_table, removed_row, cause)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
@@ -17,7 +17,7 @@ remove_cows(cows, areas, i, area_table, removed_row, cause_removal)
 
 \item{removed_row}{Row indice in \code{cow_table} of cows to be removed from current areas.}
 
-\item{cause_removal}{A cause of removal of a cow.}
+\item{cause}{A cause of removal of a cow.}
 }
 \value{
 A \link{cow_table} in which \code{area_id} and \code{chamber_id} of specified cows are set as \code{NA}.

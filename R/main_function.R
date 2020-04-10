@@ -483,8 +483,11 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
 check_removal <- function(cows, areas, i, area_table, param_sim) {
   # Removal by death
   rows_expected_removal <- which(cows$date_removal_expected == i)
+  cause_removal <-
+    fifelse(cows$cause_removal[rows_expected_removal] == "will_die",
+            "died", "slaughtered")
   res <- remove_cows(cows, areas, i, area_table, rows_expected_removal,
-    fifelse(cause_removal == "will_die", "died", "slaughtered"))
+                     cause_removal)
   cows <- res$cows
   areas <- res$areas
 
