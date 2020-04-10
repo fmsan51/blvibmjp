@@ -47,3 +47,7 @@ resample <- function(x, ...) {
   x[sample.int(length(x), ...)]
 }
 
+
+#' Days per month (365 / 12)
+days_per_month <- (365 / 12)
+

@@ -337,25 +337,24 @@ calc_param <- function(param, modification = NULL) {
 
 
   ## artificial_insemination ----
-  day_per_month <- 365 / 12
   # First AI after delivery
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
-  mean_date_start_ai <- c(88, 88, 88, 88, 89) / day_per_month
+  mean_date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
   lims_date_start_ai <- set_param(param$mean_day_start_ai,
                                   c(min(mean_date_start_ai),
                                     max(mean_date_start_ai)))
   # TODO: It's assumed that 95% of cows start AI within one month
   res$sd_date_start_ai <-
-    set_param(param$sd_day_start_ai / day_per_month,
+    set_param(param$sd_day_start_ai / days_per_month,
               1 / qnorm(0.975))
   res$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
                                     max = lims_date_start_ai[2])
 
 
   # First AI for heifer
-  mean_age_first_ai <- c(427, 427, 435, 432) / day_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
+  mean_age_first_ai <- c(427, 427, 435, 432) / days_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
   lims_age_first_ai <- set_param(param$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month
@@ -403,7 +402,7 @@ calc_param <- function(param, modification = NULL) {
 
   # Length of milking period
   length_milking <-
-    set_param(param$days_milking, 363) / day_per_month
+    set_param(param$days_milking, 363) / days_per_month
   res$lower_lim_dried <- length_milking %/% 1
   res$prop_dried_shorter <- 1 - length_milking %% 1
 
@@ -520,18 +519,17 @@ calc_param_pre <- function(param, modification = NULL) {
   res <- list()
 
   # Nyuken (H23-27)
-  day_per_month <- 365 / 12
-  # calving_interval, age_first_delivery, months_open, months_milking is used only in prepare_cow()
+  # calving_interval, age_first_delivery, months_open, months_milking is used only in prepare_cows()
   res$age_first_delivery <- set_param(param$age_first_delivery,
                                         mean(25.2, 25.1, 25.0, 25.0, 24.8))
   res$calving_interval <-
-    set_param(param$calving_interval / day_per_month,
-              mean(432, 430, 432, 429, 427) / day_per_month)
-  res$months_open <- set_param(param$days_open / day_per_month,
-                                 mean(160, 159, 159, 155, 154) / day_per_month)
+    set_param(param$calving_interval / days_per_month,
+              mean(432, 430, 432, 429, 427) / days_per_month)
+  res$months_open <- set_param(param$days_open / days_per_month,
+                                 mean(160, 159, 159, 155, 154) / days_per_month)
   res$months_milking <-
-    set_param(param$days_milking / day_per_month,
-              mean(366, 363, 365, 364, 363) / day_per_month)
+    set_param(param$days_milking / days_per_month,
+              mean(366, 363, 365, 364, 363) / days_per_month)
 
   res <- c(res, calc_param_both(param))
 

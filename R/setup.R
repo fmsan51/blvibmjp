@@ -154,7 +154,7 @@ setup_movement_table <- function(area_table, movement_table) {
   cond <- movement_table$condition
   convert_day_to_month <- function(day) {
     day <- as.numeric(day)
-    month <- round(day / (365 / 12), 3)  # rounded for readability
+    month <- round(day / days_per_month, 3)  # rounded for readability
     return(month)
   }
   cond <- str_replace_all(cond, "(?<=dim[^|&]{1,20}?)\\d+",
