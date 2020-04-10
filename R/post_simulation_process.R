@@ -215,7 +215,7 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
   if (gray) {
     color_specification <- c("area_color", "border_color")
     is_color_specified <-
-      !sapply(color_specification, function(x) is.null(get(x)))
+      !vapply(color_specification, function(x) is.null(get(x)), T)
     if (sum(is_color_specified) != 0) {
       specified_color <- color_specification[is_color_specified]
       warning(glue("Argument(s) {paste(specified_color, collapse = ' and ')} \\

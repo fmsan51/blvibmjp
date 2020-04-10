@@ -12,7 +12,7 @@
 setup_cows <- function(param, save_cows, cow_table = NULL) {
   if (is.null(cow_table)) {
     cow_table <- fread(file = param$input_csv,
-                       colClasses = sapply(a_new_calf, class))
+                       colClasses = vapply(a_new_calf, class, ""))
   }
 
   # Prepare cow_table with many rows to reserve enough memory while simulation

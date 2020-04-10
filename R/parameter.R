@@ -567,8 +567,8 @@ calc_param_both <- function(param) {
     g_shape = c(3.94254619, 4.0635499, 4.11764786, 4.11193613, 4.06322732),
     g_rate = c(0.06274259, 0.06433635, 0.06515513, 0.06596917, 0.06591569)
   )
-  param_die_min <- sapply(param_die, min)
-  param_die_max <- sapply(param_die, max)
+  param_die_min <- vapply(param_die, min, 1)
+  param_die_max <- vapply(param_die, max, 1)
   param_die_set <- runif(4, min = param_die_min, max = param_die_max)
   res$die_prop <- param_die_set[1]
   res$die_e_rate <- param_die_set[2]
@@ -580,8 +580,8 @@ calc_param_both <- function(param) {
     shape = c(5.207747, 5.172914, 5.182164, 4.918844, 5.134622),
     rate = c(0.07337904, 0.07226869, 0.07165169, 0.0678387, 0.06992455)
   )
-  param_slaughtered_min <- sapply(param_slaughtered, min)
-  param_slaughtered_max <- sapply(param_slaughtered, max)
+  param_slaughtered_min <- vapply(param_slaughtered, min, 1)
+  param_slaughtered_max <- vapply(param_slaughtered, max, 1)
   param_slaughtered_set <- runif(2,
                                  min = param_slaughtered_min,
                                  max = param_slaughtered_max)

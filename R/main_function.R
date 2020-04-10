@@ -684,7 +684,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
            levels = area_table$area_id)
     )
   n_cows_to_move_by_each_condition <-
-    sapply(cow_id_to_move_in_each_area, length)
+    vapply(cow_id_to_move_in_each_area, length, 1)
   n_cows_to_move_in_each_area <- tapply(
     n_cows_to_move_by_each_condition,
     attr(movement_table, "factored_current_area"),
