@@ -437,6 +437,10 @@ age_die <- function(n_cows, param_sim) {
 
 #' @name longevity
 age_slaughtered <- function(n_cows, param_sim) {
+  if (!is.null(param_sim$slaughter_age)) {
+    return(param_sim$slaughter_age)
+  }
+  # TODO: Fix slaughter_age
   value <- rgamma(n_cows,
                   shape = param_sim$slaughter_shape,
                   rate = param_sim$slaughter_rate)
