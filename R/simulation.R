@@ -31,7 +31,6 @@ simulate_blv_spread <- function(prepared_data, param,
 
   setup_cows_res <- setup_cows(cow_table, param, save_cows)
   area_table <- setup_area_table(area_table, param)
-
   areas <- setup_tie_stall_table(area_table)
   # setup_tie_stall_table() must come after setup_area_table()
   # because it uses an attributes which setup_area_table() calculates

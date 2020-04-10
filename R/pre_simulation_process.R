@@ -147,7 +147,8 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
     cows[is_na & (is.na(stage) | stage == "dry" | stage == "milking"),
       `:=`(parity = vapply(age, function(x) sum(x >= delivery_age_table), 1))]
     cows[(stage == "milking" | stage == "dry" | !is.na(date_last_delivery)) &
-         age < delivery_age_table[1], `:=`(parity = 1)]
+         age < delivery_age_table[1],
+         `:=`(parity = 1)]
   }
   is_na_date_delivered <- is.na(cows$date_last_delivery) & cows$parity != 0
   if (any(is_na_date_delivered)) {
@@ -175,8 +176,8 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
        ((date_got_pregnant == -10 | date_got_pregnant == -9) &
          stage == "milking"),
        `:=`(date_got_pregnant = NA_real_)]
-  is_na_date_dried <- is.na(cows$date_dried) &
-                        (is.na(cows$stage) | cows$stage != "milking")
+  is_na_date_dried <-
+    is.na(cows$date_dried) & (is.na(cows$stage) | cows$stage != "milking")
   months_milking <- integerize(param_calculated$months_milking)
   if (any(is_na_date_dried)) {
     cows[is_na_date_dried,
@@ -273,16 +274,15 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
       list(freq_area =
              as.integer(names(sort(table(area_id), decreasing = T))[1])),
       by = join_on]
-    area_by_stage_and_parity <-
-      area_by_stage_and_parity[CJ(stage = cow_stage,
-                                  parity = parity, unique = T),
-                               on = join_on]
+    area_by_stage_and_parity <- area_by_stage_and_parity[
+      CJ(stage = cow_stage, parity = parity, unique = T),
+      on = join_on]
     cows <- area_by_stage_and_parity[cows, on = join_on]
     cows$area_id <- fcoalesce(cows$area_id, cows$freq_area)
     cows$freq_area <- NULL
     area_id_in_input <- unique(cows$area_id[!is.na(cows$area_id)])
-    empty_area_id <- setdiff(seq_len(length(area_id_in_input) + 4L),
-                             area_id_in_input)[1:4]
+    empty_area_id <-
+      setdiff(seq_len(length(area_id_in_input) + 4L), area_id_in_input)[1:4]
     join_on <- "stage"
     area_by_stage <- cows[,
       list(freq_area =
@@ -617,7 +617,8 @@ prepare_data <- function(excel, param, output = F,
   }
 
   cows <- prepare_cows(data = cow_input, param = param,
-                       output_file = cow_output_file, area_name = area_name, ...)
+                       output_file = cow_output_file, area_name = area_name,
+                       ...)
   areas <- prepare_area(data = area_input,
                         output_file = area_output_file, sep = sep)
   movement <- prepare_movement(data = movement_input,

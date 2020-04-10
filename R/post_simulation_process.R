@@ -285,7 +285,6 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 #'
 #' Calculate monthly infection routes at the end of simulations.
 #'
-#' @param cows A `cow_table` read by [read_final_cows].
 #' @inheritParams read_final_cows
 #'
 #' @seealso [table_infection_status]
@@ -304,6 +303,7 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
 }
 
 
+#' @param cows A result of [read_final_cows()].
 #' @name table_route
 summary_route <- function(cows) {
   table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
@@ -322,7 +322,6 @@ summary_route <- function(cows) {
 #'
 #' Calculate monthly infection status at the end of simulations.
 #'
-#' @param cows A `cow_table` read by [read_final_cows].
 #' @inheritParams read_final_cows
 #'
 #' @seealso [table_route]
@@ -343,10 +342,11 @@ table_infection_status <- function(param,
 }
 
 
+#' @param cows A result of [read_final_cows()].
 #' @name table_infection_status
 summary_infection_status <- function(cows) {
-  cows$infection_status <- factor(cows$infection_status,
-                                  levels = c("s", "ial", "ipl", "ebl"))
+  cows$infection_status <-
+    factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
   table_status <- cows[, .N, by = list(i_simulation, infection_status)]
   table_status <- dcast.data.table(table_status,
                                    i_simulation ~ infection_status,

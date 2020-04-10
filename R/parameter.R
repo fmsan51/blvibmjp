@@ -309,8 +309,7 @@ calc_param <- function(param, modification = NULL) {
 
   # 直検1回ごとの感染確率
   # Kohara, Konnai and Onuma, 2016.
-  res$prob_inf_rp <- fifelse(param$change_gloves,
-                               0, 1 - (1 - 3 / 4) ^ (1 / 4))
+  res$prob_inf_rp <- fifelse(param$change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
   ## infection_vertical ----
@@ -328,8 +327,7 @@ calc_param <- function(param, modification = NULL) {
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
   # Frequency of infection by colostrum may be smaller than that by contact. 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months. - Ferrer and Piper, 1981. https://www.ncbi.nlm.nih.gov/pubmed/6272983
   # Probability of BLV infection after freeze-thaw can be considered as 0 - Kanno et al, 2014. https://doi.org/10.1292/jvms.13-0253
-  feed_raw_colostrum <- param$feed_raw_colostrum
-  res$prob_inf_colostrum <- fifelse(feed_raw_colostrum, 3 / (25 + 26), 0)
+  res$prob_inf_colostrum <- fifelse(param$feed_raw_colostrum, 3 / (25 + 26), 0)
 
 
   ## infection_introduced ----
@@ -341,19 +339,19 @@ calc_param <- function(param, modification = NULL) {
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
   mean_date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
-  lims_date_start_ai <- set_param(param$mean_day_start_ai,
-                                  c(min(mean_date_start_ai),
-                                    max(mean_date_start_ai)))
+  lims_date_start_ai <-
+    set_param(param$mean_day_start_ai,
+              c(min(mean_date_start_ai), max(mean_date_start_ai)))
   # TODO: It's assumed that 95% of cows start AI within one month
   res$sd_date_start_ai <-
-    set_param(param$sd_day_start_ai / days_per_month,
-              1 / qnorm(0.975))
-  res$mean_date_start_ai <- runif(1, min = lims_date_start_ai[1],
-                                    max = lims_date_start_ai[2])
+    set_param(param$sd_day_start_ai / days_per_month, 1 / qnorm(0.975))
+  res$mean_date_start_ai <-
+    runif(1, min = lims_date_start_ai[1], max = lims_date_start_ai[2])
 
 
   # First AI for heifer
-  mean_age_first_ai <- c(427, 427, 435, 432) / days_per_month  # NOTE: From Gyugun Kentei Seisekihyo by HRK
+  # From Gyugun Kentei Seisekihyo by HRK
+  mean_age_first_ai <- c(427, 427, 435, 432) / days_per_month
   lims_age_first_ai <- set_param(param$mean_age_first_ai,
                                  c(min(mean_age_first_ai), max(mean_age_first_ai)))
   # TODO: It's assumed that 95% of cows will get pregnant within one month

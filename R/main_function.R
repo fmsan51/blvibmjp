@@ -231,8 +231,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
 calc_ai_list <- function(possible_heat, param_sim) {
   heat_detection <-
     lapply(possible_heat, function(x) is_heat_detected(length(x), param_sim))
-  detected_heat <- mapply(function(x, y) x[y],
-                          possible_heat, heat_detection,
+  detected_heat <- mapply(function(x, y) x[y], possible_heat, heat_detection,
                           SIMPLIFY = F)
   succeeded_ai <-
     lapply(detected_heat, function(x) is_ai_succeeded(length(x), param_sim))
@@ -255,8 +254,8 @@ calc_heat <- function(possible_heat, calculated_ai) {
     function(x) ifelse(!any(x), length(x), min(which(x))), 0)
   # Here ifelse is used instead of fifelse,
   # because min(which(x)) may cause warning when the condition is not met.
-  heat_list <- mapply(function(x, y) x[1:y],
-                      possible_heat, n_heat, SIMPLIFY = F)
+  heat_list <- mapply(function(x, y) x[1:y], possible_heat, n_heat,
+                      SIMPLIFY = F)
   heat_detection_list <-
     mapply(function(x, y) x[1:y], calculated_ai$heat_detection, n_heat,
            SIMPLIFY = F)
@@ -292,6 +291,7 @@ change_stage <- function(cows, i, param_sim) {
             parity = parity + 1,
             date_got_pregnant = NA,
             day_heat = sample.int(30, .N, replace = T) * 1)]
+            # * 1 to make integer to real
 
   # Milking to dry
   cows[stage == "milking" & is_dried(i - date_last_delivery, param_sim),
@@ -356,6 +356,7 @@ do_test <- function(cows, month, param_sim) {
   return(cows)
 }
 
+
 #' Add newborns to a cow_table
 #'
 #' @param cows See [cow_table].
@@ -370,7 +371,6 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
                          param_sim) {
   newborn_table[, ] <- NA
   rows_mothers <- which(cows$date_last_delivery == i)
-  # TODO: Make newborn_list like day_rp
   # Here, date_last_delivery == i (not i - 12), because date_last_delivery is changed by change_stage().
   # TODO: Temporary delivery interval is set to 12 months.
   # TODO: Consider the functions to change stage and consider delivery could be the same or not.
@@ -397,6 +397,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
            parity = 0,
            n_ai = 0,
            day_heat = sample.int(30, n_newborns, replace = T) * 1,
+           # * 1 to make integer to real
            infection_status = "s",
            area_id = 1,
            months_in_area = 0,
@@ -472,7 +473,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
 
   }
 
-  # areas will be updated later in tether_roaming_cows().
+  # areas will be updated later in assign_newborns().
   return(list(cows = cows, max_cow_id = max_cow_id))
 }
 
@@ -502,8 +503,8 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   areas <- res$areas
 
   # Removal by selling
-  rows_removed_sold <- which(cows$is_replacement == F &
-                               cows$date_removal_expected != i)
+  rows_removed_sold <-
+    which(cows$is_replacement == F & cows$date_removal_expected != i)
   res <- remove_cows(cows, areas, i, area_table, rows_removed_sold, "sold")
   cows <- res$cows
   areas <- res$areas
@@ -530,6 +531,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
                 fifelse(date_removal_expected >= month_ebl_die,
                         "will_die", cause_removal))]
     # 1:n is used because it is much faster than seq_len(n).
+    # TODO: EBL cows will be detected later
   }
 
   return(res)
@@ -605,7 +607,7 @@ cull_infected_cows <- function(cows, areas, i, param_sim) {
 replace_selected_cows <- function(cows, areas, cow_id_to_cull, i) {
   id_non_replacement_newborns <-
     cows[age == 0 & is_owned & !is_replacement & sex == "female",
-         cow_id]
+         cow_id]  # TODO: reconsider age
   n_non_replacement <- length(id_non_replacement_newborns)
   n_to_cull <- length(cow_id_to_cull)
   if (n_non_replacement != 0 & n_to_cull != 0) {
@@ -718,6 +720,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     chr_i_next_area <- attr(movement_table, "chr_next_area")[i_movement]
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
       # A. For conditions with priorities specified by integers
+      # TODO: How to control more than two areas have same priority
 
       empty_spaces_in_next_areas <- empty_spaces[chr_i_next_area]
       allocated_area_index <-

@@ -22,27 +22,28 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
     prop_ial_period <- numeric(n_cows)
   neg_months_ipl_to_ebl <- logical(n_cows)
   while (any(neg_months_ipl_to_ebl)) {
-    months_ial_to_ebl[neg_months_ipl_to_ebl] <- rweibull(
-                           n_cows,
-                           shape = param_sim$ebl_progress_shape,
-                           scale = param_sim$ebl_progress_scale
-                         ) * 12
-    prop_ial_period[neg_months_ipl_to_ebl] <- rnorm(n_cows,
-                             mean = param_sim$mean_prop_ial_period,
-                             sd = param_sim$sd_prop_ial_period)
+    months_ial_to_ebl[neg_months_ipl_to_ebl] <-
+      rweibull(n_cows,
+               shape = param_sim$ebl_progress_shape,
+               scale = param_sim$ebl_progress_scale
+               ) * 12
+    prop_ial_period[neg_months_ipl_to_ebl] <-
+      rnorm(n_cows,
+            mean = param_sim$mean_prop_ial_period,
+            sd = param_sim$sd_prop_ial_period)
     prop_ial_period[prop_ial_period < 0] <- 0
-    months_ial_to_ipl[neg_months_ipl_to_ebl] <- rweibull(
-                           n_cows,
-                           shape = param_sim$ebl_progress_shape,
-                           scale = param_sim$ebl_progress_scale *
-                             prop_ial_period
-                         ) * 12
+    months_ial_to_ipl[neg_months_ipl_to_ebl] <-
+      rweibull(n_cows,
+               shape = param_sim$ebl_progress_shape,
+               scale = param_sim$ebl_progress_scale * prop_ial_period
+               ) * 12
     months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
     neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
   }
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
   months_ial_to_ipl <- ceiling(months_ial_to_ipl)
-  # シミュレーションには「その月に起きた出来事」を反映する方針 (＝月の最終日におけるステータス) なのでroundではなくceiling
+  # ceiling(), not round(), is used because status of cows reflects
+  # what happened in the month (= status of cows at the last day of a month)
   months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
   months_ial_to_ipl[!susceptibility_ial_to_ipl] <- NA_real_
   months_ipl_to_ebl[!susceptibility_ipl_to_ebl] <- NA_real_
@@ -184,8 +185,9 @@ is_infected_vertical <- function(status_mother, param_sim) {
   n_calf <- length(status_mother)
   is_vert_inf_ial <-
     runif(n_calf) < param_sim$prob_vert_inf_ial * (status_mother == "ial")
-  is_vert_inf_ipl <- runif(n_calf) < param_sim$prob_vert_inf_ipl *
-    (status_mother == "ipl" | status_mother == "ebl")
+  is_vert_inf_ipl <-
+    runif(n_calf) < param_sim$prob_vert_inf_ipl *
+      (status_mother == "ipl" | status_mother == "ebl")
   is_infected <- (is_vert_inf_ial | is_vert_inf_ipl)
   return(is_infected)
 }
@@ -285,8 +287,7 @@ is_dried <- function(months_from_delivery, param_sim) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
   (months_from_delivery > param_sim$lower_lim_dried) |
   ((months_from_delivery == param_sim$lower_lim_dried) &
-     (runif(length(months_from_delivery)) <
-        param_sim$prop_dried_shorter))
+   (runif(length(months_from_delivery)) < param_sim$prop_dried_shorter))
 }
 
 
