@@ -37,7 +37,7 @@ setup_cows <- function(cow_table, param, save_cows) {
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
 setup_rp_table <- function(param) {
   # Prepare rp_table with many rows to reserve enough memory while simulation
-  one_day_rp[1:param$max_herd_size, ]
+  one_day_rp[rep(1, param$max_herd_size), ]
   # Used 1:n instead of seq_len(n) because it is faster
 }
 
@@ -52,7 +52,7 @@ setup_rp_table <- function(param) {
 setup_newborn_table <- function(param) {
   # Prepare newborn_table with many rows to reserve enough memory
   # while simulation
-  newborn_table <- a_new_calf[1:param$max_herd_size, ]
+  newborn_table <- a_new_calf[rep(1, param$max_herd_size), ]
   # Used 1:n instead of seq_len(n) because it is faster
   newborn_table[, c("id_mother", "id_calf", "n_litter", "status_mother",
                     "is_freemartin") :=
