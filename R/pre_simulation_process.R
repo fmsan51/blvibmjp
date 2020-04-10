@@ -32,10 +32,10 @@
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_BLV_spread()].
-prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
-                        today = Sys.Date(),
-                        create_calf_data = F, modify_prevalence = NULL,
-                        area_name = NULL) {
+prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
+                         today = Sys.Date(),
+                         create_calf_data = F, modify_prevalence = NULL,
+                         area_name = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -534,12 +534,12 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 #' @param excel Set this or `cow_data`, `area_data` and `movement_data`.
 #' @param param See [param].
 #' @param output When `TRUE`, create output csv files with names of "cow.csv", "area.csv" and "movement.csv" into a working directory. Shorthand form of setting "xxx.csv" to `xxx_output_file`.
-#' @param cow_data See [prepare_cow()] for detail.
+#' @param cow_data See [prepare_cows()] for detail.
 #' @param area_data See [prepare_area()] for detail.
 #' @param movement_data See [prepare_movement()] for detail.
 #' @param cow_output_file,area_output_file,movement_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
 #' @param sep Separatator used in `capacity` column of area data. See [prepare_area()] for detail.
-#' @param ... Other arguments passed to [prepare_cow()].
+#' @param ... Other arguments passed to [prepare_cows()].
 #'
 #' @export
 #' @return csv files which can be used as an input for [simulate_BLV_spread()].
@@ -574,8 +574,8 @@ prepare_data <- function(excel, param, output = F,
     movement_output_file <- "movement.csv"
   }
 
-  cows <- prepare_cow(data = cow_input, param = param,
-                      output_file = cow_output_file, area_name = area_name, ...)
+  cows <- prepare_cows(data = cow_input, param = param,
+                       output_file = cow_output_file, area_name = area_name, ...)
   areas <- prepare_area(data = area_input,
                         output_file = area_output_file, sep = sep)
   movement <- prepare_movement(data = movement_input,

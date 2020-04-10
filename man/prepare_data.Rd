@@ -25,7 +25,7 @@ prepare_data(
 
 \item{output}{When \code{TRUE}, create output csv files with names of "cow.csv", "area.csv" and "movement.csv" into a working directory. Shorthand form of setting "xxx.csv" to \code{xxx_output_file}.}
 
-\item{cow_data}{See \code{\link[=prepare_cow]{prepare_cow()}} for detail.}
+\item{cow_data}{See \code{\link[=prepare_cows]{prepare_cows()}} for detail.}
 
 \item{area_data}{See \code{\link[=prepare_area]{prepare_area()}} for detail.}
 
@@ -35,7 +35,7 @@ prepare_data(
 
 \item{sep}{Separatator used in \code{capacity} column of area data. See \code{\link[=prepare_area]{prepare_area()}} for detail.}
 
-\item{...}{Other arguments passed to \code{\link[=prepare_cow]{prepare_cow()}}.}
+\item{...}{Other arguments passed to \code{\link[=prepare_cows]{prepare_cows()}}.}
 }
 \value{
 csv files which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
