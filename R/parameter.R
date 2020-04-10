@@ -171,7 +171,7 @@ calc_param <- function(param, modification = NULL) {
   if (param$test_frequency == 0) {
     res$test_months <- numeric(0)
   } else {
-    test_months <- floor(12 / param$test_frequency *
+    test_months <- ceiling(12 / param$test_frequency *
                          seq(param$test_frequency))
     test_months <-
       (test_months + param$simulation_start + 6) %% 12 + 1

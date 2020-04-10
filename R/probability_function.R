@@ -411,7 +411,7 @@ age_die <- function(n_cows, param_sim) {
     rexp(n_cows, rate = param_sim$die_e_rate) * (is_exp < param_sim$die_prop) +
     rgamma(n_cows, shape = param_sim$die_g_shape, rate = param_sim$die_g_rate) *
     (is_exp >= param_sim$die_prop)
-  return(trunc(value))
+  return(ceiling(value))
 }
 
 
@@ -420,7 +420,7 @@ age_slaughtered <- function(n_cows, param_sim) {
   value <- rgamma(n_cows,
                   shape = param_sim$slaughter_shape,
                   rate = param_sim$slaughter_rate)
-  return(trunc(value))
+  return(ceiling(value))
 }
 
 

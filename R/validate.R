@@ -175,7 +175,7 @@ format_date <- function(cows, date_format = "ymd",
         cows[[date_col]] <- day(date_formatter(cows[[date_col]]))
         cows[[date_col]][cows[[date_col]] == 31] <- 1
       } else {
-        cows[[date_col]] <- floor(
+        cows[[date_col]] <- ceiling(
           interval(today, date_formatter(cows[[date_col]])) / months(1, F)
           )
         if (any(cows[[date_col]] < 0, na.rm = T)) {
