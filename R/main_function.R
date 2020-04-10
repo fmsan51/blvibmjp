@@ -653,9 +653,6 @@ extract_owned_cows <- function(cows) {
 #'
 #' @return A list composed of [cow_table] and [areas].
 change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
-  # area_tableに沿って、移動する個体、合致したconditionを抽出
-  # とりあえず全て移動させて、移動できなかった個体はchamber_idを決めない
-
   res <- assign_newborns(cows, area_table, areas)
   cows <- res$cows
   areas <- res$areas
@@ -663,30 +660,31 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
     attr(movement_table, "cond_as_expr"),
-    function(x) {cows[eval(x) & is_owned, cow_id]}
+    function(x) {cows[eval(x), cow_id]}
     )
 
   # Remove duplicated cow_id
-  duplicated_cow_id <-
+  unique_cow_id <-
     relist(!duplicated(unlist(cow_id_met_condition)), cow_id_met_condition)
-  cow_id_to_move <- mapply(function(x, y) {x[y]},
-                           cow_id_met_condition, duplicated_cow_id,
-                           SIMPLIFY = FALSE)
+  cow_id_to_move_in_each_area <-
+    mapply(function(x, y) {x[y]}, cow_id_met_condition, unique_cow_id,
+           SIMPLIFY = FALSE)
   cow_id_to_move <- unlist(cow_id_to_move_in_each_area)
-  n_cows_to_move <- length(cow_id_to_move)
-  if (n_cows_to_move == 0) {
+  if (length(cow_id_to_move) == 0) {
     return(res)
   }
 
   cow_id_returned_from_pasture <-
-      cows[cow_id %in% unlist(cow_id_to_move) & area_id == 0, cow_id]
+    cows[cow_id %in% cow_id_to_move & area_id == 0, cow_id]
+    # cows$cow_id[cond] contains NA rows
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <- table(
     factor(cows$area_id[cows$is_owned & !is.na(cows$is_owned)],
            levels = area_table$area_id)
     )
-  n_cows_to_move_by_each_condition <- sapply(cow_id_to_move, length)
+  n_cows_to_move_by_each_condition <-
+    sapply(cow_id_to_move_in_each_area, length)
   n_cows_to_move_in_each_area <- tapply(
     n_cows_to_move_by_each_condition,
     attr(movement_table, "factored_current_area"),
@@ -696,23 +694,21 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   empty_spaces[empty_spaces < 0] <- 0
 
   # Remove cows from areas
-  vec_cows_to_move <- flatten_dbl(cow_id_met_condition)
   res <- remove_from_areas(cows, areas, area_table,
-                           match(vec_cows_to_move, cows$cow_id))
+                           match(cow_id_to_move, cows$cow_id))
   cows <- res$cows
   areas <- res$areas
-  cow_id_allocated_to_full_areas <- numeric(attr(cows, "herd_size"))
-  cow_id_allocated_to_full_areas_index <- 0
 
   # Decide to which next_area cows will move
   for (i_movement in 1:nrow(movement_table)) {
     # 1:n is used because it is much faster than seq_len(n).
-    i_cow_id <- resample(cow_id_to_move[[i_movement]])
-    # sample() here must not be replaced with sample.int() because the latter
-    # causes error when the length of x is 0.
-    # Order of cow_id is randomized to decide cow_id_allocated_to_full_areas
+    i_cow_id <- cow_id_to_move_in_each_area[[i_movement]]
+    n_cows_to_move <- length(i_cow_id)
+    if (n_cows_to_move == 0) {
+      next()
+    }
     i_next_area <- movement_table$next_area[[i_movement]]
-    chr_i_next_area <- as.character(i_next_area)
+    chr_i_next_area <- attr(movement_table, "chr_next_area")[i_movement]
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
       # A. For conditions with priorities specified by integers
 
@@ -720,86 +716,76 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
       allocated_area_index <-
         findInterval(seq_along(i_cow_id),
                      c(0, cumsum(empty_spaces_in_next_areas)), left.open = T)
+      # Note that empty_spaces_in_next_areas may contain Inf
       allocated_areas <- i_next_area[allocated_area_index]
       empty_spaces[chr_i_next_area] <- empty_spaces[chr_i_next_area] -
         table(factor(allocated_areas, levels = chr_i_next_area))
 
-      # When length(i_cow_id) is larger than sum(empty_spaces_in_next_area),
-      # allocated_area_index includes NA.
-      # Then allocate such cows into full areas according to capacity.
+      # When n_cows_to_move > sum(empty_spaces_in_next_area),
+      # allocated_areas includes NA.
+      # Then allocate these cows into full areas according to capacity.
       if (anyNA(allocated_areas)) {
         capacity_of_next_areas <- attr(area_table, "capacity")[chr_i_next_area]
-        is_na_allocated_areas <- is.na(allocated_areas)
-        n_na_allocated_areas <- sum(is_na_allocated_areas)
+        is_not_allocated <- is.na(allocated_areas)
+        n_not_allocated <- sum(is_not_allocated)
         if (any(capacity_of_next_areas == Inf)) {
-          allocated_areas[which(is_na_allocated_areas)] <-
+          allocated_areas[is_not_allocated] <-
             resample(i_next_area[capacity_of_next_areas == Inf],
-                     n_na_allocated_areas, replace = T)
+                     n_not_allocated, replace = T)
         } else {
-          allocated_areas[which(is_na_allocated_areas)] <-
-            resample(i_next_area, n_na_allocated_areas, replace = T,
+          allocated_areas[is_not_allocated] <-
+            resample(i_next_area, n_not_allocated, replace = T,
                      prob = capacity_of_next_areas)
         }
-        cow_id_allocated_to_full_areas[
-          cow_id_allocated_to_full_areas_index + 1:n_na_allocated_areas
-          ] <- i_cow_id[is_na_allocated_areas]
-        # 1:n is used because it is much faster than seq_len(n).
-        cow_id_allocated_to_full_areas_index <-
-          cow_id_allocated_to_full_areas_index + n_na_allocated_areas
       }
     } else {
       # B. For conditions with priorities specified by real numbers
 
-      n_cows_to_move <- length(i_cow_id)
       i_priority <- movement_table$priority[[i_movement]]
       vacancy <- empty_spaces[i_next_area]
+      fct_i_next_area <- factor(i_next_area)
+      total_vacancy <- sum(vacancy)
 
-      if (sum(vacancy) > n_cows_to_move) {
+      if (total_vacancy > n_cows_to_move) {
         n_cows_to_reallocate <- n_cows_to_move
-        n_cows_allocated_in_each_area <- setNames(numeric(length(i_next_area)),
-                                                  chr_i_next_area)
+        n_cows_allocated_in_each_area <- numeric(length(i_next_area))
         while (n_cows_to_reallocate > 0) {
           # When some cows are allocated to full areas, assign cows
           # to non-full areas.
-          is_overcrowded <- vacancy < 0
           is_not_full <- vacancy > 0
-          allocated_areas <- resample(i_next_area[is_not_full],
-                                      n_cows_to_reallocate, replace = T,
-                                      prob = i_priority[is_not_full])
-          n_cows_reallocated_in_each_area <-
-            table(factor(allocated_areas, levels = chr_i_next_area))
+          allocated_areas <-
+            resample(fct_i_next_area[is_not_full], n_cows_to_reallocate,
+                     replace = T, prob = i_priority[is_not_full])
+          n_cows_reallocated_in_each_area <- table(allocated_areas)
           vacancy <- vacancy - n_cows_reallocated_in_each_area
           n_cows_to_reallocate_in_each_area <- -vacancy * (vacancy < 0)
-          n_cows_to_reallocate <- sum(n_cows_to_reallocate_in_each_area)
           n_cows_allocated_in_each_area <-
             n_cows_allocated_in_each_area + n_cows_reallocated_in_each_area -
             n_cows_to_reallocate_in_each_area
+          n_cows_to_reallocate <- sum(n_cows_to_reallocate_in_each_area)
         }
-        allocated_areas <- rep(i_next_area,
-                               times = n_cows_allocated_in_each_area)
+        allocated_areas <-
+          rep(i_next_area, times = n_cows_allocated_in_each_area)
+      } else if (total_vacancy == n_cows_to_move) {
+        allocated_areas <- rep(i_next_area, times = vacancy)
       } else {
         # When there is not enough vacancy
-        n_cows_allocated_to_full_areas <- sum(vacancy) - n_cows_to_move
-        cow_id_allocated_to_full_areas[
-          seq_len(n_cows_allocated_to_full_areas) +
-            cow_id_allocated_to_full_areas_index
-          ] <- i_cow_id[seq_len(n_cows_allocated_to_full_areas)]
-        cow_id_allocated_to_full_areas_index <-
-          cow_id_allocated_to_full_areas_index + n_cows_allocated_to_full_areas
-
+        n_cows_allocated_to_full_areas <- total_vacancy - n_cows_to_move
         capacity_of_areas <- attr(area_table, "capacity")[i_next_area]
-        allocated_areas <- c(rep(i_next_area, vacancy),
+        allocated_areas <- c(
           resample(i_next_area, n_cows_allocated_to_full_areas, replace = T,
-                   prob = capacity_of_areas))
+                   prob = capacity_of_areas),
+          rep(i_next_area, vacancy))
       }
     }
-    cows$area_id[match(i_cow_id, cows$cow_id)] <- allocated_areas
+    cows$area_id[match(i_cow_id, cows$cow_id)] <- resample(allocated_areas)
   }
+
   # Assignment of a chamber_id for a cow allocated to a full but free area
   # will not occur because calculate_area_assignment() calculates only about
   # tie-stall areas.
   cows_to_allocate_chambers <-
-    calculate_area_assignment(cows, area_table, vec_cows_to_move)
+    calculate_area_assignment(cows, area_table, cow_id_to_move)
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
 
   # Calculate seroconversion of cows have returned from a communal pasture
@@ -832,8 +818,7 @@ infect <- function(cows, areas, area_table, infected_cow_id, cause, i) {
        `:=`(infection_status = "ial",
             cause_infection = cause)]
   for (i_area in attr(area_table, "tie_stall_chr")) {
-    areas[[i_area]][match(infected_cow_id, cow_id),
-                    `:=`(cow_status = "ial")]
+    areas[[i_area]][match(infected_cow_id, cow_id), `:=`(cow_status = "ial")]
   }
   return(list(cows = cows, areas = areas))
 }
