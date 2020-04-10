@@ -2,10 +2,8 @@
 #'
 #' Simulate spread of BLV in a typical Japanese dairy herd.
 #'
-#' @param prepared_data The result of [prepare_data()]. Set this parameters or `area_table` and `movement_table`.
+#' @param prepared_data The result of [prepare_data()].
 #' @param param See [param].
-#' @param area_table See [area_table].
-#' @param movement_table See [movement_table].
 #' @param list_param_modif List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to `param_modif` of  [calc_param()]. Specify like `list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)`.
 #' @param save_cows,save_param Wheher to save results of simulations and used parameters to files.
 #' @param i_simulation_start An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.
@@ -15,7 +13,6 @@
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
 simulate_blv_spread <- function(prepared_data, param,
-                                area_table, movement_table,
                                 list_param_modif = NULL,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1, seed = NULL,
@@ -31,9 +28,9 @@ simulate_blv_spread <- function(prepared_data, param,
   cow_table <- NULL
   if (!missing(prepared_data)) {
     cow_table <- prepared_data$cows
-    area_table <- prepared_data$areas
-    movement_table <- prepared_data$movement
   }
+  area_table <- prepared_data$areas
+  movement_table <- prepared_data$movement
 
   setup_cows_res <- setup_cows(param, save_cows, cow_table)
   area_table <- setup_area_table(area_table, param)

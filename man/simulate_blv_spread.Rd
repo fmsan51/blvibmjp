@@ -7,8 +7,6 @@
 simulate_blv_spread(
   prepared_data,
   param,
-  area_table,
-  movement_table,
   list_param_modif = NULL,
   save_cows = T,
   save_param = T,
@@ -18,13 +16,9 @@ simulate_blv_spread(
 )
 }
 \arguments{
-\item{prepared_data}{The result of \code{\link[=prepare_data]{prepare_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
+\item{prepared_data}{The result of \code{\link[=prepare_data]{prepare_data()}}.}
 
 \item{param}{See \link{param}.}
-
-\item{area_table}{See \link{area_table}.}
-
-\item{movement_table}{See \link{movement_table}.}
 
 \item{list_param_modif}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modif} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
 
