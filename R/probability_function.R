@@ -52,12 +52,12 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
 
 #' Whether a EBL cow is detected
 #'
-#' @param rows_cow_ebl The row indices in [cow_table] of EBL cows.
+#' @param n_cows The number of cows.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A logical vector.
-is_ebl_detected <- function(id_cow_ebl, param_sim) {
-  runif(length(id_cow_ebl)) < param_sim$prob_ebl_detected
+is_ebl_detected <- function(n_cows, param_sim) {
+  runif(n_cows) < param_sim$prob_ebl_detected
 }
 
 

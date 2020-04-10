@@ -513,8 +513,9 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
     areas <- res$areas
   }
   rows_overlooked <- rows_new_ebl[!rows_new_ebl %in% rows_removed_ebl]
-  if (length(rows_overlooked) != 0) {
-    month_ebl_die <- n_month_until_ebl_die(rows_overlooked, param_sim) + i
+  n_cows_overlooked <- length(rows_overlooked)
+  if (n_cows_overlooked != 0) {
+    month_ebl_die <- n_month_until_ebl_die(n_cows_overlooked, param_sim) + i
     cows[rows_overlooked,
          `:=`(date_removal_expected =
                 fifelse(date_removal_expected >= month_ebl_die,
