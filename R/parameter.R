@@ -610,3 +610,33 @@ validate_param <- function(param) {
   invisible(NULL)
 }
 
+
+#' Whether a newborn will be a replacement
+#'
+#' @param n_calves The number of newborns.
+#' @param herd_size The current herd size.
+#' @param n_delivered The number of delivered cows in a herd.
+#' @param param See [param].
+#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
+#'
+#' @name is_replacement
+#' @references 「平成28年度 乳用種初生牛の経営に関する調査報告書」の「表40 調査対象経営の乳用種雌子牛の仕向け状況（規模別）」
+#' @encoding UTF-8
+#' @return A logical vector or a numeric value.
+set_prob_rep <- function(n_delivered, param) {
+  prob_rep <- if (!is.na(param$prop_replacement)) {
+    param$prop_replacement
+  } else if (n_delivered < 30) {
+    4 / (0.2 + 4)
+  } else if (n_delivered < 50) {
+    4.6 / (1 + 4.6)
+  } else if (n_delivered < 80) {
+    9.9 / (1.7 + 9.9)
+  } else if (n_delivered < 100) {
+    26.7 / (1 + 26.7)
+  } else {
+    44.5 / (3.2 + 44.5)
+  }
+  return(prob_rep)
+}
+
