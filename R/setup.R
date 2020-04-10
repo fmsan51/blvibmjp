@@ -6,7 +6,7 @@
 #' @param param See [param].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
 #'
-#' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
+#' @return A list consisted of `init_cows` ([cow_table]) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
 setup_cows <- function(cow_table, param, save_cows) {
@@ -24,8 +24,7 @@ setup_cows <- function(cow_table, param, save_cows) {
     save_to_csv(init_cows, "month", 0, param$output_dir)
   }
 
-  return(list(init_cows = init_cows, init_n_cows = init_n_cows,
-              init_max_cow_id = init_max_cow_id))
+  return(list(init_cows = init_cows, init_max_cow_id = init_max_cow_id))
 }
 
 
@@ -33,13 +32,12 @@ setup_cows <- function(cow_table, param, save_cows) {
 #'
 #' Make initial `rp_table`.
 #'
-#' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
 #' @param param See [param].
 #'
 #' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
-setup_rp_table <- function(init_n_cows, param) {
+setup_rp_table <- function(param) {
   # Prepare rp_table with many rows to reserve enough memory while simulation
-  one_day_rp[1:(init_n_cows * 2), ]
+  one_day_rp[1:(param$herd_size_limits[2] * 2), ]
   # Used 1:n instead of seq_len(n) because it is faster
 }
 
@@ -48,13 +46,13 @@ setup_rp_table <- function(init_n_cows, param) {
 #'
 #' Make initial `newborn_table`. `newborn_table` is similar to [cow_table] and with additional columns `"id_mother"`, `"id_calf"`, `"n_newborns_per_cow"`, `"status_mother"` and `"is_freemartin`".
 #'
-#' @param init_n_cows The element `init_n_cows` from the return of [setup_cows()].
+#' @param param See [param].
 #'
 #' @seealso [setup_cows] [setup_areas] [cow_table] [rp_table] [setup_area_table]
-setup_newborn_table <- function(init_n_cows) {
+setup_newborn_table <- function(param) {
   # Prepare newborn_table with many rows to reserve enough memory
   # while simulation
-  newborn_table <- a_new_calf[1:(init_n_cows * 2), ]
+  newborn_table <- a_new_calf[1:(param$herd_size_limits[2] * 2), ]
   # Used 1:n instead of seq_len(n) because it is faster
   newborn_table[, c("id_mother", "id_calf", "n_litter", "status_mother",
                     "is_freemartin") :=

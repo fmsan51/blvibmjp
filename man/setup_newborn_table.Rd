@@ -4,10 +4,10 @@
 \alias{setup_newborn_table}
 \title{Setup of \code{newborn_table}}
 \usage{
-setup_newborn_table(init_n_cows)
+setup_newborn_table(param)
 }
 \arguments{
-\item{init_n_cows}{The element \code{init_n_cows} from the return of \code{\link[=setup_cows]{setup_cows()}}.}
+\item{param}{See \link{param}.}
 }
 \description{
 Make initial \code{newborn_table}. \code{newborn_table} is similar to \link{cow_table} and with additional columns \code{"id_mother"}, \code{"id_calf"}, \code{"n_newborns_per_cow"}, \code{"status_mother"} and \verb{"is_freemartin}".

@@ -38,8 +38,8 @@ simulate_blv_spread <- function(prepared_data, param,
 
   movement_table <- setup_movement_table(area_table, movement_table)
   cows_areas <- set_init_chamber_id(setup_cows_res$init_cows, area_table, areas)
-  day_rp <- setup_rp_table(setup_cows_res$init_n_cows, param)
-  newborn_table <- setup_newborn_table(setup_cows_res$init_n_cows)
+  day_rp <- setup_rp_table(param)
+  newborn_table <- setup_newborn_table(param)
   if (validate) {
     validate_param(param)
   }
