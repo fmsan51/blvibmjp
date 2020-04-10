@@ -45,11 +45,8 @@ simulate_blv_spread <- function(prepared_data, param,
   }
   param_processed <- c(param, process_param(cows_areas, param))
 
-  result <- result_area <-
-    vector("list", param_processed$simulation_length + 1)
+  result <- vector("list", param_processed$simulation_length + 1)
   result[[1]] <- copy(cows_areas$cows)
-  # result_aras is made to make debugging easy.
-  result_area[[1]] <- cows_areas$areas
 
   seeds <- sample.int(.Machine$integer.max, param_processed$n_simulation)
   if (save_param) {
@@ -63,7 +60,7 @@ simulate_blv_spread <- function(prepared_data, param,
     set.seed(seeds[i_simulation])
     res <- simulate_once(cows_areas, setup_cows_res$init_max_cow_id,
              area_table, movement_table, day_rp, newborn_table,
-             i_simulation, result, result_area,
+             i_simulation, result,
              param_processed, param_modif = list_param_modif[[i_simulation]],
              save_cows, save_param)
   }
@@ -85,15 +82,15 @@ simulate_blv_spread <- function(prepared_data, param,
 #' @param day_rp A result of [setup_rp_table()].
 #' @param newborn_table A result of [setup_newborn_table()].
 #' @param i_simulation The iteration number of simulations.
-#' @param result,result_area Lists to store a `cow_table` and a `tie_stall_table` respectively.
+#' @param result Lists to store a `cow_table`.
 #' @param param_processed A result of [process_param()].
 #' @param param_modif See [calc_param()].
 #' @param save_cows,save_param Wheher to save a result of a simulation and used parameters to files.
 #'
-#' @return A list composed of two components: `result_combined` and `result_area_combined`
+#' @return A `cow_table`
 simulate_once <- function(cows_areas, max_cow_id,
                           area_table, movement_table, day_rp, newborn_table,
-                          i_simulation, result, result_area,
+                          i_simulation, result,
                           param_processed, param_modif, save_cows, save_param) {
   cows <- copy(cows_areas$cows)
   areas <- copy(cows_areas$areas)
@@ -145,7 +142,6 @@ simulate_once <- function(cows_areas, max_cow_id,
     areas <- res$areas
 
     result[[i + 1]] <- copy(cows)
-    # result_area[[i + 1]] <- copy(areas)
     cows <- extract_owned_cows(cows)
   }
 
@@ -155,7 +151,6 @@ simulate_once <- function(cows_areas, max_cow_id,
     save_to_csv(result_combined, param_processed$output_filename,
                 i_simulation, subdir = param_processed$output_dir)
   }
-  # result_area_combined <- lapply(result_area, rbindlist)
 
   return(result_combined)
 }

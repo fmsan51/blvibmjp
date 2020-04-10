@@ -13,7 +13,6 @@ simulate_once(
   newborn_table,
   i_simulation,
   result,
-  result_area,
   param_processed,
   param_modif,
   save_cows,
@@ -35,7 +34,7 @@ simulate_once(
 
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
+\item{result}{Lists to store a \code{cow_table}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 
@@ -44,7 +43,7 @@ simulate_once(
 \item{save_cows, save_param}{Wheher to save a result of a simulation and used parameters to files.}
 }
 \value{
-A list composed of two components: \code{result_combined} and \code{result_area_combined}
+A \code{cow_table}
 }
 \description{
 Run simulation once.
