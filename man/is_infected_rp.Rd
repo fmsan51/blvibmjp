@@ -4,10 +4,10 @@
 \alias{is_infected_rp}
 \title{Whether cows are infected by rectal palpation}
 \usage{
-is_infected_rp(n_cows_palpated, param_sim)
+is_infected_rp(n_cows, param_sim)
 }
 \arguments{
-\item{n_cows_palpated}{ID of rectally palpated cows.}
+\item{n_cows}{The number of cows.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }

@@ -5,12 +5,12 @@
 \alias{sex_twins}
 \title{Sex ratio of newborns}
 \usage{
-sex_newborns(n_newborns, param_sim)
+sex_newborns(n_calves, param_sim)
 
 sex_twins(n_calves, param_sim)
 }
 \arguments{
-\item{n_newborns, n_calves}{The number of newborns.}
+\item{n_calves}{The number of newborns.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }

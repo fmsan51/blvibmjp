@@ -167,13 +167,12 @@ is_infected_needles <- function(cows, param_sim) {
 
 #' Whether cows are infected by rectal palpation
 #'
-#' @param n_cows_palpated ID of rectally palpated cows.
+#' @param n_cows The number of cows.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_rp <- function(n_cows_palpated, param_sim) {
- # TODO: ここ他のis_infected_xxxにそろえてid_cow_xxxにしたほうがいいかも。それとも他をn_xxxにする？
-  runif(n_cows_palpated) < param_sim$prob_inf_rp
+is_infected_rp <- function(n_cows, param_sim) {
+  runif(n_cows) < param_sim$prob_inf_rp
 }
 
 
@@ -335,14 +334,14 @@ n_newborn_per_dam <- function(n_dams, param_sim) {
 #' `sex_twins()` returns sex of pairs of twin newborns.
 #' Probability to be triplets or more is ignored (=0).
 #'
-#' @param n_newborns,n_calves The number of newborns.
+#' @param n_calves The number of newborns.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @rdname sex_newborns
 #' @return A character vector consisted of "male", "female" and "freemartin".
-sex_newborns <- function(n_newborns, param_sim) {
-  c("female", "male")[(runif(n_newborns) > param_sim$prob_female) + 1]
-  # Equals to sample(c(...), n_newborns, replace = T, prob = c(prob, 1 - prob))
+sex_newborns <- function(n_calves, param_sim) {
+  c("female", "male")[(runif(n_calves) > param_sim$prob_female) + 1]
+  # Equals to sample(c(...), n_calves, replace = T, prob = c(prob, 1 - prob))
 }
 
 
