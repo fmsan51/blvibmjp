@@ -230,7 +230,7 @@ prepare_cow <- function(csv, param, data = NULL, output_file = NULL,
            `:=`(infection_status = "s")]
       cows$infection_status[is_na] <- "s"
     } else if (appropreate_n_inf <= max_n_inf) {
-      cows[resample(which(is_na), max_n_inf - appropreate_n_inf),
+      cows[resample(which(is_na), max_n_inf - inf_count["TRUE"]),
            `:=`(infection_status = "ial")]
       cows$infection_status[is.na(cows$infection_status)] <- "s"
     } else {
