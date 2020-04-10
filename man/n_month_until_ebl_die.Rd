@@ -4,10 +4,10 @@
 \alias{n_month_until_ebl_die}
 \title{The number of months until EBL cows die}
 \usage{
-n_month_until_ebl_die(rows_cow_overlooked, param_sim)
+n_month_until_ebl_die(n_cows, param_sim)
 }
 \arguments{
-\item{rows_cow_overlooked}{The row IDs of EBL-yet-non-detected cows.}
+\item{n_cows}{The number of cows.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }

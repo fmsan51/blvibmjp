@@ -63,13 +63,12 @@ is_ebl_detected <- function(n_cows, param_sim) {
 
 #' The number of months until EBL cows die
 #'
-#' @param rows_cow_overlooked The row IDs of EBL-yet-non-detected cows.
+#' @param n_cows The number of cows.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A numeric vector.
-n_month_until_ebl_die <- function(rows_cow_overlooked, param_sim) {
-  # TODO: なんでここrow? idにしよう
-  months <- rexp(length(rows_cow_overlooked), param_sim$rate_ebl_die)
+n_month_until_ebl_die <- function(n_cows, param_sim) {
+  months <- rexp(n_cows, param_sim$rate_ebl_die)
   months <- ceiling(months)
   return(months)
 }

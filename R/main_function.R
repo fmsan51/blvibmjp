@@ -506,7 +506,8 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
 
   # Removal by detection of EBL
   rows_new_ebl <- which(cows$date_ebl == i)
-  rows_removed_ebl <- rows_new_ebl[is_ebl_detected(rows_new_ebl, param_sim)]
+  rows_removed_ebl <-
+    rows_new_ebl[is_ebl_detected(length(rows_new_ebl), param_sim)]
   if (length(rows_removed_ebl) != 0) {
     res <- remove_cows(cows, areas, i, area_table, rows_removed_ebl, "culled")
     cows <- res$cows
