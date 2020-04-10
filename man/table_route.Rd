@@ -6,16 +6,24 @@
 \title{Summarize infection routes}
 \usage{
 table_route(
-  output_filename,
-  output_dir,
-  n_simulation,
-  simulation_length,
-  route_levels = NULL
+  param,
+  route_levels = NULL,
+  route_labels = NULL,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  n_simulation = param$n_simulation,
+  simulation_length = param$simulation_length
 )
 
 summary_route(cows)
 }
 \arguments{
+\item{param}{See \link{param}.}
+
+\item{route_levels}{See \link{redefine_route_levels}.}
+
+\item{route_labels}{See \link{redefine_route_levels}.}
+
 \item{output_filename}{See \link{param}.}
 
 \item{output_dir}{See \link{param}.}
@@ -24,9 +32,7 @@ summary_route(cows)
 
 \item{simulation_length}{See \link{param}.}
 
-\item{route_levels}{See \link{redefine_route_levels}.}
-
-\item{cows}{A \code{cow_table} read by \link{read_final_cows}.}
+\item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
 }
 \description{
 Calculate monthly infection routes at the end of simulations.

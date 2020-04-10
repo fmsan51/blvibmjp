@@ -314,6 +314,7 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 #'
 #' @seealso [table_infection_status]
 #' @name table_route
+#' @export
 table_route <- function(output_filename, output_dir, n_simulation,
                         simulation_length, route_levels = NULL) {
   cows <- read_final_cows(output_filename, output_dir, n_simulation,
@@ -346,6 +347,7 @@ summary_route <- function(cows) {
 #'
 #' @seealso [table_route]
 #' @name table_infection_status
+#' @export
 table_infection_status <- function(output_filename, output_dir,
                                    n_simulation, simulation_length) {
     cows <- read_final_cows(output_filename, output_dir, n_simulation,

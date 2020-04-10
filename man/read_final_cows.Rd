@@ -5,16 +5,17 @@
 \title{Read cow information at the end of a simulation}
 \usage{
 read_final_cows(
-  output_filename,
-  output_dir,
-  n_simulation,
-  simulation_length,
+  param,
   route_levels = NULL,
-  route_labels = NULL
+  route_labels = NULL,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  n_simulation = param$n_simulation,
+  simulation_length = param$simulation_length
 )
 }
 \arguments{
-\item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param}.}
+\item{param, output_filename, output_dir, n_simulation, simulation_length}{See \link{param}.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
