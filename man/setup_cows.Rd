@@ -4,14 +4,14 @@
 \alias{setup_cows}
 \title{Setup of \code{cow_table}}
 \usage{
-setup_cows(param, save_cows, cow_table = NULL)
+setup_cows(cow_table, param, save_cows)
 }
 \arguments{
+\item{cow_table}{See \link{cow_table}.}
+
 \item{param}{See \link{param}.}
 
 \item{save_cows}{logical. Whether to save initial \code{cows} to a file.}
-
-\item{cow_table}{See \link{cow_table}.}
 }
 \value{
 A list consisted of \code{init_cows} (\link{cow_table}) and \code{init_n_cows} (the number of rows of \code{cows}) as return of the function and \code{month0000.csv} in the directionry specified as \code{param$output_dir}.

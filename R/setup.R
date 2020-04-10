@@ -2,19 +2,14 @@
 #'
 #' Load initial cow status from a csv file, transform it to a [cow_table], and output the `cow_table` to a csv file `month0000.csv`.
 #'
+#' @param cow_table See [cow_table].
 #' @param param See [param].
 #' @param save_cows logical. Whether to save initial `cows` to a file.
-#' @param cow_table See [cow_table].
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) and `init_n_cows` (the number of rows of `cows`) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
 #'
 #' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
-setup_cows <- function(param, save_cows, cow_table = NULL) {
-  if (is.null(cow_table)) {
-    cow_table <- fread(file = param$input_csv,
-                       colClasses = vapply(a_new_calf, class, ""))
-  }
-
+setup_cows <- function(cow_table, param, save_cows) {
   # Prepare cow_table with many rows to reserve enough memory while simulation
   init_n_cows <- nrow(cow_table)
   max_herd_size <- init_n_cows * param$simulation_length * 2

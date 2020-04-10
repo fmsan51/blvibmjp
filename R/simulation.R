@@ -25,14 +25,11 @@ simulate_blv_spread <- function(prepared_data, param,
     dir.create(param$output_dir, recursive = T)
   }
 
-  cow_table <- NULL
-  if (!missing(prepared_data)) {
-    cow_table <- prepared_data$cows
-  }
+  cow_table <- prepared_data$cows
   area_table <- prepared_data$areas
   movement_table <- prepared_data$movement
 
-  setup_cows_res <- setup_cows(param, save_cows, cow_table)
+  setup_cows_res <- setup_cows(cow_table, param, save_cows)
   area_table <- setup_area_table(area_table, param)
 
   areas <- setup_tie_stall_table(area_table)
