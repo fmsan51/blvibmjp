@@ -1,29 +1,3 @@
-#' Read cow_table at the start of a simulation from a csv and modify data ready to plot
-#'
-#' Read cow_table from a csv file, extract owned cows, set `i_simulation` column to 0, and redefine infection routes.
-#'
-#' @param csv Path to a csv file which contains [cow_table].
-#' @param cows See `cow_table`
-#' @param route_levels,route_labels See [redefine_route_levels].
-#'
-#' @return A [cow_table] with an additional column `i_simulation`.
-#'
-#' @seealso [read_final_cows]
-read_initial_cows <- function(csv = NULL, cows = NULL, route_levels = NULL,
-                              route_labels = NULL) {
-  stopifnot(sum(is.null(cows), is.null(csv)) == 1)
-  if (is.null(cows)) {
-    cows <- fread(csv)
-  }
-  cows <- cows[is_owned == T, ]
-
-  cows <- redefine_route_levels(cows, lenguage = NULL,
-                                route_levels, route_labels)
-  cows$i_simulation <- 0
-  return(cows)
-}
-
-
 #' Read cow information at the end of a simulation
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
