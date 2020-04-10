@@ -24,7 +24,6 @@ Imports:
     stats,
     stringr,
     tidyr,
-    purrr,
     utils,
     zoo
 RoxygenNote: 7.1.0

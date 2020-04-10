@@ -665,10 +665,15 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 
   # Remove duplicated cow_id
   duplicated_cow_id <-
-    relist(!duplicated(flatten_dbl(cow_id_met_condition)), cow_id_met_condition)
+    relist(!duplicated(unlist(cow_id_met_condition)), cow_id_met_condition)
   cow_id_to_move <- mapply(function(x, y) {x[y]},
                            cow_id_met_condition, duplicated_cow_id,
                            SIMPLIFY = FALSE)
+  cow_id_to_move <- unlist(cow_id_to_move_in_each_area)
+  n_cows_to_move <- length(cow_id_to_move)
+  if (n_cows_to_move == 0) {
+    return(res)
+  }
 
   cow_id_returned_from_pasture <-
       cows[cow_id %in% unlist(cow_id_to_move) & area_id == 0, cow_id]
