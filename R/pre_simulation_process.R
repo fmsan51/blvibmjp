@@ -157,7 +157,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
               trunc(runif(.N, 0, param_calculated$calving_interval - 1)) * -1))]
   }
 
-  is_na <- cows$is_replacement
+  is_na <- is.na(cows$is_replacement)
   if (any(is_na)) {
     prob_rep <- set_prob_rep(sum(cows$parity != 0), param)
     cows[is_na, `:=`(is_replacement =
@@ -186,7 +186,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
                         date_last_delivery + months_milking, NA_real_))]
   }
   cows$date_dried[cows$stage == "milking"] <- NA_real_
-  is_na <- cows$stage
+  is_na <- is.na(cows$stage)
   if (any(is_na)) {
     cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
     cows[is_na & parity != 0,
@@ -224,7 +224,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
           ))
   }
 
-  is_na <- cows$infection_status
+  is_na <- is.na(cows$infection_status)
   if (!is.null(modify_prevalence)) {
     appropreate_n_inf <- round(n_cows * modify_prevalence)
     inf_count <- table(cows$infection_status != "s", useNA = "always")
