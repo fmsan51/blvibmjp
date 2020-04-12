@@ -29,20 +29,21 @@ simulate_blv_spread <- function(prepared_data, param,
   area_table <- prepared_data$areas
   movement_table <- prepared_data$movement
 
-  setup_cows_res <- setup_cows(cow_table, param, save_cows)
-  area_table <- setup_area_table(area_table, param)
+  param_processed <- c(param, process_param(cow_table, param))
+
+  cow_table <- setup_cows(cow_table, param_processed, save_cows)
+  area_table <- setup_area_table(area_table, param_processed)
   areas <- setup_tie_stall_table(area_table)
   # setup_tie_stall_table() must come after setup_area_table()
   # because it uses an attributes which setup_area_table() calculates
 
   movement_table <- setup_movement_table(area_table, movement_table)
-  cows_areas <- set_init_chamber_id(setup_cows_res$init_cows, area_table, areas)
-  day_rp <- setup_rp_table(param)
-  newborn_table <- setup_newborn_table(param)
+  cows_areas <- set_init_chamber_id(cow_table, area_table, areas)
+  day_rp <- setup_rp_table(param_processed)
+  newborn_table <- setup_newborn_table(param_processed)
   if (validate) {
-    validate_param(param)
+    validate_param(param_processed)
   }
-  param_processed <- c(param, process_param(cows_areas, param))
 
   result <- vector("list", param_processed$simulation_length + 1)
   result[[1]] <- copy(cows_areas$cows)
@@ -57,7 +58,7 @@ simulate_blv_spread <- function(prepared_data, param,
   for (i_simulation in (i_simulation_start:param_processed$n_simulation)) {
     cat("Simulation ", i_simulation, " / ", param_processed$n_simulation, "\n")
     set.seed(seeds[i_simulation])
-    res <- simulate_once(cows_areas, setup_cows_res$init_max_cow_id,
+    res <- simulate_once(cows_areas, param_processed$init_max_cow_id,
              area_table, movement_table, day_rp, newborn_table,
              i_simulation, result,
              param_processed, param_modif = list_param_modif[[i_simulation]],
@@ -75,7 +76,7 @@ simulate_blv_spread <- function(prepared_data, param,
 #' @note This function does not output the result to a csv file.
 #'
 #' @param cows_areas A result of [set_init_chamber_id()].
-#' @param max_cow_id `init_max_cow_id` component of a result of [setup_cows()].
+#' @param max_cow_id `init_max_cow_id` component of a result of [process_param()].
 #' @param area_table A result of [setup_area_table()].
 #' @param movement_table A result of [setup_movement_table()].
 #' @param day_rp A result of [setup_rp_table()].

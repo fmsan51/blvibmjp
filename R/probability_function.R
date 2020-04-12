@@ -372,8 +372,8 @@ is_replacement <- function(n_calves, herd_size, param_sim) {
   #   desirable_n_rep[2] <- param_sim$herd_size_limits[2] - herd_size
   # }
 
-  feasible_n_rep <- n_calves * (feasible_n_rep > n_calves) +
-                       feasible_n_rep * (feasible_n_rep <= n_calves)
+  feasible_n_rep <- n_calves * (desirable_n_rep > n_calves) +
+                       desirable_n_rep * (desirable_n_rep <= n_calves)
   # Identical to:
   # if (feasible_n_rep[1] > n_calves) {
   #   feasible_n_rep[1] <- n_calves

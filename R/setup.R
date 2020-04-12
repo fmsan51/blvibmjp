@@ -17,14 +17,13 @@ setup_cows <- function(cow_table, param, save_cows) {
   init_cows[1:init_n_cows, ] <- cow_table
   # Used 1:n instead of seq_len(n) because it is faster
 
-  init_max_cow_id <- max(init_cows$cow_id, na.rm = T)
   attr(init_cows, "herd_size") <- init_n_cows
 
   if (save_cows) {
     save_to_csv(init_cows, "month", 0, param$output_dir)
   }
 
-  return(list(init_cows = init_cows, init_max_cow_id = init_max_cow_id))
+  return(init_cows)
 }
 
 
@@ -149,10 +148,10 @@ setup_movement_table <- function(area_table, movement_table) {
   attr(movement_table, "factored_current_area") <-
     factor(movement_table$current_area, levels = area_table$area_id)
   attr(movement_table, "chr_next_area") <-
-    as.character(movement_table$next_area)
+    lapply(movement_table$next_area, as.character)
   attr(movement_table, "is_priority_specified_by_integer") <-
     vapply(movement_table$priority, is.wholenumber, T)
-  attr(movement_table, "cond_as_expr") <- parse(text = cond)
+  attr(movement_table, "cond_as_expr") <- parse(text = movement_table$condition)
 
   return(movement_table)
 }

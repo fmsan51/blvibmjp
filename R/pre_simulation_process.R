@@ -557,8 +557,8 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   cond <- gsub("dim", "i_month - date_last_delivery", cond, fixed = T)
   cond <- gsub("stay", "months_in_area", cond, fixed = T)
 
-  cond <- paste0(cond, "& area_id == ", movement_table$current_area,
-                 "& is_owned == T")
+  cond <- paste0(cond, " & area_id == ", movement_table$current_area,
+                 " & is_owned == T")
   movement_table$condition <- cond
 
   if (!is.null(output_file)) {

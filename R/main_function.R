@@ -175,7 +175,9 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
            type = "pregnancy_test")
       ]
     day_rp_last_row <- day_rp_last_row + n_pregnant_cows
-    cows$is_to_test_pregnancy <- (cows$date_got_pregnant == i - 2)
+    cows$is_to_test_pregnancy[
+      !is.na(cows$date_got_pregnant) & cows$date_got_pregnant == i - 2
+      ] <- F
   }
 
   # Health check after delivery
@@ -346,11 +348,11 @@ change_infection_status <- function(cows, i, month, area_table, areas,
 #' @return A [cow_table].
 do_test <- function(cows, month, param_sim) {
   if (any(month == param_sim$test_months)) {
-    herd_size <- attr(cows, "herd_size")
-    is_detected <- cows$infection_status != "s" &
-       runif(herd_size) < param_sim$test_sensitivity
-    is_false_positive <- cows$infection_status == "s" &
-      runif(herd_size) > param_sim$test_specificity
+    n_cows <- nrow(cows)
+    is_detected <-
+      cows$infection_status != "s" & runif(n_cows) < param_sim$test_sensitivity
+    is_false_positive <-
+      cows$infection_status != "s" & runif(n_cows) > param_sim$test_specificity
     cows$is_detected <- is_detected | is_false_positive
   }
   return(cows)
@@ -666,7 +668,6 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   res <- assign_newborns(cows, area_table, areas)
   cows <- res$cows
   areas <- res$areas
-
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
     attr(movement_table, "cond_as_expr"),
@@ -715,10 +716,10 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
     i_cow_id <- cow_id_to_move_in_each_area[[i_movement]]
     n_cows_to_move <- length(i_cow_id)
     if (n_cows_to_move == 0) {
-      next()
+      next
     }
     i_next_area <- movement_table$next_area[[i_movement]]
-    chr_i_next_area <- attr(movement_table, "chr_next_area")[i_movement]
+    chr_i_next_area <- attr(movement_table, "chr_next_area")[[i_movement]]
     if (attr(movement_table, "is_priority_specified_by_integer")[i_movement]) {
       # A. For conditions with priorities specified by integers
       # TODO: How to control more than two areas have same priority

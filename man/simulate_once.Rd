@@ -22,7 +22,7 @@ simulate_once(
 \arguments{
 \item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
 
-\item{max_cow_id}{\code{init_max_cow_id} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
+\item{max_cow_id}{\code{init_max_cow_id} component of a result of \code{\link[=process_param]{process_param()}}.}
 
 \item{area_table}{A result of \code{\link[=setup_area_table]{setup_area_table()}}.}
 
