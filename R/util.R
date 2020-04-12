@@ -40,8 +40,10 @@ is.wholenumber <- function(number) {
 #'
 #' See "sample()'s surprise" and "safer version" section in the example section in the help of [sample()] to understand why this function is necessary.
 #'
+#' @param x,... See [sample()].
+#'
 #' @examples
-#' sample()  # length 9
+#' sample(9)  # length 9
 #' blvibmjp:::resample(9)  # length 1
 resample <- function(x, ...) {
   x[sample.int(length(x), ...)]

@@ -20,5 +20,5 @@ A list consisted of \code{init_cows} (\link{cow_table}) as return of the functio
 Load initial cow status from a csv file, transform it to a \link{cow_table}, and output the \code{cow_table} to a csv file \code{month0000.csv}.
 }
 \seealso{
-\link{cow_table} \link{setup_areas} \link{setup_rp_table} \link{setup_area_table}
+\link{cow_table} \link{setup_area_table} \link{setup_rp_table} \link{setup_area_table}
 }

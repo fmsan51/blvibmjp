@@ -25,6 +25,3 @@ A \link{cow_table} with an additional column \code{i_simulation}.
 \description{
 Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 }
-\seealso{
-\link{read_initial_cows}
-}

@@ -31,7 +31,7 @@
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #'
 #' @export
-#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+#' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
                          today = Sys.Date(),
                          create_calf_data = F, modify_prevalence = NULL,
@@ -359,7 +359,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 #' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
 #'
 #' @export
-#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+#' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_area <- function(csv, data = NULL, output_file = NULL,
                          sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
@@ -454,7 +454,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 #' @param sep Separatator used in `priority` column. See explanation of `priority` in Detail section.
 #'
 #' @export
-#' @return A csv file which can be used as an input for [simulate_BLV_spread()].
+#' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_movement <- function(csv, data = NULL, output_file = NULL,
                              area_name = NULL, sep = "[,\t\r\n |;:]") {
   if (!missing(csv)) {
@@ -497,7 +497,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 
     movement_table$current_area <-
       factor(movement_table$current_area,
-             levels = chr_area_name, labes = area_name)
+             levels = chr_area_name, labels = area_name)
     movement_table$next_area <- lapply(movement_table$next_area,
       function(x) factor(x, levels = chr_area_name, labels = area_name)
       )
@@ -584,7 +584,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 #' @param ... Other arguments passed to [prepare_cows()].
 #'
 #' @export
-#' @return csv files which can be used as an input for [simulate_BLV_spread()].
+#' @return csv files which can be used as an input for [simulate_blv_spread()].
 prepare_data <- function(excel, param, output = F,
                          cow_data = NULL, area_data = NULL,
                          movement_data = NULL,

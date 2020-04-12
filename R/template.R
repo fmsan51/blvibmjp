@@ -174,15 +174,6 @@ a_chamber <- data.table(
 #' - `capacity`: Max number of cows can be kept in a area.
 #' - `tie_stall`: `area_id`s of tie-stall areas.
 #'
-#' @examples
-#' # A farm has three areas:
-#' # - A freebarn for calves (max capacity is 30 calves).
-#' # - A paddock for heifers (capacity is not limited).
-#' # - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
-#' areas <- a_area[rep(1, 3), ]
-#' areas[, `:=`(area_id = 1:3,
-#'              area_type = c("free", "outside", "tie"),
-#'              capacity = list(30, NA, c(40, 40, 30, 30))]
 #' @seealso [cow_table] [tie_stall_table] [movement_table] [rp_table]
 #' @name area_table
 #' @export
@@ -216,13 +207,6 @@ area_table_cols <- colnames(a_area)
 #' - `priority` (list consisted of integer and/or numeric): The priority for `next_area`. Specify integer or numeric vector (for numeric vector, they must be summed to 1,) whose length is equal to `next_area`. If `priority` is set by integer, cows move to the area with highest `priority` (= nearest to 1) which is not full. If multiple areas have the same `priority`, cows are romdomly allocated to the areas. If `priority` is set by numeric which is summed to 1, `priority` is regarded as probability in accordance to which cows move to `next_area`.
 #'
 #' If a cow meets multiple conditions, the condition in the fastest row will be used.
-#'
-#' @examples
-#' movements <- a_movement[rep(1, 3), ]
-#' movements[, `:=`(current_area = c(1L, 2L, 3L),
-#'                  condition = c("age > 2", "delivery", "delivery"),
-#'                  next_area = list(2L, 3:4, 3:4),
-#'                  priority = list(NA, NA, c(1, 2)))]
 #'
 #' @seealso [cow_table] [tie_stall_table] [area_table] [rp_table]
 #' @name movement_table

@@ -39,16 +39,6 @@ Several parameters are calculated by \link{setup_area_table} and added to a \cod
 \item \code{tie_stall}: \code{area_id}s of tie-stall areas.
 }
 }
-\examples{
-# A farm has three areas:
-# - A freebarn for calves (max capacity is 30 calves).
-# - A paddock for heifers (capacity is not limited).
-# - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
-areas <- a_area[rep(1, 3), ]
-areas[, `:=`(area_id = 1:3,
-             area_type = c("free", "outside", "tie"),
-             capacity = list(30, NA, c(40, 40, 30, 30))]
-}
 \seealso{
 \link{cow_table} \link{tie_stall_table} \link{movement_table} \link{rp_table}
 }

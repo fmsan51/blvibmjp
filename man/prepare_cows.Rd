@@ -33,7 +33,7 @@ prepare_cows(
 \item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
 }
 \value{
-A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
+A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.
 }
 \description{
 Transform an input csv into a suitable form, which is in a form of \link{cow_table}.

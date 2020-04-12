@@ -6,6 +6,9 @@
 \usage{
 validate_param(param)
 }
+\arguments{
+\item{param}{See \link{param}.}
+}
 \value{
 A parameter list.
 }

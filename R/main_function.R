@@ -14,7 +14,7 @@ add_1_to_age <- function(cows) {
 #' Conduct AI and check chance of infection
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 #' @param area_table See [area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param day_rp See [rp_table].
@@ -307,7 +307,7 @@ change_stage <- function(cows, i, param_sim) {
 #' @param i The number of months from the start of the simulation.
 #' @param month The month (1, 2, ..., 12) of month `i`.
 #' @param area_table See [area_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
@@ -483,6 +483,7 @@ add_newborns <- function(cows, area_table, i, max_cow_id, newborn_table,
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
+#' @param area_table See [area_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of [cow_table] and [tie_stall_table].
@@ -542,7 +543,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
 #'
 #' @param cows See [cow_table].
 #' @param area_table See [area_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 assign_newborns <- function(cows, area_table, areas) {
   newborn_cow_id <- cows$cow_id[cows$age == 0 & !is.na(cows$age)]
   n_newborn <- length(newborn_cow_id)
@@ -657,7 +658,7 @@ extract_owned_cows <- function(cows) {
 #' @param i The number of months from the start of the simulation.
 #' @param movement_table See [movement_table].
 #' @param area_table See [area_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list composed of [cow_table] and [areas].
@@ -816,7 +817,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 #' Update `infection_status`, `date_ial` and `cause_infection` of [cow_table] and `cow_status` of [areas].
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 #' @param area_table See [area_table].
 #' @param infected_cow_id `cow_id` of new infected cows.
 #' @param cause A cause of infection.

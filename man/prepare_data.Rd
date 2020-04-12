@@ -38,7 +38,7 @@ prepare_data(
 \item{...}{Other arguments passed to \code{\link[=prepare_cows]{prepare_cows()}}.}
 }
 \value{
-csv files which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
+csv files which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.
 }
 \description{
 Process raw data to suitable forms to use in simulation.

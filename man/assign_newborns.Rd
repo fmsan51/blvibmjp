@@ -11,7 +11,7 @@ assign_newborns(cows, area_table, areas)
 
 \item{area_table}{See \link{area_table}.}
 
-\item{areas}{See \link{setup_areas} and \link{tie_stall_table}.}
+\item{areas}{See \link{setup_area_table} and \link{tie_stall_table}.}
 }
 \description{
 Assign \code{chamber_id} to newborns

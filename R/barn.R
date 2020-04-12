@@ -3,7 +3,7 @@
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas].
+#' @param areas See [setup_area_table].
 #' @param i The number of months from the start of the simulation.
 #' @param area_table See [area_table].
 #' @param removed_row Row indice in `cow_table` of cows to be removed from current areas.
@@ -27,7 +27,7 @@ remove_cows <- function(cows, areas, i, area_table, removed_row,
 #' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas].
+#' @param areas See [setup_area_table].
 #' @param area_table See [area_table].
 #' @param removed_row Row indice in `cow_table` of cows to be removed from current areas.
 #'
@@ -51,7 +51,7 @@ remove_from_areas <- function(cows, areas, area_table, removed_row) {
 #' Assign `chamber_id` to cows allocated to tie-stall barns.
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas].
+#' @param areas See [setup_area_table].
 #' @param area_assignment See [calculate_area_assignment()].
 #'
 #' @return A [cow_table].
@@ -90,7 +90,7 @@ assign_chambers <- function(cows, areas, area_assignment) {
 #' @param i The number of months from the start of the simulation.
 #' @param month The current month (1, 2, ..., 12).
 #' @param area_table See [area_table].
-#' @param areas See [setup_areas] and [tie_stall_table].
+#' @param areas See [setup_area_table] and [tie_stall_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
@@ -148,7 +148,7 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
 #' Assign `chamber_id` to cows roaming in a tie-stall barn.
 #'
 #' @param cows See [cow_table].
-#' @param areas See [setup_areas].
+#' @param areas See [setup_area_table].
 #'
 #' @return A list consisted of [areas] and [cow_table].
 tether_roaming_cows <- function(cows, areas) {

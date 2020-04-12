@@ -13,6 +13,8 @@ check_removal(cows, areas, i, area_table, param_sim)
 
 \item{i}{The number of months from the start of the simulation.}
 
+\item{area_table}{See \link{area_table}.}
+
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{

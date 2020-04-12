@@ -7,7 +7,7 @@
 #' - `simulation_length`: Length of simulation (months). (default: 60)
 #' - `n_simulation`: The number of simulation. (default: 1)
 #' - `simulation_start`: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
-#' - `input_csv`: Path to a csv file which contains cattle information. Can be `NA` if `processed_data` is supplied to [simulate_BLV_spread()].
+#' - `input_csv`: Path to a csv file which contains cattle information. Can be `NA` if `processed_data` is supplied to [simulate_blv_spread()].
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
@@ -129,6 +129,7 @@ set_param <- function(parameter, default) {
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
+#' @param param See [param].
 #' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
 #'
 #' @seealso [calc_param_pre()] [calc_param_both()]
@@ -481,7 +482,7 @@ calc_param <- function(param, modification = NULL) {
 #'
 #' Parameters processed by [process_param()] are deteministic. Parameters calculated by [calc_param()] are stochastic.
 #'
-#' @param cows_areas A result of [set_chamber_id()].
+#' @param cows_areas A result of [set_init_chamber_id()].
 #' @param param See [param].
 #'
 #' @return A list of calculated parameters.
@@ -508,6 +509,7 @@ process_param <- function(cows_areas, param) {
 #'
 #' Calculate parameters which are used only in [prepare_data()] and overwrite the default setting if necessary.
 #'
+#' @param param See [param].
 #' @param modification A list used to overwrite the defaut parameter like `list(parameter_name = new_value, ...)`.
 #'
 #' @seealso [calc_param()] [calc_param_both()]
@@ -540,6 +542,8 @@ calc_param_pre <- function(param, modification = NULL) {
 #' Calculate parameters used in both of prepare_data() and simulation
 #'
 #' Calculate parameters which are in both of [prepare_data()] and simulation
+#'
+#' @param param See [param].
 #'
 #' @seealso [calc_param()] [calc_param_pre()]
 #' @return A parameter list.
@@ -599,6 +603,8 @@ calc_param_both <- function(param) {
 
 
 #' Validate parameters
+#'
+#' @param param See [param].
 #'
 #' @return A parameter list.
 validate_param <- function(param) {

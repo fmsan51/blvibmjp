@@ -9,7 +9,7 @@ remove_cows(cows, areas, i, area_table, removed_row, cause)
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_area_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 

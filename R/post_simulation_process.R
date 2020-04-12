@@ -6,8 +6,6 @@
 #' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
-#'
-#' @seealso [read_initial_cows]
 read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
@@ -59,12 +57,14 @@ calc_prev <- function(csv = NULL, cows = NULL,
       factor(cows$infection_status != "s", levels = c("TRUE", "FALSE"),
              labels = c("inf", "noinf"))
     prevalences <-
-      dcast(cows, i_month ~ is_infected, fun.aggregate = length, drop = F)
+      dcast.data.table(cows, i_month ~ is_infected, fun.aggregate = length,
+                       drop = F)
   } else {
     cows$infection_status  <-
       factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
-    prevalences <- dcast(cows, i_month ~ infection_status,
-                         fun.aggregate = length, drop = F)
+    prevalences <-
+      dcast.data.table(cows, i_month ~ infection_status, fun.aggregate = length,
+                       drop = F)
   }
 
   return(prevalences)

@@ -24,7 +24,7 @@ prepare_movement(
 \item{sep}{Separatator used in \code{priority} column. See explanation of \code{priority} in Detail section.}
 }
 \value{
-A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
+A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.
 }
 \description{
 Transform an input csv into a suitable form, which is in a form of \link{movement_table}.

@@ -9,7 +9,7 @@ tether_roaming_cows(cows, areas)
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_area_table}.}
 }
 \value{
 A list consisted of \link{areas} and \link{cow_table}.

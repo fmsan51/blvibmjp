@@ -7,6 +7,8 @@
 calc_param(param, modification = NULL)
 }
 \arguments{
+\item{param}{See \link{param}.}
+
 \item{modification}{A list used to overwrite the defaut parameter like \code{list(parameter_name = new_value, ...)}.}
 }
 \value{

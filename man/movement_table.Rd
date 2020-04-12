@@ -39,14 +39,6 @@ Users must specify one \code{movement_table} consisted of following items before
 
 If a cow meets multiple conditions, the condition in the fastest row will be used.
 }
-\examples{
-movements <- a_movement[rep(1, 3), ]
-movements[, `:=`(current_area = c(1L, 2L, 3L),
-                 condition = c("age > 2", "delivery", "delivery"),
-                 next_area = list(2L, 3:4, 3:4),
-                 priority = list(NA, NA, c(1, 2)))]
-
-}
 \seealso{
 \link{cow_table} \link{tie_stall_table} \link{area_table} \link{rp_table}
 }

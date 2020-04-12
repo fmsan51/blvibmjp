@@ -16,7 +16,7 @@ prepare_area(csv, data = NULL, output_file = NULL, sep = "[,\\t\\r\\n |;:]")
 \item{sep}{Separatator used in \code{capacity} column. See explanation of \code{capacity} in Detail section.}
 }
 \value{
-A csv file which can be used as an input for \code{\link[=simulate_BLV_spread]{simulate_BLV_spread()}}.
+A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.
 }
 \description{
 Transform an input csv into a suitable form, which is in a form of \link{area_table}.

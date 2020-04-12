@@ -13,5 +13,5 @@ setup_newborn_table(param)
 Make initial \code{newborn_table}. \code{newborn_table} is similar to \link{cow_table} and with additional columns \code{"id_mother"}, \code{"id_calf"}, \code{"n_newborns_per_cow"}, \code{"status_mother"} and \verb{"is_freemartin}".
 }
 \seealso{
-\link{setup_cows} \link{setup_areas} \link{cow_table} \link{rp_table} \link{setup_area_table}
+\link{setup_cows} \link{setup_area_table} \link{cow_table} \link{rp_table} \link{setup_area_table}
 }

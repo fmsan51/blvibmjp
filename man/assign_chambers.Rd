@@ -9,7 +9,7 @@ assign_chambers(cows, areas, area_assignment)
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_area_table}.}
 
 \item{area_assignment}{See \code{\link[=calculate_area_assignment]{calculate_area_assignment()}}.}
 }

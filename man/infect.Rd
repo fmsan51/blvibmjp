@@ -9,7 +9,7 @@ infect(cows, areas, area_table, infected_cow_id, cause, i)
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{setup_areas} and \link{tie_stall_table}.}
+\item{areas}{See \link{setup_area_table} and \link{tie_stall_table}.}
 
 \item{area_table}{See \link{area_table}.}
 

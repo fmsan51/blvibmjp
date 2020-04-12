@@ -15,5 +15,5 @@ setup_area_table(area_table, param)
 Setup \link{area_table}.
 }
 \seealso{
-\link{area_table} \link{setup_cows} \link{setup_areas} \link{setup_movement_table} \link{setup_areas}
+\link{area_table} \link{setup_cows} \link{setup_area_table} \link{setup_movement_table} \link{setup_area_table}
 }

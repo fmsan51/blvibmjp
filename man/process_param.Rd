@@ -7,7 +7,7 @@
 process_param(cows_areas, param)
 }
 \arguments{
-\item{cows_areas}{A result of \code{\link[=set_chamber_id]{set_chamber_id()}}.}
+\item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
 
 \item{param}{See \link{param}.}
 }

@@ -13,5 +13,5 @@ setup_rp_table(param)
 Make initial \code{rp_table}.
 }
 \seealso{
-\link{setup_cows} \link{setup_areas} \link{rp_table} \link{setup_area_table}
+\link{setup_cows} \link{setup_area_table} \link{rp_table} \link{setup_area_table}
 }

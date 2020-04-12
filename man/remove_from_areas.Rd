@@ -9,7 +9,7 @@ remove_from_areas(cows, areas, area_table, removed_row)
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{areas}{See \link{setup_areas}.}
+\item{areas}{See \link{setup_area_table}.}
 
 \item{area_table}{See \link{area_table}.}
 

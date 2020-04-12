@@ -8,7 +8,7 @@
 #'
 #' @return A list consisted of `init_cows` ([cow_table]) as return of the function and `month0000.csv` in the directionry specified as `param$output_dir`.
 #'
-#' @seealso [cow_table] [setup_areas] [setup_rp_table] [setup_area_table]
+#' @seealso [cow_table] [setup_area_table] [setup_rp_table] [setup_area_table]
 setup_cows <- function(cow_table, param, save_cows) {
   # Prepare cow_table with many rows to reserve enough memory while simulation
   init_n_cows <- nrow(cow_table)
@@ -34,7 +34,7 @@ setup_cows <- function(cow_table, param, save_cows) {
 #'
 #' @param param See [param].
 #'
-#' @seealso [setup_cows] [setup_areas] [rp_table] [setup_area_table]
+#' @seealso [setup_cows] [setup_area_table] [rp_table] [setup_area_table]
 setup_rp_table <- function(param) {
   # Prepare rp_table with many rows to reserve enough memory while simulation
   one_day_rp[rep(1, param$max_herd_size), ]
@@ -48,7 +48,7 @@ setup_rp_table <- function(param) {
 #'
 #' @param param See [param].
 #'
-#' @seealso [setup_cows] [setup_areas] [cow_table] [rp_table] [setup_area_table]
+#' @seealso [setup_cows] [setup_area_table] [cow_table] [rp_table] [setup_area_table]
 setup_newborn_table <- function(param) {
   # Prepare newborn_table with many rows to reserve enough memory
   # while simulation
@@ -119,7 +119,7 @@ set_init_chamber_id <- function(init_cows, area_table, areas) {
 #' @param area_table See [area_table].
 #' @param param See [param].
 #'
-#' @seealso [area_table] [setup_cows] [setup_areas] [setup_movement_table] [setup_areas]
+#' @seealso [area_table] [setup_cows] [setup_area_table] [setup_movement_table] [setup_area_table]
 setup_area_table <- function(area_table, param) {
   capacity <- vapply(area_table$capacity, sum, 1)
   names(capacity) <- area_table$area_id
@@ -142,7 +142,7 @@ setup_area_table <- function(area_table, param) {
 #' @param area_table See [area_table].
 #' @param movement_table See [movement_table].
 #'
-#' @seealso [area_table] [movement_table] [setup_cows] [setup_rp_table] [setup_areas]
+#' @seealso [area_table] [movement_table] [setup_cows] [setup_rp_table] [setup_area_table]
 setup_movement_table <- function(area_table, movement_table) {
   # Attributes is added instead of converting area_id column to factor
   # because I don't want to change class of the columns from the original one

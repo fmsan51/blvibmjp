@@ -6,6 +6,9 @@
 \usage{
 calc_param_both(param)
 }
+\arguments{
+\item{param}{See \link{param}.}
+}
 \value{
 A parameter list.
 }

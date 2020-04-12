@@ -18,6 +18,7 @@ Imports:
     ggplot2,
     ggthemes,
     glue,
+    grDevices,
     lubridate,
     readxl,
     rlang,
@@ -28,5 +29,4 @@ Imports:
 RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Suggests:
-    testthat (>= 2.1.0),
     usethis

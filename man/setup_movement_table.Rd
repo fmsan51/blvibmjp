@@ -15,5 +15,5 @@ setup_movement_table(area_table, movement_table)
 Setup \code{movement_table} from \link{area_table} and \link{movement_table}.
 }
 \seealso{
-\link{area_table} \link{movement_table} \link{setup_cows} \link{setup_rp_table} \link{setup_areas}
+\link{area_table} \link{movement_table} \link{setup_cows} \link{setup_rp_table} \link{setup_area_table}
 }
