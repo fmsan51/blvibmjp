@@ -6,6 +6,9 @@
 \usage{
 resample(x, ...)
 }
+\arguments{
+\item{x, ...}{See \code{\link[=sample]{sample()}}.}
+}
 \description{
 Modified version of \code{\link[=sample]{sample()}} to sample from \code{x} rather than \code{1:x} when \code{x} has length 1 and is numeric.
 }
@@ -13,6 +16,6 @@ Modified version of \code{\link[=sample]{sample()}} to sample from \code{x} rath
 See "sample()'s surprise" and "safer version" section in the example section in the help of \code{\link[=sample]{sample()}} to understand why this function is necessary.
 }
 \examples{
-sample()  # length 9
+sample(9)  # length 9
 blvibmjp:::resample(9)  # length 1
 }

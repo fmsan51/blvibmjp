@@ -62,25 +62,23 @@ file.path(.libPaths()[1], "blvibmjp")
 # パッケージの読み込み
 library(blvibmjp)
 
-# データの入力
-data <- process_raw_data(
-  "C:\\Users\\xxx\\Desktop\\input.xlsx"  # データを入力したファイルの場所
-  )
-# Note: method with signature ... や Following item(s) in the `infection_status` ... というメッセージは無視してOK
-
 # シミュレーションの設定
-param_simulation$simulation_length <- 60  # シミュレーション期間の長さ（月）
-param_simulation$n_simulation <- 3  # シミュレーション回数
+param$simulation_length <- 60  # シミュレーション期間の長さ（月）
+param$n_simulation <- 3  # シミュレーション回数
 
 # 対策の設定
-param_farm$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
-param_farm$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
-param_farm$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
-# 他、詳細は help("param_farm") 参照
+param$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
+param$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
+param$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
+# 他、詳細は help("param") 参照
+
+# データの入力
+data <- prepare_data(
+  "C:\\Users\\xxx\\Desktop\\input.xlsx",  # データを入力したファイルの場所
+  param)
 
 # シミュレーションの実行（1回ごとに十数秒～数分）
-simulate_blv_spread(param_simulation, param_farm, param_area,
-                    processed_data = data)
+simulate_blv_spread(data, param)
 ```
 
 4. 以下のコードで表示されるフォルダ内に、シミュレーション結果（simulationXX.csv）が保存される。

@@ -4,11 +4,18 @@
 \alias{read_final_cows}
 \title{Read cow information at the end of a simulation}
 \usage{
-read_final_cows(output_filename, output_dir, n_simulation,
-  simulation_length, route_levels = NULL, route_labels = NULL)
+read_final_cows(
+  param,
+  route_levels = NULL,
+  route_labels = NULL,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  n_simulation = param$n_simulation,
+  simulation_length = param$simulation_length
+)
 }
 \arguments{
-\item{output_filename, output_dir, n_simulation, simulation_length}{See \link{param_simulation}.}
+\item{param, output_filename, output_dir, n_simulation, simulation_length}{See \link{param}.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
@@ -17,7 +24,4 @@ A \link{cow_table} with an additional column \code{i_simulation}.
 }
 \description{
 Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
-}
-\seealso{
-\link{read_initial_cows}
 }

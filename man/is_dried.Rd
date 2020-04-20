@@ -4,12 +4,12 @@
 \alias{is_dried}
 \title{Whether a cow is dried}
 \usage{
-is_dried(months_from_delivery, param_calculated)
+is_dried(months_from_delivery, param_sim)
 }
 \arguments{
 \item{months_from_delivery}{The number of months past from the last delivery.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

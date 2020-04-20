@@ -4,10 +4,17 @@
 \name{movement_table}
 \alias{movement_table}
 \alias{a_movement}
+\alias{movement_table_cols}
 \title{A data.table to manage cows' movement between areas}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.}
+\format{
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 4 columns.
+
+An object of class \code{character} of length 4.
+}
 \usage{
 a_movement
+
+movement_table_cols
 }
 \description{
 \code{movement_table} is a \link[data.table:data.table]{data.table} to manage cow movement among areas.
@@ -31,14 +38,6 @@ Users must specify one \code{movement_table} consisted of following items before
 }
 
 If a cow meets multiple conditions, the condition in the fastest row will be used.
-}
-\examples{
-movements <- a_movement[rep(1, 3), ]
-movements[, `:=`(current_area = c(1L, 2L, 3L),
-                 condition = c("age > 2", "delivery", "delivery"),
-                 next_area = list(2L, 3:4, 3:4),
-                 priority = list(NA, NA, c(1, 2)))]
-
 }
 \seealso{
 \link{cow_table} \link{tie_stall_table} \link{area_table} \link{rp_table}

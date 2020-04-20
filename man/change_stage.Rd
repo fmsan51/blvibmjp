@@ -4,14 +4,14 @@
 \alias{change_stage}
 \title{Change stage of cows accordinglly}
 \usage{
-change_stage(cows, i, param_calculated)
+change_stage(cows, i, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A list consists of \code{cow_table} and \code{tie_stall_table}.

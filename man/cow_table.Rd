@@ -4,10 +4,17 @@
 \name{cow_table}
 \alias{cow_table}
 \alias{a_new_calf}
+\alias{cow_table_cols}
 \title{A data.table to store status of cows}
-\format{\link[data.table:data.table]{data.table}}
+\format{
+\link[data.table:data.table]{data.table}
+
+An object of class \code{character} of length 33.
+}
 \usage{
 a_new_calf
+
+cow_table_cols
 }
 \description{
 \code{cow_table} is a \link[data.table:data.table]{data.table} to store status of cows.
@@ -23,8 +30,8 @@ The rows are consists of \code{a_new_calf}, which indicates one cow.
 \item \code{stage}: One of "calf", "heifer", "milking" or "dry".
 \item \code{sex}: One of "female" (Holstern), "male" (Holstein), "freemartin" (female Hostein), "f1-female" (Hostein x Japanese black), "f1-male" (Holstein x Japanese black), "black-female" (Japanese black), "black-male" (Japanese black).
 \item \code{date_birth}: Date of birth.
-\item \code{date_death}: Date of death. The value is NA while the cow is alive. It is set after the cow died.
-\item \code{date_death_expected}: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
+\item \code{date_removal}: Date of death. The value is NA while the cow is alive. It is set after the cow died.
+\item \code{date_removal_expected}: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 \item \code{is_owned}: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 \item \code{cause_removal}:
 \itemize{
@@ -62,7 +69,7 @@ FALSE: The cow Will be sold to beef operations.
 \item "rp": by rectal palpation.
 \item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-\item "communal_pasture": infected at a communal pasture.
+\item "pasture": infected at a communal pasture.
 }
 \item \code{susceptibility_ial_to_ipl}: Genetic susceptibility to disease progress (Ial -> Ipl).
 \item \code{susceptibility_ipl_to_ebl}: Genetic susceptibility to disease progress (Ipl -> EBL).

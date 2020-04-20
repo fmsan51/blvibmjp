@@ -4,12 +4,12 @@
 \alias{is_ai_started_heifer}
 \title{Whether the first AIs for hifers are conducted}
 \usage{
-is_ai_started_heifer(ages, param_calculated)
+is_ai_started_heifer(ages, param_sim)
 }
 \arguments{
 \item{ages}{Age of heifers.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

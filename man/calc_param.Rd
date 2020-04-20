@@ -4,10 +4,10 @@
 \alias{calc_param}
 \title{Calculate parameters necessary to the simulation.}
 \usage{
-calc_param(param_farm, param_simulation, modification = NULL)
+calc_param(param, modification = NULL)
 }
 \arguments{
-\item{param_farm}{See \link{param_farm}.}
+\item{param}{See \link{param}.}
 
 \item{modification}{A list used to overwrite the defaut parameter like \code{list(parameter_name = new_value, ...)}.}
 }
@@ -19,4 +19,7 @@ Calculate parameters to the simulation and overwrite the default setting if nece
 }
 \details{
 Parameters processed by \code{\link[=process_param]{process_param()}} are deteministic. Parameters calculated by \code{\link[=calc_param]{calc_param()}} are stochastic.
+}
+\seealso{
+\code{\link[=calc_param_pre]{calc_param_pre()}} \code{\link[=calc_param_both]{calc_param_both()}}
 }

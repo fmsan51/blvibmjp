@@ -8,16 +8,15 @@
 # To prevent a warning "undefined gloval variable xxx" while devtools::check()
 if (getRversion() >= "3.1.0") {
   utils::globalVariables(c(
-    ".",
-    "adjoint_next_chamber", "adjoint_previous_chamber", "age",
-    "cause_infection", "cause_removal", "chamber_id", "cow_id", "cow_status",
-    "date_death_expected", "date_got_pregnant", "date_last_delivery", "day_heat", "day_heat1", "day_heat2", "day_last_heat_detected", "day_next_heat",
-    "area_id",
-    "infection_status", "is_after_inf", "is_ai1_successed", "is_ai2_successed", "is_freemartin", "is_heat1_detected", "is_heat2_detected", "is_infected", "is_isolated", "is_pregnant", "is_owned", "i_heat", "i_month", "i_rp", "i_simulation",
-    "N", "n_ai", "n_heat", "n_heat_from_ai",
+    ".", "..cow_table_cols", "..lgl_vars", "..necessary_cols",
+    "adjoint_next_chamber", "adjoint_previous_chamber", "age", "area_id", "area_table", "area_type",
+    "capacity", "capacity_as_ratio", "cause_infection", "cause_removal", "chamber_id", "cond", "cow_id", "cow_status",
+    "date_birth", "date_dried", "date_ebl", "date_got_pregnant", "date_ial", "date_ipl", "date_ipl_expected", "date_ebl_expected", "date_last_delivery", "date_removal_expected", "day_heat", "day_heat1", "day_heat2", "day_last_detected_heat", "day_next_heat",
+    "id_calf", "infection_status", "is_after_inf", "is_ai1_successed", "is_ai2_successed", "is_detected", "is_freemartin", "is_heat1_detected", "is_heat2_detected", "is_infected", "is_isolated", "is_owned", "is_pregnant", "is_to_test_pregnancy", "i_heat", "i_month", "i_rp", "i_simulation",
+    "N", "n_ai", "n_heat", "n_heat_from_ai", "n_litter",
     "parity", "prevalence", "p_inf",
-    "sex", "stage", "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl",
-    "total", "total_inf", "type",
+    "sex", "se_upr", "se_est", "se_lwr", "sp_est", "sp_lwr", "sp_upr", "stage", "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl",
+    "total", "total_inf", "type", "type_prev",
     "uninfected"
   ))
 }

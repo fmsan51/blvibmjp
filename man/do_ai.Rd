@@ -4,16 +4,20 @@
 \alias{do_ai}
 \title{Conduct AI and check chance of infection}
 \usage{
-do_ai(cows, i, day_rp, param_calculated)
+do_ai(cows, areas, area_table, i, day_rp, param_sim)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
+
+\item{areas}{See \link{setup_area_table} and \link{tie_stall_table}.}
+
+\item{area_table}{See \link{area_table}.}
 
 \item{i}{The number of months from the start of the simulation.}
 
 \item{day_rp}{See \link{rp_table}.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A \link{cow_table}.

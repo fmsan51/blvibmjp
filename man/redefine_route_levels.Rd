@@ -4,8 +4,12 @@
 \alias{redefine_route_levels}
 \title{Redefine infection routes}
 \usage{
-redefine_route_levels(cows, language = NULL, route_levels = NULL,
-  route_labels = NULL)
+redefine_route_levels(
+  cows,
+  language = NULL,
+  route_levels = NULL,
+  route_labels = NULL
+)
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}

@@ -5,21 +5,34 @@
 \alias{summary_infection_status}
 \title{Summarize infection status}
 \usage{
-table_infection_status(output_filename, output_dir, n_simulation,
-  simulation_length)
+table_infection_status(
+  param,
+  route_levels = NULL,
+  route_labels = NULL,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  n_simulation = param$n_simulation,
+  simulation_length = param$simulation_length
+)
 
 summary_infection_status(cows)
 }
 \arguments{
-\item{output_filename}{See \link{param_simulation}.}
+\item{param}{See \link{param}.}
 
-\item{output_dir}{See \link{param_simulation}.}
+\item{route_levels}{See \link{redefine_route_levels}.}
 
-\item{n_simulation}{See \link{param_simulation}.}
+\item{route_labels}{See \link{redefine_route_levels}.}
 
-\item{simulation_length}{See \link{param_simulation}.}
+\item{output_filename}{See \link{param}.}
 
-\item{cows}{A \code{cow_table} read by \link{read_final_cows}.}
+\item{output_dir}{See \link{param}.}
+
+\item{n_simulation}{See \link{param}.}
+
+\item{simulation_length}{See \link{param}.}
+
+\item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
 }
 \description{
 Calculate monthly infection status at the end of simulations.

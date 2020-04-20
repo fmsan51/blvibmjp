@@ -4,34 +4,34 @@
 \alias{simulate_blv_spread}
 \title{Simulate spread of BLV}
 \usage{
-simulate_blv_spread(param_simulation, param_farm, param_area,
-  processed_data, area_table, movement_table,
-  communal_pasture_table = NULL, list_param_modification = NULL,
-  save_cows = T, save_param = T, i_simulation_start = 1)
+simulate_blv_spread(
+  prepared_data,
+  param,
+  list_param_modif = NULL,
+  save_cows = T,
+  save_param = T,
+  i_simulation_start = 1,
+  seed = NULL,
+  validate = T
+)
 }
 \arguments{
-\item{param_simulation}{See \link{param_simulation}.}
+\item{prepared_data}{The result of \code{\link[=prepare_data]{prepare_data()}}.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param}{See \link{param}.}
 
-\item{param_area}{See \link{param_area}.}
+\item{list_param_modif}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modif} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
 
-\item{processed_data}{The result of \code{\link[=process_raw_data]{process_raw_data()}}. Set this parameters or \code{area_table} and \code{movement_table}.}
-
-\item{area_table}{See \link{area_table}.}
-
-\item{movement_table}{See \link{movement_table}.}
-
-\item{communal_pasture_table}{See \link{communal_pasture_table}. Set \code{NULL} if a farm does not use communal pastures.}
-
-\item{list_param_modification}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modification} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
-
-\item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
+\item{save_cows, save_param}{Wheher to save results of simulations and used parameters to files.}
 
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
+
+\item{seed}{Seed for a simulation.}
+
+\item{validate}{A logical value indicates whether validate inputs (data and paramters).}
 }
 \value{
-The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param_simulation$output_dir}.
+The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param$output_dir}.
 }
 \description{
 Simulate spread of BLV in a typical Japanese dairy herd.

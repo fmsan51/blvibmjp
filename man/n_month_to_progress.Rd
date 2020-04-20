@@ -4,8 +4,12 @@
 \alias{n_month_to_progress}
 \title{Calculate months to progress the disease}
 \usage{
-n_month_to_progress(susceptibility_ial_to_ipl, susceptibility_ipl_to_ebl,
-  i, param_calculated)
+n_month_to_progress(
+  susceptibility_ial_to_ipl,
+  susceptibility_ipl_to_ebl,
+  i,
+  param_sim
+)
 }
 \arguments{
 \item{susceptibility_ial_to_ipl}{A numeric.}
@@ -14,7 +18,7 @@ n_month_to_progress(susceptibility_ial_to_ipl, susceptibility_ipl_to_ebl,
 
 \item{i}{The number of months from the start of a simulation.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A list consisted of a month.
@@ -29,13 +33,5 @@ Probabilities to:
 \item develop persistent lymphocytosis (ial->ipl), and
 \item show symptom (ipl->ebl),
 in the month.
-}
-
-Total infection risk = Infection risk in free-stall or grazing
-\itemize{
-\item (hours_grazing / 24)
-}
-\itemize{
-\item Infection risk from neighborhood cows * (1 - hours_grazing / 24)
 }
 }

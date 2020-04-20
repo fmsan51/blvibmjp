@@ -4,14 +4,25 @@
 \alias{simulate_once}
 \title{Body of the simulation}
 \usage{
-simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
-  i_simulation, result, result_area, param_simulation, param_farm,
-  param_area, param_processed, param_modification, save_cows, save_param)
+simulate_once(
+  cows_areas,
+  max_cow_id,
+  area_table,
+  movement_table,
+  day_rp,
+  newborn_table,
+  i_simulation,
+  result,
+  param_processed,
+  param_modif,
+  save_cows,
+  save_param
+)
 }
 \arguments{
-\item{cows_areas}{A result of \code{\link[=set_init_chamber_and_area_id]{set_init_chamber_and_area_id()}}.}
+\item{cows_areas}{A result of \code{\link[=set_init_chamber_id]{set_init_chamber_id()}}.}
 
-\item{last_cow_id}{\code{init_last_cow_id} component of a result of \code{\link[=setup_cows]{setup_cows()}}.}
+\item{max_cow_id}{\code{init_max_cow_id} component of a result of \code{\link[=process_param]{process_param()}}.}
 
 \item{area_table}{A result of \code{\link[=setup_area_table]{setup_area_table()}}.}
 
@@ -19,24 +30,20 @@ simulate_once(cows_areas, last_cow_id, area_table, movement_table, day_rp,
 
 \item{day_rp}{A result of \code{\link[=setup_rp_table]{setup_rp_table()}}.}
 
+\item{newborn_table}{A result of \code{\link[=setup_newborn_table]{setup_newborn_table()}}.}
+
 \item{i_simulation}{The iteration number of simulations.}
 
-\item{result, result_area}{Lists to store a \code{cow_table} and a \code{tie_stall_table} respectively.}
-
-\item{param_simulation}{See \link{param_simulation}.}
-
-\item{param_farm}{See \link{param_farm}.}
-
-\item{param_area}{See \link{param_area}.}
+\item{result}{Lists to store a \code{cow_table}.}
 
 \item{param_processed}{A result of \code{\link[=process_param]{process_param()}}.}
 
-\item{param_modification}{See \code{\link[=calc_param]{calc_param()}}.}
+\item{param_modif}{See \code{\link[=calc_param]{calc_param()}}.}
 
-\item{save_cows, save_param}{Whether to save \code{result_combined} and \code{param_calculated} (a result of \code{\link[=calc_param]{calc_param()}}) to a file.}
+\item{save_cows, save_param}{Wheher to save a result of a simulation and used parameters to files.}
 }
 \value{
-A list composed of two components: \code{result_combined} and \code{result_area_combined}
+A \code{cow_table}
 }
 \description{
 Run simulation once.

@@ -4,12 +4,12 @@
 \alias{is_heat_detected}
 \title{Whether a heat is detected}
 \usage{
-is_heat_detected(n_cows, param_calculated)
+is_heat_detected(n_cows, param_sim)
 }
 \arguments{
 \item{n_cows}{The number of cows which come into heat.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A logical vector.

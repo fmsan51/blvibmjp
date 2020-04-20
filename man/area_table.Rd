@@ -4,10 +4,17 @@
 \name{area_table}
 \alias{area_table}
 \alias{a_area}
+\alias{area_table_cols}
 \title{A data.table to manage areas in a farm}
-\format{An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.}
+\format{
+An object of class \code{data.table} (inherits from \code{data.frame}) with 1 rows and 3 columns.
+
+An object of class \code{character} of length 3.
+}
 \usage{
 a_area
+
+area_table_cols
 }
 \description{
 \code{area_table} is a \link[data.table:data.table]{data.table} to manage areas (barns, paddocks, hatches, etc.) in a farm.
@@ -31,16 +38,6 @@ Several parameters are calculated by \link{setup_area_table} and added to a \cod
 \item \code{capacity}: Max number of cows can be kept in a area.
 \item \code{tie_stall}: \code{area_id}s of tie-stall areas.
 }
-}
-\examples{
-# A farm has three areas:
-# - A freebarn for calves (max capacity is 30 calves).
-# - A paddock for heifers (capacity is not limited).
-# - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
-areas <- a_area[rep(1, 3), ]
-areas[, `:=`(area_id = 1:3,
-             area_type = c("free", "outside", "tie"),
-             capacity = list(30, NA, c(40, 40, 30, 30))]
 }
 \seealso{
 \link{cow_table} \link{tie_stall_table} \link{movement_table} \link{rp_table}

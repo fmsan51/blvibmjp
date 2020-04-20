@@ -4,12 +4,12 @@
 \alias{n_newborn_per_dam}
 \title{The number of newborns per dam}
 \usage{
-n_newborn_per_dam(n_dams, param_calculated)
+n_newborn_per_dam(n_dams, param_sim)
 }
 \arguments{
 \item{n_dams}{The number of dams.}
 
-\item{param_calculated}{Return from \code{\link[=calc_param]{calc_param()}}.}
+\item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }
 \value{
 A numeric vector consisted of 1 and 2.

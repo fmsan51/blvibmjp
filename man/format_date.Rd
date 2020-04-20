@@ -4,8 +4,11 @@
 \alias{format_date}
 \title{Format and validate date columns}
 \usage{
-format_date(cows, date_format = "ymd", today = lubridate::today(tzone =
-  "Asia/Tokyo"))
+format_date(
+  cows,
+  date_format = "ymd",
+  today = lubridate::today(tzone = "Asia/Tokyo")
+)
 }
 \arguments{
 \item{cows}{A \link{cow_table}.}

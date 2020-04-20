@@ -14,8 +14,8 @@
 #' - `stage`: One of "calf", "heifer", "milking" or "dry".
 #' - `sex`: One of "female" (Holstern), "male" (Holstein), "freemartin" (female Hostein), "f1-female" (Hostein x Japanese black), "f1-male" (Holstein x Japanese black), "black-female" (Japanese black), "black-male" (Japanese black).
 #' - `date_birth`: Date of birth.
-#' - `date_death`: Date of death. The value is NA while the cow is alive. It is set after the cow died.
-#' - `date_death_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
+#' - `date_removal`: Date of death. The value is NA while the cow is alive. It is set after the cow died.
+#' - `date_removal_expected`: Expected date of death. It is calculated when a calf is born or when a cow is introduced to the herd.
 #' - `is_owned`: Whether the cow is owned by the simulated herd. It is set FALSE when the cow is sold or died.
 #' - `cause_removal`:
 #'     - "died": died.
@@ -50,7 +50,7 @@
 #'     - "rp": by rectal palpation.
 #'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).
-#'     - "communal_pasture": infected at a communal pasture.
+#'     - "pasture": infected at a communal pasture.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
 #' - `area_id`: Area ID. `0` means that the cow is in a communal pasture.
@@ -65,25 +65,22 @@
 #' @name cow_table
 #' @export
 a_new_calf <- data.table(
-  # TODO: Add notes indicating which parameter is necessary and which is not.
   cow_id = NA_integer_,
   age = NA_real_,
   stage = NA_character_,
   sex = NA_character_,
   date_birth = NA_real_,
-  date_death = NA_real_,
-  # TODO: date_removal が必要か？ もしそうならdate_deathと統合するべきか？
-  date_death_expected = NA_real_,
+  date_removal = NA_real_,
+  date_removal_expected = NA_real_,
   is_owned = NA,
   cause_removal = NA_character_,
-  # TODO: 他の感染症に応用することも考えて、eblはonsetとかに名前を変えたい。
   is_replacement = NA,
 
   # Delivery and milking
   parity = NA_real_,
   date_last_delivery = NA_real_,
   date_got_pregnant = NA_real_,
-  date_dried = NA_real_,  # TODO: make function to set this
+  date_dried = NA_real_,
   # n_ai is currently used nowhere,
   # but recorded for when to consider repeat breeder.
   n_ai = NA_real_,
@@ -109,15 +106,20 @@ a_new_calf <- data.table(
   susceptibility_ipl_to_ebl = NA,
   # TODO: これ削除
 
-  area_id = NA_integer_,
+  area_id = NA_integer_,  # TODO: consider how to set pastures in UI
   months_in_area = NA_real_,  # TODO: make a function to increment this
 
   # For tie-stall (For free-stall, all the following variables are NA)
-  chamber_id = NA_integer_,  # TODO: Remove chamber_id from cow_table. It's enough if tie_stall_table holds chamber_id.
+  chamber_id = NA_integer_,
+  # chamber_id is used in setup_tie_stall_table().
+  # After set up, it is used to identify whether a cow is tied, freed or
+  # roaming in a tie-stall.
   is_isolated = NA,
   i_month = NA_real_
 )
-# TODO: consider whether status can removed from the codes.
+
+#' @name cow_table
+cow_table_cols <- colnames(a_new_calf)
 
 
 # ---- tie_stall_template ----
@@ -172,15 +174,6 @@ a_chamber <- data.table(
 #' - `capacity`: Max number of cows can be kept in a area.
 #' - `tie_stall`: `area_id`s of tie-stall areas.
 #'
-#' @examples
-#' # A farm has three areas:
-#' # - A freebarn for calves (max capacity is 30 calves).
-#' # - A paddock for heifers (capacity is not limited).
-#' # - A tie-stall for delivered cows consisted of 2 lanes with 40 chambers and 2 lanes with 30 chambers.
-#' areas <- a_area[rep(1, 3), ]
-#' areas[, `:=`(area_id = 1:3,
-#'              area_type = c("free", "outside", "tie"),
-#'              capacity = list(30, NA, c(40, 40, 30, 30))]
 #' @seealso [cow_table] [tie_stall_table] [movement_table] [rp_table]
 #' @name area_table
 #' @export
@@ -188,6 +181,10 @@ a_area <- data.table(area_id = NA_integer_,
                      area_type = NA_character_,
                      capacity = list(NA))
 # TODO: How to hundle when multiple cows are set to one hatch
+
+
+#' @name area_table
+area_table_cols <- colnames(a_area)
 
 
 # ---- movement_template ----
@@ -211,13 +208,6 @@ a_area <- data.table(area_id = NA_integer_,
 #'
 #' If a cow meets multiple conditions, the condition in the fastest row will be used.
 #'
-#' @examples
-#' movements <- a_movement[rep(1, 3), ]
-#' movements[, `:=`(current_area = c(1L, 2L, 3L),
-#'                  condition = c("age > 2", "delivery", "delivery"),
-#'                  next_area = list(2L, 3:4, 3:4),
-#'                  priority = list(NA, NA, c(1, 2)))]
-#'
 #' @seealso [cow_table] [tie_stall_table] [area_table] [rp_table]
 #' @name movement_table
 #' @export
@@ -225,37 +215,10 @@ a_movement <- data.table(current_area = NA_integer_,
                          condition = NA_character_,
                          next_area = list(NA),
                          priority = list(NA))
-# TODO: Make UI to setup this.
 
-# ---- communal_pasture_template ----
 
-#' A data.table to manage use of a communal pasture
-#'
-#' `communal_pasture_table` is a [data.table][data.table::data.table] to manage use of a communal pasture by a farm.
-#' To simulate a farm using a communal pasture, users must specify one `communal_pasture_table` consisted by following items before starting a simulation. To simulate a farm not using a communal pasture, users must not specify `communal_pasture_table`.
-#'
-#' - `area_out` (integer), `area_back` (list consister of integer vectors): Areas from where cows are send to a communal pasture and come back to the farm specified by `area_id` in [area_table].
-#' - `condition_out`, `condition_back` (character): Condition that cows in the area are send to the communal pasture and come back to the farm. See `condition` part in [area_table] to know how to specify them.
-#' - `priority` (list consisted of numeric and/or integer vectors): Priority of `area_back`. See `priority` part in [movement_table] for the detail.
-#'
-#' @examples
-#' # Heifers are send to a communal pasture from a non-pregnant heifer barn (area_id = 2) at 13 months old and come back to a pregnant heifer barn (area_id = 3) eight month after they get pregnant.
-#' # Delivered cows are send to the communal pasture from a delivered cow barn (area_id = 4) in April and come back to the same barn in October.
-#' communal_pasture_use <- a_communal_pasture_use[rep(1, 2), ]
-#' communal_pasture_use[,
-#'  `:=`(area_out = c(2, 4),
-#'       area_back = list(3, c(4, 5)),
-#'       condition_out = c("age == 20", "month == 4"),
-#'       condition_back = c("months_from_pregnancy == 8", "month == 10"),
-#'       priority = list(NA, c(1, 2)))]
-#' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table] [rp_table]
-#' @name communal_pasture_table
-#' @export
-a_communal_pasture_use <- data.table(area_out = NA_integer_,
-                                     area_back = list(NA),
-                                     condition_out = NA_character_,
-                                     condition_back = NA_character_,
-                                     priority = list(NA))
+#' @name movement_table
+movement_table_cols <- colnames(a_movement)
 
 
 # ---- rectal_palpation_template ----
@@ -276,7 +239,6 @@ a_communal_pasture_use <- data.table(area_out = NA_integer_,
 #' @format [data.table] [data.table::data.table]
 #' @seealso [cow_table] [tie_stall_table] [area_table] [movement_table]
 #' @name rp_table
-#' @export
 one_day_rp <- data.table(cow_id = NA_integer_,
                          infection_status = NA_character_,
                          day_rp = NA_real_,
@@ -284,5 +246,4 @@ one_day_rp <- data.table(cow_id = NA_integer_,
                          i_rp = NA_integer_,
                          is_after_inf = NA,
                          is_infected = NA)
-# TODO: 名前は検討
 

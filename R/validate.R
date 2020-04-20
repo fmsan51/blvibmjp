@@ -10,18 +10,15 @@
 validate_cow_table <- function(cows,
                                date_format = "ymd",
                                today = lubridate::today(tzone = "Asia/Tokyo")) {
-  cows <- copy(cows)
-
   # Check missing parameters
   for (i in c("stage", "parity")) {
-    # TODO: add a function to automatically set parameters which are not specified by user input with warning.
     if (anyNA(cows[[i]])) {
       stop(glue("there must not be missing value in column `{i}`."), call. = F)
     }
   }
 
-  for (i in c("date_death", "date_death_expected", "is_owned", "cause_removal",
-              "day_heat", "day_last_heat", "n_heat_from_ai",
+  for (i in c("date_removal", "date_removal_expected", "is_owned",
+              "cause_removal", "day_heat", "day_last_heat", "n_heat_from_ai",
               "date_ipl_expected", "date_ebl_expected", "cause_infection",
               "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl",
               "area_id", "i_month")) {
@@ -69,13 +66,13 @@ validate_cow_table <- function(cows,
   }
 
   # stage
-  if (any(cows[stage %in% c("calf", "heifer"), parity] != 0)) {
+  if (any(cows[match(c("calf", "heifer"), stage), parity] != 0)) {
     stop("`parity` for calves and heifers must be 0.", call. = F)
   }
-  if (any(cows[stage %in% c("milking", "dry"), parity] == 0)) {
+  if (any(cows[match(c("milking", "dry"), stage), parity] == 0)) {
     stop("`parity` for milking cows and dry cows must not be 0.", call. = F)
   }
-  if (any(!is.na(cows[stage %in% c("calf", "heifer"), date_last_delivery]))) {
+  if (any(!is.na(cows[match(c("calf", "heifer"), stage), date_last_delivery]))) {
     stop("`date_last_delivery` for calves and heifers must be NA.", call. = F)
   }
   if (any(!is.na(cows[stage == "calf", date_got_pregnant]))) {
@@ -99,7 +96,7 @@ validate_cow_table <- function(cows,
       stop("stopped.", call. = F)
     }
   }
-  if (any(cows[stage %in% c("milking", "dry"), age] < 18)) {
+  if (any(cows[match(c("milking", "dry"), stage), age] < 18)) {
     ans <- menu(c("continue", "stop and fix"),
                 title = glue("There is milking cow or dry cow who is younger \\
                              than 18 months old.
@@ -119,8 +116,7 @@ validate_cow_table <- function(cows,
               (a cow whose `date_got_pregnant` is NA) must be 0."), call. = F)
   }
 
-  return(cows)
-
+  invisible(NULL)
   # TODO: chamber_idとis_isolatedの設定をしたいなー（Free-stall以外で設定してはいけない）
 }
 
@@ -134,8 +130,8 @@ validate_cow_table <- function(cows,
 #' @return Stop if the `col` contains invalid category.
 validate_category <- function(cows, col, category) {
   values <- cows[[col]]
-  if (any(!(values %in% category))) {
-    invalid_value <- unique(values[!(values %in% category)])
+  if (any(!values %in% category)) {
+    invalid_value <- unique(values[!values %in% category])
     stop(glue("column `{col}` contains invalid value(s): \\
               {paste(invalid_value, collapse = ', ')}
               column `{col}` must contain only following values: \\
@@ -153,8 +149,6 @@ validate_category <- function(cows, col, category) {
 #' @return A [cow_table] whose date columns are formatted.
 format_date <- function(cows, date_format = "ymd",
                         today = lubridate::today(tzone = "Asia/Tokyo")) {
-  cows <- copy(cows)
-
   if (all(date_format != c("ymd", "ydm", "myd", "mdy", "dym", "dmy"))) {
     stop("date_format must be one of ymd, ydm, myd, mdy, dym, dmy", call. = F)
   }
@@ -176,7 +170,7 @@ format_date <- function(cows, date_format = "ymd",
         cows[[date_col]] <- day(date_formatter(cows[[date_col]]))
         cows[[date_col]][cows[[date_col]] == 31] <- 1
       } else {
-        cows[[date_col]] <- floor(
+        cows[[date_col]] <- ceiling(
           interval(today, date_formatter(cows[[date_col]])) / months(1, F)
           )
         if (any(cows[[date_col]] < 0, na.rm = T)) {

@@ -4,16 +4,16 @@
 \alias{setup_area_table}
 \title{Setup of \code{area_table}}
 \usage{
-setup_area_table(area_table, param_farm, param_area)
+setup_area_table(area_table, param)
 }
 \arguments{
 \item{area_table}{See \link{area_table}.}
 
-\item{param_farm}{See \link{param_farm}.}
+\item{param}{See \link{param}.}
 }
 \description{
 Setup \link{area_table}.
 }
 \seealso{
-\link{area_table} \link{setup_cows} \link{setup_areas} \link{setup_movement_table} \link{setup_areas}
+\link{area_table} \link{setup_cows} \link{setup_area_table} \link{setup_movement_table} \link{setup_area_table}
 }
