@@ -45,7 +45,6 @@ param <- list(
   output_dir = "data/output",
   output_filename = "simulation",
 
-  # TODO: The function to confirm the necessary parameters are set or not
   prop_female = NA,
   prop_replacement = NA,
   prop_died = NA,
