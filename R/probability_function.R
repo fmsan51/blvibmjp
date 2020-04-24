@@ -134,26 +134,6 @@ is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
 }
 
 
-#' Whether cows are infected by contaminated needles
-#'
-#' @param cows See [cow_table].
-#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
-#'
-#' @return A logical vector.
-is_infected_needles <- function(cows, param_sim) {
-  # Studies succeeded to prove infection by contaminated needles
-  # (in Japan) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2835688/?tool=pmcentrez&report=abstract
-  # Several studies failed to prove infection by contaminated needles
-  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
-  # https://academic.oup.com/aje/article/117/5/621/102629
-  # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
-  #   By same authors with a "succeeded" paper in Japan, probably with more samples
-  n_infected <- sum(cows$is_owned & cows$infection_status != "s", na.rm = T)
-  herd_size <- attr(cows, "herd_size")
-  is_infected <- runif(herd_size) <
-    param_sim$prob_inf_needles * (n_infected / herd_size)
-  return(is_infected)
-}
 # TODO: Gauge dehorning https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1236184/pdf/compmed00003-0104.pdf
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
 

@@ -317,11 +317,6 @@ change_infection_status <- function(cows, i, month, area_table, areas,
                                     param_sim) {
   res <- calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
 
-  s_cows <-
-    cows$cow_id[cows$infection_status == "s" & !is.na(cows$infection_status)]
-  cows_inf_by_needles <- s_cows[is_infected_needles(cows, param_sim)]
-  res <- infect(cows, areas, area_table, cows_inf_by_needles, "needles", i)
-
   res$cows[date_ial == i,
            c("date_ipl_expected", "date_ebl_expected") :=
              n_month_to_progress(susceptibility_ial_to_ipl,

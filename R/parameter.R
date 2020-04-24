@@ -26,7 +26,6 @@
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
-#' - `change_needles` (logical): whether use one needles for one cow. (default: TRUE)
 #' - `change_gloves` (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 #' - `feed_raw_colostrum` (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 #' - `cull_infected_cows` ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by `cull_frequency` described next.
@@ -88,7 +87,6 @@ param <- list(
   #   Kitagawa and Takeda, 2011. p56 of https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/pdf/syoroku_52.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
 
   control_insects = F,
-  change_needles = T,
   change_gloves = T,
   # TODO: Make it to prop
   feed_raw_colostrum = F,
@@ -290,11 +288,9 @@ calc_param <- function(param, modification = NULL) {
 
 
   ## infection_needles ----
+  # Ignored because no appropreate reference was found
+  # about frequency of use of needles in a herd
 
-  # Infection by using same needles among infected and non-infected cattle
-  # Infection probability per day
-  # TODO: temporary, just by inspiration
-  res$prob_inf_needles <- fifelse(param$change_needles, 0, 0.001)
 
   ## infection_rp ----
   # Infection by rectal palpation

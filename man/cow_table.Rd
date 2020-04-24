@@ -65,7 +65,6 @@ FALSE: The cow Will be sold to beef operations.
 \item "initial": already be infected at the start of the start of a simulation.
 \item "insects": by bloodsucking insects.
 \item "contact": by direct contact with an infected cow.
-\item "needles": by a contaminated needle.
 \item "rp": by rectal palpation.
 \item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).

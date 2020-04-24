@@ -139,7 +139,6 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
   if (is.null(route_levels)) {
     route_levels <- c("uninfected", "initial", "insects",
                       # "contact",  TODO: Fix this
-                      # "needles",  TODO: Fix this
                       "rp", "vertical", "colostrum", "introduced", "pasture")
   }
   uninf_and_route <- unique(c("uninfected", route_levels))

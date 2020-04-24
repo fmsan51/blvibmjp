@@ -5,7 +5,7 @@
 \alias{param}
 \title{Parameters about a simulation which should be set by users}
 \format{
-An object of class \code{list} of length 29.
+An object of class \code{list} of length 28.
 }
 \usage{
 param
@@ -39,7 +39,6 @@ Parameters depends on a farm:
 \item \code{n_introduced} c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 \item \code{days_qualantine}: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 \item \code{control_insects} (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., \code{control_insects = 0.8} means that the number of insects becomes 80\%). When \code{TRUE}, it is assumed that insects in a farm decrease to 50\%. (default: FALSE)
-\item \code{change_needles} (logical): whether use one needles for one cow. (default: TRUE)
 \item \code{change_gloves} (logical): whether use one glove for one cow for rectal palpation. (default: TRUE)
 \item \code{feed_raw_colostrum} (logical): wheter feed non-pasteurized colostrum milk to newborn calves. (default: FALSE)
 \item \code{cull_infected_cows} ("no"/"all"/"highrisk"): Whether cull infected cows. "all" means cull infected cows even when they do not show simptoms and "highrisk" means cull PL or EBL cows only. Culling is conducted when a new female calf is born and you can set frequency of culling by \code{cull_frequency} described next.
