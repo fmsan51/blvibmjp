@@ -592,7 +592,7 @@ cull_infected_cows <- function(cows, areas, i, param_sim) {
          cow_id]
   res <- replace_selected_cows(cows, areas, id_detected_highrisk, i)
   if (param$cull_infected_cows == "all") {
-    id_detected <- cows[is_detected & is_owned, cow_id]
+    id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
     res <- replace_selected_cows(cows, areas, id_detected, i)
   }
   return(res)
@@ -686,8 +686,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   }
 
   cow_id_returned_from_pasture <-
-    cows[cow_id %in% cow_id_to_move & area_id == 0, cow_id]
-    # cows$cow_id[cond] contains NA rows
+    remove_na(cows$cow_id[cows$cow_id %in% cow_id_to_move & cows$area_id == 0])
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <- table(

@@ -134,7 +134,7 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
                                   route_labels = NULL) {
   cows <- copy(cows)
 
-  cows[infection_status == "s", `:=`(cause_infection = "uninfected")]
+  cows$cause_infection[cows$infection_status == "s"] <- "uninfected"
 
   if (is.null(route_levels)) {
     route_levels <- c("uninfected", "initial", "insects",
