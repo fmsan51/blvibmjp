@@ -636,7 +636,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
                cond, fixed = T)
   cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
 
-  # (?^|[^_]) is about 3x faster than (?<!_)
+  # (?:^|[^_]) is about 3x faster than (?<!_)
   cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
   cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
   cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)
