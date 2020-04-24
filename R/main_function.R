@@ -28,7 +28,8 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   # Calculate day of next heat
   # Heat can occur 1-2 times/month because mean heat cycle is 21.
   # Here we use 4 to calculate the number of heat in month with some margin.
-  heat_matrix <- matrix(heat_cycle(attr(cows, "herd_size") * 4, param_sim),
+  heat_matrix <- matrix(heat_cycle(attr(cows, "herd_size") * 4,
+                                   rep(cows$stage, each = 4), param_sim),
                         nrow = 4)
   heat_matrix <-
     rbind(cows$day_heat[cows$is_owned & !is.na(cows$is_owned)], heat_matrix)

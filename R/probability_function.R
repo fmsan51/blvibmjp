@@ -269,11 +269,17 @@ is_ai_succeeded <- function(n_cows, param_sim) {
 #' Heat cycle
 #'
 #' @param n_cows The number of cows to which heat cycle should be calculated.
+#' @param stage Stage (`stage` column of [cow_table] of cows.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A numeric vector.
-heat_cycle <- function(n_cows, param_sim) {
-  round(rnorm(n_cows, mean = 21, sd = param_sim$sd_heat))
+heat_cycle <- function(n_cows, stage, param_sim) {
+  mean_heat <- param_sim$mean_heat_0 * (stage == "calf" | stage == "heifer") +
+                 param_sim$mean_heat_1 * (stage == "milking" | stage == "dry")
+  sd_heat <- param_sim$sd_heat_0 * (stage == "calf" | stage == "heifer") +
+               param_sim$sd_heat_1 * (stage == "milking" | stage == "dry")
+  heat_cycle <- round(rnorm(n_cows, mean = mean_heat, sd = sd_heat))
+  return(heat_cycle)
 }
 
 

@@ -392,7 +392,10 @@ calc_param <- function(param, modification = NULL) {
 
   # Heat cycle
   # Martin et al, 2019. https://doi.org/10.1017/S1751731118001830
-  res$sd_heat <- 1  # SD of length of heat cycle (days)
+  res$mean_heat_0 <- 20.5  # Heifer
+  res$mean_heat_1 <- 20.7  # Delivered
+  res$sd_heat_0 <- 1.0  # Heifer
+  res$sd_heat_1 <- 1.1  # Delivered
 
 
   ## milking_stage ----
