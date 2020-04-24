@@ -309,6 +309,7 @@ calc_param <- function(param, modification = NULL) {
 
   # 直検1回ごとの感染確率
   # Kohara, Konnai and Onuma, 2016.
+  # TODO: Recalculate
   res$prob_inf_rp <- fifelse(param$change_gloves, 0, 1 - (1 - 3 / 4) ^ (1 / 4))
 
 
