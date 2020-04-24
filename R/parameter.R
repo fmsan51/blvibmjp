@@ -521,16 +521,26 @@ calc_param_pre <- function(param, modification = NULL) {
 
   # Nyuken (H23-27)
   # calving_interval, age_first_delivery, months_open, months_milking is used only in prepare_cows()
-  res$age_first_delivery <- set_param(param$age_first_delivery,
-                                        mean(25.2, 25.1, 25.0, 25.0, 24.8))
-  res$calving_interval <-
-    set_param(param$calving_interval / days_per_month,
-              mean(432, 430, 432, 429, 427) / days_per_month)
-  res$months_open <- set_param(param$days_open / days_per_month,
-                                 mean(160, 159, 159, 155, 154) / days_per_month)
-  res$months_milking <-
-    set_param(param$days_milking / days_per_month,
-              mean(366, 363, 365, 364, 363) / days_per_month)
+  calving_interval <- c(432, 430, 432, 429, 427) / days_per_month
+  res$calving_interval <- set_param(
+    param$calving_interval / days_per_month,
+    runif(1, min = min(calving_interval), max = max(calving_interval))
+    )
+  age_first_delivery <- c(25.2, 25.1, 25.0, 25.0, 24.8)
+  res$age_first_delivery <- set_param(
+    param$age_first_delivery,
+    runif(1, min = min(age_first_delivery), max = max(age_first_delivery))
+    )
+  months_open <- c(160, 159, 159, 155, 154) / days_per_month
+  res$months_open <- set_param(
+    param$days_open / days_per_month,
+    runif(1, min = min(months_open), max = max(months_open))
+    )
+  months_milking <- c(366, 363, 365, 364, 363) / days_per_month
+  res$months_milking <- set_param(
+    param$days_milking / days_per_month,
+    runif(1, min = min(months_milking), max = max(months_milking))
+    )
 
   res <- c(res, calc_param_both(param))
 
