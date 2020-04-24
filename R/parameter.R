@@ -402,10 +402,7 @@ calc_param <- function(param, modification = NULL) {
 
 
   # Length of milking period
-  length_milking <-
-    set_param(param$days_milking, 363) / days_per_month
-  res$lower_lim_dried <- length_milking %/% 1
-  res$prop_dried_shorter <- 1 - length_milking %% 1
+  res$length_milking <- set_param(param$days_milking, 363) / days_per_month
 
 
   ## reproduction ----

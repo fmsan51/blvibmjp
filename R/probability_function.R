@@ -291,9 +291,7 @@ heat_cycle <- function(n_cows, stage, param_sim) {
 #' @return A logical vector.
 is_dried <- function(months_from_delivery, param_sim) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
-  (months_from_delivery > param_sim$lower_lim_dried) |
-  ((months_from_delivery == param_sim$lower_lim_dried) &
-   (runif(length(months_from_delivery)) < param_sim$prop_dried_shorter))
+  months_from_delivery >= integerize(param_sim$length_milking)
 }
 
 
