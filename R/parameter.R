@@ -485,7 +485,7 @@ process_param <- function(cows, param) {
     herd_size_limits = herd_size_limits,
     max_herd_size = herd_size_limits[2] * 2,
     init_max_cow_id = max(cows$cow_id, na.rm = T),
-    prob_rep = set_prob_rep(sum(cows$parity != 1, na.rm = T), param)
+    prob_rep = set_prob_rep(sum(cows$parity != 0, na.rm = T), param)
     )
 
   return(res)
