@@ -406,6 +406,7 @@ calc_param <- function(param, modification = NULL) {
 
   ## Probability to be twins ----
   ratio_twin <- prop_twin / (prop_m + prop_f + prop_twin)
+  # prop_m + prop_f + prop_twin != 1
   lims_twin <- c(min(ratio_twin), max(ratio_twin))
   res$prob_twin <- runif(1, min = lims_twin[1], max = lims_twin[2])
 
