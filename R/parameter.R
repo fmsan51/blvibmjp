@@ -199,8 +199,9 @@ calc_param <- function(param, modification = NULL) {
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
   } else if (param$test_method == "PHA") {
-    estimates <- data.table(sensitivity = numeric(2),
-                            specificity = numeric(2))
+    n_est <- 2
+    estimates <- data.table(sensitivity = numeric(n_est),
+                            specificity = numeric(n_est))
     # Calculate treating a result of nested PCR as gold standard
     # Abe et al, 2012. http://www.pref.tochigi.lg.jp/g68/documents/4abe.pdf (http://www.pref.tochigi.lg.jp/g68/jigyougaiyou23.html)
     estimates[1, `:=`(sensitivity = 1,
@@ -208,7 +209,7 @@ calc_param <- function(param, modification = NULL) {
     # Division of Pathology, Kyoto City Institute of Health and Environmental Sciences, 2006. Annual Report of Kyoto City Institute of Health and Environmental Sciences, 73. https://www.city.kyoto.lg.jp/hokenfukushi/cmsfiles/contents/0000118/118365/O6.pdf (https://www.city.kyoto.lg.jp/hokenfukushi/page/0000118365.html)
     estimates[2, `:=`(sensitivity = 0.909,
                       specificity = 0.984)]
-    estimate <- estimates[sample.int(.N, 1), ]
+    estimate <- estimates[sample.int(n_est, 1), ]
     res$test_sensitivity <- estimate$sensitivity
     res$test_specificity <- estimate$specificity
   } else if (param$test_method == "nested PCR") {
@@ -225,9 +226,10 @@ calc_param <- function(param, modification = NULL) {
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
   } else if (param$test_method == "real-time PCR") {
+    n_est <- 3
     # Calculate treating a result of nested PCR as gold standard
-    estimates <- data.table(sensitivity = numeric(3),
-                            specificity = numeric(3))
+    estimates <- data.table(sensitivity = numeric(n_est),
+                            specificity = numeric(n_est))
     # Hayashi et al, 2016. https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/files/27gyohatu_BLV.pdf (https://www.pref.aomori.lg.jp/soshiki/kenmin/ao-kaho/chosashiken.html)
     estimates[1, `:=`(sensitivity = 4 / 5,
                       specificity = 1)]
@@ -237,7 +239,7 @@ calc_param <- function(param, modification = NULL) {
     # Soda et al, 2015. Saitamaken Chosa Kenkyu Seiseki Houkokusho, 56. https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/documents/h26_09.pdf (https://www.pref.saitama.lg.jp/a0908/gyousekihappyou/gyousekihappyou.html)
     estimates[3, `:=`(sensitivity = 1,
                       specificity = 1)]
-    estimate <- estimates[sample.int(.N, 1), ]
+    estimate <- estimates[sample.int(n_est, 1), ]
     res$test_sensitivity <- estimate$sensitivity
     res$test_specificity <- estimate$specificity
   } else {
@@ -272,8 +274,7 @@ calc_param <- function(param, modification = NULL) {
   ## infection_neighbor ----
 
   res$prob_inf_tiestall_baseline <- res$probs_inf_insects_month
-  res$hr_having_infected_neighbor <-
-    exp(rnorm(1, mean = 2.52, sd = 0.73))
+  res$hr_having_infected_neighbor <- exp(rnorm(1, mean = 2.52, sd = 0.73))
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
 
 
@@ -351,18 +352,18 @@ calc_param <- function(param, modification = NULL) {
 
   # Detection of heats
   prop_heat_detected <- c(0.60, 0.60, 0.60, 0.59, 0.59)  # Probability of detection of heat from Nenkan Kentei Seiseki from HRK (H23-28)
-  res$prob_heat_detected <- set_param(param$prop_heat_detected,
-                                        runif(1, min = min(prop_heat_detected),
-                                              max = max(prop_heat_detected)))
+  res$prob_heat_detected <- set_param(
+    param$prop_heat_detected,
+    runif(1, min = min(prop_heat_detected), max = max(prop_heat_detected))
+    )
 
 
   # Proportion of success of the first AI
   # From Gyugun Kentei Seisekihyo by HRK
   # (because the data of the current year is only known from Feb to Dec)
   prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  res$prob_first_ai_success <- runif(1,
-                                       min(prop_first_ai_success),
-                                       max(prop_first_ai_success))
+  res$prob_first_ai_success <-
+    runif(1, min = min(prop_first_ai_success), max = max(prop_first_ai_success))
 
 
   # Proportion of success of AI after the first
@@ -373,7 +374,8 @@ calc_param <- function(param, modification = NULL) {
   mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
   prop_ai_success <- (1 - res$prob_first_ai_success) / (mean_ai - 1)
   lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
-  res$prob_ai_success <- runif(1, min(prop_ai_success), max(prop_ai_success))
+  res$prob_ai_success <-
+    runif(1, min = min(prop_ai_success), max = max(prop_ai_success))
 
 
   # Heat cycle
@@ -414,30 +416,26 @@ calc_param <- function(param, modification = NULL) {
   res$prob_female <- runif(1, min = lims_female[1], max = lims_female[2])
 
   ## Sex ratio for twins ----
-  sex_ratio_mm <- prop_mm / (prop_mm + prop_ff + prop_fm)
-  sex_ratio_ff <- prop_ff / (prop_mm + prop_ff + prop_fm)
-  lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))
-  lims_ff <- c(min(sex_ratio_ff), max(sex_ratio_ff))
+  sex_ratio_mm <- prop_mm / prop_twin
+  sex_ratio_ff <- prop_ff / prop_twin
 
-  if (!is.na(param$prop_female)) {
-    if (length(param$prop_female) == 1) {
-      prop_female <-
-        c(param$prop_female, param$prop_female)
-    }
+  if (is.na(param$prop_female)) {
+    lims_mm <- c(min(sex_ratio_mm), max(sex_ratio_mm))
+    lims_ff <- c(min(sex_ratio_ff), max(sex_ratio_ff))
+  } else {
     tend_mm <- sex_ratio_mm / (prop_m ^ 2)
     tend_ff <- sex_ratio_ff / (prop_f ^ 2)
-    lims_mm <- c((1 - prop_female[2]) ^ 2 * min(tend_mm),
-                 (1 - prop_female[1]) ^ 2 * max(tend_mm))
-    lims_ff <- c(prop_female[1] ^ 2 * min(tend_ff),
-                 prop_female[2] ^ 2 * max(tend_ff))
-    if (lims_mm[2] + lims_ff[2] > 1) {
-      lims_mm <- c((1 - prop_female[2]) ^ 2, (1 - prop_female[1]) ^ 2)
-      lims_ff <- c(prop_female[1] ^ 2, prop_female[2] ^ 2)
-    }
+    lims_mm <- (1 - param$prop_female) ^ 2 * range(tend_mm)
+    lims_ff <- param$prop_female ^ 2 * range(tend_ff)
   }
 
   prob_mm <- runif(1, min = lims_mm[1], max = lims_mm[2])
   prob_ff <- runif(1, min = lims_ff[1], max = lims_ff[2])
+  total <- prob_mm + prob_ff
+  if (total > 1) {
+    prob_mm <- prob_mm / total
+    prob_ff <- prob_ff / total
+  }
   res$probs_sex_pairs <- c(prob_mm, 1 - prob_mm - prob_ff, prob_ff)
 
 
