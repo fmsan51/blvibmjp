@@ -155,8 +155,7 @@ calc_param <- function(param, modification = NULL) {
   # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
   # (Because they assumed as the same and there is no data about the length of period from clinical onset to detection.)
   # - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
-  res$prob_ebl_detected <- rnorm(1, mean = 0.397,
-                                   sd = (0.397 - 0.358) / qnorm(0.975))
+  res$prob_ebl_detected <- rnorm(1, mean = 0.397, sd = (0.397 - 0.358) / q975)
 
   # Months until EBL cattle die
   res$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
@@ -194,7 +193,6 @@ calc_param <- function(param, modification = NULL) {
                             sp_est = c(0.985, 0.987, 0.970, 0.849),
                             sp_lwr = c(0.962, 0.958, 0.927, 0.784),
                             sp_upr = c(1.000, 0.998, 0.996, 0.913))
-    q975 <- qnorm(0.975)
     estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
                      sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
     estimate <- estimates[sample.int(.N, 1), ]
@@ -221,7 +219,6 @@ calc_param <- function(param, modification = NULL) {
                             sp_est = c(0.767, 0.770, 0.755),
                             sp_lwr = c(0.696, 0.694, 0.674),
                             sp_upr = c(0.828, 0.836, 0.828))
-    q975 <- qnorm(0.975)
     estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
                      sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
     estimate <- estimates[sample.int(.N, 1), ]
@@ -282,12 +279,12 @@ calc_param <- function(param, modification = NULL) {
 
   ## infection_free ----
   free_pressure <-
-    rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / qnorm(0.975))
+    rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / q975)
   # Kobayashi et al, 2014. https://doi.org/10.1016/j.rvsc.2013.11.014
   res$prob_inf_free <- res$probs_inf_insects_month * free_pressure
 
   res$average_prop_inf_in_free <-
-    rnorm(1, mean = 0.409, sd = mean(c(0.404, 0.414)) / qnorm(0.975))
+    rnorm(1, mean = 0.409, sd = mean(c(0.409 - 0.404, 0.414 - 0.409)) / q975)
   # Murakami et al, 2013. https://doi.org/10.1292/jvms.12-0374
 
 

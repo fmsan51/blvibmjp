@@ -61,3 +61,6 @@ remove_na <- function(x) {
 }
 
 
+#' 97.5% quantile of normal distribution
+q975 <- qnorm(0.975)
+
