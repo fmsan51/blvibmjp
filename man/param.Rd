@@ -5,7 +5,7 @@
 \alias{param}
 \title{Parameters about a simulation which should be set by users}
 \format{
-An object of class \code{list} of length 31.
+An object of class \code{list} of length 29.
 }
 \usage{
 param
@@ -31,8 +31,8 @@ Parameters depends on a farm:
 \item \code{prop_died} (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 \item \code{prop_heat_detected} (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 \item \code{calving_interval}: Calving interval in day. (default: average in Hokkaido)
-\item \code{mean_age_first_ai}, \code{sd_age_first_ai}: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = \code{2 / qnorm(0.975)})
-\item \code{mean_day_start_ai}, \code{sd_day_start_ai}: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = \code{10 / qnorm(0.975)})
+\item \code{age_first_ai}: Age (in month) of the first AI for heifers. (default: average in Hokkaido)
+\item \code{day_start_ai}: Day of first AI after a delivery. (default: average in Hokkaido)
 \item \code{capacity_in_head} c(lower, upper): Lower/upper limit of the herd size. Set either this or \code{capacity_as_ratio} below.
 \item \code{capacity_as_ratio} c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = \code{lower * initial_herd_size}, upper limit = \code{upper * initial_herd_size}). Set either this or \code{capacity_in_head} above. When both of \code{capacity_in_head} and \code{capacity_as_ratio} is NA, \code{capacity_as_ratio} is set to \code{c(0.9, 1.1)}.
 \item \code{prob_seroconversion_in_pasture} (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
