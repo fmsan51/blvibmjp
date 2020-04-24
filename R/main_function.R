@@ -212,11 +212,10 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
     day_rp[,
            `:=`(is_after_inf = (shift(infection_status, type = "lag") != "s")),
            by = list(day_rp, type)]
-    day_rp[infection_status == "s",
-           `:=`(is_infected = (is_after_inf & is_infected_rp(.N, param_sim)))]
+    day_rp$is_infected <- day_rp$infection_status == "s" & day_rp$is_after_inf &
+      is_infected_rp(param_sim$max_herd_size, param_sim)
     res <- infect(cows, areas, area_table,
-                  day_rp[is_infected == T, cow_id], "rp", i)
-                  # is_infected = NA rows are excluded
+                  remove_na(day_rp$cow_id[day_rp$is_infected]), "rp", i)
   } else {
     res <- list(cows = cows, areas = areas)
   }
