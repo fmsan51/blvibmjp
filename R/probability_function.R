@@ -18,8 +18,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
                                 i, param_sim) {
   n_cows <- length(susceptibility_ial_to_ipl)
-  months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <-
-    prop_ial_period <- numeric(n_cows)
+  months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <- numeric(n_cows)
   neg_months_ipl_to_ebl <- logical(n_cows)
   while (any(neg_months_ipl_to_ebl)) {
     months_ial_to_ebl[neg_months_ipl_to_ebl] <-
@@ -27,15 +26,10 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                shape = param_sim$ebl_progress_shape,
                scale = param_sim$ebl_progress_scale
                ) * 12
-    prop_ial_period[neg_months_ipl_to_ebl] <-
-      rnorm(n_cows,
-            mean = param_sim$mean_prop_ial_period,
-            sd = param_sim$sd_prop_ial_period)
-    prop_ial_period[prop_ial_period < 0] <- 0
     months_ial_to_ipl[neg_months_ipl_to_ebl] <-
       rweibull(n_cows,
                shape = param_sim$ebl_progress_shape,
-               scale = param_sim$ebl_progress_scale * prop_ial_period
+               scale = param_sim$ebl_progress_scale * param_sim$prop_ial_period
                ) * 12
     months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
     neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
@@ -212,12 +206,7 @@ is_infected_by_colostrum <- function(status_mother, param_sim) {
 #'
 #' @return A logical vector.
 is_ai_started_milking <- function(n_month_from_delivery, param_sim) {
-  prob_start_ai <- pnorm(n_month_from_delivery,
-                         mean = param_sim$mean_date_start_ai,
-                         sd = param_sim$sd_date_start_ai)
-  is_ai_started_milking <-
-    (runif(length(n_month_from_delivery)) < prob_start_ai)
-  return(is_ai_started_milking)
+  n_month_from_delivery >= integerize(param_sim$date_start_ai)
 }
 
 
@@ -228,12 +217,7 @@ is_ai_started_milking <- function(n_month_from_delivery, param_sim) {
 #'
 #' @return A logical vector.
 is_ai_started_heifer <- function(ages, param_sim) {
-  prob_first_ai <- pnorm(ages,
-                         mean = param_sim$mean_age_first_ai,
-                         sd = param_sim$sd_age_first_ai)
-  prob_first_ai[ages < param_sim$lower_lim_first_ai] <- 0
-  is_ai_started_heifer <- (runif(length(ages)) < prob_first_ai)
-  return(is_ai_started_heifer)
+  ages >= integerize(param_sim$age_first_ai)
 }
 
 

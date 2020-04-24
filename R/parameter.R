@@ -18,8 +18,8 @@
 #' - `prop_died` (1-0): Proportion of dead cows in removed cows (Died / (Died + Slaughtered)). (default: average in Hokkaido)
 #' - `prop_heat_detected` (0-1): Proportion of detected heats in total heats. (default: average in Hokkaido)
 #' - `calving_interval`: Calving interval in day. (default: average in Hokkaido)
-#' - `mean_age_first_ai`, `sd_age_first_ai`: Age (in month) of the first AI for heifers. $~Norm(mean, sd)$. (default: mean = mode of Hokkaido, sd = `2 / qnorm(0.975)`)
-#' - `mean_day_start_ai`, `sd_day_start_ai`: Day of first AI after a delivery. $~Norm(mean, sd)$. (default: mean = mean of Hokkaido, sd = `10 / qnorm(0.975)`)
+#' - `age_first_ai`: Age (in month) of the first AI for heifers. (default: average in Hokkaido)
+#' - `day_start_ai`: Day of first AI after a delivery. (default: average in Hokkaido)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
 #' - `prob_seroconversion_in_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
@@ -55,10 +55,8 @@ param <- list(
   age_first_delivery = NA,
   days_open = NA,
   days_milking = NA,
-  mean_age_first_ai = NA,
-  sd_age_first_ai = NA,
-  mean_day_start_ai = NA,
-  sd_day_start_ai = NA,
+  age_first_ai = NA,
+  day_start_ai = NA,
 
   n_introduced = c(0, 0, 0),
   days_qualantine = 0,
@@ -142,9 +140,8 @@ calc_param <- function(param, modification = NULL) {
   #   because ordinal farms are assumed to change gloves for each rectal palpation.
   #   TODO: Some farmers don't change gloves. consider again.
 
-  res$mean_prop_ial_period <-  0.3
+  res$prop_ial_period <-  0.3
   # TODO: Reconsider this parameter
-  res$sd_prop_ial_period <- (0.3 - 0.2) / qnorm(0.975)
   # Length of periods from PL to EBL is not well known. (several months to years)
   res$ebl_progress_shape <- 3.3
   res$ebl_progress_scale <- 7.8
@@ -339,28 +336,20 @@ calc_param <- function(param, modification = NULL) {
   # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
   # The date of the first AI after a delivery of PREVIOUS year
   # (because the data of the current year is only known from Feb to Dec)
-  mean_date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
-  lims_date_start_ai <-
-    set_param(param$mean_day_start_ai,
-              c(min(mean_date_start_ai), max(mean_date_start_ai)))
-  # TODO: It's assumed that 95% of cows start AI within one month
-  res$sd_date_start_ai <-
-    set_param(param$sd_day_start_ai / days_per_month, 1 / qnorm(0.975))
-  res$mean_date_start_ai <-
+  date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
+  lims_date_start_ai <- set_param(param$day_start_ai,
+                                  c(min(date_start_ai), max(date_start_ai)))
+  res$date_start_ai <-
     runif(1, min = lims_date_start_ai[1], max = lims_date_start_ai[2])
 
 
   # First AI for heifer
   # From Gyugun Kentei Seisekihyo by HRK
-  mean_age_first_ai <- c(427, 427, 435, 432) / days_per_month
-  lims_age_first_ai <- set_param(param$mean_age_first_ai,
-                                 c(min(mean_age_first_ai), max(mean_age_first_ai)))
-  # TODO: It's assumed that 95% of cows will get pregnant within one month
-  res$sd_age_first_ai <-
-    set_param(param$sd_age_first_ai, 1 / qnorm(0.975))
-  res$mean_age_first_ai <- runif(1, min = lims_age_first_ai[1],
-                                   max = lims_age_first_ai[2])
-  res$lower_lim_first_ai <- 12
+  age_first_ai <- c(427, 427, 435, 432) / days_per_month
+  lims_age_first_ai <-
+    set_param(param$age_first_ai, c(min(age_first_ai), max(age_first_ai)))
+  res$age_first_ai <-
+    runif(1, min = lims_age_first_ai[1], max = lims_age_first_ai[2])
 
 
   # Detection of heats
