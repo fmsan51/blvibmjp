@@ -671,7 +671,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
     attr(movement_table, "cond_as_expr"),
-    function(x) {cows[eval(x), cow_id]}
+    function(x) remove_na(cows$cow_id[eval(x, envir = cows)])
     )
 
   # Remove duplicated cow_id
