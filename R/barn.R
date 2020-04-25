@@ -69,7 +69,7 @@ assign_chambers <- function(cows, areas, area_assignment) {
 
     rows_assigned <- match(assigned_cow_id, cows$cow_id)
     if (n_candidates > n_chambers) {
-      rows$chamber_id[match(candidate_cow_id, cows$cow_id)] <- 0
+      cows$chamber_id[match(candidate_cow_id, cows$cow_id)] <- 0
     }
     cows$chamber_id[rows_assigned] <- assigned_chambers
     assigned_area[match(assigned_chambers, chamber_id),
