@@ -12,7 +12,8 @@ simulate_blv_spread(
   save_param = T,
   i_simulation_start = 1,
   seed = NULL,
-  validate = T
+  validate = T,
+  silent = F
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ simulate_blv_spread(
 \item{seed}{Seed for a simulation.}
 
 \item{validate}{A logical value indicates whether validate inputs (data and paramters).}
+
+\item{silent}{A logical value to control print \verb{Simulation x / x} while simulation.}
 }
 \value{
 The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by \code{param$output_dir}.
