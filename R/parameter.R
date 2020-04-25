@@ -266,21 +266,22 @@ calc_param <- function(param, modification = NULL) {
   } else {
     insects_pressure <- control_insects
   }
-  res$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
+  res$probs_inf_insects_month <- probs_inf_insects_month
+  # used in is_infected_in_free_stall
+  res$probs_inf_tie_month <- probs_inf_insects_month * insects_pressure
+
 
   ## infection_tiestall ----
   ## infection_neighbor ----
 
-  res$prob_inf_tiestall_baseline <- res$probs_inf_insects_month
   res$hr_having_infected_neighbor <- exp(rnorm(1, mean = 2.52, sd = 0.73))
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
 
 
   ## infection_free ----
-  free_pressure <-
+  res$free_pressure <-
     rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / q975)
   # Kobayashi et al, 2014. https://doi.org/10.1016/j.rvsc.2013.11.014
-  res$prob_inf_free <- res$probs_inf_insects_month * free_pressure
 
   res$average_prop_inf_in_free <-
     rnorm(1, mean = 0.409, sd = mean(c(0.409 - 0.404, 0.414 - 0.409)) / q975)

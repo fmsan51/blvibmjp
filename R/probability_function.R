@@ -77,7 +77,7 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_insects <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$probs_inf_insects_month[month]
+  runif(n_cows) < param_sim$probs_inf_tie_month[month]
 }
 
 
@@ -100,7 +100,7 @@ is_infected_pasture <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] *
+  runif(n_cows) < param_sim$probs_inf_tie_month[month] *
                     param_sim$hr_having_infected_neighbor
 }
 
@@ -113,7 +113,7 @@ is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month]
+  runif(n_cows) < param_sim$probs_inf_tie_month[month]
 }
 
 
@@ -129,7 +129,8 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_free[month] *
+  runif(n_cows) <
+    param_sim$probs_inf_insects_month[month] * param_sim$free_pressure *
     ((n_inf / n_cows) / param_sim$average_prop_in_free)
 }
 
