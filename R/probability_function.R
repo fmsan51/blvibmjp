@@ -69,18 +69,6 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 }
 
 
-#' Whether cows are infected by insects
-#'
-#' @param n_cows The number of cows.
-#' @param month The current month (1, 2, ..., 12).
-#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
-#'
-#' @return A logical vector.
-is_infected_insects <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$probs_inf_tie_month[month]
-}
-
-
 #' Whether cows are infected in a communal pasture
 #'
 #' @param n_cows The number of cows.
