@@ -275,17 +275,18 @@ calc_param <- function(param, modification = NULL) {
   prob_seroconv_insects <- prob_seroconv_year * 13 / 14
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
   # 14 cows with seroconversion, 13 of which occured in June to December
-  diff <- function(coef) {
-    coef <- coef * 0.01  # To prevent estimates become 0 when coef is small
-    prob <- 1 - prod(1 - risks_inf_insects)
-    return(abs(prob_seroconv_insects - prob))
-  }
-  coef_est <- optim(0.1, fn = diff, method = "L-BFGS-B", lower = 0,
-                    upper = 1 / max(risks_inf_insects) * 100
-                    # 1 - risks_inf_insects contains a negative value
-                    # when coef is bigger than this
-                    )
-  probs_inf_insects_month <- risks_inf_insects * coef_est$par["coef"] * 100
+  coef_est <- optim(
+    0.01, fn = est_coef_inf_insects, method = "L-BFGS-B",
+    risks_inf_insects = risks_inf_insects,
+    prob_seroconv_insects = prob_seroconv_insects,
+    lower = 0,
+    upper = 1 / max(risks_inf_insects) * 100
+    # 1 - risks_inf_insects in est_coef_in_insects() contains a negative value
+    # when coef is bigger than this
+    # See the source code of est_coef_inf_insects() to understand
+    # why * 100 is necessary
+    )
+  probs_inf_insects_month <- risks_inf_insects * coef_est$par * 100
 
   insects_pressure <- set_null_param(modification$insects_pressure, 1)
   if (is.logical(param$control_insects)) {
