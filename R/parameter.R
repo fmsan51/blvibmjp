@@ -261,25 +261,41 @@ calc_param <- function(param, modification = NULL) {
 
   ## Probability of infection by bloodsucking insects per month per cattle ----
   # Read preps/Parameters_num_insects.Rmd
-  probs_inf_insects_month <- c(0, 0, 0, 0,  # Jan to Apr
-                               0.0028,  # May
-                               0.0107,  # Jun
-                               0.0146,  # Jul
-                               0.0063,  # Aug
-                               0.0406,  # Sep
-                               0.0140,  # Oct
-                               0.0001,  # Nov
-                               0        # Dec
-                               )
-  control_insects <- param$control_insects
-  if (is.logical(control_insects)) {
-    insects_pressure <- fifelse(control_insects, 0.5, 1)
-  } else {
-    insects_pressure <- control_insects
+
+  res$risk_tabanid <- set_null_param(modification$risk_tabanid, 25 / (25 + 1))
+  # Buxton, Hinkle and Schultz, 1985. https://www.ncbi.nlm.nih.gov/pubmed/2982293
+  n_tabanid <- c(0, 0, 0, 0, 0, 23.08, 61.32, 8.23, 0, 0, 0, 0)
+  n_stable <-
+    c(0, 0, 0, 0, 606.70, 1739.58, 1620.03, 1151.16, 8787.05, 3026.42, 27.43, 0)
+  risks_inf_insects <-
+    n_tabanid * res$risk_tabanid + n_stable * (1 - res$risk_tabanid)
+
+  prob_seroconv_year <- 1 - (1 - (4 / 83)) ^ 2
+  # Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
+  prob_seroconv_insects <- prob_seroconv_year * 13 / 14
+  # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
+  # 14 cows with seroconversion, 13 of which occured in June to December
+  diff <- function(coef) {
+    coef <- coef * 0.01  # To prevent estimates become 0 when coef is small
+    prob <- 1 - prod(1 - risks_inf_insects)
+    return(abs(prob_seroconv_insects - prob))
   }
-  res$probs_inf_insects_month <- probs_inf_insects_month
+  coef_est <- optim(0.1, fn = diff, method = "L-BFGS-B", lower = 0,
+                    upper = 1 / max(risks_inf_insects) * 100
+                    # 1 - risks_inf_insects contains a negative value
+                    # when coef is bigger than this
+                    )
+  probs_inf_insects_month <- risks_inf_insects * coef_est$par["coef"] * 100
+
+  insects_pressure <- set_null_param(modification$insects_pressure, 1)
+  if (is.logical(param$control_insects)) {
+    control_insects <- fifelse(param$control_insects, 0.5, 1)
+  } else {
+    control_insects <- param$control_insects
+  }
+  res$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
   # used in is_infected_in_free_stall
-  res$probs_inf_tie_month <- probs_inf_insects_month * insects_pressure
+  res$probs_inf_tie_month <- res$probs_inf_insects_month * control_insects
 
 
   ## infection_tiestall ----
