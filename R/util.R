@@ -64,3 +64,16 @@ remove_na <- function(x) {
 #' 97.5% quantile of normal distribution
 q975 <- qnorm(0.975)
 
+
+#' Likelihood function of a coefficient for infection by insects
+#'
+#' A function used to estimate coefficient for risks_inf_insects in [calc_param()].
+#'
+#' @param coef,risks_inf_insects,prob_seroconv_insects See the source code of [calc_param()] for detail.
+est_coef_inf_insects <- function(coef,
+                                 risks_inf_insects, prob_seroconv_insects) {
+  coef <- coef * 0.01  # To prevent estimates become 0 when coef is small
+  prob <- 1 - prod(1 - risks_inf_insects * coef)
+  return(abs(prob_seroconv_insects - prob))
+}
+
