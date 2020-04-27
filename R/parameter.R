@@ -342,7 +342,7 @@ calc_param <- function(param, modification = NULL) {
   res$prob_vert_inf_ial <- (4 + 5) / 95
   res$prob_vert_inf_ipl <- (10 + 4) / 29
 
-  ## infection_by_colostrum ----
+  ## infection_colostrum ----
 
   # Probability of infection by feeding raw colostrum milk of BLV-infected dams
   # Frequency of infection by colostrum may be smaller than that by contact. 3/(25+16) cavles raised on colostrum and milk from BLV-infected dams get infected within 5 months. - Ferrer and Piper, 1981. https://www.ncbi.nlm.nih.gov/pubmed/6272983
