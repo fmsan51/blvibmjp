@@ -262,13 +262,15 @@ calc_param <- function(param, modification = NULL) {
   ## Probability of infection by bloodsucking insects per month per cattle ----
   # Read preps/Parameters_num_insects.Rmd
 
-  res$risk_tabanid <- set_null_param(modification$risk_tabanid, 25 / (25 + 1))
+  res$risk_stable <- set_null_param(modification$risk_stable, 1 / (25 + 1))
   # Buxton, Hinkle and Schultz, 1985. https://www.ncbi.nlm.nih.gov/pubmed/2982293
-  n_tabanid <- c(0, 0, 0, 0, 0, 23.08, 61.32, 8.23, 0, 0, 0, 0)
+  # Infection of sheep occurred with monthparts of 25 stable flies and
+  # with a monthpart of a horse fly
   n_stable <-
     c(0, 0, 0, 0, 606.70, 1739.58, 1620.03, 1151.16, 8787.05, 3026.42, 27.43, 0)
+  n_tabanid <- c(0, 0, 0, 0, 0, 23.08, 61.32, 8.23, 0, 0, 0, 0)
   risks_inf_insects <-
-    n_tabanid * res$risk_tabanid + n_stable * (1 - res$risk_tabanid)
+    n_stable * res$risk_stable + n_tabanid * (1 - res$risk_stable)
 
   prob_seroconv_year <- 1 - (1 - (4 / 83)) ^ 2
   # Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
@@ -276,17 +278,17 @@ calc_param <- function(param, modification = NULL) {
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
   # 14 cows with seroconversion, 13 of which occured in June to December
   coef_est <- optim(
-    0.01, fn = est_coef_inf_insects, method = "L-BFGS-B",
+    1.2, fn = est_coef_inf_insects, method = "L-BFGS-B",
     risks_inf_insects = risks_inf_insects,
     prob_seroconv_insects = prob_seroconv_insects,
     lower = 0,
-    upper = 1 / max(risks_inf_insects) * 100
+    upper = 10000 / max(risks_inf_insects)
     # 1 - risks_inf_insects in est_coef_in_insects() contains a negative value
     # when coef is bigger than this
-    # See the source code of est_coef_inf_insects() to understand
-    # why * 100 is necessary
     )
-  probs_inf_insects_month <- risks_inf_insects * coef_est$par * 100
+  probs_inf_insects_month <- risks_inf_insects * coef_est$par / 10000
+  # See the source code of est_coef_inf_insects() to understand
+  # why * 10000 is necessary
 
   insects_pressure <- set_null_param(modification$insects_pressure, 1)
   if (is.logical(param$control_insects)) {
