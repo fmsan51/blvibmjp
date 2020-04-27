@@ -2,6 +2,14 @@
   # library.dynam.unload("blvibmjp", libpath)  # Enable this when using Rcpp
 }
 
+
+.onLoad <- function(libname, pkgname) {
+  suppressMessages(interval(today, today) %/% months(1))
+  # To suppress a message "Note: method with signature ..." by lubridate
+  # when runnig prepare_cows()
+}
+
+
 # Run and delete the following when using Rcpp
 # usethis::use_package(c("Rcpp", "BH"), type = "LinkingTo")
 

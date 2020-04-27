@@ -69,8 +69,6 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   if (length(date_as_chr) != 0) {
     cows[, (date_as_chr) := cows[, lapply(.SD, ymd), .SDcols = date_as_chr]]
   }
-  suppressMessages(interval(today, today) %/% months(1))
-  # To suppress a message "Note: method with signature ..." by lubridate
 
   # Convert is_xxx variables from numeric or character to logical
   lgl_vars <- grep("^is_", cow_table_cols, value = T)
