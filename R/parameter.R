@@ -103,16 +103,27 @@ param <- list(
 #' It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
 #' When `parameter` is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.
 #' When `parameter` is NA (= when a farm specific parameter was not set), it returns dafault parameters.
+#' [set_param()] it to overwrite parameters listed in [param] and [set_null_param()] is to overwrite parameters not listed.
 #'
 #' @param parameter The farm specific parameter
 #' @param default The default parameter
 #'
+#' @name set_param
 #' @return A list of overwritten parameters
 set_param <- function(parameter, default) {
   if (anyNA(parameter)) {  # Much faster than (is.na(parameter[1]))
     parameter <- default
   } else if (length(parameter) != length(default)) {
     parameter <- rep(parameter, length.out = length(default))
+  }
+  return(parameter)
+}
+
+
+#' @name set_param
+set_null_param <- function(parameter, default) {
+  if (is.null(parameter)) {
+    parameter <- default
   }
   return(parameter)
 }
