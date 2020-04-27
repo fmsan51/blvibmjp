@@ -18,8 +18,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
                                 i, param_sim) {
   n_cows <- length(susceptibility_ial_to_ipl)
-  months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <-
-    prop_ial_period <- numeric(n_cows)
+  months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <- numeric(n_cows)
   neg_months_ipl_to_ebl <- logical(n_cows)
   while (any(neg_months_ipl_to_ebl)) {
     months_ial_to_ebl[neg_months_ipl_to_ebl] <-
@@ -27,15 +26,10 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                shape = param_sim$ebl_progress_shape,
                scale = param_sim$ebl_progress_scale
                ) * 12
-    prop_ial_period[neg_months_ipl_to_ebl] <-
-      rnorm(n_cows,
-            mean = param_sim$mean_prop_ial_period,
-            sd = param_sim$sd_prop_ial_period)
-    prop_ial_period[prop_ial_period < 0] <- 0
     months_ial_to_ipl[neg_months_ipl_to_ebl] <-
       rweibull(n_cows,
                shape = param_sim$ebl_progress_shape,
-               scale = param_sim$ebl_progress_scale * prop_ial_period
+               scale = param_sim$ebl_progress_scale * param_sim$prop_ial_period
                ) * 12
     months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
     neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
@@ -75,18 +69,6 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 }
 
 
-#' Whether cows are infected by insects
-#'
-#' @param n_cows The number of cows.
-#' @param month The current month (1, 2, ..., 12).
-#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
-#'
-#' @return A logical vector.
-is_infected_insects <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$probs_inf_insects_month[month]
-}
-
-
 #' Whether cows are infected in a communal pasture
 #'
 #' @param n_cows The number of cows.
@@ -106,7 +88,7 @@ is_infected_pasture <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month] *
+  runif(n_cows) < param_sim$probs_inf_tie_month[month] *
                     param_sim$hr_having_infected_neighbor
 }
 
@@ -119,7 +101,7 @@ is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_tiestall_baseline[month]
+  runif(n_cows) < param_sim$probs_inf_tie_month[month]
 }
 
 
@@ -135,31 +117,12 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
-  runif(n_cows) < param_sim$prob_inf_free[month] *
+  runif(n_cows) <
+    param_sim$probs_inf_insects_month[month] * param_sim$free_pressure *
     ((n_inf / n_cows) / param_sim$average_prop_in_free)
 }
 
 
-#' Whether cows are infected by contaminated needles
-#'
-#' @param cows See [cow_table].
-#' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
-#'
-#' @return A logical vector.
-is_infected_needles <- function(cows, param_sim) {
-  # Studies succeeded to prove infection by contaminated needles
-  # (in Japan) https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2835688/?tool=pmcentrez&report=abstract
-  # Several studies failed to prove infection by contaminated needles
-  # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
-  # https://academic.oup.com/aje/article/117/5/621/102629
-  # (in Japan) https://www.sciencedirect.com/science/article/pii/S0034528813003767
-  #   By same authors with a "succeeded" paper in Japan, probably with more samples
-  n_infected <- sum(cows$is_owned & cows$infection_status != "s", na.rm = T)
-  herd_size <- attr(cows, "herd_size")
-  is_infected <- runif(herd_size) <
-    param_sim$prob_inf_needles * (n_infected / herd_size)
-  return(is_infected)
-}
 # TODO: Gauge dehorning https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1236184/pdf/compmed00003-0104.pdf
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1255626/pdf/cjvetres00045-0186.pdf
 
@@ -212,12 +175,7 @@ is_infected_by_colostrum <- function(status_mother, param_sim) {
 #'
 #' @return A logical vector.
 is_ai_started_milking <- function(n_month_from_delivery, param_sim) {
-  prob_start_ai <- pnorm(n_month_from_delivery,
-                         mean = param_sim$mean_date_start_ai,
-                         sd = param_sim$sd_date_start_ai)
-  is_ai_started_milking <-
-    (runif(length(n_month_from_delivery)) < prob_start_ai)
-  return(is_ai_started_milking)
+  n_month_from_delivery >= integerize(param_sim$date_start_ai)
 }
 
 
@@ -228,12 +186,7 @@ is_ai_started_milking <- function(n_month_from_delivery, param_sim) {
 #'
 #' @return A logical vector.
 is_ai_started_heifer <- function(ages, param_sim) {
-  prob_first_ai <- pnorm(ages,
-                         mean = param_sim$mean_age_first_ai,
-                         sd = param_sim$sd_age_first_ai)
-  prob_first_ai[ages < param_sim$lower_lim_first_ai] <- 0
-  is_ai_started_heifer <- (runif(length(ages)) < prob_first_ai)
-  return(is_ai_started_heifer)
+  ages >= integerize(param_sim$age_first_ai)
 }
 
 
@@ -269,11 +222,17 @@ is_ai_succeeded <- function(n_cows, param_sim) {
 #' Heat cycle
 #'
 #' @param n_cows The number of cows to which heat cycle should be calculated.
+#' @param stage Stage (`stage` column of [cow_table] of cows.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A numeric vector.
-heat_cycle <- function(n_cows, param_sim) {
-  round(rnorm(n_cows, mean = 21, sd = param_sim$sd_heat))
+heat_cycle <- function(n_cows, stage, param_sim) {
+  mean_heat <- param_sim$mean_heat_0 * (stage == "calf" | stage == "heifer") +
+                 param_sim$mean_heat_1 * (stage == "milking" | stage == "dry")
+  sd_heat <- param_sim$sd_heat_0 * (stage == "calf" | stage == "heifer") +
+               param_sim$sd_heat_1 * (stage == "milking" | stage == "dry")
+  heat_cycle <- round(rnorm(n_cows, mean = mean_heat, sd = sd_heat))
+  return(heat_cycle)
 }
 
 
@@ -285,9 +244,7 @@ heat_cycle <- function(n_cows, param_sim) {
 #' @return A logical vector.
 is_dried <- function(months_from_delivery, param_sim) {
   # TODO: ここ基準の前後1ヶ月以内で必ず乾乳することになってるのでどうにかしたい
-  (months_from_delivery > param_sim$lower_lim_dried) |
-  ((months_from_delivery == param_sim$lower_lim_dried) &
-   (runif(length(months_from_delivery)) < param_sim$prop_dried_shorter))
+  months_from_delivery >= integerize(param_sim$length_milking)
 }
 
 

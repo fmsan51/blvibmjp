@@ -17,7 +17,6 @@ Japanese_redefine_route_levels <- list(
     initial = "開始時点での感染牛",
     insects = "吸血昆虫",
     contact = "感染牛との接触",
-    needles = "注射針",
     rp = "直腸検査",
     vertical = "垂直感染",
     colostrum = "初乳",

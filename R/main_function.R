@@ -28,7 +28,8 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   # Calculate day of next heat
   # Heat can occur 1-2 times/month because mean heat cycle is 21.
   # Here we use 4 to calculate the number of heat in month with some margin.
-  heat_matrix <- matrix(heat_cycle(attr(cows, "herd_size") * 4, param_sim),
+  heat_matrix <- matrix(heat_cycle(attr(cows, "herd_size") * 4,
+                                   rep(cows$stage, each = 4), param_sim),
                         nrow = 4)
   heat_matrix <-
     rbind(cows$day_heat[cows$is_owned & !is.na(cows$is_owned)], heat_matrix)
@@ -211,11 +212,10 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
     day_rp[,
            `:=`(is_after_inf = (shift(infection_status, type = "lag") != "s")),
            by = list(day_rp, type)]
-    day_rp[infection_status == "s",
-           `:=`(is_infected = (is_after_inf & is_infected_rp(.N, param_sim)))]
+    day_rp$is_infected <- day_rp$infection_status == "s" & day_rp$is_after_inf &
+      is_infected_rp(param_sim$max_herd_size, param_sim)
     res <- infect(cows, areas, area_table,
-                  day_rp[is_infected == T, cow_id], "rp", i)
-                  # is_infected = NA rows are excluded
+                  remove_na(day_rp$cow_id[day_rp$is_infected]), "rp", i)
   } else {
     res <- list(cows = cows, areas = areas)
   }
@@ -316,11 +316,6 @@ change_stage <- function(cows, i, param_sim) {
 change_infection_status <- function(cows, i, month, area_table, areas,
                                     param_sim) {
   res <- calc_infection_in_barns(cows, i, month, area_table, areas, param_sim)
-
-  s_cows <-
-    cows$cow_id[cows$infection_status == "s" & !is.na(cows$infection_status)]
-  cows_inf_by_needles <- s_cows[is_infected_needles(cows, param_sim)]
-  res <- infect(cows, areas, area_table, cows_inf_by_needles, "needles", i)
 
   res$cows[date_ial == i,
            c("date_ipl_expected", "date_ebl_expected") :=
@@ -592,7 +587,7 @@ cull_infected_cows <- function(cows, areas, i, param_sim) {
          cow_id]
   res <- replace_selected_cows(cows, areas, id_detected_highrisk, i)
   if (param$cull_infected_cows == "all") {
-    id_detected <- cows[is_detected & is_owned, cow_id]
+    id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
     res <- replace_selected_cows(cows, areas, id_detected, i)
   }
   return(res)
@@ -671,7 +666,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   # Extract cows whose area must be changed
   cow_id_met_condition <- lapply(
     attr(movement_table, "cond_as_expr"),
-    function(x) {cows[eval(x), cow_id]}
+    function(x) remove_na(cows$cow_id[eval(x, envir = cows)])
     )
 
   # Remove duplicated cow_id
@@ -686,8 +681,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   }
 
   cow_id_returned_from_pasture <-
-    cows[cow_id %in% cow_id_to_move & area_id == 0, cow_id]
-    # cows$cow_id[cond] contains NA rows
+    remove_na(cows$cow_id[cows$cow_id %in% cow_id_to_move & cows$area_id == 0])
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <- table(

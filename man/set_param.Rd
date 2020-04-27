@@ -2,9 +2,12 @@
 % Please edit documentation in R/parameter.R
 \name{set_param}
 \alias{set_param}
+\alias{set_null_param}
 \title{Overwrite default parameters with herd specific parameters}
 \usage{
 set_param(parameter, default)
+
+set_null_param(parameter, default)
 }
 \arguments{
 \item{parameter}{The farm specific parameter}
@@ -18,4 +21,5 @@ A list of overwritten parameters
 It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
 When \code{parameter} is not NA (= when a farm specific parameter was set), it returns the farm specific parameters.
 When \code{parameter} is NA (= when a farm specific parameter was not set), it returns dafault parameters.
+\code{\link[=set_param]{set_param()}} it to overwrite parameters listed in \link{param} and \code{\link[=set_null_param]{set_null_param()}} is to overwrite parameters not listed.
 }

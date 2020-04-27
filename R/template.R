@@ -46,7 +46,6 @@
 #'     - "initial": already be infected at the start of the start of a simulation.
 #'     - "insects": by bloodsucking insects.
 #'     - "contact": by direct contact with an infected cow.
-#'     - "needles": by a contaminated needle.
 #'     - "rp": by rectal palpation.
 #'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).

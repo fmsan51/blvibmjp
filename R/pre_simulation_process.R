@@ -12,7 +12,7 @@
 #' - `stage`, `parity`, `date_last_delivery`, `date_got_pregnant`, `date_dried`: If not set, they will be calculated in according to parameters related with reproduction in [param].
 #' - `is_to_test_pregnancy`: If not set, `FALSE` is set.
 #' - `n_ai`: If not set, it is assumed to be 0.
-#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the value of `modify_prevalence`.
+#' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the first value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
 #' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set. If a cow is in a communal pasture, specify `0`.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
@@ -26,7 +26,7 @@
 #' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param today A Date class object or a character in "YYYY/MM/DD" format. The date used to calculate `age` from `date_birth` when `age` is not set. `today` is automatically calculated when both of `age` and `date_birth` are filled and `date_birth` is in form of Date rather than number (which means that the cow was born $n$ month ago) and the value passed to this argument is ignored.
 #' @param create_calf_data logical or a numeric. Create data for young cows based on cow data in the input. Set this argument when the input does not contain data for young cows (e.g. when you use Nyuken data). If `TRUE`, create cows younger than the youngest cows in the input. If a numeric is set, create cows equal to or younger than that age.
-#' @param modify_prevalence double (0-1). If not `NULL`, modify `infection_status` column to make prevalence to the specified value.
+#' @param modify_prevalence One or two numbers within a range of 0 to 1. If the parameter is not `NULL`, modify `infection_status` column to make proportion of infected cows (when `modify_prevalence is a number) or`ial` and `ipl + ebl` cows (when `modify_prevalence` is two numbers) accordingly.
 #' @param param See [param].
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #'
@@ -226,27 +226,113 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 
   is_na <- is.na(cows$infection_status)
   if (!is.null(modify_prevalence)) {
-    appropreate_n_inf <- round(n_cows * modify_prevalence)
-    inf_count <- table(cows$infection_status != "s", useNA = "always")
-    max_n_inf <- inf_count["TRUE"] + inf_count["<NA>"]
-    is_na <- is.na(cows$infection_status)
-    if (appropreate_n_inf < inf_count["TRUE"]) {
-      cows$infection_status[
-        resample(which(infection_status != "s"),
-                 inf_count["TRUE"] - appropreate_n_inf)
+    fct_infection_status <-
+      factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
+    n_modify_prevalence <- length(modify_prevalence)
+    stopifnot(n_modify_prevalence <= 2, sum(modify_prevalence) <= 1,
+              all(modify_prevalence >= 0), all(modify_prevalence <= 1))
+
+    if (n_modify_prevalence == 2) {
+      appropreate_n_highrisk <- round(n_cows * modify_prevalence[2])
+      inf_table <- table(fct_infection_status, useNA = "always")
+      n_highrisk <- inf_table["ipl"] + inf_table["ebl"]
+      max_n_highrisk <- n_highrisk + inf_table[5]  # inf_table[5] = NA
+      if (appropreate_n_highrisk < n_highrisk) {
+        n_extra <- n_highrisk - appropreate_n_highrisk
+        if (n_extra < inf_table["ipl"]) {
+          fct_infection_status[
+            resample(which(fct_infection_status == "ipl"), n_extra)
+            ] <- "ial"
+        } else {
+          fct_infection_status[fct_infection_status == "ipl"] <- "ial"
+          fct_infection_status[
+            resample(which(fct_infection_status == "ebl"),
+                     n_extra - inf_table["ipl"])
+            ] <- "ial"
+        }
+      } else if (appropreate_n_highrisk <= max_n_highrisk) {
+        fct_infection_status[
+          resample(which(is_na), appropreate_n_highrisk - n_highrisk)
+          ] <- "ipl"
+      } else {  # max_n_highrisk < appropreate_n_highrisk
+        fct_infection_status[is_na] <- "ipl"
+        n_extra <- appropreate_n_highrisk - max_n_highrisk
+        if (n_extra < inf_table["ial"]) {
+          fct_infection_status[
+            resample(which(fct_infection_status == "ial"), n_extra)
+            ] <- "ipl"
+        } else {
+          fct_infection_status[fct_infection_status == "ial"] <- "ipl"
+          fct_infection_status[
+            resample(which(fct_infection_status == "s"),
+                     n_extra - inf_table["ial"])
+            ] <- "ipl"
+        }
+      }
+
+      appropreate_n_ial <- round(n_cows * modify_prevalence[1])
+      is_na <- is.na(fct_infection_status)
+      inf_table <- table(fct_infection_status, useNA = "always")
+      max_n_ial <- inf_table["ial"] + inf_table[5]  # inf_table[5] = NA
+      if (appropreate_n_ial < inf_table["ial"]) {
+        fct_infection_status[
+          resample(which(fct_infection_status == "ial"),
+                   inf_table["ial"] - appropreate_n_ial)
         ] <- "s"
-      cows$infection_status[is_na] <- "s"
-    } else if (appropreate_n_inf <= max_n_inf) {
-      cows$infection_status[
-        resample(which(is_na), max_n_inf - inf_count["TRUE"])
+        fct_infection_status[is_na] <- "s"
+      } else if (appropreate_n_ial <= max_n_ial) {
+        fct_infection_status[
+          resample(which(is_na), appropreate_n_ial - inf_table["ial"])
         ] <- "ial"
-      cows$infection_status[is.na(cows$infection_status)] <- "s"
-    } else {
-      cows$infection_status[
-        resample(which(infection_status == "s"), appropreate_n_inf - max_n_inf)
+        fct_infection_status[is.na(fct_infection_status)] <- "s"
+      } else {  # max_n_ial < appropreate_n_ial
+        fct_infection_status[is_na] <- "ial"
+        fct_infection_status[
+          resample(which(fct_infection_status == "s"),
+                   appropreate_n_ial - max_n_ial)
         ] <- "ial"
-      cows$infection_status[is_na] <- "ial"
+      }
+    } else {  # length(modify_prevalence == 1)
+      appropreate_n_inf <- round(n_cows * modify_prevalence)
+      inf_table <- table(fct_infection_status, useNA = "always")
+      n_inf <- inf_table["ial"] + inf_table["ipl"] + inf_table["ebl"]
+      max_n_inf <- n_inf + inf_table[5]  # inf_table[5] = NA
+      if (appropreate_n_inf < n_inf) {
+        n_extra <- n_inf - appropreate_n_inf
+        if (n_extra < inf_table["ial"]) {
+          fct_infection_status[
+            resample(which(fct_infection_status == "ial"), n_extra)
+            ] <- "s"
+        } else if (n_extra < inf_table["ial"] + inf_table["ipl"]) {
+          fct_infection_status[fct_infection_status == "ial"] <- "s"
+          fct_infection_status[
+            resample(which(fct_infection_status == "ipl"),
+                     n_extra - inf_table["ial"])
+            ] <- "s"
+        } else {
+          fct_infection_status[
+            fct_infection_status == "ial" | fct_infection_status == "ipl"
+            ] <- "s"
+          fct_infection_status[
+            resample(which(fct_infection_status == "ebl"),
+                     n_extra - inf_table["ial"] - inf_table["ipl"])
+            ] <- "s"
+        }
+        fct_infection_status[is_na] <- "s"
+      } else if (appropreate_n_inf <= max_n_inf) {
+        fct_infection_status[
+          resample(which(is_na), appropreate_n_inf - n_inf)
+          ] <- "ial"
+        fct_infection_status[is.na(fct_infection_status)] <- "s"
+      } else {  # max_n_inf < appropreate_n_inf
+        fct_infection_status[is_na] <- "ial"
+        fct_infection_status[
+          resample(which(fct_infection_status == "s"),
+                   appropreate_n_inf - max_n_inf)
+          ] <- "ial"
+      }
     }
+    cows$infection_status <- fct_infection_status
   } else if (any(is_na)) {
     cows$infection_status[is_na] <- "s"
   }
@@ -550,7 +636,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
                cond, fixed = T)
   cond <- gsub("months_from_dry", "i_month - date_dried", cond, fixed = T)
 
-  # (?^|[^_]) is about 3x faster than (?<!_)
+  # (?:^|[^_]) is about 3x faster than (?<!_)
   cond <- gsub("(?:^|[^_])delivery", "\\1i_month == date_last_delivery", cond)
   cond <- gsub("(?:^|[^_])pregnancy", "\\1i_month == date_got_pregnant", cond)
   cond <- gsub("(?:^|[^_])dry", "\\1i_month == date_dried", cond)

@@ -53,3 +53,14 @@ resample <- function(x, ...) {
 #' Days per month (365 / 12)
 days_per_month <- (365 / 12)
 
+
+#' Remove NA from a vector
+#' @param x A vector
+remove_na <- function(x) {
+  x[!is.na(x)]
+}
+
+
+#' 97.5% quantile of normal distribution
+q975 <- qnorm(0.975)
+
