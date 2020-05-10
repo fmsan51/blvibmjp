@@ -764,14 +764,15 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
                      replace = T, prob = i_priority[is_not_full])
           n_cows_reallocated_in_each_area <-
             table(allocated_areas)[fct_i_next_area]
-          vacancy <- vacancy - n_cows_reallocated_in_each_area
+          temp_vacancy <- vacancy - n_cows_reallocated_in_each_area
           n_cows_to_reallocate_in_each_area <-
-            ifelse(vacancy == Inf, 0, -vacancy * (vacancy < 0))
-            # fifelse cannot be used here because when vacancy contains Inf,
-            # 'yes' and 'no' have different classes.
+            ifelse(temp_vacancy == Inf, 0, -temp_vacancy * (temp_vacancy < 0))
+            # fifelse cannot be used here because when temp_vacancy contains
+            # Inf, 'yes' and 'no' have different classes.
           n_cows_allocated_in_each_area <-
             n_cows_allocated_in_each_area + n_cows_reallocated_in_each_area -
             n_cows_to_reallocate_in_each_area
+          vacancy <- vacancy - n_cows_allocated_in_each_area
           n_cows_to_reallocate <- sum(n_cows_to_reallocate_in_each_area)
         }
         allocated_areas <-
