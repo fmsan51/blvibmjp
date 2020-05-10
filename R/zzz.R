@@ -4,7 +4,7 @@
 
 
 .onLoad <- function(libname, pkgname) {
-  suppressMessages(interval(today, today) %/% months(1))
+  suppressMessages(interval(Sys.Date(), Sys.Date()) %/% months(1))
   # To suppress a message "Note: method with signature ..." by lubridate
   # when runnig prepare_cows()
 }
