@@ -765,7 +765,9 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
           n_cows_reallocated_in_each_area <- table(allocated_areas)
           vacancy <- vacancy - n_cows_reallocated_in_each_area
           n_cows_to_reallocate_in_each_area <-
-            fifelse(vacancy == Inf, 0, -vacancy * (vacancy < 0))
+            ifelse(vacancy == Inf, 0, -vacancy * (vacancy < 0))
+            # fifelse cannot be used here because when vacancy contains Inf,
+            # 'yes' and 'no' have different classes.
           n_cows_allocated_in_each_area <-
             n_cows_allocated_in_each_area + n_cows_reallocated_in_each_area -
             n_cows_to_reallocate_in_each_area
