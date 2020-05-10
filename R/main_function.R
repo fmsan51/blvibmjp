@@ -762,7 +762,8 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
           allocated_areas <-
             resample(fct_i_next_area[is_not_full], n_cows_to_reallocate,
                      replace = T, prob = i_priority[is_not_full])
-          n_cows_reallocated_in_each_area <- table(allocated_areas)
+          n_cows_reallocated_in_each_area <-
+            table(allocated_areas)[fct_i_next_area]
           vacancy <- vacancy - n_cows_reallocated_in_each_area
           n_cows_to_reallocate_in_each_area <-
             ifelse(vacancy == Inf, 0, -vacancy * (vacancy < 0))
