@@ -357,24 +357,6 @@ calc_param <- function(param, modification = NULL) {
 
 
   ## artificial_insemination ----
-  # First AI after delivery
-  # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
-  # The date of the first AI after a delivery of PREVIOUS year
-  # (because the data of the current year is only known from Feb to Dec)
-  date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
-  lims_date_start_ai <- set_param(param$day_start_ai,
-                                  c(min(date_start_ai), max(date_start_ai)))
-  res$date_start_ai <-
-    runif(1, min = lims_date_start_ai[1], max = lims_date_start_ai[2])
-
-
-  # First AI for heifer
-  # From Gyugun Kentei Seisekihyo by HRK
-  age_first_ai <- c(427, 427, 435, 432) / days_per_month
-  lims_age_first_ai <-
-    set_param(param$age_first_ai, c(min(age_first_ai), max(age_first_ai)))
-  res$age_first_ai <-
-    runif(1, min = lims_age_first_ai[1], max = lims_age_first_ai[2])
 
 
   # Detection of heats
@@ -383,25 +365,6 @@ calc_param <- function(param, modification = NULL) {
     param$prop_heat_detected,
     runif(1, min = min(prop_heat_detected), max = max(prop_heat_detected))
     )
-
-
-  # Proportion of success of the first AI
-  # From Gyugun Kentei Seisekihyo by HRK
-  # (because the data of the current year is only known from Feb to Dec)
-  prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
-  res$prob_first_ai_success <-
-    runif(1, min = min(prop_first_ai_success), max = max(prop_first_ai_success))
-
-
-  # Proportion of success of AI after the first
-  #
-  # p1 + (E(p2) - p2) * (1 - p1) = mean_ai
-  # (p1: the prob in which the first AI successes; p2: the prop in which AI after the first successes)
-  # The probability in which the AI after the first successes
-  mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
-  prop_ai_success <- (1 - res$prob_first_ai_success) / (mean_ai - 1)
-  res$prob_ai_success <-
-    runif(1, min = min(prop_ai_success), max = max(prop_ai_success))
 
 
   # Heat cycle
@@ -614,6 +577,46 @@ calc_param_both <- function(param) {
   res$prob_develop_ipl <- 0.3  # 30% of infected cattle develops ipl (OIE terrestrial manual)
   # Proportion of blv infected cattle which develops ebl
   res$prob_develop_ebl <- 0.014 / res$prob_develop_ipl  # 1.4% of BLV-infected cattle develops ebl - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
+
+
+  ## Reproduction ----
+  # First AI for heifer
+  # From Gyugun Kentei Seisekihyo by HRK
+  age_first_ai <- c(427, 427, 435, 432) / days_per_month
+  lims_age_first_ai <-
+    set_param(param$age_first_ai, c(min(age_first_ai), max(age_first_ai)))
+  res$age_first_ai <-
+    runif(1, min = lims_age_first_ai[1], max = lims_age_first_ai[2])
+
+  # Proportion of success of the first AI
+  # From Gyugun Kentei Seisekihyo by HRK
+  # (because the data of the current year is only known from Feb to Dec)
+  prop_first_ai_success <- c(0.32, 0.34, 0.34, 0.33, 0.35)
+  res$prob_first_ai_success <-
+    runif(1, min = min(prop_first_ai_success), max = max(prop_first_ai_success))
+
+  # Proportion of success of AI after the first
+  #
+  # p1 + (E(p2) + 1) * (1 - p1) = mean_ai
+  # p1: the prob in which the first AI successes
+  # p2: the prob in which AI after the first successes
+  # p2 follows geometric distribution; thus E(p2) = p2 / (1 - p2)
+  # Then p2 = (1 - p1) / (mean_ai - 1)
+  # The probability in which the AI after the first successes
+  mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
+  prop_ai_success <- (1 - res$prob_first_ai_success) / (mean_ai - 1)
+  res$prob_ai_success <-
+    runif(1, min = min(prop_ai_success), max = max(prop_ai_success))
+
+  # First AI after delivery
+  # From Gyugun Kentei Seisekihyo (H25-29) by Hokkaido Rakuno Kentei Kensa Kyokai (HRK)
+  # The date of the first AI after a delivery of PREVIOUS year
+  # (because the data of the current year is only known from Feb to Dec)
+  date_start_ai <- c(88, 88, 88, 88, 89) / days_per_month
+  lims_date_start_ai <- set_param(param$day_start_ai,
+                                  c(min(date_start_ai), max(date_start_ai)))
+  res$date_start_ai <-
+    runif(1, min = lims_date_start_ai[1], max = lims_date_start_ai[2])
 
 
   return(res)
