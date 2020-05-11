@@ -251,7 +251,7 @@ calc_heat <- function(possible_heat, calculated_ai) {
   n_heat <- vapply(calculated_ai$succeeded_ai,
     function(x) ifelse(!any(x), length(x), min(which(x))), 0)
   # Here ifelse is used instead of fifelse,
-  # because min(which(x)) may cause warning when the condition is not met.
+  # because min(which(x)) may cause an error when the condition is not met.
   detected_heat_list <-
     mapply(function(x, y) x[1:y], calculated_ai$detected_heat, n_heat,
            SIMPLIFY = F)
