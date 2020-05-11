@@ -578,19 +578,34 @@ assign_newborns <- function(cows, area_table, areas) {
 #'
 #' @return A [cow_table].
 cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
-  if (param_sim$cull_infected_cows == "no") {
+  n_newborns <- sum(cows$date_birth == i & cows$is_owned, na.rm = T)
+  n_cull <- integerize(n_newborns / param_sim$culling_frequency)
+
+  if (param_sim$cull_infected_cows == "no" |
+      all(cows$infection_status == "s", na.rm = T) |
+      n_cull == 0) {
     return(list(cows = cows, areas = areas))
   }
 
   id_detected_highrisk <-
-    cows[(infection_status == "pl" | infection_status == "ebl") &
-         is_detected & is_owned,
-         cow_id]
-  res <- replace_selected_cows(cows, areas, area_table, id_detected_highrisk, i)
-  if (param_sim$cull_infected_cows == "all") {
-    id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
-    res <- replace_selected_cows(cows, areas, area_table, id_detected, i)
+    cows[(infection_status == "pl") & is_detected & is_owned, cow_id]
+  # ebl cows are removed in check_removal()
+  n_detected_highrisk <- length(id_detected_highrisk)
+  if (n_cull <= n_detected_highrisk) {
+    id_cull <- resample(id_detected_highrisk, n_cull)
+  } else {
+    id_cull <- id_detected_highrisk
+    if (param_sim$cull_infected_cows == "all") {
+      id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
+      n_cull <- n_cull - n_detected_highrisk
+      if (n_cull < length(id_detected)) {
+        id_cull <- c(id_cull, resample(id_detected, n_cull))
+      } else {
+        id_cull <- c(id_cull, id_detected)
+      }
+    }
   }
+  res <- replace_selected_cows(cows, areas, area_table, id_cull, i)
   return(res)
 }
 
