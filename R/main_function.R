@@ -586,10 +586,10 @@ cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
     cows[(infection_status == "pl" | infection_status == "ebl") &
          is_detected & is_owned,
          cow_id]
-  res <- replace_selected_cows(cows, areas, id_detected_highrisk, i)
+  res <- replace_selected_cows(cows, areas, area_table, id_detected_highrisk, i)
   if (param_sim$cull_infected_cows == "all") {
     id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
-    res <- replace_selected_cows(cows, areas, id_detected, i)
+    res <- replace_selected_cows(cows, areas, area_table, id_detected, i)
   }
   return(res)
 }
@@ -599,11 +599,12 @@ cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
 #'
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
+#' @param area_table See [area_table].
 #' @param cow_id_to_cull `cow_id` to remove from `cows`.
 #' @param i The number of months from the start of the simulation.
 #'
 #' @return A [cow_table].
-replace_selected_cows <- function(cows, areas, cow_id_to_cull, i) {
+replace_selected_cows <- function(cows, areas, area_table, cow_id_to_cull, i) {
   id_non_replacement_newborns <-
     cows[age == 0 & is_owned & !is_replacement & sex == "female",
          cow_id]  # TODO: reconsider age
