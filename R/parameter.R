@@ -512,6 +512,10 @@ calc_param_pre <- function(param, modification = NULL) {
     param$days_milking / days_per_month,
     runif(1, min = min(months_milking), max = max(months_milking))
     )
+  # The number of conducted AI
+  res$prob_n_ai <-
+    c(res$prob_ai_success,
+      dgeom(0:9, prob = res$prob_ai_success) * (1 - res$prob_ai_success))
 
   res <- c(modification, res)
   res <- res[!duplicated(names(res))]
