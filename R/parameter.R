@@ -400,7 +400,6 @@ calc_param <- function(param, modification = NULL) {
   # The probability in which the AI after the first successes
   mean_ai <- c(2.4, 2.3, 2.3, 2.3, 2.3)  # Mean of the number of AI conducted
   prop_ai_success <- (1 - res$prob_first_ai_success) / (mean_ai - 1)
-  lims_ai_success <- c(min(prop_ai_success), max(prop_ai_success))
   res$prob_ai_success <-
     runif(1, min = min(prop_ai_success), max = max(prop_ai_success))
 
