@@ -253,8 +253,8 @@ calc_heat <- function(possible_heat, calculated_ai) {
   # Here ifelse is used instead of fifelse,
   # because min(which(x)) may cause an error when the condition is not met.
   detected_heat_list <-
-    mapply(function(x, y) x[1:y], calculated_ai$detected_heat, n_heat,
-           SIMPLIFY = F)
+    mapply(function(x, y) x[seq_len(y)], calculated_ai$detected_heat, n_heat,
+           SIMPLIFY = F)  # seq_len(y), not 1:y, because y may contain 0
   detected_heat <- unlist(detected_heat_list)
   day_last_detected_heat <- vapply(detected_heat_list,
     function(x) ifelse(length(x) == 0, NA_real_, x[length(x)]), 0)
