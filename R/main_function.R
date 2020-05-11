@@ -509,7 +509,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   # TODO: とりあえず後継牛以外は0ヶ月齢で売却
 
   # Removal by detection of EBL
-  rows_new_ebl <- which(cows$date_ebl == i)
+  rows_new_ebl <- which(cows$infection_status == "ebl")
   rows_removed_ebl <-
     rows_new_ebl[is_ebl_detected(length(rows_new_ebl), param_sim)]
   if (length(rows_removed_ebl) != 0) {
