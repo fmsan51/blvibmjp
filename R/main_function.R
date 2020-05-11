@@ -496,7 +496,7 @@ check_removal <- function(cows, areas, i, area_table, param_sim) {
   areas <- res$areas
 
   # Removal by culling
-  res <- cull_infected_cows(cows, areas, i, param_sim)
+  res <- cull_infected_cows(cows, areas, i, area_table, param_sim)
   cows <- res$cows
   areas <- res$areas
 
@@ -573,10 +573,11 @@ assign_newborns <- function(cows, area_table, areas) {
 #' @param cows See [cow_table].
 #' @param areas See [tie_stall_table].
 #' @param i The number of months from the start of the simulation.
+#' @param area_table See [area_table].
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A [cow_table].
-cull_infected_cows <- function(cows, areas, i, param_sim) {
+cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
   if (param_sim$cull_infected_cows == "no") {
     return(list(cows = cows, areas = areas))
   }
