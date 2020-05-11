@@ -141,7 +141,7 @@ set_null_param <- function(parameter, default) {
 #' @seealso [calc_param_pre()] [calc_param_both()]
 #' @return A parameter list.
 calc_param <- function(param, modification = NULL) {
-  res <- list()
+  res <- calc_param_both(param)
 
   ## infection_status_change ----
   # Changes of infection status
@@ -474,9 +474,6 @@ calc_param <- function(param, modification = NULL) {
   res$prob_sb_5 <- runif(1, min = 0.0582, max = 0.0620)  # >5
 
 
-  res <- c(res, calc_param_both(param))
-
-
   res <- c(modification, res)
   res <- res[!duplicated(names(res))]
 
@@ -528,7 +525,7 @@ process_param <- function(cows, param) {
 #' @seealso [calc_param()] [calc_param_both()]
 #' @return A parameter list.
 calc_param_pre <- function(param, modification = NULL) {
-  res <- list()
+  res <- calc_param_both(param)
 
   # Nyuken (H23-27)
   # calving_interval, age_first_delivery, months_open, months_milking is used only in prepare_cows()
@@ -552,8 +549,6 @@ calc_param_pre <- function(param, modification = NULL) {
     param$days_milking / days_per_month,
     runif(1, min = min(months_milking), max = max(months_milking))
     )
-
-  res <- c(res, calc_param_both(param))
 
   res <- c(modification, res)
   res <- res[!duplicated(names(res))]
