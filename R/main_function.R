@@ -55,8 +55,8 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
   # in order to follow the data about date of doing first AI.
   n_cows_started_ai <- length(rows_started_ai)
   if (n_cows_started_ai != 0) {
-    possible_heat_detection_list <- possible_detected_heat_list <-
-      possible_succeeded_ai_list <- vector("list", n_cows_started_ai)
+    possible_detected_heat_list <- possible_succeeded_ai_list <-
+      vector("list", n_cows_started_ai)
     n_ai_vec <- numeric(n_cows_started_ai)
     pregnancy <- logical(n_cows_started_ai)
 
@@ -69,8 +69,6 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
       n_ai_vec[index_ai_not_done] <- calculated_ai$n_ai
       possible_succeeded_ai_list[index_ai_not_done] <-
         calculated_ai$succeeded_ai
-      possible_heat_detection_list[index_ai_not_done] <-
-        calculated_ai$heat_detection
       possible_detected_heat_list[index_ai_not_done] <-
         calculated_ai$detected_heat
       pregnancy[index_ai_not_done] <- calculated_ai$pregnancy
@@ -79,7 +77,6 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
     calculated_heat <-
       calc_heat(possible_heat_started_ai,
                 list(succeeded_ai = possible_succeeded_ai_list,
-                     heat_detection = possible_heat_detection_list,
                      detected_heat = possible_detected_heat_list))
 
     cows[rows_started_ai,
@@ -242,13 +239,12 @@ calc_ai_list <- function(possible_heat, param_sim) {
   # Here ifelse is used instead of fifelse,
   # because min(which(x)) may cause warning when the condition is not met.
   pregnancy <- vapply(succeeded_ai, function(x) length(x) > 0, T)
-  return(list(succeeded_ai = succeeded_ai, heat_detection = heat_detection,
-              detected_heat = detected_heat, n_ai = n_ai,
-              pregnancy = pregnancy))
+  return(list(succeeded_ai = succeeded_ai, detected_heat = detected_heat,
+              n_ai = n_ai, pregnancy = pregnancy))
 }
 
 
-#' @param calculated_ai A list consisted of `"succeeded_ai"`, `"heat_detection"` and `"detected_heat"`.
+#' @param calculated_ai A list consisted of `"succeeded_ai"` and `"detected_heat"`.
 #'
 #' @name calc_ai
 calc_heat <- function(possible_heat, calculated_ai) {
@@ -256,11 +252,6 @@ calc_heat <- function(possible_heat, calculated_ai) {
     function(x) ifelse(!any(x), length(x), min(which(x))), 0)
   # Here ifelse is used instead of fifelse,
   # because min(which(x)) may cause warning when the condition is not met.
-  heat_list <- mapply(function(x, y) x[1:y], possible_heat, n_heat,
-                      SIMPLIFY = F)
-  heat_detection_list <-
-    mapply(function(x, y) x[1:y], calculated_ai$heat_detection, n_heat,
-           SIMPLIFY = F)
   detected_heat_list <-
     mapply(function(x, y) x[1:y], calculated_ai$detected_heat, n_heat,
            SIMPLIFY = F)

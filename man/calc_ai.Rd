@@ -15,7 +15,7 @@ calc_heat(possible_heat, calculated_ai)
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 
-\item{calculated_ai}{A list consisted of \code{"succeeded_ai"}, \code{"heat_detection"} and \code{"detected_heat"}.}
+\item{calculated_ai}{A list consisted of \code{"succeeded_ai"} and \code{"detected_heat"}.}
 }
 \description{
 Calculate the number of conducted AI
