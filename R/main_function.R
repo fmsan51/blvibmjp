@@ -577,7 +577,7 @@ assign_newborns <- function(cows, area_table, areas) {
 #'
 #' @return A [cow_table].
 cull_infected_cows <- function(cows, areas, i, param_sim) {
-  if (param$cull_infected_cows == "no") {
+  if (param_sim$cull_infected_cows == "no") {
     return(list(cows = cows, areas = areas))
   }
 
@@ -586,7 +586,7 @@ cull_infected_cows <- function(cows, areas, i, param_sim) {
          is_detected & is_owned,
          cow_id]
   res <- replace_selected_cows(cows, areas, id_detected_highrisk, i)
-  if (param$cull_infected_cows == "all") {
+  if (param_sim$cull_infected_cows == "all") {
     id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
     res <- replace_selected_cows(cows, areas, id_detected, i)
   }
