@@ -76,7 +76,7 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_pasture <- function(n_cows, param_sim) {
-  runif(n_cows) < param$prob_seroconv_pasture
+  runif(n_cows) < param_sim$prob_seroconv_pasture
 }
 
 
