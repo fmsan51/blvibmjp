@@ -192,7 +192,20 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   }
 
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
-  cows$n_ai[is.na(cows$n_ai)] <- 0
+  is_na <- is.na(cows$n_ai)
+  if (any(is_na)) {
+    cows$n_ai[is_na & cows$stage == "calf"] <- 0
+    cows[
+      is_na & is.na(date_got_pregnant) &
+      (
+       (stage == "heifer" & is_ai_started_heifer(age, param_calculated)) |
+       ((stage == "milking" | stage == "dry") &
+        is_ai_started_milking(date_last_delivery * -1, param_calculated))
+      ),
+      `:=`(n_ai = sample(0:10, .N, replace = T,
+                         prob = param_calculated$prob_n_ai) + 0)
+      ]
+  }
 
   is_ial <- cows[,
     grepl("^i?al$", infection_status, ignore.case = T) |
