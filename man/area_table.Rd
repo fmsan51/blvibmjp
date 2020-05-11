@@ -23,7 +23,7 @@ Users must specify one \code{area_table} consisted of following items before sta
 \details{
 \itemize{
 \item \code{area_id} (integer): Area ID.
-\item \code{area_type} (\code{"free"}/\code{"tie"}/\code{"outside"}/\code{"hatch"}/\code{"communal pasture"}): Type of a area. Specify one of \code{"free"} (hatch, freebarn, free-stall, etc.), \code{"tie"} (tie-stall), \code{"outside"} (paddock or rangeland, etc.), \code{"hatch"} or \code{"communal pasture"} (yotaku).
+\item \code{area_type} (\code{"free"}/\code{"tie"}/\code{"outside"}/\code{"hatch"}/\code{"pasture"}): Type of a area. Specify one of \code{"free"} (hatch, freebarn, free-stall, etc.), \code{"tie"} (tie-stall), \code{"outside"} (paddock or rangeland, etc.), \code{"hatch"} or \code{"pasture"} (yotaku).
 \item \code{capacity} (list consisted of numeric): Max number of cows to be kept in the area. \code{Inf} is set if you specify \code{NA}. \code{capacity} must be set if \code{area_type} is \code{"tie"}; otherwise optional.
 \itemize{
 \item If \code{area_type} is \code{"free"} or \code{"outside"}: a numeric or \code{NA}.
