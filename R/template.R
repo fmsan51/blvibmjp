@@ -52,7 +52,7 @@
 #'     - "pasture": infected at a communal pasture.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' - `area_id`: Area ID. `0` means that the cow is in a communal pasture.
+#' - `area_id`: Area ID.
 #' - `months_in_area`: The number of month a cow stayed in the current area.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn. `0` for a cow in a tie-stall barn but to it a chamber is not assigned (a free-roaming cow).
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.

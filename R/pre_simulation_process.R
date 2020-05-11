@@ -14,7 +14,7 @@
 #' - `n_ai`: If not set, it is assumed to be 0.
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the first value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
-#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set. If a cow is in a communal pasture, specify `0`.
+#' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set.
 #' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.

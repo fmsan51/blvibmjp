@@ -681,7 +681,8 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   }
 
   cow_id_returned_from_pasture <-
-    remove_na(cows$cow_id[cows$cow_id %in% cow_id_to_move & cows$area_id == 0])
+    remove_na(cows$cow_id[cows$cow_id %in% cow_id_to_move &
+                          cows$area_id %in% attr(area_table, "pasture")])
 
   # Remove cows to move from n_cows
   n_cows_in_each_area <- table(
@@ -800,7 +801,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
   res <- assign_chambers(cows, areas, cows_to_allocate_chambers)
 
   # Calculate seroconversion of cows have returned from a communal pasture
-  if (any(cows$area_id == 0, na.rm = T)) {
+  if (length(cow_id_returned_from_pasture) != 0) {
     cow_id_infected_in_pasture <- cow_id_returned_from_pasture[
       is_infected_pasture(length(cow_id_returned_from_pasture), param_sim)
       ]
