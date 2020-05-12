@@ -303,7 +303,7 @@ sex_twins <- function(n_calves, param_sim) {
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
                       size = (n_calves / 2), replace = T,
                       prob = param_sim$probs_sex_pairs)
-  sex_calves <- strsplit(paste(sex_pairs, collapse = "-"), split = "-")[[1]]
+  sex_calves <- unlist(strsplit(sex_pairs, split = "-"))
   return(sex_calves)
 }
 # TODO: 性判別精液は双子が少ない？？
