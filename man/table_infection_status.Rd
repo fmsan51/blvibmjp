@@ -32,7 +32,7 @@ summary_infection_status(cows)
 
 \item{simulation_length}{See \link{param}.}
 
-\item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
+\item{cows}{A result of \code{\link[=read_cows]{read_cows()}}.}
 }
 \description{
 Calculate monthly infection status at the end of simulations.

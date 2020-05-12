@@ -1,4 +1,4 @@
-#' Read cow information at the end of a simulation
+#' Read cow information from simulation csvs
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
@@ -6,7 +6,7 @@
 #' @param route_levels,route_labels See [redefine_route_levels].
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
-read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
+read_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
                             n_simulation = param$n_simulation,
@@ -19,11 +19,7 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
     all_simulations[[i]] <- cows
   }
   all_simulations <- rbindlist(all_simulations)
-  final_cows <-
-    all_simulations[is_owned == T & i_month == simulation_length, ]
-  final_cows <- redefine_route_levels(final_cows, language = NULL,
-                                      route_levels, route_labels)
-  return(final_cows)
+  return(all_simulations)
 }
 
 
@@ -292,7 +288,7 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 #'
 #' Calculate monthly infection routes at the end of simulations.
 #'
-#' @inheritParams read_final_cows
+#' @inheritParams read_cows
 #'
 #' @seealso [table_infection_status]
 #' @name table_route
@@ -302,15 +298,18 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_dir = param$output_dir,
                         n_simulation = param$n_simulation,
                         simulation_length = param$simulation_length) {
-  cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, n_simulation,
-                          simulation_length)
+  cows <- read_cows(param, route_levels, route_labels,
+                    output_filename, output_dir, n_simulation,
+                    simulation_length)
+  cows <- cows[is_owned == T & i_month == simulation_length, ]
+  cows <-
+    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
   summary <- summary_route(cows)
   return(summary)
 }
 
 
-#' @param cows A result of [read_final_cows()].
+#' @param cows A result of [read_cows()].
 #' @name table_route
 summary_route <- function(cows) {
   table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
@@ -329,7 +328,7 @@ summary_route <- function(cows) {
 #'
 #' Calculate monthly infection status at the end of simulations.
 #'
-#' @inheritParams read_final_cows
+#' @inheritParams read_cows
 #'
 #' @seealso [table_route]
 #' @name table_infection_status
@@ -341,15 +340,18 @@ table_infection_status <- function(param,
                                    n_simulation = param$n_simulation,
                                    simulation_length = param$simulation_length
                                    ) {
-  cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, n_simulation,
-                          simulation_length)
+  cows <- read_cows(param, route_levels, route_labels,
+                    output_filename, output_dir, n_simulation,
+                    simulation_length)
+  cows <- cows[is_owned == T & i_month == simulation_length, ]
+  cows <-
+    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
   summary <- summary_infection_status(cows)
   return(summary)
 }
 
 
-#' @param cows A result of [read_final_cows()].
+#' @param cows A result of [read_cows()].
 #' @name table_infection_status
 summary_infection_status <- function(cows) {
   cows$infection_status <-
