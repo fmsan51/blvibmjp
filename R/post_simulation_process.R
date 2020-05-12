@@ -103,18 +103,26 @@ calc_prev <- function(param, output_filename = param$output_filename,
 
 #' Plot the change in prevalence
 #'
-#' @param csv Path to a simulation output csv file.
-#' @param cows See `cow_table`
-#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
+#' Plot monthly prevalences from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#'
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are used.
+#' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
+plot_prev <- function(param,
+                      output_filename = param$output_filename,
+                      output_dir = param$output_dir,
+                      i_simulation = 1:param$n_simulation,
+                      list_cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
-  prevalences <- calc_prev(csv = csv, cows = cows)
+  prevalences <-
+    calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   translate_msg("plot_prev", language)
   default_msg <- list(title = "Change of prevalence",
