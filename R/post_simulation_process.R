@@ -7,10 +7,10 @@
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 read_cows <- function(param, route_levels = NULL, route_labels = NULL,
-                            output_filename = param$output_filename,
-                            output_dir = param$output_dir,
-                            n_simulation = param$n_simulation,
-                            simulation_length = param$simulation_length) {
+                      output_filename = param$output_filename,
+                      output_dir = param$output_dir,
+                      n_simulation = param$n_simulation,
+                      simulation_length = param$simulation_length) {
   all_simulations <- vector("list", n_simulation)
   for (i in 1:n_simulation) {
     # 1:n is used because it is much faster than seq_len(n).
