@@ -65,7 +65,7 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
     while (any(n_ai_vec == 0)) {
       index_ai_not_done <- which(n_ai_vec == 0)
       possible_heat <- possible_heat_started_ai[index_ai_not_done]
-      calculated_ai <- calc_ai_list(possible_heat, param_sim)
+      calculated_ai <- calc_first_ai_list(possible_heat, param_sim)
       n_ai_vec[index_ai_not_done] <- calculated_ai$n_ai
       possible_succeeded_ai_list[index_ai_not_done] <-
         calculated_ai$succeeded_ai
