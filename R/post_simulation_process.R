@@ -317,7 +317,7 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 #'
 #' @inheritParams read_cows
 #'
-#' @seealso [table_infection_status]
+#' @seealso [table_status]
 #' @name table_route
 #' @export
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
@@ -353,24 +353,23 @@ summary_route <- function(cows) {
 #' @inheritParams read_cows
 #'
 #' @seealso [table_route]
-#' @name table_infection_status
+#' @name table_status
 #' @export
-table_infection_status <- function(param,
-                                   route_levels = NULL, route_labels = NULL,
-                                   output_filename = param$output_filename,
-                                   output_dir = param$output_dir,
-                                   i_simulation = 1:param$n_simulation
-                                   ) {
+table_status <- function(param, route_levels = NULL, route_labels = NULL,
+                         output_filename = param$output_filename,
+                         output_dir = param$output_dir,
+                         i_simulation = 1:param$n_simulation
+                         ) {
   cows <- read_final_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation)
-  summary <- summary_infection_status(cows)
+  summary <- summary_status(cows)
   return(summary)
 }
 
 
 #' @param cows A result of [read_final_cows()].
-#' @name table_infection_status
-summary_infection_status <- function(cows) {
+#' @name table_status
+summary_status <- function(cows) {
   cows$infection_status <-
     factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
   table_status <- cows[, .N, by = list(i_simulation, infection_status)]

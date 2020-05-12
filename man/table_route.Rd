@@ -35,5 +35,5 @@ summary_route(cows)
 Calculate monthly infection routes at the end of simulations.
 }
 \seealso{
-\link{table_infection_status}
+\link{table_status}
 }
