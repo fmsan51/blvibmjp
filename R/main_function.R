@@ -244,6 +244,25 @@ calc_ai_list <- function(possible_heat, param_sim) {
 }
 
 
+#' @name calc_ai
+calc_first_ai_list <- function(possible_heat, param_sim) {
+  heat_detection <-
+    lapply(possible_heat, function(x) is_heat_detected(length(x), param_sim))
+  detected_heat <- mapply(function(x, y) x[y], possible_heat, heat_detection,
+                          SIMPLIFY = F)
+  succeeded_ai <-
+    lapply(detected_heat,
+           function(x) is_first_ai_succeeded(length(x), param_sim))
+  n_ai <- vapply(succeeded_ai,
+    function(x) ifelse(length(x) == 0 | !any(x), length(x), min(which(x))), 0)
+  # Here ifelse is used instead of fifelse,
+  # because min(which(x)) may cause warning when the condition is not met.
+  pregnancy <- vapply(succeeded_ai, function(x) any(x), T)
+  return(list(succeeded_ai = succeeded_ai, detected_heat = detected_heat,
+              n_ai = n_ai, pregnancy = pregnancy))
+}
+
+
 #' @param calculated_ai A list consisted of `"succeeded_ai"` and `"detected_heat"`.
 #'
 #' @name calc_ai

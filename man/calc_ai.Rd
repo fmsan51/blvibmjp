@@ -3,10 +3,13 @@
 \name{calc_ai}
 \alias{calc_ai}
 \alias{calc_ai_list}
+\alias{calc_first_ai_list}
 \alias{calc_heat}
 \title{Calculate the number of conducted AI}
 \usage{
 calc_ai_list(possible_heat, param_sim)
+
+calc_first_ai_list(possible_heat, param_sim)
 
 calc_heat(possible_heat, calculated_ai)
 }
