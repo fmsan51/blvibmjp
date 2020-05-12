@@ -74,7 +74,7 @@ assign_chambers <- function(cows, areas, area_assignment) {
     cows$chamber_id[rows_assigned] <- assigned_chambers
     assigned_area[match(assigned_chambers, chamber_id),
                   `:=`(cow_id = cows$cow_id[rows_assigned],
-                       cow_statuts = cows$infection_status[rows_assigned],
+                       cow_status = cows$infection_status[rows_assigned],
                        is_isolated = cows$is_isolated[rows_assigned])]
     areas[[i_area]] <- assigned_area
   }
@@ -101,8 +101,8 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
   names(expose_status) <- as.character(cows$cow_id[is_cow_id_set])
   for (i_area in names(areas)) {
     area <- areas[[i_area]]
-    cows_in_area <- as.character(area$cow_id)
     if (any(attr(area_table, "tie_stall") == i_area)) {
+      cows_in_area <- as.character(area$cow_id)
       is_infectious <- area$cow_status != "s" & !area$is_isolated
       is_infectious[is.na(is_infectious)] <- F
       is_exposed_to_inf_next <- area$adjoint_next_chamber &
@@ -117,7 +117,9 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
       expose_status[exposed_cow] <- "exposed"
       expose_status[non_exposed_cow] <- "non_exposed"
     } else {
-      s_cow_id <- cows_in_area[area$cow_status == "s"]
+      s_cow_id <-
+        cows$cow_id[cows$area_id == "s" & cows$infection_status == "s"]
+      s_cow_id <- as.character(remove_na(s_cow_id))
       new_infected_cow_id <- s_cow_id[
         is_infected_in_free_stall(length(s_cow_id),
                                   sum(area$cow_status != "s", na.rm = T),
