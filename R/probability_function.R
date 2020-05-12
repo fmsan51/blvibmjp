@@ -105,9 +105,6 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 }
 
 
-# TODO: そういや全国平均感染率は感染農場も非感染農場も一緒にしてるんだった。あとで感染農場のみにしぼって計算し直す。
-
-
 #' Whether cows are infected in free pastures
 #'
 #' @param n_noinf The number of non-infected cows in a barn.
