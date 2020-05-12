@@ -346,21 +346,16 @@ table_infection_status <- function(param,
                                    route_levels = NULL, route_labels = NULL,
                                    output_filename = param$output_filename,
                                    output_dir = param$output_dir,
-                                   n_simulation = param$n_simulation,
-                                   simulation_length = param$simulation_length
+                                   i_simulation = 1:param$n_simulation
                                    ) {
-  cows <- read_cows(param, route_levels, route_labels,
-                    output_filename, output_dir, n_simulation,
-                    simulation_length)
-  cows <- cows[is_owned == T & i_month == simulation_length, ]
-  cows <-
-    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+  cows <- read_final_cows(param, route_levels, route_labels,
+                          output_filename, output_dir, i_simulation)
   summary <- summary_infection_status(cows)
   return(summary)
 }
 
 
-#' @param cows A result of [read_cows()].
+#' @param cows A result of [read_final_cows()].
 #' @name table_infection_status
 summary_infection_status <- function(cows) {
   cows$infection_status <-
