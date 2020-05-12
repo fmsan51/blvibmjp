@@ -110,16 +110,16 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 
 #' Whether cows are infected in free pastures
 #'
-#' @param n_cows The number of cows in a barn.
+#' @param n_noinf The number of non-infected cows in a barn.
 #' @param n_inf The number of infected cows in the barn.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #' @param month The current month (1, 2, ..., 12).
 #'
 #' @return A logical vector.
-is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
-  runif(n_cows) <
+is_infected_in_free_stall <- function(n_noinf, n_inf, month, param_sim) {
+  runif(n_noinf) <
     param_sim$probs_inf_insects_month[month] * param_sim$free_pressure *
-    ((n_inf / n_cows) / param_sim$average_prop_in_free)
+    ((n_inf / (n_noinf + n_inf)) / param_sim$average_prop_inf_in_free)
 }
 
 
