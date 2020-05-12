@@ -75,7 +75,7 @@ calc_prev <- function(csv = NULL, cows = NULL,
 #'
 #' @param csv Path to a simulation output csv file.
 #' @param cows See `cow_table`
-#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
@@ -123,7 +123,7 @@ plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param language When set, `route_labels` are translated in this language. At present, only Japanese is implemented.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
 #'
@@ -174,7 +174,8 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #'
 #' @param csv Path to an output csv file.
 #' @param cows See `cow_table`
-#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
@@ -366,9 +367,9 @@ summary_infection_status <- function(cows) {
 #' At present, translation only for Japanese is implemented.
 #'
 #' @param type Type of massages.
-#' @param to Language to which translate messages. At present, only Japanese is implemented.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 translate_msg <- function(type, to) {
-  if (is.null(to)) {
+  if (is.null(to) | to == "English") {
     return(list())
   }
   msg <- get(paste0(to, "_", type))

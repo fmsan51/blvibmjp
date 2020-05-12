@@ -14,11 +14,11 @@ redefine_route_levels(
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{language}{When set, \code{route_labels} are translated in this language. At present, only Japanese is implemented.}
-
 \item{route_levels}{If specified, infection routes not specified in \code{route_levels} are coarced into "other" category. See \code{cause_infection} in \link{cow_table} to know about default categories.}
 
 \item{route_labels}{Specify if you want to rename categories.}
+
+\item{to}{Language to which translate messages. At present, only English and Japanese is implemented.}
 }
 \value{
 A \link{cow_table} with recategorized \code{cause_infection}.

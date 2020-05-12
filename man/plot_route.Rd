@@ -8,6 +8,7 @@ plot_route(
   csv = NULL,
   cows = NULL,
   language = NULL,
+  drop = T,
   route_levels = NULL,
   route_labels = NULL,
   max_ylim = NULL,
@@ -27,7 +28,7 @@ plot_route(
 
 \item{cows}{See \code{cow_table}}
 
-\item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}}
 
@@ -44,6 +45,8 @@ plot_route(
 \item{border_color}{Specify a color palette for the border.}
 
 \item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
+
+\item{to}{Language to which translate messages. At present, only English and Japanese is implemented.}
 }
 \value{
 A \link[ggplot2:ggplot]{ggplot2::ggplot} plot.

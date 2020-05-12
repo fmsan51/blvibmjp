@@ -9,7 +9,7 @@ translate_msg(type, to)
 \arguments{
 \item{type}{Type of massages.}
 
-\item{to}{Language to which translate messages. At present, only Japanese is implemented.}
+\item{to}{Language to which translate messages. At present, only English and Japanese is implemented.}
 }
 \description{
 Translate plot title and labels to other languages than English.
