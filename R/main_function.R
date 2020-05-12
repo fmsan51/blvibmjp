@@ -115,8 +115,9 @@ do_ai <- function(cows, areas, area_table, i, day_rp, param_sim) {
                 fcoalesce(calculated_heat$day_last_detected_heat,
                           day_last_detected_heat),
               is_to_test_pregnancy = T)]
-    cows[rows_open[pregnancy], `:=`(date_got_pregnant = i,
-                                    n_ai = 0)]
+    cows[rows_open[calculated_ai$pregnancy],
+         `:=`(date_got_pregnant = i,
+              n_ai = 0)]
 
     n_ai_done <- sum(calculated_ai$n_ai)
     if (n_ai_done != 0) {
