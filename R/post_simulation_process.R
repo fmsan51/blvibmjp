@@ -310,20 +310,15 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        n_simulation = param$n_simulation,
-                        simulation_length = param$simulation_length) {
-  cows <- read_cows(param, route_levels, route_labels,
-                    output_filename, output_dir, n_simulation,
-                    simulation_length)
-  cows <- cows[is_owned == T & i_month == simulation_length, ]
-  cows <-
-    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+                        i_simulation = 1:param$n_simulation) {
+  cows <- read_fianl_cows(param, route_levels, route_labels,
+                          output_filename, output_dir, i_simulation)
   summary <- summary_route(cows)
   return(summary)
 }
 
 
-#' @param cows A result of [read_cows()].
+#' @param cows A result of [read_final_cows()].
 #' @name table_route
 summary_route <- function(cows) {
   table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
