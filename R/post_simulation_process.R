@@ -378,7 +378,7 @@ summary_infection_status <- function(cows) {
 #' @param type Type of massages.
 #' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 translate_msg <- function(type, to) {
-  if (is.null(to) | to == "English") {
+  if (is.null(to) || to == "English") {
     return(list())
   }
   msg <- get(paste0(to, "_", type))
