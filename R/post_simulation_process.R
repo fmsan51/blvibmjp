@@ -12,10 +12,10 @@ read_cows <- function(param, route_levels = NULL, route_labels = NULL,
                       output_dir = param$output_dir,
                       i_simulation = 1:param$n_simulation) {
   all_simulations <- vector("list", n_simulation)
-  for (i in i_simulation) {
-    # 1:n is used because it is much faster than seq_len(n).
-    cows <- fread(construct_filepath(output_filename, i, output_dir))
-    cows$i_simulation <- i
+  paths <- construct_filepath(output_filename, i, output_dir)
+  for (i in seq_len(i_simulation)) {
+    cows <- fread(paths[i])
+    cows$i_simulation <- i_simulation[i]
     all_simulations[[i]] <- cows
   }
   all_simulations <- rbindlist(all_simulations)
