@@ -3,11 +3,10 @@
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
 #' @param param,output_filename,output_dir See [param].
-#' @param route_levels,route_labels See [redefine_route_levels].
 #' @param i_simulation csvs with this numbers are read.
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
-read_cows <- function(param, route_levels = NULL, route_labels = NULL,
+read_cows <- function(param,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
                       i_simulation = 1:param$n_simulation) {

@@ -6,8 +6,6 @@
 \usage{
 read_cows(
   param,
-  route_levels = NULL,
-  route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
   i_simulation = 1:param$n_simulation
