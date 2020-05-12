@@ -123,6 +123,7 @@ plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
@@ -130,16 +131,21 @@ plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
-redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
+redefine_route_levels <- function(cows,
+                                  drop, language = NULL, route_levels = NULL,
                                   route_labels = NULL) {
   cows <- copy(cows)
 
   cows$cause_infection[cows$infection_status == "s"] <- "uninfected"
 
   if (is.null(route_levels)) {
+    if (drop) {
+      route_levels <- unique(cows$cause_infection)
+    } else {
     route_levels <- c("uninfected", "initial", "insects",
                       # "contact",  TODO: Fix this
                       "rp", "vertical", "colostrum", "introduced", "pasture")
+    }
   }
   uninf_and_route <- unique(c("uninfected", route_levels))
 
