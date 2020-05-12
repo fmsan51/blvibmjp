@@ -195,7 +195,7 @@ redefine_route_levels <- function(cows,
 #'
 #' @export
 plot_route <- function(csv = NULL, cows = NULL, language = NULL,
-                       route_levels = NULL, route_labels = NULL,
+                       drop = T, route_levels = NULL, route_labels = NULL,
                        max_ylim = NULL, title = T, legend_title = T,
                        xlab = T, ylab = T, gray = F, area_color = NULL,
                        border = F, border_color = NULL, font = NULL) {
@@ -205,7 +205,8 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
   }
   cows <- cows[is_owned == T, ]
 
-  cows <- redefine_route_levels(cows, language, route_levels, route_labels)
+  cows <-
+    redefine_route_levels(cows, drop, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
   translate_msg("plot_route", language)
