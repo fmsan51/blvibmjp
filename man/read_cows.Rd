@@ -2,6 +2,7 @@
 % Please edit documentation in R/post_simulation_process.R
 \name{read_cows}
 \alias{read_cows}
+\alias{read_final_cows}
 \title{Read cow information from simulation csvs}
 \usage{
 read_cows(
@@ -10,13 +11,22 @@ read_cows(
   output_dir = param$output_dir,
   i_simulation = 1:param$n_simulation
 )
+
+read_final_cows(
+  param,
+  route_levels = NULL,
+  route_labels = NULL,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  i_simulation = 1:param$n_simulation
+)
 }
 \arguments{
 \item{param, output_filename, output_dir}{See \link{param}.}
 
-\item{route_levels, route_labels}{See \link{redefine_route_levels}.}
-
 \item{i_simulation}{csvs with this numbers are read.}
+
+\item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
 \value{
 A \link{cow_table} with an additional column \code{i_simulation}.

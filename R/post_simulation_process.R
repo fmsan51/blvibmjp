@@ -5,6 +5,7 @@
 #' @param param,output_filename,output_dir See [param].
 #' @param i_simulation csvs with this numbers are read.
 #'
+#' @name read_cows
 #' @return A [cow_table] with an additional column `i_simulation`.
 read_cows <- function(param,
                       output_filename = param$output_filename,
@@ -19,6 +20,20 @@ read_cows <- function(param,
   }
   all_simulations <- rbindlist(all_simulations)
   return(all_simulations)
+}
+
+
+#' @param route_levels,route_labels See [redefine_route_levels].
+#' @name read_cows
+read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
+                            output_filename = param$output_filename,
+                            output_dir = param$output_dir,
+                            i_simulation = 1:param$n_simulation) {
+  cows <- read_cows(param, output_filename, output_dir, i_simulation)
+  cows <- cows[is_owned == T & max(i_month), ]
+  cows <-
+    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+  return(cows)
 }
 
 
