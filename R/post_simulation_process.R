@@ -11,7 +11,7 @@ read_cows <- function(param,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
                       i_simulation = 1:param$n_simulation) {
-  all_simulations <- vector("list", n_simulation)
+  all_simulations <- vector("list", length(i_simulation))
   paths <- construct_filepath(output_filename, i, output_dir)
   for (i in seq_len(i_simulation)) {
     cows <- fread(paths[i])
