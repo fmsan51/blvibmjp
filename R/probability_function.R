@@ -19,7 +19,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 i, param_sim) {
   n_cows <- length(susceptibility_ial_to_ipl)
   months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <- numeric(n_cows)
-  neg_months_ipl_to_ebl <- logical(n_cows)
+  neg_months_ipl_to_ebl <- !logical(n_cows)
   while (any(neg_months_ipl_to_ebl)) {
     months_ial_to_ebl[neg_months_ipl_to_ebl] <-
       rweibull(n_cows,
@@ -31,8 +31,7 @@ n_month_to_progress <- function(susceptibility_ial_to_ipl,
                shape = param_sim$ebl_progress_shape,
                scale = param_sim$ebl_progress_scale * param_sim$prop_ial_period
                ) * 12
-    months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
-    neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
+    neg_months_ipl_to_ebl <- (months_ial_to_ebl - months_ial_to_ipl) < 0
   }
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
   months_ial_to_ipl <- ceiling(months_ial_to_ipl)
