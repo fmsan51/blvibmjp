@@ -10,12 +10,11 @@ read_cows(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  n_simulation = param$n_simulation,
-  simulation_length = param$simulation_length
+  n_simulation = param$n_simulation
 )
 }
 \arguments{
-\item{param, output_filename, output_dir, n_simulation, simulation_length}{See \link{param}.}
+\item{param, output_filename, output_dir, n_simulation}{See \link{param}.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}.}
 }
