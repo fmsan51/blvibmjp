@@ -66,25 +66,6 @@ param <- list(
 
   prob_seroconversion_in_pasture = 0.5,
   # Probability of seroconversion in communal pastures
-  # Reports about seroconversion in communal pastures
-  # - Niigata: 60%, 47%, 50%, 51% (2013-2016) -> 5.6% (2017)
-  #   Ohkatsu et al, 2018. https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf (https://www.pref.niigata.lg.jp/sec/chikusan/1356889019293.html)
-  # - Tohoku: 0-11.5% (2006-2008)
-  #   Terada, 2009. Tohoku Nogyo Kenkyu, 62, 87-88. http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/DATA/062/062-087.pdf (http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/issue/no_062.html)
-  # - Yamagata: 0% (with countermeasures)
-  #   Watanabe and Kugota, 2016. p2 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
-  # - Yamagata: 0% (with countermeasures)
-  #   Tuchiya and Kiguchi, 2014. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H26-2.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
-  #   Kiguchi and Mori, 2015. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H27-1.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
-  # - Yamagata: 51.8% (2007) -> 22.3% (2015), 49.4% (2007) -> 1.5% (2015)
-  #   Ohkawara and Morita, 2016. p3 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
-  #   (Change of prevalence) https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019eiseidayori/2019No.9.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019kachikueiseidayori.html)
-  # - Ibaraki: 97.4% (Apr. 2014) -> 33.3 (2015)
-  #   Kodato et al, 2016. p1-7 of https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf (https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/h27gyouseki.html)
-  # - Nagano: 7.9% (2014), 4.5% (2015) (with countermeasures)
-  #   Yahikozawa, 2016. p58 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
-  # - Iwate: 0% (with countermeasures)
-  #   Kitagawa and Takeda, 2011. p56 of https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/pdf/syoroku_52.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
 
   control_insects = F,
   change_gloves = T,
@@ -352,6 +333,28 @@ calc_param <- function(param, modification = NULL) {
   # Probability of BLV infection after freeze-thaw can be considered as 0 - Kanno et al, 2014. https://doi.org/10.1292/jvms.13-0253
   res$prob_inf_colostrum <- fifelse(param$feed_raw_colostrum, 3 / (25 + 26), 0)
 
+  ## infection_pasture ----
+
+  res$prob_seroconv_pasture <- param$prob_seroconversion_in_pasture
+  # Reports about seroconversion in communal pastures
+  # - Niigata: 60%, 47%, 50%, 51% (2013-2016) -> 5.6% (2017)
+  #   Ohkatsu et al, 2018. https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf (https://www.pref.niigata.lg.jp/sec/chikusan/1356889019293.html)
+  # - Tohoku: 0-11.5% (2006-2008)
+  #   Terada, 2009. Tohoku Nogyo Kenkyu, 62, 87-88. http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/DATA/062/062-087.pdf (http://www.naro.affrc.go.jp/org/tarc/to-noken/DB/issue/no_062.html)
+  # - Yamagata: 0% (with countermeasures)
+  #   Watanabe and Kugota, 2016. p2 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
+  # - Yamagata: 0% (with countermeasures)
+  #   Tuchiya and Kiguchi, 2014. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H26-2.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  #   Kiguchi and Mori, 2015. https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyohatu/H27-1.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  # - Yamagata: 51.8% (2007) -> 22.3% (2015), 49.4% (2007) -> 1.5% (2015)
+  #   Ohkawara and Morita, 2016. p3 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/okitama/325048/gakujyusujyoho/gyosekihappyokai.html)
+  #   (Change of prevalence) https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019eiseidayori/2019No.9.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019kachikueiseidayori.html)
+  # - Ibaraki: 97.4% (Apr. 2014) -> 33.3 (2015)
+  #   Kodato et al, 2016. p1-7 of https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf (https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/h27gyouseki.html)
+  # - Nagano: 7.9% (2014), 4.5% (2015) (with countermeasures)
+  #   Yahikozawa, 2016. p58 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
+  # - Iwate: 0% (with countermeasures)
+  #   Kitagawa and Takeda, 2011. p56 of https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/pdf/syoroku_52.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
 
   ## infection_introduced ----
 
