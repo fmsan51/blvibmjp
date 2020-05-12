@@ -123,7 +123,7 @@ plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
 #'

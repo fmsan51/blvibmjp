@@ -18,7 +18,7 @@ redefine_route_levels(
 
 \item{route_labels}{Specify if you want to rename categories.}
 
-\item{to}{Language to which translate messages. At present, only English and Japanese is implemented.}
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 }
 \value{
 A \link{cow_table} with recategorized \code{cause_infection}.
