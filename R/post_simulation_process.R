@@ -2,16 +2,17 @@
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
-#' @param param,output_filename,output_dir,n_simulation See [param].
+#' @param param,output_filename,output_dir See [param].
 #' @param route_levels,route_labels See [redefine_route_levels].
+#' @param i_simulation csvs with this numbers are read.
 #'
 #' @return A [cow_table] with an additional column `i_simulation`.
 read_cows <- function(param, route_levels = NULL, route_labels = NULL,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
-                      n_simulation = param$n_simulation) {
+                      i_simulation = 1:param$n_simulation) {
   all_simulations <- vector("list", n_simulation)
-  for (i in 1:n_simulation) {
+  for (i in i_simulation) {
     # 1:n is used because it is much faster than seq_len(n).
     cows <- fread(construct_filepath(output_filename, i, output_dir))
     cows$i_simulation <- i

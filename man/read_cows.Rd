@@ -10,13 +10,15 @@ read_cows(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  n_simulation = param$n_simulation
+  i_simulation = 1:param$n_simulation
 )
 }
 \arguments{
-\item{param, output_filename, output_dir, n_simulation}{See \link{param}.}
+\item{param, output_filename, output_dir}{See \link{param}.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}.}
+
+\item{i_simulation}{csvs with this numbers are read.}
 }
 \value{
 A \link{cow_table} with an additional column \code{i_simulation}.
