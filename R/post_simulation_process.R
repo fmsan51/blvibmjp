@@ -216,9 +216,12 @@ redefine_route_levels <- function(cows,
 
 #' Plot monthly infection routes nicely
 #'
-#' @param csv Path to an output csv file.
-#' @param cows See `cow_table`
-#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
+#' Plot monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#'
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are used.
+#' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
@@ -232,14 +235,19 @@ redefine_route_levels <- function(cows,
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_route <- function(csv = NULL, cows = NULL, language = NULL,
+plot_route <- function(param,
+                       output_filename = param$output_filename,
+                       output_dir = param$output_dir,
+                       i_simulation = 1:param$n_simulation,
+                       list_cows = NULL, language = NULL,
                        drop = T, route_levels = NULL, route_labels = NULL,
                        max_ylim = NULL, title = T, legend_title = T,
                        xlab = T, ylab = T, gray = F, area_color = NULL,
                        border = F, border_color = NULL, font = NULL) {
-  stopifnot(sum(is.null(cows), is.null(csv)) == 1)
-  if (is.null(cows)) {
-    cows <- fread(csv)
+  if (is.null(list_cows)) {
+    cows <- read_cows(param, output_filename, output_dir, i_simulation)
+  } else {
+    cows <- rbindlist(list_cows, idcol = "i_simulation")
   }
   cows <- cows[is_owned == T, ]
 
