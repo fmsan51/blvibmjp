@@ -10,7 +10,8 @@ calc_prev(
   output_dir = param$output_dir,
   i_simulation = 1:param$n_simulation,
   list_cows = NULL,
-  type = c("prop", "count", "status")
+  type = c("prop", "count", "status"),
+  by_simulation = F
 )
 }
 \arguments{
@@ -21,6 +22,8 @@ calc_prev(
 \item{list_cows}{List consisted of \code{cow_table}s. Specify one of \code{output_dir}+\code{output_filename} or \code{list_cows}.}
 
 \item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows.}
+
+\item{by_simulation}{Whether calculate median of all simulations (\code{FALSE}) or calculate by each simualtion (\code{TRUE}).}
 }
 \value{
 A \link[data.table:data.table]{data.table} contains monthly prevalences.

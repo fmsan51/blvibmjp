@@ -45,6 +45,7 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
 #' @param i_simulation csvs with this numbers are used.
 #' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
 #' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows.
+#' @param by_simulation Whether calculate median of all simulations (`FALSE`) or calculate by each simualtion (`TRUE`).
 #'
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
@@ -53,7 +54,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
                       output_dir = param$output_dir,
                       i_simulation = 1:param$n_simulation,
                       list_cows = NULL,
-                      type = c("prop", "count", "status")) {
+                      type = c("prop", "count", "status"), by_simulation = F) {
   if (is.null(list_cows)) {
     cows <- read_cows(param, output_filename, output_dir, i_simulation)
   } else {
@@ -66,9 +67,11 @@ calc_prev <- function(param, output_filename = param$output_filename,
     prevalences <- cows[,
       list(prevalence = .SD[infection_status != "s", .N] / .N),
       by = list(i_month, i_simulation)
-      ][
-        !is.na(i_month), ][,
-          list(prevalence = median(prevalence)), by = i_month]
+      ][!is.na(i_month), ]
+    if (!by_simulation) {
+      prevalences <- prevalences[,
+        list(prevalence = median(prevalence)), by = i_month]
+    }
   } else if (type == "count") {
     cows$is_infected <-
       factor(cows$infection_status != "s", levels = c("TRUE", "FALSE"),
@@ -76,18 +79,22 @@ calc_prev <- function(param, output_filename = param$output_filename,
     prevalences <-
       dcast.data.table(cows, i_month + i_simulation ~ is_infected,
                        fun.aggregate = length, drop = F)
-    prevalences <-
-      prevalences[, lapply(.SD, median), .SDcols = c("inf", "noinf"),
-                  by = i_month]
+    if (!by_simulation) {
+      prevalences <-
+        prevalences[, lapply(.SD, median), .SDcols = c("inf", "noinf"),
+                    by = i_month]
+    }
   } else {
     cows$infection_status <-
       factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
     prevalences <-
       dcast.data.table(cows, i_month + i_simulation ~ infection_status,
                        fun.aggregate = length, drop = F)
-    prevalences <-
-      prevalences[, lapply(.SD, median), .SDcols = c("s", "ial", "ipl", "ebl"),
-                  by = i_month]
+    if (!by_simulation) {
+      prevalences <-
+        prevalences[, lapply(.SD, median), .SDcols = c("s", "ial", "ipl", "ebl"),
+                    by = i_month]
+    }
   }
 
   return(prevalences)
