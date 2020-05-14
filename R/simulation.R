@@ -133,8 +133,9 @@ simulate_once <- function(cows_areas, max_cow_id,
     cows <- res$cows
     areas <- res$areas
 
-    # check_removal() must come after add_newborns(), because check_removal()
-    # replaces infected old cows with non-replacement newborns
+    # check_removal() must come after add_newborns() and
+    # change_infection_status(), because check_removal() replaces or removes
+    # cows based on infection status.
     res <- check_removal(cows, areas, i, area_table, param_sim)
     cows <- res$cows
     areas <- res$areas
