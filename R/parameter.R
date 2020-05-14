@@ -299,6 +299,10 @@ calc_param <- function(param, modification = NULL) {
     rnorm(1, mean = 0.409, sd = mean(c(0.409 - 0.404, 0.414 - 0.409)) / q975)
   # Murakami et al, 2013. https://doi.org/10.1292/jvms.12-0374
 
+  # NOTE:
+  # insects_pressure, control_insects, free_pressure and average_prop_in_free
+  # canncel each other
+
 
   ## infection_needles ----
   # Ignored because no appropreate reference was found
