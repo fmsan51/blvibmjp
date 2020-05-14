@@ -124,9 +124,6 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
                       !is.na(cows$cow_id) & cows$area_id == i_area
                     ] == "s"
       s_cow_id <- cows_in_area[is_s_cow]
-      #       s_cow_id <-
-      #         cows$cow_id[cows$area_id == i_area & cows$infection_status == "s"]
-      #       s_cow_id <- as.character(remove_na(s_cow_id))
       new_infected_cow_id <- s_cow_id[is_infected_in_free_stall(
           sum(is_s_cow), sum(!is_s_cow), month, param_sim
         )]
