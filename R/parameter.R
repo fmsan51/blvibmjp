@@ -141,8 +141,8 @@ calc_param <- function(param, modification = NULL) {
   ## Probabilities of disease progress ----
   # NOTE: prob_develop_ipl and prob_develop_ebl are calculated in calc_param_both().
 
-  # Probability that an BLV-infected cow is detected
-  # 39.7% of infected cows are detected. This 39.7% are assumed to found at the month in which infection stage moved from Ial to Ipl.
+  # Probability that an EBL cow is detected
+  # 39.7% of EBL are detected. This 39.7% are assumed to found at the month in which infection stage moved from ipl to ebl.
   # (Because they assumed as the same and there is no data about the length of period from clinical onset to detection.)
   # - Tsutsui et al, 2016. https://doi.org/10.1016/j.prevetmed.2015.11.019
   res$prob_ebl_detected <- rnorm(1, mean = 0.397, sd = (0.397 - 0.358) / q975)
