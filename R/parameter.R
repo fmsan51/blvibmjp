@@ -22,7 +22,7 @@
 #' - `day_start_ai`: Day of first AI after a delivery. (default: average in Hokkaido)
 #' - `capacity_in_head` c(lower, upper): Lower/upper limit of the herd size. Set either this or `capacity_as_ratio` below.
 #' - `capacity_as_ratio` c(lower, upper): Lower/upper limit of the herd as ratio to the initial herd size (lower limit = `lower * initial_herd_size`, upper limit = `upper * initial_herd_size`). Set either this or `capacity_in_head` above. When both of `capacity_in_head` and `capacity_as_ratio` is NA, `capacity_as_ratio` is set to `c(0.9, 1.1)`.
-#' - `prob_seroconversion_in_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: 0.5)
+#' - `prob_seroconversion_in_pasture` (0-1): probability of seroconversion when a cow is send to a communal pasture. (default: random value from 0 to 1)
 #' - `n_introduced` c(calf, heifer, delivered): The number of introduced cows for five years. (default: c(0, 0, 0))
 #' - `days_qualantine`: Length of qualantine period (in days) for introduced cows in which introduced cows contacted no cows but introduced ones at the same time. (default: 0)
 #' - `control_insects` (logical or 0-1): wheter conduct control measures against insects. When specified by a number from 0 to 1, it means that the number of bloodsucking insects decrease to this proportion (i.e., `control_insects = 0.8` means that the number of insects becomes 80%). When `TRUE`, it is assumed that insects in a farm decrease to 50%. (default: FALSE)
@@ -64,7 +64,7 @@ param <- list(
   # TODO: Warn if capacity doesn't follow current number of cows
   # TODO: Warn if both of capacity_in_head and capacity_as_ratio are set
 
-  prob_seroconversion_in_pasture = 0.5,
+  prob_seroconversion_in_pasture = NA,
   # Probability of seroconversion in communal pastures
 
   control_insects = F,
@@ -336,7 +336,8 @@ calc_param <- function(param, modification = NULL) {
 
   ## infection_pasture ----
 
-  res$prob_seroconv_pasture <- param$prob_seroconversion_in_pasture
+  res$prob_seroconv_pasture <-
+    set_param(param$prob_seroconversion_in_pasture, runif(1, min = 0, max = 1))
   # Reports about seroconversion in communal pastures
   # - Niigata: 60%, 47%, 50%, 51% (2013-2016) -> 5.6% (2017)
   #   Ohkatsu et al, 2018. https://www.pref.niigata.lg.jp/uploaded/attachment/26756.pdf (https://www.pref.niigata.lg.jp/sec/chikusan/1356889019293.html)
