@@ -148,8 +148,9 @@ calc_param <- function(param, modification = NULL) {
   res$prob_ebl_detected <- rnorm(1, mean = 0.397, sd = (0.397 - 0.358) / q975)
 
   # Months until EBL cattle die
-  res$rate_ebl_die <- 1 / 2  # Average months until die is set to 2m
+  months_until_ebl_die <- 2
   # TODO: temporary, just by inspiration
+  res$rate_ebl_die <- 1 / months_until_ebl_die
 
 
   ## blv_test ----
