@@ -184,8 +184,9 @@ calc_param <- function(param, modification = NULL) {
                             sp_est = c(0.985, 0.987, 0.970, 0.849),
                             sp_lwr = c(0.962, 0.958, 0.927, 0.784),
                             sp_upr = c(1.000, 0.998, 0.996, 0.913))
-    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
-                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimates[, `:=`(se_se = (se_upr - se_lwr) / 2 / q975,
+                     sp_se = (sp_upr - sp_lwr) / 2 / q975)]
+    # Identidal to (((se_upr - se_est) + (se_est - se_lwr)) / 2) / q975
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
@@ -211,8 +212,9 @@ calc_param <- function(param, modification = NULL) {
                             sp_est = c(0.767, 0.770, 0.755),
                             sp_lwr = c(0.696, 0.694, 0.674),
                             sp_upr = c(0.828, 0.836, 0.828))
-    estimates[, `:=`(se_se = mean(c(se_upr - se_est, se_est - se_lwr)) / q975,
-                     sp_se = mean(c(sp_upr - sp_est, sp_est - sp_lwr)) / q975)]
+    estimates[, `:=`(se_se = (se_upr - se_lwr) / 2 / q975,
+                     sp_se = (sp_upr - sp_lwr) / 2 / q975)]
+    # Identidal to (((se_upr - se_est) + (se_est - se_lwr)) / 2) / q975
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
