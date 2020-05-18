@@ -20,7 +20,8 @@ setup_cows <- function(cow_table, param, save_cows) {
   attr(init_cows, "herd_size") <- init_n_cows
 
   if (save_cows) {
-    save_to_csv(init_cows, "month", 0, param$output_dir)
+    save_to_csv(init_cows, paste0(param$output_filename, "_month"), 0,
+                param$output_dir)
   }
 
   return(init_cows)
