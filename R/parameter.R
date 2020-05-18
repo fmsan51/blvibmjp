@@ -294,11 +294,13 @@ calc_param <- function(param, modification = NULL) {
 
   ## infection_free ----
   res$free_pressure <-
-    rnorm(1, mean = 1.19, sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / q975)
+    rnorm(1, mean = 1.19, sd = (1.39 - 1.01) / 2 / q975)
+  # Identical to sd = mean(c(1.19 - 1.01, 1.39 - 1.19)) / q975
   # Kobayashi et al, 2014. https://doi.org/10.1016/j.rvsc.2013.11.014
 
   res$average_prop_inf_in_free <-
-    rnorm(1, mean = 0.409, sd = mean(c(0.409 - 0.404, 0.414 - 0.409)) / q975)
+    rnorm(1, mean = 0.409, sd = (0.414 - 0.404) / 2 / q975)
+  # Identical to sd = mean(c(0.409 - 0.404, 0.414 - 0.409)) / q975
   # Murakami et al, 2013. https://doi.org/10.1292/jvms.12-0374
 
   # NOTE:
