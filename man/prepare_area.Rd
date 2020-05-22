@@ -4,7 +4,13 @@
 \alias{prepare_area}
 \title{Process raw area data to suitable form}
 \usage{
-prepare_area(csv, data = NULL, output_file = NULL, sep = "[,\\t\\r\\n |;:]")
+prepare_area(
+  csv,
+  data = NULL,
+  output_file = NULL,
+  sep = "[,\\t\\r\\n |;:]",
+  seed = NULL
+)
 }
 \arguments{
 \item{csv}{File path of an input csv file. See the Detail section to know about form of input csv.}
@@ -14,6 +20,8 @@ prepare_area(csv, data = NULL, output_file = NULL, sep = "[,\\t\\r\\n |;:]")
 \item{output_file}{The name of an output file (must be a csv file). If \code{NULL}, no output file is created.}
 
 \item{sep}{Separatator used in \code{capacity} column. See explanation of \code{capacity} in Detail section.}
+
+\item{seed}{Seed for a simulation.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.

@@ -12,7 +12,8 @@ prepare_cows(
   today = Sys.Date(),
   create_calf_data = F,
   modify_prevalence = NULL,
-  area_name = NULL
+  area_name = NULL,
+  seed = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ prepare_cows(
 \item{modify_prevalence}{One or two numbers within a range of 0 to 1. If the parameter is not \code{NULL}, modify \code{infection_status} column to make proportion of infected cows (when \verb{modify_prevalence is a number) or}ial\code{and}ipl + ebl\verb{cows (when}modify_prevalence` is two numbers) accordingly.}
 
 \item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
+
+\item{seed}{Seed for a simulation.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.

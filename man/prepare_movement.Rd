@@ -9,7 +9,8 @@ prepare_movement(
   data = NULL,
   output_file = NULL,
   area_name = NULL,
-  sep = "[,\\t\\r\\n |;:]"
+  sep = "[,\\t\\r\\n |;:]",
+  seed = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ prepare_movement(
 \item{area_name}{If \code{current_area} and \code{next_area} are specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
 
 \item{sep}{Separatator used in \code{priority} column. See explanation of \code{priority} in Detail section.}
+
+\item{seed}{Seed for a simulation.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.

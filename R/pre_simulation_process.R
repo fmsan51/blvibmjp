@@ -29,17 +29,22 @@
 #' @param modify_prevalence One or two numbers within a range of 0 to 1. If the parameter is not `NULL`, modify `infection_status` column to make proportion of infected cows (when `modify_prevalence is a number) or`ial` and `ipl + ebl` cows (when `modify_prevalence` is two numbers) accordingly.
 #' @param param See [param].
 #' @param area_name If `area_id` is specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
+#' @param seed Seed for a simulation.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
                          today = Sys.Date(),
                          create_calf_data = F, modify_prevalence = NULL,
-                         area_name = NULL) {
+                         area_name = NULL, seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
     input <- as.data.table(data)
+  }
+
+  if (!is.null(seed)) {
+    set.seed(seed)
   }
 
   cols_in_input <- intersect(cow_table_cols, colnames(input))
@@ -454,15 +459,20 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 #' @param data data.frame as a input instead of `csv`. See the Detail section to know about form of input data.
 #' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param sep Separatator used in `capacity` column. See explanation of `capacity` in Detail section.
+#' @param seed Seed for a simulation.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_area <- function(csv, data = NULL, output_file = NULL,
-                         sep = "[,\t\r\n |;:]") {
+                         sep = "[,\t\r\n |;:]", seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
     input <- as.data.table(data)
+  }
+
+  if (!is.null(seed)) {
+    set.seed(seed)
   }
 
   cols_in_input <- intersect(area_table_cols, colnames(input))
@@ -549,15 +559,21 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 #' @param output_file The name of an output file (must be a csv file). If `NULL`, no output file is created.
 #' @param area_name If `current_area` and `next_area` are specified by character, specify integer `area_id` like `c(barnA = 1, barnB = 2, ...)`.
 #' @param sep Separatator used in `priority` column. See explanation of `priority` in Detail section.
+#' @param seed Seed for a simulation.
 #'
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_movement <- function(csv, data = NULL, output_file = NULL,
-                             area_name = NULL, sep = "[,\t\r\n |;:]") {
+                             area_name = NULL, sep = "[,\t\r\n |;:]",
+                             seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
     input <- as.data.table(data)
+  }
+
+  if (!is.null(seed)) {
+    set.seed(seed)
   }
 
   cols_in_input <- intersect(movement_table_cols, colnames(input))
@@ -678,6 +694,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 #' @param movement_data See [prepare_movement()] for detail.
 #' @param cow_output_file,area_output_file,movement_output_file If not `NULL`, created data is exported to the files with these names (must be csv files).
 #' @param sep Separatator used in `capacity` column of area data. See [prepare_area()] for detail.
+#' @param seed Seed for a simulation.
 #' @param ... Other arguments passed to [prepare_cows()].
 #'
 #' @export
@@ -687,7 +704,7 @@ prepare_data <- function(excel, param, output = F,
                          movement_data = NULL,
                          cow_output_file = NULL, area_output_file = NULL,
                          movement_output_file = NULL,
-                         sep = "[,\t\r\n |;:]", ...) {
+                         sep = "[,\t\r\n |;:]", seed = NULL, ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
     area_input <- read_excel(excel, sheet = "area", skip = 3,
@@ -715,12 +732,12 @@ prepare_data <- function(excel, param, output = F,
 
   cows <- prepare_cows(data = cow_input, param = param,
                        output_file = cow_output_file, area_name = area_name,
-                       ...)
+                       seed = seed, ...)
   areas <- prepare_area(data = area_input,
-                        output_file = area_output_file, sep = sep)
+                        output_file = area_output_file, sep = sep, seed = seed)
   movement <- prepare_movement(data = movement_input,
                                output_file = movement_output_file,
-                               area_name = area_name, sep = sep)
+                               area_name = area_name, sep = sep, seed = seed)
 
   return(list(cows = cows, areas = areas, movement = movement))
 }
