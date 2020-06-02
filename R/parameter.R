@@ -170,11 +170,11 @@ calc_param <- function(param, modification = NULL) {
     # Not is.na() because length of test_method can be two
     res$test_sensitivity <- 0
     res$test_specificity <- 0
-  } else if (param$test_method == "immunodiffusion") {
+  } else if (any(param$test_method == "immunodiffusion")) {
     res$test_sensitivity <- 0.981
     res$test_specificity <- 0.967
     # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
-  } else if (param$test_method == "ELISA") {
+  } else if (any(param$test_method == "ELISA")) {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
@@ -188,7 +188,7 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param$test_method == "PHA") {
+  } else if (any(param$test_method == "PHA")) {
     n_est <- 2
     estimates <- data.table(sensitivity = numeric(n_est),
                             specificity = numeric(n_est))
@@ -202,7 +202,7 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(n_est, 1), ]
     res$test_sensitivity <- estimate$sensitivity
     res$test_specificity <- estimate$specificity
-  } else if (param$test_method == "nested PCR") {
+  } else if (any(param$test_method == "nested PCR")) {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
                             se_lwr = c(0.901, 0.895, 0.878),
@@ -216,7 +216,7 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (param$test_method == "real-time PCR") {
+  } else if (any(param$test_method == "real-time PCR")) {
     n_est <- 3
     # Calculate treating a result of nested PCR as gold standard
     estimates <- data.table(sensitivity = numeric(n_est),
