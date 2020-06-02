@@ -10,6 +10,7 @@
 #' @param seed Seed for a simulation.
 #' @param validate A logical value indicates whether validate inputs (data and paramters).
 #' @param silent A logical value to control print `Simulation x / x` while simulation.
+#' @param gc If `TRUE`, a garbage collection is done after every simulation.
 #'
 #' @return The function invisibully returns the result of the final run of simulations. csv files storing cow data and txt files storing parameters information are written to a directory specified by `param$output_dir`.
 #' @export
@@ -17,7 +18,7 @@ simulate_blv_spread <- function(prepared_data, param,
                                 list_param_modif = NULL,
                                 save_cows = T, save_param = T,
                                 i_simulation_start = 1, seed = NULL,
-                                validate = T, silent = F) {
+                                validate = T, silent = F, gc = T) {
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -67,6 +68,10 @@ simulate_blv_spread <- function(prepared_data, param,
              i_simulation, result,
              param_processed, param_modif = list_param_modif[[i_simulation]],
              save_cows, save_param)
+    if (gc) {
+      gc(verbose = F)
+      gc(verbose = F)
+    }
   }
 
   invisible(res)
