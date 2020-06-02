@@ -7,7 +7,6 @@
 #' - `simulation_length`: Length of simulation (months). (default: 60)
 #' - `n_simulation`: The number of simulation. (default: 1)
 #' - `simulation_start`: The month simulation starts (1 = Jan, 2 = Feb, ...). (default: 1)
-#' - `input_csv`: Path to a csv file which contains cattle information. Can be `NA` if `processed_data` is supplied to [simulate_blv_spread()].
 #' - `output_dir`: Directory to output files. (default: data/output)
 #' - `output_filename`: The name of the output files. (default: "simulation")
 #'
@@ -40,7 +39,6 @@ param <- list(
   simulation_length = 60,
   n_simulation = 1,
   simulation_start = 1,
-  input_csv = NA_character_,
   output_dir = "data/output",
   output_filename = "simulation",
 
