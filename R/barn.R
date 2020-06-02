@@ -160,6 +160,7 @@ tether_roaming_cows <- function(cows, areas) {
   res <- assign_chambers(cows, areas, roaming_cow_assign_list)
   return(res)
 }
+# TODO: calculate infection by a roaming cow
 
 
 #' Make area_assignment list
