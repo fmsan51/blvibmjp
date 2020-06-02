@@ -332,7 +332,7 @@ change_infection_status <- function(cows, i, month, area_table, areas,
            c("date_ipl_expected", "date_ebl_expected") :=
              n_month_to_progress(susceptibility_ial_to_ipl,
                                  susceptibility_ipl_to_ebl,
-                                 i, param_sim)]
+                                 param_sim)]
 
   res$cows[date_ipl_expected == i,
            `:=`(infection_status = "ipl",

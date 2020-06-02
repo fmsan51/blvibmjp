@@ -10,13 +10,12 @@
 #'
 #' @param susceptibility_ial_to_ipl A numeric.
 #' @param susceptibility_ipl_to_ebl A numeric.
-#' @param i The number of months from the start of a simulation.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of a month.
 n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
-                                i, param_sim) {
+                                param_sim) {
   n_neg_months_ial_to_ebl <- n_cows <- length(susceptibility_ial_to_ipl)
   months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <- numeric(n_cows)
   neg_months_ipl_to_ebl <- !logical(n_cows)
