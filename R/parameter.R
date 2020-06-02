@@ -360,6 +360,7 @@ calc_param <- function(param, modification = NULL) {
   #   (Change of prevalence) https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019eiseidayori/2019No.9.pdf (https://www.pref.yamagata.jp/ou/sogoshicho/shonai/337051/2019kachikueiseidayori.html)
   # - Ibaraki: 97.4% (Apr. 2014) -> 33.3 (2015)
   #   Kodato et al, 2016. p1-7 of https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/documents/endai1.pdf (https://www.pref.ibaraki.jp/nourinsuisan/chikusan/kachiku/kaho/h27gyouseki.html)
+  #   p4 of https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
   # - Nagano: 7.9% (2014), 4.5% (2015) (with countermeasures)
   #   Yahikozawa, 2016. p58 of http://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/attach/pdf/index-3.pdf (https://www.maff.go.jp/j/syouan/douei/katiku_yobo/k_kaho/index.html)
   # - Iwate: 0% (with countermeasures)
