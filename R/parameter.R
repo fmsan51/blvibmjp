@@ -647,6 +647,7 @@ calc_param_both <- function(param) {
 #' Validate parameters
 #'
 #' @param param See [param].
+#' @param list_param_modif See [simulate_blv_spread()].
 #'
 #' @return A parameter list.
 validate_param <- function(param) {

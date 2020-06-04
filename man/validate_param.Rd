@@ -4,10 +4,12 @@
 \alias{validate_param}
 \title{Validate parameters}
 \usage{
-validate_param(param)
+validate_param(param, list_param_modif = NULL)
 }
 \arguments{
 \item{param}{See \link{param}.}
+
+\item{list_param_modif}{See \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.}
 }
 \value{
 A parameter list.
