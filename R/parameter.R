@@ -274,13 +274,15 @@ calc_param <- function(param, modification = NULL) {
   # See the source code of est_coef_inf_insects() to understand
   # why * 10000 is necessary
 
-  insects_pressure <- set_null_param(modification$insects_pressure, 1)
+  res$insects_pressure <- set_null_param(modification$insects_pressure, 1)
+  # insects_pressure itself is not used in the other functions in a simulation,
+  # but listed in res to output the value by save_param.
   if (is.logical(param$control_insects)) {
     control_insects <- fifelse(param$control_insects, 0.5, 1)
   } else {
     control_insects <- param$control_insects
   }
-  res$probs_inf_insects_month <- probs_inf_insects_month * insects_pressure
+  res$probs_inf_insects_month <- probs_inf_insects_month * res$insects_pressure
   # used in is_infected_in_free_stall
   res$probs_inf_tie_month <- res$probs_inf_insects_month * control_insects
 
