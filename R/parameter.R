@@ -79,6 +79,9 @@ param <- list(
 )
 
 
+default_param <- names(param)
+
+
 #' Overwrite default parameters with herd specific parameters
 #'
 #' It's used to overwrite default parameters (averages of Hokkaido or Japan) with farm specific parameters.
@@ -650,10 +653,173 @@ calc_param_both <- function(param) {
 #' @param list_param_modif See [simulate_blv_spread()].
 #'
 #' @return A parameter list.
-validate_param <- function(param) {
-  if (param$simulation_length <= 0 | !is.wholenumber(param$simulation_length)) {
-    stop("simulation_length must be a positive integer")
+#' @export
+validate_param <- function(param, list_param_modif = NULL) {
+  be_0_1 <- grep("^pro[pb]_", names(param), value = T)
+  be_a_int <- c("simulation_length", "n_simulation", "simulation_start",
+                "days_qualantine", "test_frequency")
+  be_a_num <- c("calving_interval", "age_first_delivery", "age_first_ai", "day_start_ai", "days_open", "days_milking", "culling_frequency")
+  be_nums <- c("n_introduced", "capacity_in_head", "capacity_as_ratio")
+  be_a_lgl <- c("change_gloves", "feed_raw_colostrum")
+  others <- c("control_insects", "cull_infected_cows", "test_method")
+
+  # Check names
+  if (!all(names(param) %in% default_param)) {
+    invalid <- setdiff(names(param), default_param)
+    stop(glue("Following parameters in `param` are invalid: \\
+               {paste0(invalid, collapse = ', ')}"))
   }
+  if (!all(default_param %in% names(param))) {
+    missing <- setdiff(default_param, names(param))
+    stop(glue("Following parameters are missing in `param`: \\
+               {paste0(missing, collapse = ', ')}"))
+  }
+
+  if (!is.null(list_param_modif)) {
+    modified_param_name <- unique(names(flatten(list_param_modif)))
+    def_param_name <- names(calc_param(param, NULL))
+    if (!all(modified_param_name %in% def_param_name)) {
+      invalid <- setdiff(modified_param_name, def_param_name)
+      stop(glue("Following parameters in `list_param_modif` are invalid: \\
+                 {paste0(invalid, collapse = ', ')}"))
+    }
+  }
+
+  # Check length
+  test_be_one_val <- c("output_dir", "output_filename",
+                       be_0_1, be_a_int, be_a_num, be_a_lgl,
+                       "control_insects", "cull_infected_cows")
+  is_one_val <- vapply(param[test_be_one_val], function(x) length(x) == 1, T)
+  if (!all(is_one_val)) {
+    var_not_one_val <- names(param[test_be_one_val[!is_one_val]])
+    stop(glue("Following parameter in `param` must contain only one value: \\
+               {paste0(var_not_one_val, collapse = ', ')}"))
+  }
+
+  if (length(param$n_introduced) != 3) {
+    stop("`n_introduced` in `param` must contain three values.")
+  }
+
+  if ((!all(is.na(param$capacity_in_head)) &
+       !all(is.na(param$capacity_as_ratio)))) {
+    stop(glue("Only one of `capacity_in_head` and `capacity_as_ratio` \\
+               in `param` must have values."))
+  }
+  if ((!all(is.na(param$capacity_in_head)) &
+       length(param$capacity_in_head) != 2) |
+      (!all(is.na(param$capacity_as_ratio)) &
+       length(param$capacity_as_ratio) != 2)) {
+    stop(glue("Either one of `capacity_in_head` and `capacity_as_ratio` \\
+               in `param` must contain two values."))
+  }
+
+  if (is.character(param$test_method) & length(param$test_method) != 1) {
+    stop(glue("`test_method` in `param` must contain only one value \\
+               when it is specified by a character."))
+  }
+  if (is.numeric(param$test_method) & length(param$test_method) != 2) {
+    stop(glue("`test_method` in `param` must contain two values \\
+               when it is specified by numbers."))
+  }
+
+  # Check class
+  test_be_a_num <- c(be_0_1, be_a_num)
+  is_a_num <- vapply(param[test_be_a_num],
+                     function(x) is.na(x) | is.numeric(x), T)
+  if (!all(is_a_num)) {
+    var_not_a_num <- names(param[test_be_a_num[!is_a_num]])
+    stop(glue("Following parameter in `param` must be a number: \\
+               {paste0(var_not_a_num, collapse = ', ')}"))
+  }
+
+  is_a_int <-
+    vapply(param[be_a_int],
+           function(x) is.na(x) | (is.numeric(x) && is.wholenumber(x)), T)
+  if (!all(is_a_int)) {
+    var_not_a_int <- names(param[be_a_int[!is_a_int]])
+    stop(glue("Following parameter in `param` must be an integer: \\
+               {paste0(var_not_a_int, collapse = ', ')}"))
+  }
+
+  is_a_lgl <- vapply(param[be_a_lgl], function(x) is.na(x) | is.logical(x), T)
+  if (!all(is_a_lgl)) {
+    var_not_a_lgl <- names(param[be_a_lgl[!is_a_lgl]])
+    stop(glue("Following parameter in `param` must be a logical: \\
+               {paste0(var_not_a_lgl, collapse = ', ')}"))
+  }
+
+  if ((!all(is.na(param$capacity_in_head)) &
+       !is.numeric(param$capacity_in_head)) |
+      (!all(is.na(param$capacity_as_ratio)) &
+       !is.numeric(param$capacity_as_ratio))) {
+    stop(glue("`capacity_in_head` or `capacity_as_ratio` in `param` \\
+               must be a vector of two numbers"))
+  }
+
+  if (!is.logical(param$control_insects) & !is.numeric(param$control_insects)) {
+    stop("`control_insects` in `param` must be a logical or a number.")
+  }
+
+  if (!anyNA(param$test_method) & !is.character(param$test_method) &
+      !is.numeric(param$test_method)) {
+    stop(glue("`test_method` in `param` must be a character or \\
+               a vector of two numbers."))
+  }
+
+  # Check range
+  test_pos_num <-
+    c(setdiff(be_a_int, c("days_qualantine", "test_frequency")), be_a_num)
+  is_pos_num <- vapply(param[test_pos_num], function(x) is.na(x) | x > 0, T)
+  if (!all(is_pos_num)) {
+    var_not_pos_num <- names(param[test_pos_num[!is_pos_num]])
+    stop(glue("Following parameter in `param` must be a positive number: \\
+               {paste0(var_not_pos_num, collapse = ', ')}"))
+  }
+
+  is_0_1 <- vapply(param[be_0_1], function(x) is.na(x) | (0 <= x & x <= 1), T)
+  if (!all(is_0_1)) {
+    var_not_0_1 <- names(param[be_0_1[!is_0_1]])
+    stop(glue("Following parameter in `param` must be a number between 0 and 1: \\
+               {paste0(var_not_0_1, collapse = ', ')}"))
+  }
+
+  if (param$days_qualantine < 0) {
+    stop(glue("`days_qualantine` in `param` must be a number equal to or \\
+               larger than 0."))
+  }
+
+  if (param$test_frequency < 0 | param$test_frequency > 12) {
+    stop("`test_frequency` in `param` must an integer from 0 to 12.")
+  }
+
+  if ((!anyNA(param$capacity_in_head) & any(param$capacity_in_head < 0)) |
+      (!anyNA(param$capacity_as_ratio) & any(param$capacity_as_ratio < 0))) {
+    stop(glue("`capacity_in_head` or `capacity_as_ratio` in `param` \\
+               must be positive numbers."))
+  }
+
+  if (is.numeric(param$control_insects) &&
+      (param$control_insects < 0 | param$control_insects > 1)) {
+    stop(glue("`control_insects` in `param` must between 0 and 1 \\
+               when it is specified by a number."))
+  }
+
+  if (!any(param$cull_infected_cows == c("no", "all", "highrisk"))) {
+    stop("`cull_infected_cows` in `param` contains invalid value.")
+  }
+
+  if (is.character(param$test_method) &&
+      !any(param$test_method ==
+           c("immunodiffusion", "ELISA", "PHA", "nested PCR", "real-time PCR"))
+      ) {
+    stop("`test_method` in `param` contains invalid value.")
+  }
+  if (is.numeric(param$test_method) &&
+      (any(param$test_method < 0) | any(param$test_method > 1))) {
+    stop(glue("`test_method` in `param` must between 0 and 1 \\
+               when it is specified by numbers."))
+  }
+
   invisible(NULL)
 }
 
