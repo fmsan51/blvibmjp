@@ -856,6 +856,7 @@ change_area <- function(cows, i, movement_table, area_table, areas, param_sim) {
 infect <- function(cows, areas, area_table, infected_cow_id, cause, i) {
   cows[match(infected_cow_id, cow_id),
        `:=`(infection_status = "ial",
+            date_ial = i,
             cause_infection = cause)]
   for (i_area in attr(area_table, "tie_stall_chr")) {
     areas[[i_area]][match(infected_cow_id, cow_id), `:=`(cow_status = "ial")]
