@@ -11,6 +11,7 @@
 #' @importFrom glue glue
 #' @importFrom grDevices gray.colors
 #' @importFrom lubridate day dmy dym interval mdy myd today tz ydm ymd
+#' @importFrom purrr flatten
 #' @importFrom readxl read_excel
 #' @importFrom rlang expr !!!
 #' @importFrom stats optim qnorm rbinom rexp rgamma rnorm runif rweibull
