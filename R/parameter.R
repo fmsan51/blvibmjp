@@ -52,10 +52,10 @@ param <- list(
   prop_heat_detected = NA,
   calving_interval = NA,
   age_first_delivery = NA,
-  days_open = NA,
-  days_milking = NA,
   age_first_ai = NA,
   day_start_ai = NA,
+  days_open = NA,
+  days_milking = NA,
 
   n_introduced = c(0, 0, 0),
   days_qualantine = 0,
