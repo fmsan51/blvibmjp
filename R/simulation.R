@@ -27,6 +27,10 @@ simulate_blv_spread <- function(prepared_data, param,
     dir.create(param$output_dir, recursive = T)
   }
 
+  if (validate) {
+    validate_param(param, list_param_modif)
+  }
+
   cow_table <- prepared_data$cows
   area_table <- prepared_data$areas
   movement_table <- prepared_data$movement
@@ -43,9 +47,6 @@ simulate_blv_spread <- function(prepared_data, param,
   cows_areas <- set_init_chamber_id(cow_table, area_table, areas)
   day_rp <- setup_rp_table(param_processed)
   newborn_table <- setup_newborn_table(param_processed)
-  if (validate) {
-    validate_param(param_processed)
-  }
 
   result <- vector("list", param_processed$simulation_length + 1)
   result[[1]] <- copy(cows_areas$cows)
