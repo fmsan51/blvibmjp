@@ -58,7 +58,9 @@ simulate_blv_spread <- function(prepared_data, param,
                    subdir = param_processed$output_dir)
   }
 
-  for (i_simulation in (i_simulation_start:param_processed$n_simulation)) {
+  simulation_iter <- ifelse(param_processed$n_simulation == 0,
+    integer(0), i_simulation_start:param_processed$n_simulation)
+  for (i_simulation in simulation_iter) {
     if (!silent) {
       cat("Simulation ", i_simulation, " / ", param_processed$n_simulation,
           "\n")
