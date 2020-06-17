@@ -772,8 +772,7 @@ validate_param <- function(param, list_param_modif = NULL) {
   }
 
   # Check range
-  test_pos_num <-
-    c(setdiff(be_a_int, c("days_qualantine", "test_frequency")), be_a_num)
+  test_pos_num <- c("simulation_start", be_a_num)
   is_pos_num <- vapply(param[test_pos_num], function(x) is.na(x) | x > 0, T)
   if (!all(is_pos_num)) {
     var_not_pos_num <- names(param[test_pos_num[!is_pos_num]])
@@ -781,16 +780,20 @@ validate_param <- function(param, list_param_modif = NULL) {
                {paste0(var_not_pos_num, collapse = ', ')}"))
   }
 
+  test_non_neg_num <- setdiff(be_a_int, "simulation_start")
+  is_non_neg_num <-
+    vapply(param[test_non_neg_num], function(x) is.na(x) | x >= 0, T)
+  if (!all(is_non_neg_num)) {
+    var_neg_num <- names(param[test_non_neg_num[!is_non_neg_num]])
+    stop(glue("Following parameter in `param` must be a non-negative number: \\
+               {paste0(var_neg_num, collapse = ', ')}"))
+  }
+
   is_0_1 <- vapply(param[be_0_1], function(x) is.na(x) | (0 <= x & x <= 1), T)
   if (!all(is_0_1)) {
     var_not_0_1 <- names(param[be_0_1[!is_0_1]])
     stop(glue("Following parameter in `param` must be a number between 0 and 1: \\
                {paste0(var_not_0_1, collapse = ', ')}"))
-  }
-
-  if (param$days_qualantine < 0) {
-    stop(glue("`days_qualantine` in `param` must be a number equal to or \\
-               larger than 0."))
   }
 
   if (param$test_frequency < 0 | param$test_frequency > 12) {
