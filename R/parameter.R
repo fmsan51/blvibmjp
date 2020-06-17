@@ -171,15 +171,16 @@ calc_param <- function(param, modification = NULL) {
 
   # A list of BLV test methods available in Japan was obtained from here:
   # Mekata, 2016. https://doi.org/10.4190/jjlac.6.221
+  lowered <- tolower(param$test_method)[1]
   if (anyNA(param$test_method)) {
     # Not is.na() because length of test_method can be two
     res$test_sensitivity <- 0
     res$test_specificity <- 0
-  } else if (any(param$test_method == "immunodiffusion")) {
+  } else if (lowered == "immunodiffusion") {
     res$test_sensitivity <- 0.981
     res$test_specificity <- 0.967
     # Molloy et al, 1990. https://doi.org/10.1016/0166-0934(90)90086-U
-  } else if (any(param$test_method == "ELISA")) {
+  } else if (lowered == "elisa") {
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.994, 0.994, 0.976, 0.893),
                             se_lwr = c(0.982, 0.980, 0.951, 0.857),
@@ -193,7 +194,7 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (any(param$test_method == "PHA")) {
+  } else if (lowered == "pha") {
     n_est <- 2
     estimates <- data.table(sensitivity = numeric(n_est),
                             specificity = numeric(n_est))
@@ -207,7 +208,8 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(n_est, 1), ]
     res$test_sensitivity <- estimate$sensitivity
     res$test_specificity <- estimate$specificity
-  } else if (any(param$test_method == "nested PCR")) {
+  } else if (lowered %in% c("nestedpcr", "nested pcr", "nested-pcr")) {
+    # Faster than grepl()
     # Monti et al, 2005. https://doi.org/10.1177%2F104063870501700507
     estimates <- data.table(se_est = c(0.928, 0.929, 0.916),
                             se_lwr = c(0.901, 0.895, 0.878),
@@ -221,7 +223,10 @@ calc_param <- function(param, modification = NULL) {
     estimate <- estimates[sample.int(.N, 1), ]
     res$test_sensitivity <- rnorm(1, estimates$se_est, estimates$se_se)
     res$test_specificity <- rnorm(1, estimates$sp_est, estimates$sp_se)
-  } else if (any(param$test_method == "real-time PCR")) {
+  } else if (lowered %in% c("real-timepcr", "realtimepcr",
+                            "real-time pcr", "realtime pcr",
+                            "real-time", "realtime")) {
+    # Faster than grepl()
     n_est <- 3
     # Calculate treating a result of nested PCR as gold standard
     estimates <- data.table(sensitivity = numeric(n_est),
@@ -808,11 +813,16 @@ validate_param <- function(param, list_param_modif = NULL) {
     stop("`cull_infected_cows` in `param` contains invalid value.")
   }
 
-  if (is.character(param$test_method) &&
-      !any(param$test_method ==
-           c("immunodiffusion", "ELISA", "PHA", "nested PCR", "real-time PCR"))
-      ) {
-    stop("`test_method` in `param` contains invalid value.")
+  if (is.character(param$test_method)) {
+    lowered <- tolower(param$test_method)
+    if (!any(lowered ==
+             c("immunodiffusion", "elisa", "pha",
+               "nestedpcr", "nested pcr", "nested-pcr",
+               "real-timepcr", "realtimepcr", "real-time pcr", "realtime pcr",
+               "real-time", "realtime"))
+       ) {
+      stop("`test_method` in `param` contains invalid value.")
+    }
   }
   if (is.numeric(param$test_method) &&
       (any(param$test_method < 0) | any(param$test_method > 1))) {
