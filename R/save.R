@@ -19,7 +19,7 @@ save_to_csv <- function(cows, filename, i, subdir = ".") {
 #' @rdname save_file
 save_param_txt <- function(param, filename, i, subdir = ".") {
   sink(file = construct_filepath(filename, i, subdir, ".txt"))
-  str(param, vec.len = Inf, give.attr = F, give.head = F,
+  str(param, vec.len = Inf, give.attr = F,
       indent.str = "", comp.str = "", no.list = T)
   sink(file = NULL)
   invisible(NULL)
