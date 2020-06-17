@@ -58,26 +58,29 @@ simulate_blv_spread <- function(prepared_data, param,
                    subdir = param_processed$output_dir)
   }
 
-  simulation_iter <- ifelse(param_processed$n_simulation == 0,
-    integer(0), i_simulation_start:param_processed$n_simulation)
-  for (i_simulation in simulation_iter) {
-    if (!silent) {
-      cat("Simulation ", i_simulation, " / ", param_processed$n_simulation,
-          "\n")
+  if (param_processed$n_simulation == 0) {
+    invisible(NULL)
+  } else {
+    for (i_simulation in i_simulation_start:param_processed$n_simulation) {
+      if (!silent) {
+        cat("Simulation ", i_simulation, " / ", param_processed$n_simulation,
+            "\n")
+      }
+      set.seed(seeds[i_simulation])
+      res <- simulate_once(cows_areas, param_processed$init_max_cow_id,
+               area_table, movement_table, day_rp, newborn_table,
+               i_simulation, result,
+               param_processed, param_modif = list_param_modif[[i_simulation]],
+               save_cows, save_param)
+      if (gc) {
+        gc(verbose = F)
+        gc(verbose = F)
+      }
     }
-    set.seed(seeds[i_simulation])
-    res <- simulate_once(cows_areas, param_processed$init_max_cow_id,
-             area_table, movement_table, day_rp, newborn_table,
-             i_simulation, result,
-             param_processed, param_modif = list_param_modif[[i_simulation]],
-             save_cows, save_param)
-    if (gc) {
-      gc(verbose = F)
-      gc(verbose = F)
-    }
+
+    invisible(res)
   }
 
-  invisible(res)
 }
 
 
