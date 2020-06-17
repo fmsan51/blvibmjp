@@ -112,8 +112,7 @@ simulate_once <- function(cows_areas, max_cow_id,
   param_sim <- c(param_calculated, param_processed)
   param_sim <- param_sim[!duplicated(names(param_sim))]
 
-  for (i in 1:param_sim$simulation_length) {
-    # Here, 1:n, not seq_len(n), is used due to the speed
+  for (i in seq_len(param_sim$simulation_length)) {
     month <- (i + param_sim$simulation_start - 2) %% 12 + 1
     cows <- set_i_month(cows, i)
 

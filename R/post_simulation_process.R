@@ -10,7 +10,7 @@
 read_cows <- function(param,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
-                      i_simulation = 1:param$n_simulation) {
+                      i_simulation = seq_len(param$n_simulation)) {
   all_simulations <- vector("list", length(i_simulation))
   paths <- construct_filepath(output_filename, i_simulation, output_dir)
   for (i in i_simulation) {
@@ -28,7 +28,7 @@ read_cows <- function(param,
 read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
-                            i_simulation = 1:param$n_simulation) {
+                            i_simulation = seq_len(param$n_simulation)) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
   cows <- cows[is_owned == T & max(i_month), ]
   cows <-
@@ -52,7 +52,7 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
 #' @export
 calc_prev <- function(param, output_filename = param$output_filename,
                       output_dir = param$output_dir,
-                      i_simulation = 1:param$n_simulation,
+                      i_simulation = seq_len(param$n_simulation),
                       list_cows = NULL,
                       type = c("prop", "count", "status"), by_simulation = F) {
   if (is.null(list_cows)) {
@@ -118,7 +118,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
 plot_prev <- function(param,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
-                      i_simulation = 1:param$n_simulation,
+                      i_simulation = seq_len(param$n_simulation),
                       list_cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <-
@@ -238,7 +238,7 @@ redefine_route_levels <- function(cows,
 plot_route <- function(param,
                        output_filename = param$output_filename,
                        output_dir = param$output_dir,
-                       i_simulation = 1:param$n_simulation,
+                       i_simulation = seq_len(param$n_simulation),
                        list_cows = NULL, language = NULL,
                        drop = T, route_levels = NULL, route_labels = NULL,
                        max_ylim = NULL, title = T, legend_title = T,
@@ -346,7 +346,7 @@ plot_route <- function(param,
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        i_simulation = 1:param$n_simulation) {
+                        i_simulation = seq_len(param$n_simulation)) {
   cows <- read_fianl_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation)
   summary <- summary_route(cows)
@@ -381,7 +381,7 @@ summary_route <- function(cows) {
 table_status <- function(param, route_levels = NULL, route_labels = NULL,
                          output_filename = param$output_filename,
                          output_dir = param$output_dir,
-                         i_simulation = 1:param$n_simulation
+                         i_simulation = seq_len(param$n_simulation)
                          ) {
   cows <- read_final_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation)

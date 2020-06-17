@@ -11,7 +11,7 @@ table_route(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  i_simulation = 1:param$n_simulation
+  i_simulation = seq_len(param$n_simulation)
 )
 
 summary_route(cows)
