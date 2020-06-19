@@ -24,7 +24,9 @@ simulate_blv_spread(
 
 \item{list_param_modif}{List of lists. Parameter specified in each inner list overwrite default parameters. Each inner list is passed to \code{param_modif} of  \code{\link[=calc_param]{calc_param()}}. Specify like \code{list(modification_for_iter1 = list(parameter_name = new_value, ...), modification_for_iter2 = list(...), ...)}.}
 
-\item{save_cows, save_param}{Wheher to save results of simulations and used parameters to files.}
+\item{save_cows}{Whether to save results of simulations. "simulation000.csv" contains information of a herd at the start of a simulation and "simulationXXX.csv" contains a result of each run.}
+
+\item{save_param}{Whether to save parameters used in simulations. "param_simulation000.txt" contains values of \link{param} (after passed to \code{\link[=process_param]{process_param()}}) and "param_simulationXXX.txt" contains a result of \code{\link[=calc_param]{calc_param()}} in each run. Use \code{\link[=read_param]{read_param()}} to read an output file.}
 
 \item{i_simulation_start}{An option to rerun a simulation from the middle of simulations. For example, you run 100 simulation, simulation 26 encounter error and stopped, and you want to run simulation 26-100 again while keeping the result from simulation 1-25. Then set i_simulation = 26.}
 
