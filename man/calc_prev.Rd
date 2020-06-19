@@ -4,18 +4,30 @@
 \alias{calc_prev}
 \title{Calculate prevalence from \code{cow_table} or a csv file}
 \usage{
-calc_prev(csv = NULL, cows = NULL, type = c("prop", "count", "status"))
+calc_prev(
+  param,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  i_simulation = seq_len(param$n_simulation),
+  list_cows = NULL,
+  type = c("prop", "count", "status"),
+  by_simulation = F
+)
 }
 \arguments{
-\item{csv}{Path to a csv file.}
+\item{param, output_filename, output_dir}{See \link{param}.}
 
-\item{cows}{See \code{cow_table}}
+\item{i_simulation}{csvs with this numbers are used.}
+
+\item{list_cows}{List consisted of \code{cow_table}s. Specify one of \code{output_dir}+\code{output_filename} or \code{list_cows}.}
 
 \item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows.}
+
+\item{by_simulation}{Whether calculate median of all simulations (\code{FALSE}) or calculate by each simualtion (\code{TRUE}).}
 }
 \value{
 A \link[data.table:data.table]{data.table} contains monthly prevalences.
 }
 \description{
-Calculate monthly prevalences from \code{cow_table} or a csv file. Set either one of \code{cows} or \code{csv}.
+Calculate monthly prevalences from csv files or list of \code{cow_table}. Set either one of \code{output_dir}+\code{output_filename} or \code{csv}.
 }

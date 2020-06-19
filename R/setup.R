@@ -20,7 +20,8 @@ setup_cows <- function(cow_table, param, save_cows) {
   attr(init_cows, "herd_size") <- init_n_cows
 
   if (save_cows) {
-    save_to_csv(init_cows, "month", 0, param$output_dir)
+    save_to_csv(init_cows, paste0(param$output_filename, "month"), 0,
+                param$output_dir)
   }
 
   return(init_cows)
@@ -127,6 +128,8 @@ setup_area_table <- function(area_table, param) {
     area_table$area_id[area_table$area_type == "tie"]
   attr(area_table, "tie_stall_chr") <-
     as.character(attr(area_table, "tie_stall"))
+  attr(area_table, "pasture") <-
+    area_table$area_id[area_table$area_type == "pasture"]
   attr(area_table, "is_calf_isolated") <-
     area_table[area_id == 1, area_type == "hatch"]
 

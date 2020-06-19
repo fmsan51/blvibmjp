@@ -6,6 +6,7 @@
 \usage{
 redefine_route_levels(
   cows,
+  drop,
   language = NULL,
   route_levels = NULL,
   route_labels = NULL
@@ -14,7 +15,9 @@ redefine_route_levels(
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{language}{When set, \code{route_labels} are translated in this language. At present, only Japanese is implemented.}
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
+
+\item{language}{Language to which translate messages. At present, only English and Japanese is implemented.}
 
 \item{route_levels}{If specified, infection routes not specified in \code{route_levels} are coarced into "other" category. See \code{cause_infection} in \link{cow_table} to know about default categories.}
 

@@ -5,9 +5,13 @@
 \title{Plot monthly infection routes nicely}
 \usage{
 plot_route(
-  csv = NULL,
-  cows = NULL,
+  param,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  i_simulation = seq_len(param$n_simulation),
+  list_cows = NULL,
   language = NULL,
+  drop = T,
   route_levels = NULL,
   route_labels = NULL,
   max_ylim = NULL,
@@ -23,11 +27,15 @@ plot_route(
 )
 }
 \arguments{
-\item{csv}{Path to an output csv file.}
+\item{param, output_filename, output_dir}{See \link{param}.}
 
-\item{cows}{See \code{cow_table}}
+\item{i_simulation}{csvs with this numbers are used.}
 
-\item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
+\item{list_cows}{List consisted of \code{cow_table}s. Specify one of \code{output_dir}+\code{output_filename} or \code{list_cows}.}
+
+\item{language}{Language to which translate messages. At present, only English and Japanese is implemented.}
+
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 
 \item{route_levels, route_labels}{See \link{redefine_route_levels}}
 
@@ -49,5 +57,5 @@ plot_route(
 A \link[ggplot2:ggplot]{ggplot2::ggplot} plot.
 }
 \description{
-Plot monthly infection routes nicely
+Plot monthly prevalences by each infection route from csv files or list of \code{cow_table}. Set either one of \code{output_dir}+\code{output_filename} or \code{csv}.
 }

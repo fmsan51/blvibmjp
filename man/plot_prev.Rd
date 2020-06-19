@@ -5,8 +5,11 @@
 \title{Plot the change in prevalence}
 \usage{
 plot_prev(
-  csv = NULL,
-  cows = NULL,
+  param,
+  output_filename = param$output_filename,
+  output_dir = param$output_dir,
+  i_simulation = seq_len(param$n_simulation),
+  list_cows = NULL,
   language = NULL,
   title = T,
   xlab = T,
@@ -15,11 +18,13 @@ plot_prev(
 )
 }
 \arguments{
-\item{csv}{Path to a simulation output csv file.}
+\item{param, output_filename, output_dir}{See \link{param}.}
 
-\item{cows}{See \code{cow_table}}
+\item{i_simulation}{csvs with this numbers are used.}
 
-\item{language}{When set, plot title and labels are translated in this language. At present, only Japanese is implemented.}
+\item{list_cows}{List consisted of \code{cow_table}s. Specify one of \code{output_dir}+\code{output_filename} or \code{list_cows}.}
+
+\item{language}{Language to which translate messages. At present, only English and Japanese is implemented.}
 
 \item{title, xlab, ylab}{logical or character. Plot title, label for x-axis and label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE}, a title is not shown (\code{TRUE} is valid only for \code{title}). When specified by character, the string is used as a title or label.}
 
@@ -29,5 +34,5 @@ plot_prev(
 An scatterplot by \link[ggplot2:ggplot]{ggplot2::ggplot} object.
 }
 \description{
-Plot the change in prevalence
+Plot monthly prevalences from csv files or list of \code{cow_table}. Set either one of \code{output_dir}+\code{output_filename} or \code{csv}.
 }

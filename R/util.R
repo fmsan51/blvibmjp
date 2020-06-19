@@ -72,8 +72,8 @@ q975 <- qnorm(0.975)
 #' @param coef,risks_inf_insects,prob_seroconv_insects See the source code of [calc_param()] for detail.
 est_coef_inf_insects <- function(coef,
                                  risks_inf_insects, prob_seroconv_insects) {
-  coef <- coef * 0.01  # To prevent estimates become 0 when coef is small
-  prob <- 1 - prod(1 - risks_inf_insects * coef)
+  prob <- 1 - prod(1 - risks_inf_insects * coef / 10000)
+  # / 10000 to prevent estimates become 0 when coef is small
   return(abs(prob_seroconv_insects - prob))
 }
 

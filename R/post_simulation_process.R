@@ -1,48 +1,64 @@
-#' Read cow information at the end of a simulation
+#' Read cow information from simulation csvs
 #'
 #' Read information of cows which owned by a farm at the end of simulations from csv files and redefine infection routes.
 #'
-#' @param param,output_filename,output_dir,n_simulation,simulation_length See [param].
-#' @param route_levels,route_labels See [redefine_route_levels].
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are read.
 #'
+#' @name read_cows
 #' @return A [cow_table] with an additional column `i_simulation`.
-read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
-                            output_filename = param$output_filename,
-                            output_dir = param$output_dir,
-                            n_simulation = param$n_simulation,
-                            simulation_length = param$simulation_length) {
-  all_simulations <- vector("list", n_simulation)
-  for (i in 1:n_simulation) {
-    # 1:n is used because it is much faster than seq_len(n).
-    cows <- fread(construct_filepath(output_filename, i, output_dir))
-    cows$i_simulation <- i
+read_cows <- function(param,
+                      output_filename = param$output_filename,
+                      output_dir = param$output_dir,
+                      i_simulation = seq_len(param$n_simulation)) {
+  all_simulations <- vector("list", length(i_simulation))
+  paths <- construct_filepath(output_filename, i_simulation, output_dir)
+  for (i in i_simulation) {
+    cows <- fread(paths[i])
+    cows$i_simulation <- i_simulation[i]
     all_simulations[[i]] <- cows
   }
   all_simulations <- rbindlist(all_simulations)
-  final_cows <-
-    all_simulations[is_owned == T & i_month == simulation_length, ]
-  final_cows <- redefine_route_levels(final_cows, language = NULL,
-                                      route_levels, route_labels)
-  return(final_cows)
+  return(all_simulations)
+}
+
+
+#' @param route_levels,route_labels See [redefine_route_levels].
+#' @name read_cows
+read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
+                            output_filename = param$output_filename,
+                            output_dir = param$output_dir,
+                            i_simulation = seq_len(param$n_simulation)) {
+  cows <- read_cows(param, output_filename, output_dir, i_simulation)
+  cows <- cows[is_owned == T & max(i_month), ]
+  cows <-
+    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+  return(cows)
 }
 
 
 #' Calculate prevalence from `cow_table` or a csv file
 #'
-#' Calculate monthly prevalences from `cow_table` or a csv file. Set either one of `cows` or `csv`.
+#' Calculate monthly prevalences from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
 #'
-#' @param csv Path to a csv file.
-#' @param cows See `cow_table`
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are used.
+#' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
 #' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows.
+#' @param by_simulation Whether calculate median of all simulations (`FALSE`) or calculate by each simualtion (`TRUE`).
 #'
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
 #'
 #' @export
-calc_prev <- function(csv = NULL, cows = NULL,
-                      type = c("prop", "count", "status")) {
-  stopifnot(sum(is.null(cows), is.null(csv)) == 1)
-  if (is.null(cows)) {
-    cows <- fread(csv)
+calc_prev <- function(param, output_filename = param$output_filename,
+                      output_dir = param$output_dir,
+                      i_simulation = seq_len(param$n_simulation),
+                      list_cows = NULL,
+                      type = c("prop", "count", "status"), by_simulation = F) {
+  if (is.null(list_cows)) {
+    cows <- read_cows(param, output_filename, output_dir, i_simulation)
+  } else {
+    cows <- rbindlist(list_cows, idcol = "i_simulation")
   }
   cows <- cows[is_owned == T, ]
 
@@ -50,21 +66,35 @@ calc_prev <- function(csv = NULL, cows = NULL,
   if (type == "prop") {
     prevalences <- cows[,
       list(prevalence = .SD[infection_status != "s", .N] / .N),
-      by = i_month
-      ][!is.na(i_month)]
+      by = list(i_month, i_simulation)
+      ][!is.na(i_month), ]
+    if (!by_simulation) {
+      prevalences <- prevalences[,
+        list(prevalence = median(prevalence)), by = i_month]
+    }
   } else if (type == "count") {
     cows$is_infected <-
       factor(cows$infection_status != "s", levels = c("TRUE", "FALSE"),
              labels = c("inf", "noinf"))
     prevalences <-
-      dcast.data.table(cows, i_month ~ is_infected, fun.aggregate = length,
-                       drop = F)
+      dcast.data.table(cows, i_month + i_simulation ~ is_infected,
+                       fun.aggregate = length, drop = F)
+    if (!by_simulation) {
+      prevalences <-
+        prevalences[, lapply(.SD, median), .SDcols = c("inf", "noinf"),
+                    by = i_month]
+    }
   } else {
-    cows$infection_status  <-
+    cows$infection_status <-
       factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
     prevalences <-
-      dcast.data.table(cows, i_month ~ infection_status, fun.aggregate = length,
-                       drop = F)
+      dcast.data.table(cows, i_month + i_simulation ~ infection_status,
+                       fun.aggregate = length, drop = F)
+    if (!by_simulation) {
+      prevalences <-
+        prevalences[, lapply(.SD, median), .SDcols = c("s", "ial", "ipl", "ebl"),
+                    by = i_month]
+    }
   }
 
   return(prevalences)
@@ -73,18 +103,26 @@ calc_prev <- function(csv = NULL, cows = NULL,
 
 #' Plot the change in prevalence
 #'
-#' @param csv Path to a simulation output csv file.
-#' @param cows See `cow_table`
-#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' Plot monthly prevalences from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#'
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are used.
+#' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
 #' @export
-plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
+plot_prev <- function(param,
+                      output_filename = param$output_filename,
+                      output_dir = param$output_dir,
+                      i_simulation = seq_len(param$n_simulation),
+                      list_cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
-  prevalences <- calc_prev(csv = csv, cows = cows)
+  prevalences <-
+    calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   translate_msg("plot_prev", language)
   default_msg <- list(title = "Change of prevalence",
@@ -123,23 +161,29 @@ plot_prev <- function(csv = NULL, cows = NULL, language = NULL,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param language When set, `route_labels` are translated in this language. At present, only Japanese is implemented.
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
-redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
+redefine_route_levels <- function(cows,
+                                  drop, language = NULL, route_levels = NULL,
                                   route_labels = NULL) {
   cows <- copy(cows)
 
   cows$cause_infection[cows$infection_status == "s"] <- "uninfected"
 
   if (is.null(route_levels)) {
+    if (drop) {
+      route_levels <- unique(cows$cause_infection)
+    } else {
     route_levels <- c("uninfected", "initial", "insects",
                       # "contact",  TODO: Fix this
                       "rp", "vertical", "colostrum", "introduced", "pasture")
+    }
   }
   uninf_and_route <- unique(c("uninfected", route_levels))
 
@@ -172,9 +216,13 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 
 #' Plot monthly infection routes nicely
 #'
-#' @param csv Path to an output csv file.
-#' @param cows See `cow_table`
-#' @param language When set, plot title and labels are translated in this language. At present, only Japanese is implemented.
+#' Plot monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#'
+#' @param param,output_filename,output_dir See [param].
+#' @param i_simulation csvs with this numbers are used.
+#' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
+#' @param language Language to which translate messages. At present, only English and Japanese is implemented.
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
@@ -187,18 +235,24 @@ redefine_route_levels <- function(cows, language = NULL, route_levels = NULL,
 #' @return A [ggplot2::ggplot] plot.
 #'
 #' @export
-plot_route <- function(csv = NULL, cows = NULL, language = NULL,
-                       route_levels = NULL, route_labels = NULL,
+plot_route <- function(param,
+                       output_filename = param$output_filename,
+                       output_dir = param$output_dir,
+                       i_simulation = seq_len(param$n_simulation),
+                       list_cows = NULL, language = NULL,
+                       drop = T, route_levels = NULL, route_labels = NULL,
                        max_ylim = NULL, title = T, legend_title = T,
                        xlab = T, ylab = T, gray = F, area_color = NULL,
                        border = F, border_color = NULL, font = NULL) {
-  stopifnot(sum(is.null(cows), is.null(csv)) == 1)
-  if (is.null(cows)) {
-    cows <- fread(csv)
+  if (is.null(list_cows)) {
+    cows <- read_cows(param, output_filename, output_dir, i_simulation)
+  } else {
+    cows <- rbindlist(list_cows, idcol = "i_simulation")
   }
   cows <- cows[is_owned == T, ]
 
-  cows <- redefine_route_levels(cows, language, route_levels, route_labels)
+  cows <-
+    redefine_route_levels(cows, drop, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
   translate_msg("plot_route", language)
@@ -284,19 +338,17 @@ plot_route <- function(csv = NULL, cows = NULL, language = NULL,
 #'
 #' Calculate monthly infection routes at the end of simulations.
 #'
-#' @inheritParams read_final_cows
+#' @inheritParams read_cows
 #'
-#' @seealso [table_infection_status]
+#' @seealso [table_status]
 #' @name table_route
 #' @export
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        n_simulation = param$n_simulation,
-                        simulation_length = param$simulation_length) {
-  cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, n_simulation,
-                          simulation_length)
+                        i_simulation = seq_len(param$n_simulation)) {
+  cows <- read_fianl_cows(param, route_levels, route_labels,
+                          output_filename, output_dir, i_simulation)
   summary <- summary_route(cows)
   return(summary)
 }
@@ -321,29 +373,26 @@ summary_route <- function(cows) {
 #'
 #' Calculate monthly infection status at the end of simulations.
 #'
-#' @inheritParams read_final_cows
+#' @inheritParams read_cows
 #'
 #' @seealso [table_route]
-#' @name table_infection_status
+#' @name table_status
 #' @export
-table_infection_status <- function(param,
-                                   route_levels = NULL, route_labels = NULL,
-                                   output_filename = param$output_filename,
-                                   output_dir = param$output_dir,
-                                   n_simulation = param$n_simulation,
-                                   simulation_length = param$simulation_length
-                                   ) {
+table_status <- function(param, route_levels = NULL, route_labels = NULL,
+                         output_filename = param$output_filename,
+                         output_dir = param$output_dir,
+                         i_simulation = seq_len(param$n_simulation)
+                         ) {
   cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, n_simulation,
-                          simulation_length)
-  summary <- summary_infection_status(cows)
+                          output_filename, output_dir, i_simulation)
+  summary <- summary_status(cows)
   return(summary)
 }
 
 
 #' @param cows A result of [read_final_cows()].
-#' @name table_infection_status
-summary_infection_status <- function(cows) {
+#' @name table_status
+summary_status <- function(cows) {
   cows$infection_status <-
     factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
   table_status <- cows[, .N, by = list(i_simulation, infection_status)]
@@ -366,9 +415,9 @@ summary_infection_status <- function(cows) {
 #' At present, translation only for Japanese is implemented.
 #'
 #' @param type Type of massages.
-#' @param to Language to which translate messages. At present, only Japanese is implemented.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 translate_msg <- function(type, to) {
-  if (is.null(to)) {
+  if (is.null(to) || to == "English") {
     return(list())
   }
   msg <- get(paste0(to, "_", type))

@@ -10,29 +10,28 @@
 #'
 #' @param susceptibility_ial_to_ipl A numeric.
 #' @param susceptibility_ipl_to_ebl A numeric.
-#' @param i The number of months from the start of a simulation.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A list consisted of a month.
 n_month_to_progress <- function(susceptibility_ial_to_ipl,
                                 susceptibility_ipl_to_ebl,
-                                i, param_sim) {
-  n_cows <- length(susceptibility_ial_to_ipl)
+                                param_sim) {
+  n_neg_months_ial_to_ebl <- n_cows <- length(susceptibility_ial_to_ipl)
   months_ial_to_ebl <- months_ial_to_ipl <- months_ipl_to_ebl <- numeric(n_cows)
-  neg_months_ipl_to_ebl <- logical(n_cows)
+  neg_months_ipl_to_ebl <- !logical(n_cows)
   while (any(neg_months_ipl_to_ebl)) {
     months_ial_to_ebl[neg_months_ipl_to_ebl] <-
-      rweibull(n_cows,
+      rweibull(n_neg_months_ial_to_ebl,
                shape = param_sim$ebl_progress_shape,
                scale = param_sim$ebl_progress_scale
                ) * 12
     months_ial_to_ipl[neg_months_ipl_to_ebl] <-
-      rweibull(n_cows,
+      rweibull(n_neg_months_ial_to_ebl,
                shape = param_sim$ebl_progress_shape,
                scale = param_sim$ebl_progress_scale * param_sim$prop_ial_period
                ) * 12
-    months_ipl_to_ebl <- months_ial_to_ebl - months_ial_to_ipl
-    neg_months_ipl_to_ebl <- months_ipl_to_ebl < 0
+    neg_months_ipl_to_ebl <- (months_ial_to_ebl - months_ial_to_ipl) < 0
+    n_neg_months_ial_to_ebl <- sum(neg_months_ipl_to_ebl)
   }
   months_ial_to_ebl <- ceiling(months_ial_to_ebl)
   months_ial_to_ipl <- ceiling(months_ial_to_ipl)
@@ -76,7 +75,7 @@ n_month_until_ebl_die <- function(n_cows, param_sim) {
 #'
 #' @return A logical vector.
 is_infected_pasture <- function(n_cows, param_sim) {
-  runif(n_cows) < param$prob_seroconv_pasture
+  runif(n_cows) < param_sim$prob_seroconv_pasture
 }
 
 
@@ -105,21 +104,18 @@ is_infected_in_non_exposed_chamber <- function(n_cows, month, param_sim) {
 }
 
 
-# TODO: そういや全国平均感染率は感染農場も非感染農場も一緒にしてるんだった。あとで感染農場のみにしぼって計算し直す。
-
-
 #' Whether cows are infected in free pastures
 #'
-#' @param n_cows The number of cows in a barn.
+#' @param n_noinf The number of non-infected cows in a barn.
 #' @param n_inf The number of infected cows in the barn.
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #' @param month The current month (1, 2, ..., 12).
 #'
 #' @return A logical vector.
-is_infected_in_free_stall <- function(n_cows, n_inf, month, param_sim) {
-  runif(n_cows) <
+is_infected_in_free_stall <- function(n_noinf, n_inf, month, param_sim) {
+  runif(n_noinf) <
     param_sim$probs_inf_insects_month[month] * param_sim$free_pressure *
-    ((n_inf / n_cows) / param_sim$average_prop_in_free)
+    ((n_inf / (n_noinf + n_inf)) / param_sim$average_prop_inf_in_free)
 }
 
 
@@ -306,7 +302,7 @@ sex_twins <- function(n_calves, param_sim) {
   sex_pairs <- sample(c("male-male", "male-freemartin", "female-female"),
                       size = (n_calves / 2), replace = T,
                       prob = param_sim$probs_sex_pairs)
-  sex_calves <- strsplit(paste(sex_pairs, collapse = "-"), split = "-")[[1]]
+  sex_calves <- unlist(strsplit(sex_pairs, split = "-"))
   return(sex_calves)
 }
 # TODO: 性判別精液は双子が少ない？？

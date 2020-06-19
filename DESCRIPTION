@@ -20,6 +20,7 @@ Imports:
     glue,
     grDevices,
     lubridate,
+    purrr,
     readxl,
     rlang,
     stats,

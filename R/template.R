@@ -52,7 +52,7 @@
 #'     - "pasture": infected at a communal pasture.
 #' - `susceptibility_ial_to_ipl`: Genetic susceptibility to disease progress (Ial -> Ipl).
 #' - `susceptibility_ipl_to_ebl`: Genetic susceptibility to disease progress (Ipl -> EBL).
-#' - `area_id`: Area ID. `0` means that the cow is in a communal pasture.
+#' - `area_id`: Area ID.
 #' - `months_in_area`: The number of month a cow stayed in the current area.
 #' - `chamber_id`: ID of the chamber in which the cow kept for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn. `0` for a cow in a tie-stall barn but to it a chamber is not assigned (a free-roaming cow).
 #' - `is_isolated`: Whether the cow is isolated for a cow in a tie-stall barn. `NA_real_` for a cow in a free-stall barn.
@@ -162,7 +162,7 @@ a_chamber <- data.table(
 #' Users must specify one `area_table` consisted of following items before starting a simulation.
 #'
 #' - `area_id` (integer): Area ID.
-#' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`/`"communal pasture"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.), `"hatch"` or `"communal pasture"` (yotaku).
+#' - `area_type` (`"free"`/`"tie"`/`"outside"`/`"hatch"`/`"pasture"`): Type of a area. Specify one of `"free"` (hatch, freebarn, free-stall, etc.), `"tie"` (tie-stall), `"outside"` (paddock or rangeland, etc.), `"hatch"` or `"pasture"` (yotaku).
 #' - `capacity` (list consisted of numeric): Max number of cows to be kept in the area. `Inf` is set if you specify `NA`. `capacity` must be set if `area_type` is `"tie"`; otherwise optional.
 #'   - If `area_type` is `"free"` or `"outside"`: a numeric or `NA`.
 #'   - If `area_type` is `"tie"`: a numeric vector whose length is equal to the number of lanes in the area and each elements indicates the number of chambers in a lane.

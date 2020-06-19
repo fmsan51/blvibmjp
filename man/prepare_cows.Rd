@@ -12,7 +12,8 @@ prepare_cows(
   today = Sys.Date(),
   create_calf_data = F,
   modify_prevalence = NULL,
-  area_name = NULL
+  area_name = NULL,
+  seed = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ prepare_cows(
 \item{modify_prevalence}{One or two numbers within a range of 0 to 1. If the parameter is not \code{NULL}, modify \code{infection_status} column to make proportion of infected cows (when \verb{modify_prevalence is a number) or}ial\code{and}ipl + ebl\verb{cows (when}modify_prevalence` is two numbers) accordingly.}
 
 \item{area_name}{If \code{area_id} is specified by character, specify integer \code{area_id} like \code{c(barnA = 1, barnB = 2, ...)}.}
+
+\item{seed}{Seed for a simulation.}
 }
 \value{
 A csv file which can be used as an input for \code{\link[=simulate_blv_spread]{simulate_blv_spread()}}.
@@ -51,7 +54,7 @@ An input csv file can have following columns. The csv file must contain \code{ag
 \item \code{n_ai}: If not set, it is assumed to be 0.
 \item \code{infection_status}: At least one of this variable or \code{modify_prevalence} argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or \code{NA} will be coerced to "s" (= non-infected). When \code{modify_prevalence} is set, prevalence is modified to make prevalence equal to the first value of \code{modify_prevalence}.
 \item \code{date_ial}, \code{date_ipl}, \code{date_ebl}: Specify the date when infection status was confirmed. If \code{NULL}, \code{0} is set.
-\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage} ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If \code{area_id} is written in character, argument \code{area_name} must be set. If a cow is in a communal pasture, specify \code{0}.
+\item \code{area_id}: If not set, cows are divided to four areas based on \code{stage} ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If \code{NA}s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If \code{area_id} is written in character, argument \code{area_name} must be set.
 \item \code{month_in_area}: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use \code{month_in_area} as a criteria for area movement. See \link{area_table} for detail of area movement.
 \item \code{chamber_id}: If not set, it is randomly allocated later in \code{\link[=setup_cows]{setup_cows()}}.
 \item \code{is_isolated}: If not set, \code{FALSE} is set.

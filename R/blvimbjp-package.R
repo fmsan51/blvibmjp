@@ -11,9 +11,10 @@
 #' @importFrom glue glue
 #' @importFrom grDevices gray.colors
 #' @importFrom lubridate day dmy dym interval mdy myd today tz ydm ymd
+#' @importFrom purrr flatten
 #' @importFrom readxl read_excel
-#' @importFrom rlang ensyms eval_tidy expr enquos quos_auto_name !!!
-#' @importFrom stats pnorm qnorm rbinom rexp rgamma rnorm runif rweibull
+#' @importFrom rlang expr !!!
+#' @importFrom stats optim qnorm rbinom rexp rgamma rnorm runif rweibull
 #' @importFrom stringr str_replace_all
 #' @importFrom tidyr complete
 #' @importFrom utils menu osVersion relist str

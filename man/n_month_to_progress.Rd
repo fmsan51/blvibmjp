@@ -7,7 +7,6 @@
 n_month_to_progress(
   susceptibility_ial_to_ipl,
   susceptibility_ipl_to_ebl,
-  i,
   param_sim
 )
 }
@@ -15,8 +14,6 @@ n_month_to_progress(
 \item{susceptibility_ial_to_ipl}{A numeric.}
 
 \item{susceptibility_ipl_to_ebl}{A numeric.}
-
-\item{i}{The number of months from the start of a simulation.}
 
 \item{param_sim}{A list which combined \link{param}, a result of \code{\link[=process_param]{process_param()}} and a result of \code{\link[=calc_param]{calc_param()}}.}
 }

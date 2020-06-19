@@ -11,8 +11,7 @@ table_route(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  n_simulation = param$n_simulation,
-  simulation_length = param$simulation_length
+  i_simulation = seq_len(param$n_simulation)
 )
 
 summary_route(cows)
@@ -28,9 +27,7 @@ summary_route(cows)
 
 \item{output_dir}{See \link{param}.}
 
-\item{n_simulation}{See \link{param}.}
-
-\item{simulation_length}{See \link{param}.}
+\item{i_simulation}{csvs with this numbers are read.}
 
 \item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
 }
@@ -38,5 +35,5 @@ summary_route(cows)
 Calculate monthly infection routes at the end of simulations.
 }
 \seealso{
-\link{table_infection_status}
+\link{table_status}
 }

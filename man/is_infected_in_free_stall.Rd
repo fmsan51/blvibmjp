@@ -4,10 +4,10 @@
 \alias{is_infected_in_free_stall}
 \title{Whether cows are infected in free pastures}
 \usage{
-is_infected_in_free_stall(n_cows, n_inf, month, param_sim)
+is_infected_in_free_stall(n_noinf, n_inf, month, param_sim)
 }
 \arguments{
-\item{n_cows}{The number of cows in a barn.}
+\item{n_noinf}{The number of non-infected cows in a barn.}
 
 \item{n_inf}{The number of infected cows in the barn.}
 

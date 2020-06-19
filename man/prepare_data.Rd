@@ -15,6 +15,7 @@ prepare_data(
   area_output_file = NULL,
   movement_output_file = NULL,
   sep = "[,\\t\\r\\n |;:]",
+  seed = NULL,
   ...
 )
 }
@@ -34,6 +35,8 @@ prepare_data(
 \item{cow_output_file, area_output_file, movement_output_file}{If not \code{NULL}, created data is exported to the files with these names (must be csv files).}
 
 \item{sep}{Separatator used in \code{capacity} column of area data. See \code{\link[=prepare_area]{prepare_area()}} for detail.}
+
+\item{seed}{Seed for a simulation.}
 
 \item{...}{Other arguments passed to \code{\link[=prepare_cows]{prepare_cows()}}.}
 }
