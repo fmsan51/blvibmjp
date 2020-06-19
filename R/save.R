@@ -38,3 +38,68 @@ construct_filepath <- function(filename, i = NULL, subdir = ".", ext = ".csv") {
   return(path)
 }
 
+
+#' Read parameters from a txt file
+#'
+#' Read parameters from a txt file which contains parameter information (param_simulationXXX.txt) and return a list consisted of the parameter values in the file.
+#'
+#' @param path A path of a txt file which contains parameter information.
+#' @export
+read_param <- function(path) {
+  par <- readLines(path)
+
+  var_val <- str_split(par, " *:( |(?=Classes |List of|'))", simplify = T)
+  var <- sub("^ *\\.\\.\\$ *", "", var_val[, 1])
+  depth2 <- var_val[, 1] != var
+
+  type_val <- str_split(var_val[, 2], "(?<=logi|int|num|chr) ", simplify = T)
+  type_wo0 <- sub("\\(0\\)", "", type_val[, 1])
+  is_0len <- type_val[, 1] != type_wo0
+  type <- sub("( of |:\\t).+$", "", type_wo0)
+
+  len <- as.integer(
+    str_extract(type_val[, 1], "(\\d+(?= variables)|(?<=List of )\\d+)")
+    )
+  is_list <- !is.na(len)
+
+  raw_val <- sub("^\\[.+?\\] ", "", type_val[, 2])
+  val_num_lgl <- strsplit(raw_val, " ")
+  val <- strsplit(str_extract(raw_val, '(?<=^").+(?="$)'), '" "')
+
+  val[is.na(val)] <- val_num_lgl[is.na(val)]
+  names(val) <- var
+
+  # Convert type
+  for (i in seq_along(val)) {
+    if (is_0len[i]) {
+      val[[i]] <- logical(0)
+    }
+
+    i_type <- type[i]
+    if (i_type == "logi") {
+      val[[i]] <- as.logical(val[[i]])
+    } else if (i_type == "int") {
+      val[[i]] <- as.integer(val[[i]])
+    } else if (i_type == "num") {
+      val[[i]] <- as.numeric(val[[i]])
+    }
+  }
+
+  # Make list/data.frame/data.table
+  for (i in seq_along(val)) {
+    if (!is_list[i]) next()
+
+    i_list <- val[seq_len(len[i]) + i]
+    if (type[i] == "List") {
+      val[[i]] <- i_list
+    } else if (type[i] == "'data.frame'") {
+      val[[i]] <- as.data.frame(i_list)
+    } else {
+      val[[i]] <- as.data.table(i_list)
+    }
+  }
+
+  res <- val[!depth2]
+  return(res)
+}
+
