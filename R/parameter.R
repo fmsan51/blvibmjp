@@ -503,6 +503,10 @@ process_param <- function(cows, param) {
 }
 
 
+processed_param_name <-
+  names(process_param(data.table(cow_id = 1), param))
+
+
 #' Calculate parameters necessary to prepare_data()
 #'
 #' Calculate parameters which are used only in [prepare_data()] and overwrite the default setting if necessary.
@@ -669,7 +673,7 @@ validate_param <- function(param, list_param_modif = NULL) {
   others <- c("control_insects", "cull_infected_cows", "test_method")
 
   # Check names
-  if (!all(names(param) %in% default_param)) {
+  if (!all(names(param) %in% c(default_param, processed_param_name, "seed"))) {
     invalid <- setdiff(names(param), default_param)
     stop(glue("Following parameters in `param` are invalid: \\
                {paste0(invalid, collapse = ', ')}"))
