@@ -503,10 +503,6 @@ process_param <- function(cows, param) {
 }
 
 
-processed_param_name <-
-  names(process_param(data.table(cow_id = 1), param))
-
-
 #' Calculate parameters necessary to prepare_data()
 #'
 #' Calculate parameters which are used only in [prepare_data()] and overwrite the default setting if necessary.
@@ -869,4 +865,9 @@ set_prob_rep <- function(n_delivered, param) {
   }
   return(prob_rep)
 }
+
+
+# Must be after definition of set_prob_rep()
+processed_param_name <-
+  names(process_param(data.table(cow_id = 1), param))
 
