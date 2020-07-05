@@ -599,7 +599,7 @@ cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
   }
 
   id_detected_highrisk <-
-    cows[(infection_status == "pl") & is_detected & is_owned, cow_id]
+    cows[(infection_status == "ipl") & is_detected & is_owned, cow_id]
   # ebl cows are removed in check_removal()
   n_detected_highrisk <- length(id_detected_highrisk)
   if (n_cull <= n_detected_highrisk) {
@@ -607,7 +607,8 @@ cull_infected_cows <- function(cows, areas, i, area_table, param_sim) {
   } else {
     id_cull <- id_detected_highrisk
     if (param_sim$cull_infected_cows == "all") {
-      id_detected <- remove_na(cows$cow_id[cows$is_detected & cows$is_owned])
+      id_detected <-
+        cows[(infection_status == "ial") & is_detected & is_owned, cow_id]
       n_cull <- n_cull - n_detected_highrisk
       if (n_cull < length(id_detected)) {
         id_cull <- c(id_cull, resample(id_detected, n_cull))

@@ -134,6 +134,8 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
     sum(expose_status == "exposed"), month, param_sim
     )
   causes[expose_status == "exposed"] <- c("", "insects")[expose_result + 1]
+  # FIXME: Rarely the line above throws the following error (the cause is unidentified)
+  # "number of items to replace is not a multiple of replacement length"
   non_expose_result <- is_infected_in_non_exposed_chamber(
     sum(expose_status == "non_exposed"), month, param_sim
     )

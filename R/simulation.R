@@ -36,7 +36,10 @@ simulate_blv_spread <- function(prepared_data, param,
   area_table <- prepared_data$areas
   movement_table <- prepared_data$movement
 
-  param_processed <- c(param, process_param(cow_table, param))
+  param_processed <- c(process_param(cow_table, param), param)
+  param_processed <- param_processed[!duplicated(names(param_processed))]
+  # Duplication of name of param_processed happens
+  # when param is a result of read_param()
 
   cow_table <- setup_cows(cow_table, param_processed, save_cows)
   area_table <- setup_area_table(area_table, param_processed)
