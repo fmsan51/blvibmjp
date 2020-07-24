@@ -92,8 +92,8 @@ calc_prev <- function(param, output_filename = param$output_filename,
                        fun.aggregate = length, drop = F)
     if (!by_simulation) {
       prevalences <-
-        prevalences[, lapply(.SD, median), .SDcols = c("s", "ial", "ipl", "ebl"),
-                    by = i_month]
+        prevalences[, lapply(.SD, median),
+                    .SDcols = c("s", "ial", "ipl", "ebl"), by = i_month]
     }
   }
 
