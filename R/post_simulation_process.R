@@ -65,7 +65,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
   type <- match.arg(type)
   if (type == "prop") {
     prevalences <- cows[,
-      list(prevalence = .SD[infection_status != "s", .N] / .N),
+      list(prevalence = sum(.SD$infection_status != "s") / .N),
       by = list(i_month, i_simulation)
       ][!is.na(i_month), ]
     if (!by_simulation) {
