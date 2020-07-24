@@ -14,7 +14,10 @@ read_cows <- function(param,
   all_simulations <- vector("list", length(i_simulation))
   paths <- construct_filepath(output_filename, i_simulation, output_dir)
   for (i in i_simulation) {
-    cows <- fread(paths[i])
+    cows <- fread(paths[i],
+      # Setting following arguments improve speed of fread() by 1.08 times
+      sep = ",", header = T, na.strings = NULL, verbose = F, skip = 0,
+      integer64 = "integer64", data.table = T, logical01 = F)
     cows$i_simulation <- i_simulation[i]
     all_simulations[[i]] <- cows
   }
