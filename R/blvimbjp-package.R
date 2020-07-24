@@ -15,7 +15,7 @@
 #' @importFrom readxl read_excel
 #' @importFrom rlang expr !!!
 #' @importFrom stats optim qnorm rbinom rexp rgamma rnorm runif rweibull
-#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_extract str_replace_all str_split
 #' @importFrom tidyr complete
 #' @importFrom utils menu osVersion relist str
 "_PACKAGE"
