@@ -14,7 +14,10 @@ read_cows <- function(param,
   all_simulations <- vector("list", length(i_simulation))
   paths <- construct_filepath(output_filename, i_simulation, output_dir)
   for (i in i_simulation) {
-    cows <- fread(paths[i])
+    cows <- fread(paths[i],
+      # Setting following arguments improve speed of fread() by 1.08 times
+      sep = ",", header = T, na.strings = NULL, verbose = F, skip = 0,
+      integer64 = "integer64", data.table = T, logical01 = F)
     cows$i_simulation <- i_simulation[i]
     all_simulations[[i]] <- cows
   }
@@ -65,7 +68,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
   type <- match.arg(type)
   if (type == "prop") {
     prevalences <- cows[,
-      list(prevalence = .SD[infection_status != "s", .N] / .N),
+      list(prevalence = sum(.SD$infection_status != "s") / .N),
       by = list(i_month, i_simulation)
       ][!is.na(i_month), ]
     if (!by_simulation) {
@@ -92,8 +95,8 @@ calc_prev <- function(param, output_filename = param$output_filename,
                        fun.aggregate = length, drop = F)
     if (!by_simulation) {
       prevalences <-
-        prevalences[, lapply(.SD, median), .SDcols = c("s", "ial", "ipl", "ebl"),
-                    by = i_month]
+        prevalences[, lapply(.SD, median),
+                    .SDcols = c("s", "ial", "ipl", "ebl"), by = i_month]
     }
   }
 
