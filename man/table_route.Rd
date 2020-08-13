@@ -11,7 +11,8 @@ table_route(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  i_simulation = seq_len(param$n_simulation)
+  i_simulation = seq_len(param$n_simulation),
+  drop
 )
 
 summary_route(cows)
@@ -28,6 +29,8 @@ summary_route(cows)
 \item{output_dir}{See \link{param}.}
 
 \item{i_simulation}{csvs with this numbers are read.}
+
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 
 \item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
 }

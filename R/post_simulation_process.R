@@ -26,16 +26,17 @@ read_cows <- function(param,
 }
 
 
-#' @param route_levels,route_labels See [redefine_route_levels].
+#' @param route_levels,route_labels,drop See [redefine_route_levels].
 #' @name read_cows
 read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
-                            i_simulation = seq_len(param$n_simulation)) {
+                            i_simulation = seq_len(param$n_simulation),
+                            drop = T) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
   cows <- cows[is_owned == T & max(i_month), ]
-  cows <-
-    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+  cows <- redefine_route_levels(cows, drop, language = NULL, route_levels,
+                                route_labels)
   return(cows)
 }
 
@@ -324,6 +325,7 @@ plot_route <- function(param,
 #' Calculate monthly infection routes at the end of simulations.
 #'
 #' @inheritParams read_cows
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_status]
 #' @name table_route
@@ -331,17 +333,10 @@ plot_route <- function(param,
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        i_simulation = seq_len(param$n_simulation)) {
+                        i_simulation = seq_len(param$n_simulation), drop
+                        ) {
   cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, i_simulation)
-  summary <- summary_route(cows)
-  return(summary)
-}
-
-
-#' @param cows A result of [read_final_cows()].
-#' @name table_route
-summary_route <- function(cows) {
+                          output_filename, output_dir, i_simulation, drop)
   table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
   table_route <- dcast.data.table(table_route, i_simulation ~ cause_infection,
                                   value.var = "N", fill = 0, drop = F)
@@ -359,6 +354,7 @@ summary_route <- function(cows) {
 #' Calculate monthly infection status at the end of simulations.
 #'
 #' @inheritParams read_cows
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_route]
 #' @name table_status
@@ -366,18 +362,10 @@ summary_route <- function(cows) {
 table_status <- function(param, route_levels = NULL, route_labels = NULL,
                          output_filename = param$output_filename,
                          output_dir = param$output_dir,
-                         i_simulation = seq_len(param$n_simulation)
+                         i_simulation = seq_len(param$n_simulation), drop
                          ) {
   cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, i_simulation)
-  summary <- summary_status(cows)
-  return(summary)
-}
-
-
-#' @param cows A result of [read_final_cows()].
-#' @name table_status
-summary_status <- function(cows) {
+                          output_filename, output_dir, i_simulation, drop)
   cows$infection_status <-
     factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
   table_status <- cows[, .N, by = list(i_simulation, infection_status)]
