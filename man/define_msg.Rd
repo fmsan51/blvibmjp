@@ -4,12 +4,10 @@
 \alias{define_msg}
 \title{Define plot title and labels}
 \usage{
-define_msg(original_msg, default_msg, type, to)
+define_msg(original_msg, type, to)
 }
 \arguments{
 \item{original_msg}{List of original title and labels before passed to \code{\link[=translate_msg]{translate_msg()}}.}
-
-\item{default_msg}{List of default plot title and labels.}
 
 \item{type}{Type of massages.}
 

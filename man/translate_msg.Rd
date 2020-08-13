@@ -4,14 +4,12 @@
 \alias{translate_msg}
 \title{Translate plot title and labels}
 \usage{
-translate_msg(type, to, default_msg)
+translate_msg(type, to)
 }
 \arguments{
 \item{type}{Type of massages.}
 
 \item{to}{Language to which translate messages. At present, only English and Japanese is implemented.}
-
-\item{default_msg}{List of default (=English) messages.}
 }
 \description{
 Translate plot title and labels to other languages than English.

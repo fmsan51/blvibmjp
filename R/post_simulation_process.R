@@ -127,10 +127,7 @@ plot_prev <- function(param,
   prevalences <-
     calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
-  default_msg <- list(title = "Change of prevalence",
-                      xlab = "Months in simulation",
-                      ylab = "Prevalence")
-  defined_msg <- define_msg(orig_msg, default_msg, "plot_prev", language)
+  defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
   if (grepl("Windows", osVersion, fixed = T)) {
     font <- ifelse(is.null(font), "Meiryo", font)
@@ -204,9 +201,7 @@ redefine_route_levels <- function(cows,
     }
     levels(cows$cause_infection) <- route_labels
   } else {
-    default_msg <- setNames(nm = as.list(uninf_and_route))
-    translated_msg <-
-      translate_msg("redefine_route_levels", language, default_msg)
+    translated_msg <- translate_msg("redefine_route_levels", language)
     levels(cows$cause_infection) <- unlist(translated_msg[uninf_and_route])
   }
 
@@ -255,11 +250,7 @@ plot_route <- function(param,
     redefine_route_levels(cows, drop, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
-  default_msg <- list(title = "Change of prevalence",
-                      legend_title = "Infection route",
-                      xlab = "Months in simulation",
-                      ylab = "Number of cattle")
-  defined_msg <- define_msg(orig_msg, default_msg, "plot_route", language)
+  defined_msg <- define_msg(orig_msg, "plot_route", language)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
@@ -410,13 +401,12 @@ summary_status <- function(cows) {
 #'
 #' @param type Type of massages.
 #' @param to Language to which translate messages. At present, only English and Japanese is implemented.
-#' @param default_msg List of default (=English) messages.
-translate_msg <- function(type, to, default_msg) {
-  if (is.null(to) || to == "English") {
-    res <- default_msg
-  } else {
-    res <- msg[[to]][[type]]
+translate_msg <- function(type, to) {
+  if (is.null(to)) {
+    to <- "English"
   }
+  res <- msg[[to]][[type]]
+
   return(res)
 }
 
@@ -426,15 +416,14 @@ translate_msg <- function(type, to, default_msg) {
 #' Define plot title and labels based on arguments
 #'
 #' @param original_msg List of original title and labels before passed to [translate_msg()].
-#' @param default_msg List of default plot title and labels.
 #' @param type Type of massages.
 #' @param to Language to which translate messages. At present, only English and Japanese is implemented.
-define_msg <- function(original_msg, default_msg, type, to) {
+define_msg <- function(original_msg, type, to) {
   msg_names <- names(original_msg)
   original_msg_chr <- vapply(original_msg, is.character, T)
   original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
 
-  res <- translate_msg(type, to, default_msg)
+  res <- translate_msg(type, to)
   res[vapply(original_msg, is.null, T)] <- NULL
   res[msg_names[original_msg_chr]] <- original_msg[original_msg_chr]
   res[msg_names[original_msg_false]] <- NULL

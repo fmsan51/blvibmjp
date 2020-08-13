@@ -2,12 +2,23 @@ Sys.setlocale("LC_CTYPE", "Japanese")
 
 msg <- list()
 
+msg$English$plot_prev <- list(
+  title = "Change of prevalence",
+  xlab = "Months in simulation",
+  ylab = "Prevalence"
+  )
 msg$Japanese$plot_prev <- list(
   title = "陽性率の推移",
   xlab = "シミュレーション開始後月数",
   ylab = "陽性率"
   )
 
+msg$English$plot_route <- list(
+  title = "Change of prevalence",
+  legend_title = "Infection route",
+  xlab = "Months in simulation",
+  ylab = "Number of cattle"
+  )
 msg$Japanese$plot_route <- list(
   title = "感染原因別頭数",
   xlab = msg$Japanese$plot_prev$xlab,
@@ -15,6 +26,9 @@ msg$Japanese$plot_route <- list(
   legend_title = "感染原因"
   )
 
+route_levels <- c("uninfected", "initial", "insects", "contact", "rp",
+                  "vertical", "colostrum", "introduced", "pasture")
+msg$English$redefine_route_levels <- setNames(nm = as.list(route_levels))
 msg$Japanese$redefine_route_levels <- list(
   uninfected = "非感染",
   initial = "開始時点での感染牛",
@@ -31,3 +45,4 @@ msg$Japanese$redefine_route_levels <- list(
 msg <- purrr::map_depth(msg, 3, iconv, to = "UTF-8")
 
 usethis::use_data(msg, internal = T, overwrite = T)
+
