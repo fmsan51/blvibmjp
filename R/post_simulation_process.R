@@ -332,7 +332,7 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
                         i_simulation = seq_len(param$n_simulation)) {
-  cows <- read_fianl_cows(param, route_levels, route_labels,
+  cows <- read_final_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation)
   summary <- summary_route(cows)
   return(summary)
