@@ -423,13 +423,13 @@ translate_msg <- function(type, to) {
   if (is.null(to) || to == "English") {
     return(list())
   }
-  msg <- get(paste0(to, "_", type))
-  msg_defined_in_parent <- mget(names(msg), parent.frame(),
+  target_msg <- msg[[to]][[type]]
+  msg_defined_in_parent <- mget(names(target_msg), parent.frame(),
                                 ifnotfound = list(".notfound"))
-  msg[msg_defined_in_parent == ".notfound"] <- NULL
+  target_msg[msg_defined_in_parent == ".notfound"] <- NULL
   mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)),
-         names(msg), msg)
-  return(msg)
+         names(target_msg), target_msg)
+  return(target_msg)
 }
 
 
@@ -441,21 +441,21 @@ translate_msg <- function(type, to) {
 #' @param default_msg List of default plot title and labels.
 #' @param language Language to which translate messages.
 define_msg <- function(original_msg, default_msg, language) {
-  msg <- names(original_msg)
+  msg_names <- names(original_msg)
   original_msg_true <- vapply(original_msg, function(x) is.logical(x) && x, T)
   original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
   original_msg_chr <- vapply(original_msg, is.character, T)
   env <- parent.frame()
   mapply(function(x, value) assign(x, value, envir = env),
-         msg[original_msg_chr], original_msg[original_msg_chr])
-  lapply(msg[original_msg_false & msg == "title"],
+         msg_names[original_msg_chr], original_msg[original_msg_chr])
+  lapply(msg_names[original_msg_false & msg_names == "title"],
          function(x) assign(x, NULL, envir = env))
   if (is.null(language)) {
     mapply(function(x, value) assign(x, value, envir = env),
-           msg[original_msg_false & msg != "title"],
-           default_msg[original_msg_false & msg != "title"])
+           msg_names[original_msg_false & msg_names != "title"],
+           default_msg[original_msg_false & msg_names != "title"])
     mapply(function(x, value) assign(x, value, envir = env),
-           msg[original_msg_true], default_msg[original_msg_true])
+           msg_names[original_msg_true], default_msg[original_msg_true])
   }
   invisible(NULL)
 }

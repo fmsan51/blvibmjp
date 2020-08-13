@@ -1,17 +1,21 @@
 Sys.setlocale("LC_CTYPE", "Japanese")
 
-Japanese_plot_prev <- list(
+msg <- list()
+
+msg$Japanese$plot_prev <- list(
   title = "陽性率の推移",
   xlab = "シミュレーション開始後月数",
-  ylab = "陽性率")
+  ylab = "陽性率"
+  )
 
-Japanese_plot_route <- list(
+msg$Japanese$plot_route <- list(
   title = "感染原因別頭数",
-  xlab = Japanese_plot_prev$xlab,
+  xlab = msg$Japanese$plot_prev$xlab,
   ylab = "頭数",
-  legend_title = "感染原因")
+  legend_title = "感染原因"
+  )
 
-Japanese_redefine_route_levels <- list(
+msg$Japanese$redefine_route_levels <- list(
   route_labels = c(
     uninfected = "非感染",
     initial = "開始時点での感染牛",
@@ -25,11 +29,6 @@ Japanese_redefine_route_levels <- list(
     other = "その他")
 )
 
-Japanese_plot_prev <- lapply(Japanese_plot_prev, iconv, to = "UTF-8")
-Japanese_plot_route <- lapply(Japanese_plot_route, iconv, to = "UTF-8")
-Japanese_redefine_route_levels <- lapply(Japanese_redefine_route_levels,
-                                         iconv, to = "UTF-8")
+msg <- purrr::map_depth(msg, 3, iconv, to = "UTF-8")
 
-usethis::use_data(Japanese_plot_prev, Japanese_plot_route,
-                  Japanese_redefine_route_levels,
-                  internal = T, overwrite = T)
+usethis::use_data(msg, internal = T, overwrite = T)
