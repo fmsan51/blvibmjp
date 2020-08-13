@@ -21,7 +21,7 @@ redefine_route_levels(
 
 \item{route_levels}{If specified, infection routes not specified in \code{route_levels} are coarced into "other" category. See \code{cause_infection} in \link{cow_table} to know about default categories.}
 
-\item{route_labels}{Specify if you want to rename categories.}
+\item{route_labels}{Specify if you want to rename categories. This argument is valid only when \code{language} is not specified.}
 }
 \value{
 A \link{cow_table} with recategorized \code{cause_infection}.

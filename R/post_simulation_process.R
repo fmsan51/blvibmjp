@@ -167,7 +167,7 @@ plot_prev <- function(param,
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
-#' @param route_labels Specify if you want to rename categories.
+#' @param route_labels Specify if you want to rename categories. This argument is valid only when `language` is not specified.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
