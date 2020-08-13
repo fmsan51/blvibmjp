@@ -41,7 +41,7 @@ plot_route(
 
 \item{max_ylim}{Upper limit of the y-axis of the plot.}
 
-\item{title, legend_title, xlab, ylab}{logical or character. Plot title, legend title, label for x-axis and label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE}, a title is not shown (\code{TRUE} is valid only for \code{title}). When specified by character, the string is used as a title or label.}
+\item{title, legend_title, xlab, ylab}{logical or character. Plot a title, a legend title, a label for x-axis and a label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE} or \code{NULL}, the title or the label is not shown. When specified by character, the string is used as the title or the label.}
 
 \item{gray}{When \code{TRUE}, a plot will be a grayscale image.}
 

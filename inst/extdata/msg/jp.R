@@ -16,17 +16,16 @@ msg$Japanese$plot_route <- list(
   )
 
 msg$Japanese$redefine_route_levels <- list(
-  route_labels = c(
-    uninfected = "非感染",
-    initial = "開始時点での感染牛",
-    insects = "吸血昆虫",
-    contact = "感染牛との接触",
-    rp = "直腸検査",
-    vertical = "垂直感染",
-    colostrum = "初乳",
-    introduced = "感染牛の導入",
-    pasture = "公共牧場",
-    other = "その他")
+  uninfected = "非感染",
+  initial = "開始時点での感染牛",
+  insects = "吸血昆虫",
+  contact = "感染牛との接触",
+  rp = "直腸検査",
+  vertical = "垂直感染",
+  colostrum = "初乳",
+  introduced = "感染牛の導入",
+  pasture = "公共牧場",
+  other = "その他"
 )
 
 msg <- purrr::map_depth(msg, 3, iconv, to = "UTF-8")

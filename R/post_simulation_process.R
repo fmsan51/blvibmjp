@@ -112,7 +112,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
 #' @param i_simulation csvs with this numbers are used.
 #' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
-#' @param title,xlab,ylab logical or character. Plot title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
+#' @param title,xlab,ylab logical or character. Plot a title, a label for x-axis and a label for y-axis. When `TRUE`, the default value is used. When `FALSE` or `NULL`, the title or label is not shown. When specified by character, the string is used as the title or the label.
 #' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
@@ -127,11 +127,10 @@ plot_prev <- function(param,
   prevalences <-
     calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
-  translate_msg("plot_prev", language)
   default_msg <- list(title = "Change of prevalence",
                       xlab = "Months in simulation",
                       ylab = "Prevalence")
-  define_msg(orig_msg, default_msg, language)
+  defined_msg <- define_msg(orig_msg, default_msg, "plot_prev", language)
 
   if (grepl("Windows", osVersion, fixed = T)) {
     font <- ifelse(is.null(font), "Meiryo", font)
@@ -146,15 +145,12 @@ plot_prev <- function(param,
     scale_x_continuous(breaks = seq.int(0, max(prevalences$i_month), by = 12)) +
     theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
-  if (!is.null(title)) {
-    gp <- gp + labs(title = title)
-  }
-  if (!is.null(xlab)) {
-    gp <- gp + xlab(xlab)
-  }
-  if (!is.null(ylab)) {
-    gp <- gp + ylab(ylab)
-  }
+
+  plot_labs <- list(title = defined_msg$title,
+                    x = defined_msg$xlab,
+                    y = defined_msg$ylab)
+  gp <- gp + labs(!!!plot_labs)
+
   return(gp)
 }
 
@@ -167,7 +163,7 @@ plot_prev <- function(param,
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
-#' @param route_labels Specify if you want to rename categories. This argument is valid only when `language` is not specified.
+#' @param route_labels Specify if you want to rename categories.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
@@ -200,17 +196,18 @@ redefine_route_levels <- function(cows,
                                    levels = uninf_and_route)
   }
 
-  if (!is.null(language)) {
-    route_labels <- T
-    translate_msg("redefine_route_levels", language)
-    levels(cows$cause_infection) <- route_labels[uninf_and_route]
-  } else if (!is.null(route_labels)) {
+  if (!is.null(route_labels)) {
     if (length(route_labels) != length(levels(cows$cause_infection))) {
       stop(glue("Length of route_labels is not equals to the number of\\
                  categories in cause_infection.
                  Did't you forget a label for 'others'?"))
     }
     levels(cows$cause_infection) <- route_labels
+  } else {
+    default_msg <- setNames(nm = as.list(uninf_and_route))
+    translated_msg <-
+      translate_msg("redefine_route_levels", language, default_msg)
+    levels(cows$cause_infection) <- unlist(translated_msg[uninf_and_route])
   }
 
   return(cows)
@@ -228,7 +225,7 @@ redefine_route_levels <- function(cows,
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #' @param route_levels,route_labels See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
-#' @param title,legend_title,xlab,ylab logical or character. Plot title, legend title, label for x-axis and label for y-axis. When `TRUE`, the default value is used. When `FALSE`, a title is not shown (`TRUE` is valid only for `title`). When specified by character, the string is used as a title or label.
+#' @param title,legend_title,xlab,ylab logical or character. Plot a title, a legend title, a label for x-axis and a label for y-axis. When `TRUE`, the default value is used. When `FALSE` or `NULL`, the title or the label is not shown. When specified by character, the string is used as the title or the label.
 #' @param gray When `TRUE`, a plot will be a grayscale image.
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
@@ -258,12 +255,11 @@ plot_route <- function(param,
     redefine_route_levels(cows, drop, language, route_levels, route_labels)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
-  translate_msg("plot_route", language)
   default_msg <- list(title = "Change of prevalence",
                       legend_title = "Infection route",
                       xlab = "Months in simulation",
                       ylab = "Number of cattle")
-  define_msg(orig_msg, default_msg, language)
+  defined_msg <- define_msg(orig_msg, default_msg, "plot_route", language)
   infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
@@ -311,18 +307,13 @@ plot_route <- function(param,
     ylim(0, max_ylim) +
     scale_fill_manual(values = area_color, drop = F)
 
-  if (!is.null(title)) {
-    gp <- gp + labs(title = title)
-  }
-  if (!is.null(legend_title)) {
-    gp <- gp + labs(fill = legend_title, color = legend_title)
-  }
-  if (!is.null(xlab)) {
-    gp <- gp + xlab(xlab)
-  }
-  if (!is.null(ylab)) {
-    gp <- gp + ylab(ylab)
-  }
+  plot_labs <- list(title = defined_msg$title,
+                    fill = defined_msg$legend_title,
+                    color = defined_msg$legend_title,
+                    x = defined_msg$xlab,
+                    y = defined_msg$ylab)
+  gp <- gp + labs(!!!plot_labs)
+
   if (!is.null(border_color)) {
     if (border) {
       gp <- gp + scale_color_manual(values = border_color, drop = F)
@@ -419,17 +410,14 @@ summary_status <- function(cows) {
 #'
 #' @param type Type of massages.
 #' @param to Language to which translate messages. At present, only English and Japanese is implemented.
-translate_msg <- function(type, to) {
+#' @param default_msg List of default (=English) messages.
+translate_msg <- function(type, to, default_msg) {
   if (is.null(to) || to == "English") {
-    return(list())
+    res <- default_msg
+  } else {
+    res <- msg[[to]][[type]]
   }
-  target_msg <- msg[[to]][[type]]
-  msg_defined_in_parent <- mget(names(target_msg), parent.frame(),
-                                ifnotfound = list(".notfound"))
-  target_msg[msg_defined_in_parent == ".notfound"] <- NULL
-  mapply(function(x, value) assign(x, value, envir = parent.frame(n = 3)),
-         names(target_msg), target_msg)
-  return(target_msg)
+  return(res)
 }
 
 
@@ -439,24 +427,17 @@ translate_msg <- function(type, to) {
 #'
 #' @param original_msg List of original title and labels before passed to [translate_msg()].
 #' @param default_msg List of default plot title and labels.
-#' @param language Language to which translate messages.
-define_msg <- function(original_msg, default_msg, language) {
+#' @param type Type of massages.
+#' @param to Language to which translate messages. At present, only English and Japanese is implemented.
+define_msg <- function(original_msg, default_msg, type, to) {
   msg_names <- names(original_msg)
-  original_msg_true <- vapply(original_msg, function(x) is.logical(x) && x, T)
-  original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
   original_msg_chr <- vapply(original_msg, is.character, T)
-  env <- parent.frame()
-  mapply(function(x, value) assign(x, value, envir = env),
-         msg_names[original_msg_chr], original_msg[original_msg_chr])
-  lapply(msg_names[original_msg_false & msg_names == "title"],
-         function(x) assign(x, NULL, envir = env))
-  if (is.null(language)) {
-    mapply(function(x, value) assign(x, value, envir = env),
-           msg_names[original_msg_false & msg_names != "title"],
-           default_msg[original_msg_false & msg_names != "title"])
-    mapply(function(x, value) assign(x, value, envir = env),
-           msg_names[original_msg_true], default_msg[original_msg_true])
-  }
-  invisible(NULL)
+  original_msg_false <- vapply(original_msg, function(x) is.logical(x) && !x, T)
+
+  res <- translate_msg(type, to, default_msg)
+  res[vapply(original_msg, is.null, T)] <- NULL
+  res[msg_names[original_msg_chr]] <- original_msg[original_msg_chr]
+  res[msg_names[original_msg_false]] <- NULL
+  return(res)
 }
 
