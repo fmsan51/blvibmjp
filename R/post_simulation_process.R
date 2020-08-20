@@ -212,7 +212,7 @@ redefine_route_levels <- function(cows,
 
 #' Plot monthly infection routes nicely
 #'
-#' Plot monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#' Plot average (median) monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
 #'
 #' @param param,output_filename,output_dir See [param].
 #' @param i_simulation csvs with this numbers are used.
@@ -252,7 +252,9 @@ plot_route <- function(param,
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_route", language)
-  infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
+  infection_route <-
+    cows[, .N, by = c("cause_infection", "i_month", "i_simulation")][
+      N = median(N), by = c("cause_infection", "i_month")]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
   n_cause <- n_distinct(infection_route$cause_infection)

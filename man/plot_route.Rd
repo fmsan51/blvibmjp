@@ -57,5 +57,5 @@ plot_route(
 A \link[ggplot2:ggplot]{ggplot2::ggplot} plot.
 }
 \description{
-Plot monthly prevalences by each infection route from csv files or list of \code{cow_table}. Set either one of \code{output_dir}+\code{output_filename} or \code{csv}.
+Plot average (median) monthly prevalences by each infection route from csv files or list of \code{cow_table}. Set either one of \code{output_dir}+\code{output_filename} or \code{csv}.
 }
