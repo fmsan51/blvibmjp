@@ -255,7 +255,7 @@ plot_route <- function(param,
   defined_msg <- define_msg(orig_msg, "plot_route", language)
   infection_route <-
     cows[, .N, by = c("cause_infection", "i_month", "i_simulation")][
-      N = median(N), by = c("cause_infection", "i_month")]
+      , list(N = median(N)), by = c("cause_infection", "i_month")]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
   n_cause <- n_distinct(infection_route$cause_infection)
