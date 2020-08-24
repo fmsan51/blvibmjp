@@ -3,3 +3,4 @@
 ^\.Rproj\.user$
 ^src$
 ^README\.Rmd$
+^inst/extdata/test_output/

@@ -58,18 +58,23 @@ library(blvibmjp)
 # シミュレーションの設定
 param$simulation_length <- 60  # シミュレーション期間の長さ（月）
 param$n_simulation <- 3  # シミュレーション回数
+param$output_dir <- "result"  # シミュレーション結果の保存フォルダ
 
 # 対策の設定
 param$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
 param$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
 param$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
 # 他、詳細は help("param") 参照
+```
 
+``` r
 # データの入力
 data <- prepare_data(
   "C:\\Users\\xxx\\Desktop\\input.xlsx",  # データを入力したファイルの場所
   param)
+```
 
+``` r
 # シミュレーションの実行（1回ごとに十数秒～数分）
 simulate_blv_spread(data, param)
 ```
