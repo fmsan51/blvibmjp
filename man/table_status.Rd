@@ -2,7 +2,6 @@
 % Please edit documentation in R/post_simulation_process.R
 \name{table_status}
 \alias{table_status}
-\alias{summary_status}
 \title{Summarize infection status}
 \usage{
 table_status(
@@ -12,10 +11,8 @@ table_status(
   output_filename = param$output_filename,
   output_dir = param$output_dir,
   i_simulation = seq_len(param$n_simulation),
-  drop
+  drop = T
 )
-
-summary_status(cows)
 }
 \arguments{
 \item{param}{See \link{param}.}
@@ -31,8 +28,6 @@ summary_status(cows)
 \item{i_simulation}{csvs with this numbers are read.}
 
 \item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
-
-\item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
 }
 \description{
 Calculate monthly infection status at the end of simulations.

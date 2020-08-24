@@ -331,12 +331,11 @@ plot_route <- function(param,
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_status]
-#' @name table_route
 #' @export
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        i_simulation = seq_len(param$n_simulation), drop
+                        i_simulation = seq_len(param$n_simulation), drop = T
                         ) {
   cows <- read_final_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation, drop)
@@ -360,12 +359,11 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_route]
-#' @name table_status
 #' @export
 table_status <- function(param, route_levels = NULL, route_labels = NULL,
                          output_filename = param$output_filename,
                          output_dir = param$output_dir,
-                         i_simulation = seq_len(param$n_simulation), drop
+                         i_simulation = seq_len(param$n_simulation), drop = T
                          ) {
   cows <- read_final_cows(param, route_levels, route_labels,
                           output_filename, output_dir, i_simulation, drop)
