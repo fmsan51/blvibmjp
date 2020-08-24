@@ -32,7 +32,7 @@ install.packages("blvibmjp")
 
 ## Installation
 
-R、RStudioおよびRtoolsをインストールしていない場合、まずそちらをインストールする。
+R、RStudioおよびRtoolsをインストールしていない場合、まずそちらをインストールする。  
 インストール方法参考：
 
 - [RおよびRStudioのインストール方法(Mac/Windows) - Qiita](https://qiita.com/daifuku_mochi2/items/ad0b398e6affd0688c97)
@@ -94,13 +94,20 @@ simulate_blv_spread(data, param)
 4. 以下のコードで表示されるフォルダ内に、シミュレーション結果（simulationXX.csv）が保存される。
 
 ```{r output_path, eval = FALSE}
-output <- file.path(getwd(), "data", "output")
+output <- file.path(getwd(), param$output_dir)
 output
 ```
 
-5. シミュレーション結果をグラフにする。
+5. シミュレーション結果をグラフ・表にする。
 
-```{r plot, eval = FALSE}
-plot_infection_route(file.path(output, "simulation01.csv"),
-                     language = "Japanese")
+```{r plot}
+plot_prev(param, language = "Japanese")  # 陽性率の推移
+plot_route(param, language = "Japanese")  # 感染原因別頭数
+print(calc_prev(param, type = "prop"), n = Inf)  # 月ごとの感染率
+print(calc_prev(param, type = "count"), n = Inf)  # 月ごとの感染牛頭数
+print(calc_prev(param, type = "status"), n = Inf)  # 月ごとの感染ステージ別頭数（s=非感染、ial=感染・無症状、ipl=持続性リンパ球増多症、ebl=地方病性牛白血病）
+```
+
+```{r save_to_csv, eval = FALSE}
+write.csv(calc_prev(param, type = "prop"))  # 表をcsvに保存（保存場所は getwd() で表示されるフォルダ）
 ```
