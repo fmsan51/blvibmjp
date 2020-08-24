@@ -2,7 +2,6 @@
 % Please edit documentation in R/post_simulation_process.R
 \name{table_route}
 \alias{table_route}
-\alias{summary_route}
 \title{Summarize infection routes}
 \usage{
 table_route(
@@ -11,10 +10,9 @@ table_route(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  i_simulation = seq_len(param$n_simulation)
+  i_simulation = seq_len(param$n_simulation),
+  drop = T
 )
-
-summary_route(cows)
 }
 \arguments{
 \item{param}{See \link{param}.}
@@ -29,7 +27,7 @@ summary_route(cows)
 
 \item{i_simulation}{csvs with this numbers are read.}
 
-\item{cows}{A result of \code{\link[=read_final_cows]{read_final_cows()}}.}
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 }
 \description{
 Calculate monthly infection routes at the end of simulations.

@@ -26,16 +26,17 @@ read_cows <- function(param,
 }
 
 
-#' @param route_levels,route_labels See [redefine_route_levels].
+#' @param route_levels,route_labels,drop See [redefine_route_levels].
 #' @name read_cows
 read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
-                            i_simulation = seq_len(param$n_simulation)) {
+                            i_simulation = seq_len(param$n_simulation),
+                            drop = T) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
   cows <- cows[is_owned == T & max(i_month), ]
-  cows <-
-    redefine_route_levels(cows, language = NULL, route_levels, route_labels)
+  cows <- redefine_route_levels(cows, drop, language = NULL, route_levels,
+                                route_labels)
   return(cows)
 }
 
@@ -125,7 +126,8 @@ plot_prev <- function(param,
                       list_cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <-
-    calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
+    calc_prev(param, output_filename, output_dir, i_simulation, list_cows,
+              type = "prop", by_simulation = F)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
@@ -211,7 +213,7 @@ redefine_route_levels <- function(cows,
 
 #' Plot monthly infection routes nicely
 #'
-#' Plot monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
+#' Plot average (median) monthly prevalences by each infection route from csv files or list of `cow_table`. Set either one of `output_dir`+`output_filename` or `csv`.
 #'
 #' @param param,output_filename,output_dir See [param].
 #' @param i_simulation csvs with this numbers are used.
@@ -251,7 +253,9 @@ plot_route <- function(param,
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_route", language)
-  infection_route <- cows[, .SD[, .N, by = cause_infection], by = i_month]
+  infection_route <-
+    cows[, .N, by = c("cause_infection", "i_month", "i_simulation")][
+      , list(N = median(N)), by = c("cause_infection", "i_month")]
   infection_route <-
     complete(infection_route, i_month, cause_infection, fill = list(N = 0))
   n_cause <- n_distinct(infection_route$cause_infection)
@@ -324,24 +328,17 @@ plot_route <- function(param,
 #' Calculate monthly infection routes at the end of simulations.
 #'
 #' @inheritParams read_cows
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_status]
-#' @name table_route
 #' @export
 table_route <- function(param, route_levels = NULL, route_labels = NULL,
                         output_filename = param$output_filename,
                         output_dir = param$output_dir,
-                        i_simulation = seq_len(param$n_simulation)) {
-  cows <- read_fianl_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, i_simulation)
-  summary <- summary_route(cows)
-  return(summary)
-}
-
-
-#' @param cows A result of [read_final_cows()].
-#' @name table_route
-summary_route <- function(cows) {
+                        i_simulation = seq_len(param$n_simulation), drop = T
+                        ) {
+  cows <- read_final_cows(param, route_levels, route_labels,
+                          output_filename, output_dir, i_simulation, drop)
   table_route <- cows[, .N, by = list(i_simulation, cause_infection)]
   table_route <- dcast.data.table(table_route, i_simulation ~ cause_infection,
                                   value.var = "N", fill = 0, drop = F)
@@ -359,25 +356,17 @@ summary_route <- function(cows) {
 #' Calculate monthly infection status at the end of simulations.
 #'
 #' @inheritParams read_cows
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
 #'
 #' @seealso [table_route]
-#' @name table_status
 #' @export
 table_status <- function(param, route_levels = NULL, route_labels = NULL,
                          output_filename = param$output_filename,
                          output_dir = param$output_dir,
-                         i_simulation = seq_len(param$n_simulation)
+                         i_simulation = seq_len(param$n_simulation), drop = T
                          ) {
   cows <- read_final_cows(param, route_levels, route_labels,
-                          output_filename, output_dir, i_simulation)
-  summary <- summary_status(cows)
-  return(summary)
-}
-
-
-#' @param cows A result of [read_final_cows()].
-#' @name table_status
-summary_status <- function(cows) {
+                          output_filename, output_dir, i_simulation, drop)
   cows$infection_status <-
     factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
   table_status <- cows[, .N, by = list(i_simulation, infection_status)]

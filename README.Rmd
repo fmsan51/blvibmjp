@@ -32,7 +32,7 @@ install.packages("blvibmjp")
 
 ## Installation
 
-R、RStudioおよびRtoolsをインストールしていない場合、まずそちらをインストールする。
+R、RStudioおよびRtoolsをインストールしていない場合、まずそちらをインストールする。  
 インストール方法参考：
 
 - [RおよびRStudioのインストール方法(Mac/Windows) - Qiita](https://qiita.com/daifuku_mochi2/items/ad0b398e6affd0688c97)
@@ -54,29 +54,39 @@ remotes::install_github("fmsan51/blvibmjp")
 file.path(.libPaths()[1], "blvibmjp")
 ```
 
-2. フォルダ内の input.xlsx を適当な場所にコピーして、牛・牛舎・移動などのデータを入力する。
+2. フォルダ内の input.xlsx を適当な場所にコピーして、牛・牛舎・移動などのデータを入力する。  
+（とりあえず適当なデータでシミュレーションを試したい、という場合は同フォルダ内のテスト用データ（input_test.xlsx）を使ってみてください。）
 
 3. 以下のようなコードを実行する。
 
-```{r simulation, eval = FALSE}
+```{r prep_param}
 # パッケージの読み込み
 library(blvibmjp)
 
 # シミュレーションの設定
 param$simulation_length <- 60  # シミュレーション期間の長さ（月）
 param$n_simulation <- 3  # シミュレーション回数
+param$output_dir <- "result"  # シミュレーション結果の保存フォルダ
 
 # 対策の設定
 param$control_insects <- 0.5  # 吸血昆虫対策を行っている場合、対策により吸血昆虫がどれだけ減少するか（0.5＝50%減）
 param$change_gloves <- TRUE  # 直検手袋を毎回交換するか（TRUE/FALSE）
 param$feed_raw_colostrum <- FALSE  # 凍結・加温処理していない初乳を子牛に与えているか
 # 他、詳細は help("param") 参照
+```
 
+```{r prep_data_fake, eval = FALSE}
 # データの入力
 data <- prepare_data(
   "C:\\Users\\xxx\\Desktop\\input.xlsx",  # データを入力したファイルの場所
   param)
+```
+```{r prep_data_real, include = FALSE}
+param$output_dir <- "inst/extdata/readme_output"
+data <- prepare_data("inst/input_test.xlsx", param)
+```
 
+```{r simulation, echo = TRUE, results = 'hide'}
 # シミュレーションの実行（1回ごとに十数秒～数分）
 simulate_blv_spread(data, param)
 ```
@@ -84,13 +94,20 @@ simulate_blv_spread(data, param)
 4. 以下のコードで表示されるフォルダ内に、シミュレーション結果（simulationXX.csv）が保存される。
 
 ```{r output_path, eval = FALSE}
-output <- file.path(getwd(), "data", "output")
+output <- file.path(getwd(), param$output_dir)
 output
 ```
 
-5. シミュレーション結果をグラフにする。
+5. シミュレーション結果をグラフ・表にする。
 
-```{r plot, eval = FALSE}
-plot_infection_route(file.path(output, "simulation01.csv"),
-                     language = "Japanese")
+```{r plot}
+plot_prev(param, language = "Japanese")  # 陽性率の推移
+plot_route(param, language = "Japanese")  # 感染原因別頭数
+print(calc_prev(param, type = "prop"), n = Inf)  # 月ごとの感染率
+print(calc_prev(param, type = "count"), n = Inf)  # 月ごとの感染牛頭数
+print(calc_prev(param, type = "status"), n = Inf)  # 月ごとの感染ステージ別頭数（s=非感染、ial=感染・無症状、ipl=持続性リンパ球増多症、ebl=地方病性牛白血病）
+```
+
+```{r save_to_csv, eval = FALSE}
+write.csv(calc_prev(param, type = "prop"))  # 表をcsvに保存（保存場所は getwd() で表示されるフォルダ）
 ```

@@ -18,7 +18,8 @@ read_final_cows(
   route_labels = NULL,
   output_filename = param$output_filename,
   output_dir = param$output_dir,
-  i_simulation = seq_len(param$n_simulation)
+  i_simulation = seq_len(param$n_simulation),
+  drop = T
 )
 }
 \arguments{
@@ -26,7 +27,7 @@ read_final_cows(
 
 \item{i_simulation}{csvs with this numbers are read.}
 
-\item{route_levels, route_labels}{See \link{redefine_route_levels}.}
+\item{route_levels, route_labels, drop}{See \link{redefine_route_levels}.}
 }
 \value{
 A \link{cow_table} with an additional column \code{i_simulation}.
