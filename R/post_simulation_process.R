@@ -126,7 +126,8 @@ plot_prev <- function(param,
                       list_cows = NULL, language = NULL,
                       title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <-
-    calc_prev(param, output_filename, output_dir, i_simulation, list_cows)
+    calc_prev(param, output_filename, output_dir, i_simulation, list_cows,
+              type = "prop", by_simulation = F)
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
