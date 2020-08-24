@@ -107,9 +107,8 @@ plot_route(param, language = "Japanese")  # 感染原因別頭数
 <img src="man/figures/README-plot-2.png" width="100%" />
 
 ``` r
-print(calc_prev(param, type = "prop"), n = Inf)  # 月ごとの感染率
+calc_prev(param, type = "prop")  # 月ごとの感染率
 #>     i_month prevalence
-#>       <int>      <num>
 #>  1:       0  0.2000000
 #>  2:       1  0.2500000
 #>  3:       2  0.3750000
@@ -305,5 +304,5 @@ print(calc_prev(param, type = "status"), n = Inf)  # 月ごとの感染ステー
 ```
 
 ``` r
-write.csv(calc_prev(param, type = "prop"))  # 表をcsvに保存（保存場所は getwd() で表示されるフォルダ）
+write.csv(calc_prev(param, type = "prop"), file.path(output, "prev.csv"))  # 表をcsvに保存（保存場所は 4. で表示されたフォルダ）
 ```
