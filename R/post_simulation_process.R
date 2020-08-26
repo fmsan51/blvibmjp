@@ -346,7 +346,9 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
   table_route[, `:=`(total = rowSums(.SD)),
                .SDcols = cols[cols != "i_simulation"]]
   table_route[, `:=`(total_inf = total - uninfected)]
-  table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))]
+  table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))][]
+  # [] to print the result to console
+  # https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html#why-do-i-have-to-type-dt-sometimes-twice-after-using-to-print-the-result-to-console
   return(table_route)
 }
 
