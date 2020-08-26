@@ -315,7 +315,7 @@ calc_param <- function(param, modification = NULL) {
 
   # NOTE:
   # insects_pressure, control_insects, free_pressure and average_prop_in_free
-  # canncel each other
+  # cancel each other
 
 
   ## infection_needles ----
