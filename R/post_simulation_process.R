@@ -34,7 +34,7 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             i_simulation = seq_len(param$n_simulation),
                             drop = T) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
-  cows <- cows[is_owned == T & max(i_month), ]
+  cows <- cows[is_owned == T & i_month == max(i_month), ]
   cows <- redefine_route_levels(cows, drop, language = NULL, route_levels,
                                 route_labels)
   return(cows)
