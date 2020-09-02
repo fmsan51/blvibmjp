@@ -19,5 +19,5 @@ remove_from_areas(cows, areas, area_table, removed_row)
 A \link{cow_table} in which \code{area_id} and \code{chamber_id} of specified cows are set as \code{NA}.
 }
 \description{
-Assign \code{NA}s to \code{area_id} and \code{chamber_id} of specified cows.
+Assign \code{NA}s to \code{area_id} and \code{chamber_id} of specified cows and set \code{months_in_area} as 0.
 }

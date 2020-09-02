@@ -24,7 +24,7 @@ remove_cows <- function(cows, areas, i, area_table, removed_row,
 
 #' Remove cows from areas
 #'
-#' Assign `NA`s to `area_id` and `chamber_id` of specified cows.
+#' Assign `NA`s to `area_id` and `chamber_id` of specified cows and set `months_in_area` as 0.
 #'
 #' @param cows See [cow_table].
 #' @param areas See [setup_area_table].
@@ -34,7 +34,8 @@ remove_cows <- function(cows, areas, i, area_table, removed_row,
 #' @return A [cow_table] in which `area_id` and `chamber_id` of specified cows are set as `NA`.
 remove_from_areas <- function(cows, areas, area_table, removed_row) {
   cows[removed_row, `:=`(area_id = NA_integer_,
-                         chamber_id = NA_integer_)]
+                         chamber_id = NA_integer_,
+                         months_in_area = 0)]
   removed_cow_id <- cows$cow_id[removed_row]
   for (i_area in attr(area_table, "tie_stall_chr")) {
     areas[[i_area]][match(removed_cow_id, cow_id),
