@@ -131,18 +131,19 @@ plot_prev <- function(param,
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
-  if (grepl("Windows", osVersion, fixed = T)) {
-    font <- ifelse(is.null(font), "Meiryo", font)
-    eval(parse(text = paste0(
-      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  } else {
-    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  }
+  #   if (grepl("Windows", osVersion, fixed = T)) {
+  #     font <- ifelse(is.null(font), "Meiryo", font)
+  #     eval(parse(text = paste0(
+  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  #   } else {
+  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  #   }
   gp <- ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
     scale_x_continuous(breaks = seq.int(0, max(prevalences$i_month), by = 12)) +
-    theme_bw(base_family = font) +
+    #     theme_bw(base_family = font) +
+    theme_bw() +
     theme(panel.border = element_blank(), axis.line = element_line())
 
   plot_labs <- list(title = defined_msg$title,
@@ -282,14 +283,14 @@ plot_route <- function(param,
   } else {
     color <- expr(NULL)
   }
-  if (grepl("Windows", osVersion, fixed = T)) {
-    font <- ifelse(is.null(font), "Meiryo", font)
-    eval(parse(text = paste0(
-      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  } else {
-    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  }
-
+  #   if (grepl("Windows", osVersion, fixed = T)) {
+  #     font <- ifelse(is.null(font), "Meiryo", font)
+  #     eval(parse(text = paste0(
+  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  #   } else {
+  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  #   }
+  # 
   if (is.null(max_ylim)) {
     max_ylim <- max(table(cows$i_month))
   }
@@ -317,7 +318,8 @@ plot_route <- function(param,
         "Argument border_color is ignored because argument border is FALSE.")
     }
   }
-  gp <- gp + theme_bw(base_family = font) +
+  #   gp <- gp + theme_bw(base_family = font) +
+  gp <- gp + theme_bw() +
     theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }
