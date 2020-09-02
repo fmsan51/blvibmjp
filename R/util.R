@@ -56,6 +56,7 @@ days_per_month <- (365 / 12)
 
 
 #' Remove NA from a vector
+#'
 #' @param x A vector
 remove_na <- function(x) {
   x[!is.na(x)]
