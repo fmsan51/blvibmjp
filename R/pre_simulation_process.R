@@ -55,6 +55,8 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows <- a_new_calf[rep(1, n_cows), ]
   cows[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
+  warn_invalid_col(input, cow_table_cols)
+
   # First, calculate values in columns which users can specify.
   cows$cow_id <- tryCatch(as.integer(as.character(cows$cow_id)),
     warning = function(e) {
@@ -520,6 +522,8 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   area_table <- a_area[rep(1, n_rows), ]
   area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
+  warn_invalid_col(input, area_table_cols)
+
   if (all(is.na(area_table$area_id))) {
     area_table$area_id <- 1:n_rows
     # 1:n is used because it is much faster than seq_len(n).
@@ -621,6 +625,8 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   }
   movement_table <- a_movement[rep(1, n_rows), ]
   movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  warn_invalid_col(input, movement_table_cols)
 
   necessary_cols <- c("current_area", "condition", "next_area")
   necessary_data <- movement_table[, ..necessary_cols]
@@ -739,6 +745,22 @@ warn_double_sep <- function(data) {
     ))
   }
   return(data)
+}
+
+
+#' Check whether input contains invalid column(s)
+#'
+#' @param input A data.table
+#' @param default_col A character vector indicating valid column names
+warn_invalid_col <- function(input, default_col) {
+  invalid_col <- setdiff(colnames(input), default_col)
+  if (length(invalid_col) != 0) {
+    warning(glue(
+      "Following column(s) in the cow data is ignored: \\
+       {paste0('`', invalid_col, '`', collapse = ', ')}
+       Did you change the column name from the original one?"
+    ))
+  }
 }
 
 
