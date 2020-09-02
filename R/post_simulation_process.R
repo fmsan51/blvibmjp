@@ -60,7 +60,8 @@ calc_prev <- function(param, output_filename = param$output_filename,
                       output_dir = param$output_dir,
                       i_simulation = seq_len(param$n_simulation),
                       list_cows = NULL,
-                      type = c("prop", "count", "status"), by_simulation = F) {
+                      type = c("prop", "count", "status", "route"),
+                      gather = T, drop = T, by_simulation = F) {
   if (is.null(list_cows)) {
     cows <- read_cows(param, output_filename, output_dir, i_simulation)
   } else {
@@ -90,7 +91,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
         prevalences[, lapply(.SD, median), .SDcols = c("inf", "noinf"),
                     by = i_month]
     }
-  } else {
+  } else if (type == "status") {
     cows$infection_status <-
       factor(cows$infection_status, levels = c("s", "ial", "ipl", "ebl"))
     prevalences <-
@@ -100,6 +101,18 @@ calc_prev <- function(param, output_filename = param$output_filename,
       prevalences <-
         prevalences[, lapply(.SD, median),
                     .SDcols = c("s", "ial", "ipl", "ebl"), by = i_month]
+    }
+  } else {
+    cows <-
+      redefine_route_levels(cows, drop = drop, language = NULL, gather = gather)
+    prevalences <-
+      dcast.data.table(cows, i_month + i_simulation ~ cause_infection,
+                       fun.aggregate = length, drop = F)
+    if (!by_simulation) {
+      prevalences <-
+        prevalences[, lapply(.SD, median),
+                    .SDcols = setdiff(colnames(prevalences), "i_month"),
+                    by = i_month]
     }
   }
 
