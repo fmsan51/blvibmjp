@@ -671,7 +671,9 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   n_priority <- vapply(movement_table$priority, length, 1)
   if (anyNA(movement_table$priority) | any(n_priority == 0)) {
     n_next_area <-
-      vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 1)
+      # FIXME: use 0.5 to set is_priprity_specified_by_integer as F
+      # vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 1)
+      vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 0.5)
     list1 <- lapply(n_next_area, function(x) rep(1, x))
     is_priority_missing <- is.na(movement_table$priority) | n_priority == 0
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
