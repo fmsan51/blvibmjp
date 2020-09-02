@@ -51,7 +51,7 @@ plot_route(
 
 \item{border_color}{Specify a color palette for the border.}
 
-\item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
+\item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro W3" for the other OS.}
 }
 \value{
 A \link[ggplot2:ggplot]{ggplot2::ggplot} plot.

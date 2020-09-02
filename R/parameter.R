@@ -739,7 +739,7 @@ validate_param <- function(param, list_param_modif = NULL) {
 
   is_a_int <-
     vapply(param[be_a_int],
-           function(x) is.na(x) | (is.numeric(x) && is.wholenumber(x)), T)
+           function(x) is.na(x) | (is.numeric(x) && is.wholenumbers(x)), T)
   if (!all(is_a_int)) {
     var_not_a_int <- names(param[be_a_int[!is_a_int]])
     stop(glue("Following parameter in `param` must be an integer: \\

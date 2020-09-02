@@ -1,5 +1,7 @@
 Sys.setlocale("LC_CTYPE", "Japanese")
 
+double_sep <- "、"
+
 msg <- list()
 
 msg$English$plot_prev <- list(
@@ -44,5 +46,5 @@ msg$Japanese$redefine_route_levels <- list(
 
 msg <- purrr::map_depth(msg, 3, iconv, to = "UTF-8")
 
-usethis::use_data(msg, internal = T, overwrite = T)
+usethis::use_data(msg, double_sep, internal = T, overwrite = T)
 

@@ -114,7 +114,7 @@ calc_prev <- function(param, output_filename = param$output_filename,
 #' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param title,xlab,ylab logical or character. Plot a title, a label for x-axis and a label for y-axis. When `TRUE`, the default value is used. When `FALSE` or `NULL`, the title or label is not shown. When specified by character, the string is used as the title or the label.
-#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro W3" for the other OS.
 #'
 #' @return An scatterplot by [ggplot2::ggplot] object.
 #'
@@ -131,19 +131,18 @@ plot_prev <- function(param,
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
-  #   if (grepl("Windows", osVersion, fixed = T)) {
-  #     font <- ifelse(is.null(font), "Meiryo", font)
-  #     eval(parse(text = paste0(
-  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  #   } else {
-  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  #   }
+  if (grepl("Windows", osVersion, fixed = T)) {
+    font <- ifelse(is.null(font), "Meiryo", font)
+    eval(parse(text = paste0(
+      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  } else {
+    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro W3", font)
+  }
   gp <- ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
     scale_x_continuous(breaks = seq.int(0, max(prevalences$i_month), by = 12)) +
-    #     theme_bw(base_family = font) +
-    theme_bw() +
+    theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
 
   plot_labs <- list(title = defined_msg$title,
@@ -228,7 +227,7 @@ redefine_route_levels <- function(cows,
 #' @param area_color Specify a color palette of a plot.
 #' @param border When `TRUE`, each area in a plot will be surrounded by border.
 #' @param border_color Specify a color palette for the border.
-#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.
+#' @param font Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro W3" for the other OS.
 #'
 #' @return A [ggplot2::ggplot] plot.
 #'
@@ -283,14 +282,14 @@ plot_route <- function(param,
   } else {
     color <- expr(NULL)
   }
-  #   if (grepl("Windows", osVersion, fixed = T)) {
-  #     font <- ifelse(is.null(font), "Meiryo", font)
-  #     eval(parse(text = paste0(
-  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  #   } else {
-  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  #   }
-  # 
+  if (grepl("Windows", osVersion, fixed = T)) {
+    font <- ifelse(is.null(font), "Meiryo", font)
+    eval(parse(text = paste0(
+      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  } else {
+    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro W3", font)
+  }
+
   if (is.null(max_ylim)) {
     max_ylim <- max(table(cows$i_month))
   }
@@ -315,11 +314,11 @@ plot_route <- function(param,
       gp <- gp + scale_color_manual(values = border_color, drop = F)
     } else {
       warning(
-        "Argument border_color is ignored because argument border is FALSE.")
+        "Argument border_color is ignored because argument border is FALSE."
+      )
     }
   }
-  #   gp <- gp + theme_bw(base_family = font) +
-  gp <- gp + theme_bw() +
+  gp <- gp + theme_bw(base_family = font) +
     theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }

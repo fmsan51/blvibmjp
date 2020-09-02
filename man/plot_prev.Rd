@@ -28,7 +28,7 @@ plot_prev(
 
 \item{title, xlab, ylab}{logical or character. Plot a title, a label for x-axis and a label for y-axis. When \code{TRUE}, the default value is used. When \code{FALSE} or \code{NULL}, the title or label is not shown. When specified by character, the string is used as the title or the label.}
 
-\item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro" for the other OS.}
+\item{font}{Font in a plot. The default is "Meiryo" for Windows and "Hiragino Kaku Gothic Pro W3" for the other OS.}
 }
 \value{
 An scatterplot by \link[ggplot2:ggplot]{ggplot2::ggplot} object.

@@ -15,7 +15,7 @@
 #' - `infection_status`: At least one of this variable or `modify_prevalence` argument must be set. Valid categories are follows: "al", "pl" and "ebl" (case insensitive). Other values or `NA` will be coerced to "s" (= non-infected). When `modify_prevalence` is set, prevalence is modified to make prevalence equal to the first value of `modify_prevalence`.
 #' - `date_ial`, `date_ipl`, `date_ebl`: Specify the date when infection status was confirmed. If `NULL`, `0` is set.
 #' - `area_id`: If not set, cows are divided to four areas based on `stage` ("calf" = 1, "heifer" = 2, "milking" = 3, "dry" = 4). If `NA`s are included, cows are allocated to areas in which cows with the same stage and parity are kept. If `area_id` is written in character, argument `area_name` must be set.
-#' - `month_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `month_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
+#' - `months_in_area`: If not set, it is assumed to be 0. This parameter has no effect when a farm does not use `months_in_area` as a criteria for area movement. See [area_table] for detail of area movement.
 #' - `chamber_id`: If not set, it is randomly allocated later in [setup_cows()].
 #' - `is_isolated`: If not set, `FALSE` is set.
 #'
@@ -55,7 +55,13 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows <- a_new_calf[rep(1, n_cows), ]
   cows[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
+  warn_invalid_col(input, cow_table_cols)
+
   # First, calculate values in columns which users can specify.
+  cows$cow_id <- tryCatch(as.integer(as.character(cows$cow_id)),
+    warning = function(e) {
+      stop("`cow_id` in the cow input contains non-integer value(s).")
+    })
   is_na <- is.na(cows$cow_id)
   if (any(is_na)) {
     n_na <- sum(is_na)
@@ -76,13 +82,46 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   }
 
   # Convert is_xxx variables from numeric or character to logical
-  lgl_vars <- grep("^is_", cow_table_cols, value = T)
+  lgl_vars <- c(grep("^is_", cow_table_cols, value = T),
+                "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl")
   cows_w_lgl_vars <- cows[, ..lgl_vars]
   cows_lgl_vars_converted <- lapply(cows_w_lgl_vars, function(x)
     as.logical(factor(x, levels = c("1", "TRUE", "0", "FALSE"),
                       labels = c("TRUE", "TRUE", "FALSE", "FALSE")))
     )
   cows[, (lgl_vars) := cows_lgl_vars_converted]
+
+  # Convert classes of other types of variables
+  int_vars <- c("parity", "n_ai", "chamber_id")
+  num_vars <- c(int_vars, "age", "months_in_area")
+
+  cows_w_num_vars <- cows[, ..num_vars]
+  coersed_to_num <- lapply(cows_w_num_vars,
+    function(x) tryCatch(as.numeric(as.character(x)),
+                         # Do as.character to prepare when x is factor.
+                         warning = function(e) "error")
+    )
+  non_num_vars <- num_vars[!vapply(coersed_to_num, is.numeric, T)]
+  if (length(non_num_vars) != 0) {
+    stop(glue(
+      "Following column(s) in the cow data must contain numbers only:
+       {paste0('`', non_num_vars, '`', collapse = ', ')}"
+    ))
+  }
+  non_int_vars <-
+    int_vars[!vapply(coersed_to_num, is.wholenumbers, na.rm = T, T)]
+  if (length(non_int_vars) != 0) {
+    stop(glue(
+      "Following column(s) in the cow data must contain integers only:
+       {paste0('`', non_int_vars, '`', collapse = ', ')}"
+    ))
+  }
+  cows[, (num_vars) := coersed_to_num]
+  cows[, (int_vars) := lapply(.SD, floor), .SDcols = int_vars]
+  cows$chamber_id <- as.integer(cows$chamber_id)
+
+  chr_vars <- c("sex", "stage", "infection_status", "area_id")
+  cows[, (chr_vars) := cows[, lapply(.SD, as.character), .SDcols = chr_vars]]
 
   is_na_age <- is.na(cows$age)
   is_na_date_birth <- is.na(cows$date_birth)
@@ -237,7 +276,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
       "Following item(s) in the `infection_status` column is treated as \\
        non-infected:
        {paste(items_coerced_to_s, collapse = ',')}"
-          ))
+    ))
   }
 
   is_na <- is.na(cows$infection_status)
@@ -464,7 +503,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_area <- function(csv, data = NULL, output_file = NULL,
-                         sep = "[,\t\r\n |;:]", seed = NULL) {
+                         sep = "[,\t\r\n |;:]+", seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -482,6 +521,8 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   }
   area_table <- a_area[rep(1, n_rows), ]
   area_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
+
+  warn_invalid_col(input, area_table_cols)
 
   if (all(is.na(area_table$area_id))) {
     area_table$area_id <- 1:n_rows
@@ -518,8 +559,9 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   }
   area_table$capacity <- as.character(area_table$capacity)
   # as.character() to when capacity is an integer/numeric vector.
+  area_table$capacity <- warn_double_sep(area_table$capacity)
   area_table$capacity <-
-    paste0("c(", gsub(paste0(sep, "+"), ", ", area_table$capacity), ")")
+    paste0("c(", gsub(sep, ", ", area_table$capacity), ")")
   area_table$capacity <-
     lapply(area_table$capacity,
            function(x) gsub("(\\d+) ?x ?(\\d+)", "rep(\\1, \\2)", x, perl = T))
@@ -564,7 +606,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_movement <- function(csv, data = NULL, output_file = NULL,
-                             area_name = NULL, sep = "[,\t\r\n |;:]",
+                             area_name = NULL, sep = "[,\t\r\n |;:]+",
                              seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
@@ -584,6 +626,8 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table <- a_movement[rep(1, n_rows), ]
   movement_table[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
+  warn_invalid_col(input, movement_table_cols)
+
   necessary_cols <- c("current_area", "condition", "next_area")
   necessary_data <- movement_table[, ..necessary_cols]
   if (anyNA(necessary_data)) {
@@ -591,11 +635,12 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
     stop(glue(
       "Following column(s) in the movement data must not contain missing value:
        {paste0('`', missing_cols, '`', collapse = ', ')}"
-     ))
+    ))
   }
 
+  movement_table$next_area <- warn_double_sep(movement_table$next_area)
   movement_table$next_area <-
-    strsplit(as.character(movement_table$next_area), paste0(sep, "+"))
+    strsplit(as.character(movement_table$next_area), sep)
   # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
     chr_area_name <- names(area_name)
@@ -618,14 +663,17 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table$current_area <- as.integer(movement_table$current_area)
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
+  movement_table$priority <- warn_double_sep(movement_table$priority)
   movement_table$priority <-
-    strsplit(as.character(movement_table$priority), paste0(sep, "+"))
+    strsplit(as.character(movement_table$priority), sep)
   # as.character() to when capacity is an integer/numeric vector.
   movement_table$priority <- lapply(movement_table$priority, as.numeric)
   n_priority <- vapply(movement_table$priority, length, 1)
   if (anyNA(movement_table$priority) | any(n_priority == 0)) {
     n_next_area <-
-      vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 1)
+      # FIXME: use 0.5 to set is_priprity_specified_by_integer as F
+      # vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 1)
+      vapply(movement_table$next_area, function(x) length(x[!is.na(x)]), 0.5)
     list1 <- lapply(n_next_area, function(x) rep(1, x))
     is_priority_missing <- is.na(movement_table$priority) | n_priority == 0
     movement_table$priority[is_priority_missing] <- list1[is_priority_missing]
@@ -682,6 +730,42 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
 }
 
 
+#' Check whether input contains doublewidth separator
+#'
+#' @param data Data to check like `movement_table$next_area`.
+warn_double_sep <- function(data) {
+  data_name <- as.character(substitute(data))
+  data_type <- switch(data_name[2],
+                      cows = "cow",
+                      area_table = "area",
+                      movement_table = "movement")
+  if (any(grepl(double_sep, data))) {
+    data <- gsub(double_sep, ", ", data)
+    warning(glue(
+      "'{double_sep}' was found in `{data_name[3]}` in the {data_type} data. \\
+       Replaced it with ', '."
+    ))
+  }
+  return(data)
+}
+
+
+#' Check whether input contains invalid column(s)
+#'
+#' @param input A data.table
+#' @param default_col A character vector indicating valid column names
+warn_invalid_col <- function(input, default_col) {
+  invalid_col <- setdiff(colnames(input), default_col)
+  if (length(invalid_col) != 0) {
+    warning(glue(
+      "Following column(s) in the cow data is ignored: \\
+       {paste0('`', invalid_col, '`', collapse = ', ')}
+       Did you change the column name from the original one?"
+    ))
+  }
+}
+
+
 #' Process raw data to suitable forms
 #'
 #' Process raw data to suitable forms to use in simulation.
@@ -704,7 +788,7 @@ prepare_data <- function(excel, param, output = F,
                          movement_data = NULL,
                          cow_output_file = NULL, area_output_file = NULL,
                          movement_output_file = NULL,
-                         sep = "[,\t\r\n |;:]", seed = NULL, ...) {
+                         sep = "[,\t\r\n |;:]+", seed = NULL, ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
     area_input <- read_excel(excel, sheet = "area", skip = 3,

@@ -152,7 +152,7 @@ setup_movement_table <- function(area_table, movement_table) {
   attr(movement_table, "chr_next_area") <-
     lapply(movement_table$next_area, as.character)
   attr(movement_table, "is_priority_specified_by_integer") <-
-    vapply(movement_table$priority, is.wholenumber, T)
+    vapply(movement_table$priority, is.wholenumbers, T)
   attr(movement_table, "cond_as_expr") <- parse(text = movement_table$condition)
 
   return(movement_table)

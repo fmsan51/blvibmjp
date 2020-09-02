@@ -14,7 +14,7 @@ prepare_data(
   cow_output_file = NULL,
   area_output_file = NULL,
   movement_output_file = NULL,
-  sep = "[,\\t\\r\\n |;:]",
+  sep = "[,\\t\\r\\n |;:]+",
   seed = NULL,
   ...
 )

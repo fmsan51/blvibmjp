@@ -22,15 +22,16 @@ integerize <- function(number) {
 #' Test if all the components of a numeric vector is whole number or not.
 #'
 #' @param number numeric vector.
+#' @param na.rm logical. Passed to `na.rm` of [all()].
 #'
 #' @examples
-#' blvibmjp:::is.wholenumber(3L)  # TRUE
-#' blvibmjp:::is.wholenumber(3)  # TRUE
-#' blvibmjp:::is.wholenumber(pi)  # FALSE
+#' blvibmjp:::is.wholenumbers(3L)  # TRUE
+#' blvibmjp:::is.wholenumbers(3)  # TRUE
+#' blvibmjp:::is.wholenumbers(pi)  # FALSE
 #'
 #' @return A logical value.
-is.wholenumber <- function(number) {
-  all(number %% 1 == 0)
+is.wholenumbers <- function(number, na.rm = F) {
+  all(number %% 1 == 0, na.rm = na.rm)
 }
 
 
@@ -55,6 +56,7 @@ days_per_month <- (365 / 12)
 
 
 #' Remove NA from a vector
+#'
 #' @param x A vector
 remove_na <- function(x) {
   x[!is.na(x)]

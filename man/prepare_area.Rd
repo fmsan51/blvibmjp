@@ -8,7 +8,7 @@ prepare_area(
   csv,
   data = NULL,
   output_file = NULL,
-  sep = "[,\\t\\r\\n |;:]",
+  sep = "[,\\t\\r\\n |;:]+",
   seed = NULL
 )
 }
