@@ -108,7 +108,7 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
       is_infectious[is.na(is_infectious)] <- F
       is_exposed_to_inf_next <- area$adjoint_next_chamber &
                                   shift(is_infectious, type = "lead", fill = F)
-      is_exposed_to_inf_prev <- area$adjoint_next_chamber &
+      is_exposed_to_inf_prev <- area$adjoint_previous_chamber &
                                   shift(is_infectious, type = "lag", fill = F)
       is_s_in_chamber <- !is.na(area$cow_status) & area$cow_status == "s"
       is_exposed_to_inf <-
@@ -134,8 +134,6 @@ calc_infection_in_barns <- function(cows, i, month, area_table, areas,
     sum(expose_status == "exposed"), month, param_sim
     )
   causes[expose_status == "exposed"] <- c("", "insects")[expose_result + 1]
-  # FIXME: Rarely the line above throws the following error (the cause is unidentified)
-  # "number of items to replace is not a multiple of replacement length"
   non_expose_result <- is_infected_in_non_exposed_chamber(
     sum(expose_status == "non_exposed"), month, param_sim
     )

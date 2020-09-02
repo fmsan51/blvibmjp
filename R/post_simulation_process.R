@@ -34,7 +34,7 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             i_simulation = seq_len(param$n_simulation),
                             drop = T) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
-  cows <- cows[is_owned == T & max(i_month), ]
+  cows <- cows[is_owned == T & i_month == max(i_month), ]
   cows <- redefine_route_levels(cows, drop, language = NULL, route_levels,
                                 route_labels)
   return(cows)
@@ -131,18 +131,19 @@ plot_prev <- function(param,
   orig_msg <- list(title = title, xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_prev", language)
 
-  if (grepl("Windows", osVersion, fixed = T)) {
-    font <- ifelse(is.null(font), "Meiryo", font)
-    eval(parse(text = paste0(
-      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  } else {
-    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  }
+  #   if (grepl("Windows", osVersion, fixed = T)) {
+  #     font <- ifelse(is.null(font), "Meiryo", font)
+  #     eval(parse(text = paste0(
+  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  #   } else {
+  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  #   }
   gp <- ggplot(prevalences, aes(x = i_month, y = prevalence)) +
     geom_point() +
     ylim(0, 1) +
     scale_x_continuous(breaks = seq.int(0, max(prevalences$i_month), by = 12)) +
-    theme_bw(base_family = font) +
+    #     theme_bw(base_family = font) +
+    theme_bw() +
     theme(panel.border = element_blank(), axis.line = element_line())
 
   plot_labs <- list(title = defined_msg$title,
@@ -282,14 +283,14 @@ plot_route <- function(param,
   } else {
     color <- expr(NULL)
   }
-  if (grepl("Windows", osVersion, fixed = T)) {
-    font <- ifelse(is.null(font), "Meiryo", font)
-    eval(parse(text = paste0(
-      "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
-  } else {
-    font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
-  }
-
+  #   if (grepl("Windows", osVersion, fixed = T)) {
+  #     font <- ifelse(is.null(font), "Meiryo", font)
+  #     eval(parse(text = paste0(
+  #       "windowsFonts(`", font, "` = ", "windowsFont('", font, "'))")))
+  #   } else {
+  #     font <- ifelse(is.null(font), "Hiragino Kaku Gothic Pro", font)
+  #   }
+  # 
   if (is.null(max_ylim)) {
     max_ylim <- max(table(cows$i_month))
   }
@@ -317,7 +318,8 @@ plot_route <- function(param,
         "Argument border_color is ignored because argument border is FALSE.")
     }
   }
-  gp <- gp + theme_bw(base_family = font) +
+  #   gp <- gp + theme_bw(base_family = font) +
+  gp <- gp + theme_bw() +
     theme(panel.border = element_blank(), axis.line = element_line())
   return(gp)
 }
@@ -346,7 +348,9 @@ table_route <- function(param, route_levels = NULL, route_labels = NULL,
   table_route[, `:=`(total = rowSums(.SD)),
                .SDcols = cols[cols != "i_simulation"]]
   table_route[, `:=`(total_inf = total - uninfected)]
-  table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))]
+  table_route[, `:=`(p_inf = round(total_inf / total * 100, 2))][]
+  # [] to print the result to console
+  # https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html#why-do-i-have-to-type-dt-sometimes-twice-after-using-to-print-the-result-to-console
   return(table_route)
 }
 
