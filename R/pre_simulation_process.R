@@ -191,9 +191,11 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows$date_dried[cows$stage == "milking"] <- NA_real_
   is_na <- is.na(cows$stage)
   if (any(is_na)) {
-    cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
-    cows[is_na & parity != 0,
-         `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
+    #     cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
+    #     cows[is_na & parity != 0,
+    #          `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
+    cows$stage[is_na & cows$parity == 0] <- fifelse(cows$age < 4, "calf", "heifer")
+    cows$stage[is_na & cows$parity != 0] <- fifelse(is.na(date_dried), "milking", "dry")
   }
 
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
