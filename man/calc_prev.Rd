@@ -10,7 +10,9 @@ calc_prev(
   output_dir = param$output_dir,
   i_simulation = seq_len(param$n_simulation),
   list_cows = NULL,
-  type = c("prop", "count", "status"),
+  type = c("prop", "count", "status", "route"),
+  gather = T,
+  drop = T,
   by_simulation = F
 )
 }
@@ -21,7 +23,9 @@ calc_prev(
 
 \item{list_cows}{List consisted of \code{cow_table}s. Specify one of \code{output_dir}+\code{output_filename} or \code{list_cows}.}
 
-\item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows.}
+\item{type}{\code{prop} means proportion of infected cows. \code{count} means the number of infected and non-infected cows. \code{status} means the number of \code{s} (non-infected), \code{ial} (asymptomatic), \code{ipl} (persistent lymphositosis) and \code{ebl} cows. \code{route} means the number of infected cows by each infection route.}
+
+\item{gather}{When \code{type} is "route", whether infection routes as "tie_exposed_baseline", "tie_exposed_risk", "tie_non_exposed" and "free" should be gathered to one category "insects" or treated as-is.}
 
 \item{by_simulation}{Whether calculate median of all simulations (\code{FALSE}) or calculate by each simualtion (\code{TRUE}).}
 }

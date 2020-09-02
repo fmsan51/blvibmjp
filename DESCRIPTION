@@ -26,7 +26,8 @@ Imports:
     stats,
     stringr,
     tidyr,
-    utils
+    utils,
+    scales
 RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Suggests:

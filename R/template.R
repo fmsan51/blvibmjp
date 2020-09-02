@@ -44,8 +44,10 @@
 #' - `date_ebl_expected`: The exppected month when `infection_status` changes from "ial" to "ebl". It is calculated when `infection_status` becomes "ial".
 #' - `cause_infection`: The reason why the cow is infected. It is set when the cow gets infected.
 #'     - "initial": already be infected at the start of the start of a simulation.
-#'     - "insects": by bloodsucking insects.
-#'     - "contact": by direct contact with an infected cow.
+#'     - "tie_exposed_baseline": by insects (the cow is kept in a tie-stall barn and has an infected neighbor and infection was NOT due to the neighbor.)
+#'     - "tie_exposed_risk": by insects (the cow is kept in a tie-stall barn and has an infected neighbor and infection was due to the neighbor.)
+#'     - "tie_non_exposed": by insects (the cow is kept in a tie-stall barn and does not have an infected neighbor.)
+#'     - "free": by insects (the cow is kept in an free-stall barn or at outside.)
 #'     - "rp": by rectal palpation.
 #'     - "vertical": vertical transimisson (intrauterine and by the dam milk).
 #'     - "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).

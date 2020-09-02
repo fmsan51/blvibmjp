@@ -299,6 +299,8 @@ calc_param <- function(param, modification = NULL) {
   ## infection_neighbor ----
 
   res$hr_having_infected_neighbor <- exp(rnorm(1, mean = 2.52, sd = 0.73))
+  res$prop_inf_due_to_expose <-
+    (res$hr_having_infected_neighbor - 1) / res$hr_having_infected_neighbor
   # Kobayashi et al, 2015. https://doi.org/10.1292/jvms.15-0007
 
 

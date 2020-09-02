@@ -5,7 +5,7 @@
 #' @importFrom cellranger cell_limits
 #' @importFrom data.table as.data.table CJ copy data.table dcast.data.table fifelse fcoalesce fread fwrite melt.data.table rbindlist setorder shift nafill := .N .SD
 #' @importFrom dplyr n_distinct
-#' @importFrom forcats fct_other
+#' @importFrom forcats fct_collapse fct_other
 #' @importFrom ggplot2 aes element_blank element_line geom_area geom_point ggplot labs scale_fill_manual scale_color_manual scale_x_continuous theme theme_bw xlab xlim ylab ylim
 #' @importFrom ggthemes colorblind_pal
 #' @importFrom glue glue
@@ -14,6 +14,7 @@
 #' @importFrom purrr flatten
 #' @importFrom readxl read_excel
 #' @importFrom rlang expr !!!
+#' @importFrom scales hue_pal
 #' @importFrom stats optim qnorm rbinom rexp rgamma rnorm runif rweibull
 #' @importFrom stringr str_extract str_replace_all str_split
 #' @importFrom tidyr complete

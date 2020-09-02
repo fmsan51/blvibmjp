@@ -10,7 +10,7 @@ plot_prev(
   output_dir = param$output_dir,
   i_simulation = seq_len(param$n_simulation),
   list_cows = NULL,
-  language = NULL,
+  language = "English",
   title = T,
   xlab = T,
   ylab = T,

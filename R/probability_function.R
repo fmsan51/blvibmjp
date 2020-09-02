@@ -79,16 +79,20 @@ is_infected_pasture <- function(n_cows, param_sim) {
 }
 
 
-#' Whether cows are infected in chambers next to infected cows in tie-stall barns
+#' Whether cows are infected in chambers next to infected cows in tie-stall barns and the causes
 #'
 #' @param n_cows The number of cows.
 #' @param month The current month (1, 2, ..., 12).
 #' @param param_sim A list which combined [param], a result of [process_param()] and a result of [calc_param()].
 #'
 #' @return A logical vector.
-is_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
-  runif(n_cows) < param_sim$probs_inf_tie_month[month] *
+causes_infected_in_exposed_chamber <- function(n_cows, month, param_sim) {
+  is_infected  <- runif(n_cows) < param_sim$probs_inf_tie_month[month] *
                     param_sim$hr_having_infected_neighbor
+  is_due_to_expose <- runif(n_cows) < param_sim$prop_inf_due_to_expose
+  cause <- c("tie_exposed_baseline", "tie_exposed_risk")[is_due_to_expose + 1]
+  cause[!is_infected] <- ""
+  return(cause)
 }
 
 

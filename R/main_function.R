@@ -1,12 +1,13 @@
-#' Increment age in a cow table
+#' Increment age and months_in_area in a cow table
 #'
-#' Add 1 to `age` variable in a cow table.
+#' Add 1 to `age` and `months_in_area` variable in a cow table.
 #'
 #' @param cows See [cow_table].
 #'
 #' @return A [cow_table].
-add_1_to_age <- function(cows) {
+add_1_to_month <- function(cows) {
   cows$age <- cows$age + 1
+  cows$months_in_area <- cows$months_in_area + 1
   return(cows)
 }
 
