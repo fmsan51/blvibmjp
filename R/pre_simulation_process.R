@@ -555,6 +555,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   }
   area_table$capacity <- as.character(area_table$capacity)
   # as.character() to when capacity is an integer/numeric vector.
+  area_table$capacity <- warn_double_sep(area_table$capacity)
   area_table$capacity <-
     paste0("c(", gsub(sep, ", ", area_table$capacity), ")")
   area_table$capacity <-
@@ -631,6 +632,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
      ))
   }
 
+  movement_table$next_area <- warn_double_sep(movement_table$next_area)
   movement_table$next_area <-
     strsplit(as.character(movement_table$next_area), sep)
   # as.character() to when capacity is an integer/numeric vector.
@@ -655,6 +657,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table$current_area <- as.integer(movement_table$current_area)
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
+  movement_table$priority <- warn_double_sep(movement_table$priority)
   movement_table$priority <-
     strsplit(as.character(movement_table$priority), sep)
   # as.character() to when capacity is an integer/numeric vector.
@@ -716,6 +719,26 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   }
 
   return(movement_table)
+}
+
+
+#' Check whether input contains doublewidth separator
+#'
+#' @param data Data to check like `movement_table$next_area`.
+warn_double_sep <- function(data) {
+  data_name <- as.character(substitute(data))
+  data_type <- switch(data_name[2],
+                      cows = "cow",
+                      area_table = "area",
+                      movement_table = "movement")
+  if (any(grepl(double_sep, data))) {
+    data <- gsub(double_sep, ", ", data)
+    warning(glue(
+      "'{double_sep}' was found in `{data_name[3]}` in the {data_type} data. \\
+       Replaced it with ', '."
+    ))
+  }
+  return(data)
 }
 
 
