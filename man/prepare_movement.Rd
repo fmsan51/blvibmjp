@@ -9,7 +9,7 @@ prepare_movement(
   data = NULL,
   output_file = NULL,
   area_name = NULL,
-  sep = "[,\\t\\r\\n |;:]",
+  sep = "[,\\t\\r\\n |;:]+",
   seed = NULL
 )
 }

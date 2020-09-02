@@ -501,7 +501,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_area <- function(csv, data = NULL, output_file = NULL,
-                         sep = "[,\t\r\n |;:]", seed = NULL) {
+                         sep = "[,\t\r\n |;:]+", seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
   } else {
@@ -556,7 +556,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
   area_table$capacity <- as.character(area_table$capacity)
   # as.character() to when capacity is an integer/numeric vector.
   area_table$capacity <-
-    paste0("c(", gsub(paste0(sep, "+"), ", ", area_table$capacity), ")")
+    paste0("c(", gsub(sep, ", ", area_table$capacity), ")")
   area_table$capacity <-
     lapply(area_table$capacity,
            function(x) gsub("(\\d+) ?x ?(\\d+)", "rep(\\1, \\2)", x, perl = T))
@@ -601,7 +601,7 @@ prepare_area <- function(csv, data = NULL, output_file = NULL,
 #' @export
 #' @return A csv file which can be used as an input for [simulate_blv_spread()].
 prepare_movement <- function(csv, data = NULL, output_file = NULL,
-                             area_name = NULL, sep = "[,\t\r\n |;:]",
+                             area_name = NULL, sep = "[,\t\r\n |;:]+",
                              seed = NULL) {
   if (!missing(csv)) {
     input <- fread(csv)
@@ -632,7 +632,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   }
 
   movement_table$next_area <-
-    strsplit(as.character(movement_table$next_area), paste0(sep, "+"))
+    strsplit(as.character(movement_table$next_area), sep)
   # as.character() to when capacity is an integer/numeric vector.
   if (!is.null(area_name)) {
     chr_area_name <- names(area_name)
@@ -656,7 +656,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
   movement_table$next_area <- lapply(movement_table$next_area, as.integer)
 
   movement_table$priority <-
-    strsplit(as.character(movement_table$priority), paste0(sep, "+"))
+    strsplit(as.character(movement_table$priority), sep)
   # as.character() to when capacity is an integer/numeric vector.
   movement_table$priority <- lapply(movement_table$priority, as.numeric)
   n_priority <- vapply(movement_table$priority, length, 1)
@@ -741,7 +741,7 @@ prepare_data <- function(excel, param, output = F,
                          movement_data = NULL,
                          cow_output_file = NULL, area_output_file = NULL,
                          movement_output_file = NULL,
-                         sep = "[,\t\r\n |;:]", seed = NULL, ...) {
+                         sep = "[,\t\r\n |;:]+", seed = NULL, ...) {
   if (!missing(excel)) {
     cow_input <- read_excel(excel, sheet = "cow", skip = 3)
     area_input <- read_excel(excel, sheet = "area", skip = 3,
