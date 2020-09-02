@@ -315,7 +315,8 @@ plot_route <- function(param,
       gp <- gp + scale_color_manual(values = border_color, drop = F)
     } else {
       warning(
-        "Argument border_color is ignored because argument border is FALSE.")
+        "Argument border_color is ignored because argument border is FALSE."
+      )
     }
   }
   #   gp <- gp + theme_bw(base_family = font) +
