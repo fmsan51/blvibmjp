@@ -56,6 +56,10 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows[, (cols_in_input) := input[, .SD, .SDcols = cols_in_input]]
 
   # First, calculate values in columns which users can specify.
+  cows$cow_id <- tryCatch(as.integer(as.character(cows$cow_id)),
+    warning = function(e) {
+      stop("`cow_id` in the cow input contains non-integer value(s).")
+    })
   is_na <- is.na(cows$cow_id)
   if (any(is_na)) {
     n_na <- sum(is_na)
@@ -76,13 +80,46 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   }
 
   # Convert is_xxx variables from numeric or character to logical
-  lgl_vars <- grep("^is_", cow_table_cols, value = T)
+  lgl_vars <- c(grep("^is_", cow_table_cols, value = T),
+                "susceptibility_ial_to_ipl", "susceptibility_ipl_to_ebl")
   cows_w_lgl_vars <- cows[, ..lgl_vars]
   cows_lgl_vars_converted <- lapply(cows_w_lgl_vars, function(x)
     as.logical(factor(x, levels = c("1", "TRUE", "0", "FALSE"),
                       labels = c("TRUE", "TRUE", "FALSE", "FALSE")))
     )
   cows[, (lgl_vars) := cows_lgl_vars_converted]
+
+  # Convert classes of other types of variables
+  int_vars <- c("parity", "n_ai", "chamber_id")
+  num_vars <- c(int_vars, "age", "months_in_area")
+
+  cows_w_num_vars <- cows[, ..num_vars]
+  coersed_to_num <- lapply(cows_w_num_vars,
+    function(x) tryCatch(as.numeric(as.character(x)),
+                         # Do as.character to prepare when x is factor.
+                         warning = function(e) "error")
+    )
+  non_num_vars <- num_vars[!vapply(coersed_to_num, is.numeric, T)]
+  if (length(non_num_vars) != 0) {
+    stop(glue(
+      "Following column(s) in the cow data must contain numbers only:
+       {paste0('`', non_num_vars, '`', collapse = ', ')}"
+    ))
+  }
+  non_int_vars <-
+    int_vars[!vapply(coersed_to_num, is.wholenumbers, na.rm = T, T)]
+  if (length(non_int_vars) != 0) {
+    stop(glue(
+      "Following column(s) in the cow data must contain integers only:
+       {paste0('`', non_int_vars, '`', collapse = ', ')}"
+    ))
+  }
+  cows[, (num_vars) := coersed_to_num]
+  cows[, (int_vars) := lapply(.SD, floor), .SDcols = int_vars]
+  cows$chamber_id <- as.integer(cows$chamber_id)
+
+  chr_vars <- c("sex", "stage", "infection_status", "area_id")
+  cows[, (chr_vars) := cows[, lapply(.SD, as.character), .SDcols = chr_vars]]
 
   is_na_age <- is.na(cows$age)
   is_na_date_birth <- is.na(cows$date_birth)
@@ -191,11 +228,9 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
   cows$date_dried[cows$stage == "milking"] <- NA_real_
   is_na <- is.na(cows$stage)
   if (any(is_na)) {
-    #     cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
-    #     cows[is_na & parity != 0,
-    #          `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
-    cows$stage[is_na & cows$parity == 0] <- fifelse(cows$age < 4, "calf", "heifer")
-    cows$stage[is_na & cows$parity != 0] <- fifelse(is.na(cows$date_dried), "milking", "dry")
+    cows[is_na & parity == 0, `:=`(stage = fifelse(age < 4, "calf", "heifer"))]
+    cows[is_na & parity != 0,
+         `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
   }
 
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
