@@ -274,7 +274,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
       "Following item(s) in the `infection_status` column is treated as \\
        non-infected:
        {paste(items_coerced_to_s, collapse = ',')}"
-          ))
+    ))
   }
 
   is_na <- is.na(cows$infection_status)
@@ -629,7 +629,7 @@ prepare_movement <- function(csv, data = NULL, output_file = NULL,
     stop(glue(
       "Following column(s) in the movement data must not contain missing value:
        {paste0('`', missing_cols, '`', collapse = ', ')}"
-     ))
+    ))
   }
 
   movement_table$next_area <- warn_double_sep(movement_table$next_area)
