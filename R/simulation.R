@@ -125,7 +125,7 @@ simulate_once <- function(cows_areas, max_cow_id,
     month <- (i + param_sim$simulation_start - 2) %% 12 + 1
     cows <- set_i_month(cows, i)
 
-    cows <- add_1_to_age(cows)
+    cows <- add_1_to_month(cows)
     res <- do_ai(cows, areas, area_table, i, day_rp, param_sim)
     cows <- res$cows
     areas <- res$areas
