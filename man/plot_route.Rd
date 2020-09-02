@@ -10,10 +10,11 @@ plot_route(
   output_dir = param$output_dir,
   i_simulation = seq_len(param$n_simulation),
   list_cows = NULL,
-  language = NULL,
+  language = "English",
   drop = T,
   route_levels = NULL,
   route_labels = NULL,
+  gather = T,
   max_ylim = NULL,
   title = T,
   legend_title = T,
@@ -37,7 +38,7 @@ plot_route(
 
 \item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
 
-\item{route_levels, route_labels}{See \link{redefine_route_levels}}
+\item{route_levels, route_labels, gather}{See \link{redefine_route_levels}}
 
 \item{max_ylim}{Upper limit of the y-axis of the plot.}
 

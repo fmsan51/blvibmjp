@@ -63,8 +63,10 @@ FALSE: The cow Will be sold to beef operations.
 \item \code{cause_infection}: The reason why the cow is infected. It is set when the cow gets infected.
 \itemize{
 \item "initial": already be infected at the start of the start of a simulation.
-\item "insects": by bloodsucking insects.
-\item "contact": by direct contact with an infected cow.
+\item "tie_exposed_baseline": by insects (the cow is kept in a tie-stall barn and has an infected neighbor and infection was NOT due to the neighbor.)
+\item "tie_exposed_risk": by insects (the cow is kept in a tie-stall barn and has an infected neighbor and infection was due to the neighbor.)
+\item "tie_non_exposed": by insects (the cow is kept in a tie-stall barn and does not have an infected neighbor.)
+\item "free": by insects (the cow is kept in an free-stall barn or at outside.)
 \item "rp": by rectal palpation.
 \item "vertical": vertical transimisson (intrauterine and by the dam milk).
 \item "introduced": for a introduced cow which is infected before introduction (a home-bred cow infected from introduced cow is not categorized as this).

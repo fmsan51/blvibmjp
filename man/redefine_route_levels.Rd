@@ -9,19 +9,22 @@ redefine_route_levels(
   drop,
   language = NULL,
   route_levels = NULL,
-  route_labels = NULL
+  route_labels = NULL,
+  gather = T
 )
 }
 \arguments{
 \item{cows}{See \link{cow_table}.}
 
-\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend.}
+\item{drop}{Drop infection routes not in \code{csv} or \code{cows} from a legend. Ignored when \code{route_levels} is specified.}
 
 \item{language}{Language to which translate messages. At present, only English and Japanese is implemented.}
 
 \item{route_levels}{If specified, infection routes not specified in \code{route_levels} are coarced into "other" category. See \code{cause_infection} in \link{cow_table} to know about default categories.}
 
 \item{route_labels}{Specify if you want to rename categories.}
+
+\item{gather}{Whether infection routes as "tie_exposed_baseline", "tie_exposed_risk", "tie_non_exposed" and "free" should be gathered to one category "insects" or treated as-is.}
 }
 \value{
 A \link{cow_table} with recategorized \code{cause_infection}.

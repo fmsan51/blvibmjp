@@ -26,17 +26,17 @@ read_cows <- function(param,
 }
 
 
-#' @param route_levels,route_labels,drop See [redefine_route_levels].
+#' @param route_levels,route_labels,drop,gather See [redefine_route_levels].
 #' @name read_cows
 read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
                             output_filename = param$output_filename,
                             output_dir = param$output_dir,
                             i_simulation = seq_len(param$n_simulation),
-                            drop = T) {
+                            drop = T, gather = T) {
   cows <- read_cows(param, output_filename, output_dir, i_simulation)
   cows <- cows[is_owned == T & i_month == max(i_month), ]
   cows <- redefine_route_levels(cows, drop, language = NULL, route_levels,
-                                route_labels)
+                                route_labels, gather = gather)
   return(cows)
 }
 
@@ -48,7 +48,9 @@ read_final_cows <- function(param, route_levels = NULL, route_labels = NULL,
 #' @param param,output_filename,output_dir See [param].
 #' @param i_simulation csvs with this numbers are used.
 #' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
-#' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows.
+#' @param type `prop` means proportion of infected cows. `count` means the number of infected and non-infected cows. `status` means the number of `s` (non-infected), `ial` (asymptomatic), `ipl` (persistent lymphositosis) and `ebl` cows. `route` means the number of infected cows by each infection route.
+#' @param gather When `type` is "route", whether infection routes as "tie_exposed_baseline", "tie_exposed_risk", "tie_non_exposed" and "free" should be gathered to one category "insects" or treated as-is.
+# @param drop When `type` is "route", whether drop infection routes not contained in a simulation result from a resulting table of the function.
 #' @param by_simulation Whether calculate median of all simulations (`FALSE`) or calculate by each simualtion (`TRUE`).
 #'
 #' @return A [data.table][data.table::data.table] contains monthly prevalences.
@@ -123,7 +125,7 @@ plot_prev <- function(param,
                       output_filename = param$output_filename,
                       output_dir = param$output_dir,
                       i_simulation = seq_len(param$n_simulation),
-                      list_cows = NULL, language = NULL,
+                      list_cows = NULL, language = "English",
                       title = T, xlab = T, ylab = T, font = NULL) {
   prevalences <-
     calc_prev(param, output_filename, output_dir, i_simulation, list_cows,
@@ -159,41 +161,68 @@ plot_prev <- function(param,
 #' Recategorize `cause_infection` column in a `cow_table`.
 #'
 #' @param cows See [cow_table].
-#' @param drop Drop infection routes not in `csv` or `cows` from a legend.
+#' @param drop Drop infection routes not in `csv` or `cows` from a legend. Ignored when `route_levels` is specified.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param route_levels If specified, infection routes not specified in `route_levels` are coarced into "other" category. See `cause_infection` in [cow_table] to know about default categories.
 #' @param route_labels Specify if you want to rename categories.
+#' @param gather Whether infection routes as "tie_exposed_baseline", "tie_exposed_risk", "tie_non_exposed" and "free" should be gathered to one category "insects" or treated as-is.
 #'
 #' @return A [cow_table] with recategorized `cause_infection`.
 #'
 #' @export
 redefine_route_levels <- function(cows,
                                   drop, language = NULL, route_levels = NULL,
-                                  route_labels = NULL) {
+                                  route_labels = NULL, gather = T) {
   cows <- copy(cows)
 
   cows$cause_infection[cows$infection_status == "s"] <- "uninfected"
 
+  gathered_levels <-
+    c("tie_exposed_baseline", "tie_exposed_risk", "tie_non_exposed", "free")
+  routes <- c("uninfected", "initial", "insects", gathered_levels, "contact",
+              "rp", "vertical", "colostrum", "introduced", "pasture")
   if (is.null(route_levels)) {
     if (drop) {
-      route_levels <- unique(cows$cause_infection)
+      route_levels <-
+        intersect(routes, c(unique(cows$cause_infection), "insects"))
+      # Use intersect to organize order of cause_infection
     } else {
-    route_levels <- c("uninfected", "initial", "insects",
-                      # "contact",  TODO: Fix this
-                      "rp", "vertical", "colostrum", "introduced", "pasture")
+      route_levels <- routes
     }
   }
-  uninf_and_route <- unique(c("uninfected", route_levels))
-
-  if (all(unique(cows$cause_infection) %in% uninf_and_route)) {
-    cows$cause_infection <- factor(cows$cause_infection, uninf_and_route)
+  uninf_and_route_raw <- unique(c("uninfected", route_levels))
+  if (gather) {
+    uninf_and_route <-
+      intersect(routes, setdiff(uninf_and_route_raw, gathered_levels))
+    # Use intersect to organize order of cause_infection
+    uninf_and_route_w_gathered <- unique(c(uninf_and_route, gathered_levels))
   } else {
-    cows$cause_infection <- fct_other(cows$cause_infection, uninf_and_route,
-                                      other_level = "other")
-    uninf_and_route <- c(uninf_and_route, "other")
-    cows$cause_infection <- factor(cows$cause_infection,
-                                   levels = uninf_and_route)
+    uninf_and_route <- setdiff(uninf_and_route_raw, "insects")
   }
+
+  contains_all_cause <-
+    all(unique(cows$cause_infection) %in% uninf_and_route_raw)
+  if (contains_all_cause & gather) {
+    cows$cause_infection <- fct_collapse(
+        factor(cows$cause_infection, levels = uninf_and_route_w_gathered),
+        insects = gathered_levels
+      )
+  } else if (!contains_all_cause) {
+    if (gather & any(gathered_levels %in% uninf_and_route)) {
+      cows$cause_infection <- fct_other(cows$cause_infection,
+                                        uninf_and_route_w_gathered,
+                                        other_level = "other")
+      cows$cause_infection <- fct_collapse(
+          factor(cows$cause_infection, c(uninf_and_route_w_gathered, "other")),
+          insects = gathered_levels
+        )
+    } else {
+      cows$cause_infection <-
+        fct_other(cows$cause_infection, uninf_and_route, other_level = "other")
+    }
+    uninf_and_route <- c(uninf_and_route, "other")
+  }
+  cows$cause_infection <- factor(cows$cause_infection, levels = uninf_and_route)
 
   if (!is.null(route_labels)) {
     if (length(route_labels) != length(levels(cows$cause_infection))) {
@@ -202,7 +231,7 @@ redefine_route_levels <- function(cows,
                  Did't you forget a label for 'others'?"))
     }
     levels(cows$cause_infection) <- route_labels
-  } else {
+  } else if (!is.null(language)) {
     translated_msg <- translate_msg("redefine_route_levels", language)
     levels(cows$cause_infection) <- unlist(translated_msg[uninf_and_route])
   }
@@ -220,7 +249,7 @@ redefine_route_levels <- function(cows,
 #' @param list_cows List consisted of `cow_table`s. Specify one of `output_dir`+`output_filename` or `list_cows`.
 #' @param language Language to which translate messages. At present, only English and Japanese is implemented.
 #' @param drop Drop infection routes not in `csv` or `cows` from a legend.
-#' @param route_levels,route_labels See [redefine_route_levels]
+#' @param route_levels,route_labels,gather See [redefine_route_levels]
 #' @param max_ylim Upper limit of the y-axis of the plot.
 #' @param title,legend_title,xlab,ylab logical or character. Plot a title, a legend title, a label for x-axis and a label for y-axis. When `TRUE`, the default value is used. When `FALSE` or `NULL`, the title or the label is not shown. When specified by character, the string is used as the title or the label.
 #' @param gray When `TRUE`, a plot will be a grayscale image.
@@ -236,8 +265,8 @@ plot_route <- function(param,
                        output_filename = param$output_filename,
                        output_dir = param$output_dir,
                        i_simulation = seq_len(param$n_simulation),
-                       list_cows = NULL, language = NULL,
-                       drop = T, route_levels = NULL, route_labels = NULL,
+                       list_cows = NULL, language = "English", drop = T,
+                       route_levels = NULL, route_labels = NULL, gather = T,
                        max_ylim = NULL, title = T, legend_title = T,
                        xlab = T, ylab = T, gray = F, area_color = NULL,
                        border = F, border_color = NULL, font = NULL) {
@@ -249,7 +278,8 @@ plot_route <- function(param,
   cows <- cows[is_owned == T, ]
 
   cows <-
-    redefine_route_levels(cows, drop, language, route_levels, route_labels)
+    redefine_route_levels(cows, drop, language, route_levels, route_labels,
+                          gather = gather)
   orig_msg <- list(title = title, legend_title = legend_title,
                    xlab = xlab, ylab = ylab)
   defined_msg <- define_msg(orig_msg, "plot_route", language)
@@ -273,8 +303,15 @@ plot_route <- function(param,
     border_color <- rep("#000000", n_cause)
   }
   if (is.null(area_color)) {
-    area_color <- c(gray(0.85), colorblind_pal()(n_cause)[-1])
-    # TODO: Max #colors can be hundled by colorblind_pal is 8, but there is 10 categories.
+    if (n_cause <= 8) {
+      area_color <- c(gray(0.85), colorblind_pal()(n_cause)[-1])
+    } else {
+      message(glue(
+        "Note: NOT color-blind friendly palette was choosed \\
+         because there are 9+ infection routes."
+      ))
+      area_color <- c(gray(0.85), hue_pal()(n_cause - 1))
+    }
   }
 
   if (border) {
@@ -394,9 +431,6 @@ table_status <- function(param, route_levels = NULL, route_labels = NULL,
 #' @param type Type of massages.
 #' @param to Language to which translate messages. At present, only English and Japanese is implemented.
 translate_msg <- function(type, to) {
-  if (is.null(to)) {
-    to <- "English"
-  }
   res <- msg[[to]][[type]]
 
   return(res)
