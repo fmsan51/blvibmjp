@@ -4,10 +4,12 @@
 \alias{is.wholenumbers}
 \title{Test if a numeric vector is consisted of whole numbers or not}
 \usage{
-is.wholenumbers(number)
+is.wholenumbers(number, na.rm = F)
 }
 \arguments{
 \item{number}{numeric vector.}
+
+\item{na.rm}{logical. Passed to \code{na.rm} of \code{\link[=all]{all()}}.}
 }
 \value{
 A logical value.

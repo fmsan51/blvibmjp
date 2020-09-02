@@ -22,6 +22,7 @@ integerize <- function(number) {
 #' Test if all the components of a numeric vector is whole number or not.
 #'
 #' @param number numeric vector.
+#' @param na.rm logical. Passed to `na.rm` of [all()].
 #'
 #' @examples
 #' blvibmjp:::is.wholenumbers(3L)  # TRUE
@@ -29,8 +30,8 @@ integerize <- function(number) {
 #' blvibmjp:::is.wholenumbers(pi)  # FALSE
 #'
 #' @return A logical value.
-is.wholenumbers <- function(number) {
-  all(number %% 1 == 0)
+is.wholenumbers <- function(number, na.rm = F) {
+  all(number %% 1 == 0, na.rm = na.rm)
 }
 
 
