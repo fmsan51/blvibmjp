@@ -195,7 +195,7 @@ prepare_cows <- function(csv, param, data = NULL, output_file = NULL,
     #     cows[is_na & parity != 0,
     #          `:=`(stage = fifelse(is.na(date_dried), "milking", "dry"))]
     cows$stage[is_na & cows$parity == 0] <- fifelse(cows$age < 4, "calf", "heifer")
-    cows$stage[is_na & cows$parity != 0] <- fifelse(is.na(date_dried), "milking", "dry")
+    cows$stage[is_na & cows$parity != 0] <- fifelse(is.na(cows$date_dried), "milking", "dry")
   }
 
   cows$is_to_test_pregnancy[is.na(cows$is_to_test_pregnancy)] <- F
