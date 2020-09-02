@@ -116,6 +116,7 @@ is_infected_in_free_stall <- function(n_noinf, n_inf, month, param_sim) {
   runif(n_noinf) <
     param_sim$probs_inf_insects_month[month] * param_sim$free_pressure *
     ((n_inf / (n_noinf + n_inf)) / param_sim$average_prop_inf_in_free)
+  # TODO: Use the number or PL to calculate infection pressure
 }
 
 
